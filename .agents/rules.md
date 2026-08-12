@@ -1,0 +1,29 @@
+- Usa siempre patrones DRY (Don't Repeat Yourself) y buenas prácticas de código
+- Usa Tailwind para los estilos. No escribas CSS específico de componentes; `src/app/globals.css` se limita a importar Tailwind y, cuando sea imprescindible, a definir tokens globales compartidos.
+- Siempre crea archivos separados para las interfaces y types. NO escribas los types dentro de los mismos archivos. Crea carpeta para estos archivos de tipado.
+- Mantén los componentes pequeños, no excedas nunca las 170 líneas
+- Extrae la lógica de negocio a funciones puras en archivos `utils` o `services`
+- Usa nombres descriptivos y semánticos para variables, funciones y componentes
+- Evita funciones anidadas profundamente, máximo 2 niveles de anidación
+- Prioriza la composición sobre la herencia
+- Separa responsabilidades: cada función debe hacer una sola cosa
+- Usa constantes para valores mágicos y configuración
+- Documenta funciones complejas con comentarios breves y claros
+- Evita mutaciones directas, usa inmutabilidad cuando sea posible
+- Valida datos de entrada en funciones críticas
+- Maneja errores de forma explícita, nunca silencies excepciones
+- Usa early returns para reducir complejidad ciclomática
+- Agrupa imports: externos primero, luego internos, ordenados alfabéticamente
+- Evita dependencias circulares entre módulos
+- Prefiere funciones pequeñas y específicas sobre funciones grandes y genéricas
+- Usa TypeScript estricto, evita any y as cuando sea posible
+- Mantén funciones puras cuando sea posible y evita efectos secundarios innecesarios
+- Reutiliza componentes existentes antes de crear nuevos
+- Estructura archivos por feature o dominio, no por tipo de archivo
+- Usa convenciones de naming consistentes en todo el proyecto
+- Refactoriza código duplicado inmediatamente cuando lo detectes
+- Escribe código autodocumentado con nombres claros antes que comentarios extensos
+- La UI debe ser minimalista. Nada de agregar muchos colores.
+- Las migraciones de supabase se crean en la carpeta supabase para ejecutarlas con el CLI
+- Compilar siempre con Yarn
+- No uses `middleware.ts`. En Next.js 16 utiliza un único `src/proxy.ts` cuando sea necesario interceptar solicitudes; extrae su lógica auxiliar a módulos reutilizables.
