@@ -1,0 +1,1 @@
+export { RegistrationTypeSelector } from "./RegistrationTypeSelector";

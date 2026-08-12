@@ -1,0 +1,1 @@
+export { RegistrationContactFields } from "./RegistrationContactFields";

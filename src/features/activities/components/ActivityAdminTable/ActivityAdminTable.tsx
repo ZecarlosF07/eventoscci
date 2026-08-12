@@ -4,6 +4,7 @@ import { Button } from "@/components/atoms/Button";
 import { Text } from "@/components/atoms/Text";
 import { PriceDisplay } from "@/components/molecules/PriceDisplay";
 import { StatusBadge } from "@/components/molecules/StatusBadge";
+import { ROUTES } from "@/constants/routes";
 import type { ActivityAdminTableProps } from "@/features/activities/components/ActivityAdminTable/types/activity-admin-table.types";
 import { changeActivityStatusAction } from "@/features/activities/mutations/activity.actions";
 import {
@@ -36,7 +37,7 @@ export function ActivityAdminTable({ activities }: ActivityAdminTableProps) {
                 <td className="px-5 py-4"><PriceDisplay generalPrice={activity.general_price} isFree={activity.is_free} memberPrice={activity.member_price} /></td>
                 <td className="px-5 py-4"><StatusBadge status={activity.status} /></td>
                 <td className="px-5 py-4 text-slate-700">{activity.published_at ? formatActivityDate(activity.published_at) : "Sin publicar"}</td>
-                <td className="px-5 py-4"><div className="flex flex-wrap gap-2"><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-slate-50" href={editRoute}>Editar</Link>{activity.status !== "published" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "published")}><Button type="submit" variant="subtle">Publicar</Button></form> : null}{activity.status !== "cancelled" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "cancelled")}><Button type="submit" variant="subtle">Cancelar</Button></form> : null}</div></td>
+                <td className="px-5 py-4"><div className="flex flex-wrap gap-2"><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-slate-50" href={editRoute}>Editar</Link><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-slate-50" href={`${ROUTES.adminRegistrations}?actividad=${activity.id}`}>Inscripciones</Link>{activity.status !== "published" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "published")}><Button type="submit" variant="subtle">Publicar</Button></form> : null}{activity.status !== "cancelled" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "cancelled")}><Button type="submit" variant="subtle">Cancelar</Button></form> : null}</div></td>
               </tr>
             );
           })}

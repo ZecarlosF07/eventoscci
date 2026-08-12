@@ -8,7 +8,7 @@
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:test": "supabase test db",
-    "db:test:linked": "supabase db query --linked --output table -f supabase/tests/001_core_schema_test.sql && supabase db query --linked --output table -f supabase/tests/002_activities_schema_test.sql",
+    "db:test:linked": "supabase db query --linked --output table -f supabase/tests/001_core_schema_test.sql && supabase db query --linked --output table -f supabase/tests/002_activities_schema_test.sql && supabase db query --linked --output table -f supabase/tests/003_registrations_schema_test.sql",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

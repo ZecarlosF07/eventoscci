@@ -68,17 +68,47 @@ select ok(
   'public activity image bucket exists'
 );
 select is(
-  (select count(*) from public.activities where deleted_at is null),
+  (
+    select count(*)
+    from public.activities
+    where id in (
+      '40000000-0000-4000-8000-000000000001',
+      '40000000-0000-4000-8000-000000000002'
+    )
+      and deleted_at is null
+  ),
   2::bigint,
   'two seeded activities exist'
 );
 select is(
-  (select count(*) from public.activity_dates where deleted_at is null),
-  4::bigint,
+  (
+    select count(*)
+    from (
+      select activity_id
+      from public.activity_dates
+      where activity_id in (
+        '40000000-0000-4000-8000-000000000001',
+        '40000000-0000-4000-8000-000000000002'
+      )
+        and deleted_at is null
+      group by activity_id
+      having count(*) >= 2
+    ) seeded_activity_dates
+  ),
+  2::bigint,
   'seeded activities include multiple dates'
 );
 select is(
-  (select count(*) from public.activity_speakers where deleted_at is null),
+  (
+    select count(*)
+    from public.activity_speakers
+    where activity_id in (
+      '40000000-0000-4000-8000-000000000001',
+      '40000000-0000-4000-8000-000000000002'
+    )
+      and speaker_id = '20000000-0000-4000-8000-000000000001'
+      and deleted_at is null
+  ),
   2::bigint,
   'seeded activities include speakers'
 );

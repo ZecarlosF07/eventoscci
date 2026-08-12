@@ -1,0 +1,1 @@
+export { RegistrationCta } from "./RegistrationCta";

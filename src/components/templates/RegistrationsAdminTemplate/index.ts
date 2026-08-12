@@ -1,0 +1,1 @@
+export { RegistrationsAdminTemplate } from "./RegistrationsAdminTemplate";

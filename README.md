@@ -68,7 +68,9 @@ supabase gen types typescript --linked > src/lib/supabase/database.types.ts
 Después, configurar `NEXT_PUBLIC_SUPABASE_URL` y
 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` en `.env.local`.
 
-La aplicación consulta categorías, expositores y actividades directamente mediante `supabase-js`. Las tablas con datos personales permanecen cerradas por RLS y las mutaciones de actividades requieren una cuenta interna autorizada.
+La aplicación consulta categorías, expositores y actividades directamente mediante `supabase-js`. Las tablas con datos personales permanecen cerradas por RLS y las mutaciones administrativas requieren una cuenta interna autorizada.
+
+La inscripción pública se realiza exclusivamente mediante `register_activity()`. Esta RPC valida periodo, duplicidad y cupos, calcula el precio y estado inicial, crea la asistencia pendiente y registra el evento de notificación en una sola transacción. No se conceden permisos anónimos directos sobre personas, inscripciones o asistencias.
 
 ## Acceso administrativo
 

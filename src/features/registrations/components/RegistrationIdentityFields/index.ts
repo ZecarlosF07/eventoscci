@@ -1,0 +1,1 @@
+export { RegistrationIdentityFields } from "./RegistrationIdentityFields";

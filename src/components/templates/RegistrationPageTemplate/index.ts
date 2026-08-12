@@ -1,0 +1,1 @@
+export { RegistrationPageTemplate } from "./RegistrationPageTemplate";

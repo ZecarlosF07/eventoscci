@@ -1,0 +1,1 @@
+export { RegistrationStatusBadge } from "./RegistrationStatusBadge";

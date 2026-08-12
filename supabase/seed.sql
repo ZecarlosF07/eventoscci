@@ -106,7 +106,7 @@ values
     80,
     false,
     180,
-    '2026-08-15 13:00:00+00',
+    '2026-08-01 13:00:00+00',
     '2026-09-18 23:59:00+00',
     'Área de Eventos CCI',
     '956000000',
@@ -138,7 +138,7 @@ values
     0,
     false,
     60,
-    '2026-08-20 13:00:00+00',
+    '2026-08-01 13:00:00+00',
     '2026-10-01 23:59:00+00',
     'Área de Capacitaciones CCI',
     '956000001',
@@ -221,9 +221,7 @@ on conflict (id) do update set
   starts_at = excluded.starts_at,
   ends_at = excluded.ends_at,
   label = excluded.label,
-  sort_order = excluded.sort_order,
-  deleted_at = null,
-  deleted_by = null;
+  sort_order = excluded.sort_order;
 
 insert into public.activity_speakers (
   id, activity_id, speaker_id, role_label, sort_order
@@ -243,9 +241,7 @@ values
     'Especialista invitada',
     0
   )
-on conflict (id) do update set
-  activity_id = excluded.activity_id,
-  speaker_id = excluded.speaker_id,
+on conflict (activity_id, speaker_id) where deleted_at is null do update set
   role_label = excluded.role_label,
   sort_order = excluded.sort_order,
   deleted_at = null,

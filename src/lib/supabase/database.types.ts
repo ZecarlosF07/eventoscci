@@ -268,6 +268,53 @@ export type Database = {
           },
         ]
       }
+      attendance: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          marked_at: string | null
+          marked_by: string | null
+          notes: string | null
+          registration_id: string
+          status: Database["public"]["Enums"]["attendance_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          marked_at?: string | null
+          marked_by?: string | null
+          notes?: string | null
+          registration_id: string
+          status?: Database["public"]["Enums"]["attendance_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          marked_at?: string | null
+          marked_by?: string | null
+          notes?: string | null
+          registration_id?: string
+          status?: Database["public"]["Enums"]["attendance_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string
@@ -306,6 +353,71 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      notification_outbox: {
+        Row: {
+          attempts: number
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          event_type: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string | null
+          payload: Json
+          person_id: string | null
+          recipient_email: string
+          related_entity_id: string | null
+          related_entity_type: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["notification_status"]
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          event_type: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string | null
+          payload?: Json
+          person_id?: string | null
+          recipient_email: string
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["notification_status"]
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          event_type?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string | null
+          payload?: Json
+          person_id?: string | null
+          recipient_email?: string
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["notification_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_outbox_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       people: {
         Row: {
@@ -360,6 +472,84 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      registrations: {
+        Row: {
+          activity_id: string
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
+          company_snapshot: string | null
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          person_id: string
+          price_snapshot: number
+          registration_code: string
+          registration_type: Database["public"]["Enums"]["registration_type"]
+          ruc_snapshot: string | null
+          status: Database["public"]["Enums"]["registration_status"]
+          updated_at: string
+        }
+        Insert: {
+          activity_id: string
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          company_snapshot?: string | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          person_id: string
+          price_snapshot?: number
+          registration_code: string
+          registration_type?: Database["public"]["Enums"]["registration_type"]
+          ruc_snapshot?: string | null
+          status?: Database["public"]["Enums"]["registration_status"]
+          updated_at?: string
+        }
+        Update: {
+          activity_id?: string
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          company_snapshot?: string | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          person_id?: string
+          price_snapshot?: number
+          registration_code?: string
+          registration_type?: Database["public"]["Enums"]["registration_type"]
+          ruc_snapshot?: string | null
+          status?: Database["public"]["Enums"]["registration_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       speakers: {
         Row: {
@@ -449,7 +639,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_activity_registration_availability: {
+        Args: { p_activity_id: string }
+        Returns: Json
+      }
+      get_public_registration_result: {
+        Args: { p_registration_code: string }
+        Returns: Json
+      }
       is_active_admin: { Args: never; Returns: boolean }
+      register_activity: {
+        Args: { p_activity_id: string; p_registration: Json }
+        Returns: Json
+      }
+      register_activity_internal: {
+        Args: { p_activity_id: string; p_registration: Json }
+        Returns: Json
+      }
       save_activity: {
         Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
         Returns: string
@@ -472,7 +678,16 @@ export type Database = {
         | "archived"
         | "cancelled"
       activity_type: "event" | "training"
+      attendance_status: "pending" | "attended" | "absent"
       document_type: "dni" | "ce"
+      notification_status:
+        | "pending"
+        | "processing"
+        | "sent"
+        | "failed"
+        | "cancelled"
+      registration_status: "pending" | "confirmed" | "cancelled"
+      registration_type: "general" | "member"
       user_role: "student" | "operator" | "administrator"
     }
     CompositeTypes: {
@@ -613,7 +828,17 @@ export const Constants = {
         "cancelled",
       ],
       activity_type: ["event", "training"],
+      attendance_status: ["pending", "attended", "absent"],
       document_type: ["dni", "ce"],
+      notification_status: [
+        "pending",
+        "processing",
+        "sent",
+        "failed",
+        "cancelled",
+      ],
+      registration_status: ["pending", "confirmed", "cancelled"],
+      registration_type: ["general", "member"],
       user_role: ["student", "operator", "administrator"],
     },
   },

@@ -13,9 +13,12 @@ import { ActivitySpeakers } from "@/features/activities/components/ActivitySpeak
 import { ACTIVITY_TYPE_LABELS } from "@/features/activities/constants/activity.constants";
 import { getActivityBannerUrl, getModalityLabel } from "@/features/activities/utils/activity-formatters";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
+import { RegistrationCta } from "@/features/registrations/components/RegistrationCta";
+import { getRegistrationAvailability } from "@/features/registrations/queries/get-registration-availability";
 
-export function ActivityDetailTemplate({ activity }: ActivityDetailTemplateProps) {
+export async function ActivityDetailTemplate({ activity }: ActivityDetailTemplateProps) {
   const bannerUrl = getActivityBannerUrl(activity.banner_path);
+  const availability = await getRegistrationAvailability(activity.id);
   return (
     <article className="py-10 sm:py-14">
       <Link className="text-sm font-semibold text-slate-600 hover:text-slate-950" href={getPublicActivityRoute(activity.type)}>← Volver al catálogo</Link>
@@ -46,7 +49,9 @@ export function ActivityDetailTemplate({ activity }: ActivityDetailTemplateProps
           {activity.contact_name ? <Text size="sm"><strong>Contacto:</strong> {activity.contact_name}</Text> : null}
           {activity.contact_phone ? <Text size="sm">{activity.contact_phone}</Text> : null}
           {activity.contact_email ? <Text size="sm">{activity.contact_email}</Text> : null}
-          <Text className="border-t border-slate-200 pt-4" size="sm">La inscripción estará disponible en el siguiente hito.</Text>
+          {availability ? (
+            <RegistrationCta activitySlug={activity.slug} activityType={activity.type} availability={availability} />
+          ) : null}
         </aside>
       </div>
     </article>

@@ -1,0 +1,1 @@
+export { RegistrationResult } from "./RegistrationResult";
