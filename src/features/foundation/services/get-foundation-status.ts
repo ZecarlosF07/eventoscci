@@ -3,6 +3,7 @@ import type { FoundationStatus } from "@/features/foundation/types/foundation-st
 import { getActiveSpeakers } from "@/features/speakers/queries/get-active-speakers";
 import { isSupabaseConfigured } from "@/lib/env/public-env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { unstable_rethrow } from "next/navigation";
 
 const UNCONFIGURED_STATUS: FoundationStatus = {
   categories: [],
@@ -30,6 +31,7 @@ export async function getFoundationStatus(): Promise<FoundationStatus> {
       status: "connected",
     };
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Falló la verificación del núcleo de Supabase.", error);
 
     return {
