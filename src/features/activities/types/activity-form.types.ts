@@ -1,0 +1,73 @@
+import type {
+  ActivityDetail,
+  ActivityModality,
+  ActivityStatus,
+  ActivityType,
+} from "@/features/activities/types/activity.types";
+
+export interface ActivityDateInput {
+  ends_at: string;
+  label: string;
+  sort_order: number;
+  starts_at: string;
+}
+
+export interface ActivitySpeakerInput {
+  role_label: string;
+  sort_order: number;
+  speaker_id: string;
+}
+
+export interface ActivityFormInput {
+  academic_hours: string;
+  additional_info: string;
+  address: string;
+  banner_path: string;
+  capacity: string;
+  category_id: string;
+  contact_email: string;
+  contact_name: string;
+  contact_phone: string;
+  dates: ActivityDateInput[];
+  description: string;
+  duration_text: string;
+  general_price: string;
+  id: string;
+  is_free: boolean;
+  location_name: string;
+  member_price: string;
+  members_only: boolean;
+  modality: ActivityModality;
+  objective: string;
+  program: string;
+  registration_close_at: string;
+  registration_open_at: string;
+  registrations_closed_manually: boolean;
+  short_description: string;
+  slug: string;
+  speakers: ActivitySpeakerInput[];
+  status: ActivityStatus;
+  syllabus: string;
+  target_audience: string;
+  title: string;
+  type: ActivityType;
+  virtual_url: string;
+}
+
+export interface ActivityFormState {
+  errors?: Record<string, string[]>;
+  message?: string;
+  success?: boolean;
+}
+
+export interface ActivityFormProps {
+  activity?: ActivityDetail;
+  categories: Array<{ id: string; name: string }>;
+  speakers: Array<{
+    first_names: string;
+    id: string;
+    last_names: string;
+    organization: string | null;
+  }>;
+  type: ActivityType;
+}

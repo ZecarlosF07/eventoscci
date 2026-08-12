@@ -39,6 +39,235 @@ export type Database = {
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          academic_hours: number | null
+          additional_info: string | null
+          address: string | null
+          banner_path: string | null
+          capacity: number | null
+          category_id: string | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string
+          duration_text: string | null
+          general_price: number
+          id: string
+          is_free: boolean
+          location_name: string | null
+          member_price: number
+          members_only: boolean
+          modality: Database["public"]["Enums"]["activity_modality"]
+          objective: string | null
+          program: string | null
+          published_at: string | null
+          registration_close_at: string | null
+          registration_open_at: string | null
+          registrations_closed_manually: boolean
+          short_description: string | null
+          slug: string
+          status: Database["public"]["Enums"]["activity_status"]
+          syllabus: string | null
+          target_audience: string | null
+          title: string
+          type: Database["public"]["Enums"]["activity_type"]
+          updated_at: string
+          updated_by: string | null
+          virtual_url: string | null
+        }
+        Insert: {
+          academic_hours?: number | null
+          additional_info?: string | null
+          address?: string | null
+          banner_path?: string | null
+          capacity?: number | null
+          category_id?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description: string
+          duration_text?: string | null
+          general_price?: number
+          id?: string
+          is_free?: boolean
+          location_name?: string | null
+          member_price?: number
+          members_only?: boolean
+          modality: Database["public"]["Enums"]["activity_modality"]
+          objective?: string | null
+          program?: string | null
+          published_at?: string | null
+          registration_close_at?: string | null
+          registration_open_at?: string | null
+          registrations_closed_manually?: boolean
+          short_description?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["activity_status"]
+          syllabus?: string | null
+          target_audience?: string | null
+          title: string
+          type: Database["public"]["Enums"]["activity_type"]
+          updated_at?: string
+          updated_by?: string | null
+          virtual_url?: string | null
+        }
+        Update: {
+          academic_hours?: number | null
+          additional_info?: string | null
+          address?: string | null
+          banner_path?: string | null
+          capacity?: number | null
+          category_id?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string
+          duration_text?: string | null
+          general_price?: number
+          id?: string
+          is_free?: boolean
+          location_name?: string | null
+          member_price?: number
+          members_only?: boolean
+          modality?: Database["public"]["Enums"]["activity_modality"]
+          objective?: string | null
+          program?: string | null
+          published_at?: string | null
+          registration_close_at?: string | null
+          registration_open_at?: string | null
+          registrations_closed_manually?: boolean
+          short_description?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["activity_status"]
+          syllabus?: string | null
+          target_audience?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["activity_type"]
+          updated_at?: string
+          updated_by?: string | null
+          virtual_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_dates: {
+        Row: {
+          activity_id: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          ends_at: string | null
+          id: string
+          label: string | null
+          sort_order: number
+          starts_at: string
+          updated_at: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          ends_at?: string | null
+          id?: string
+          label?: string | null
+          sort_order?: number
+          starts_at: string
+          updated_at?: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          ends_at?: string | null
+          id?: string
+          label?: string | null
+          sort_order?: number
+          starts_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_dates_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_speakers: {
+        Row: {
+          activity_id: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          role_label: string | null
+          sort_order: number
+          speaker_id: string
+          updated_at: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          role_label?: string | null
+          sort_order?: number
+          speaker_id: string
+          updated_at?: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          role_label?: string | null
+          sort_order?: number
+          speaker_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_speakers_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_speakers_speaker_id_fkey"
+            columns: ["speaker_id"]
+            isOneToOne: false
+            referencedRelation: "speakers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string
@@ -220,9 +449,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_active_admin: { Args: never; Returns: boolean }
+      save_activity: {
+        Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
+        Returns: string
+      }
+      set_activity_status: {
+        Args: {
+          p_activity_id: string
+          p_status: Database["public"]["Enums"]["activity_status"]
+        }
+        Returns: string
+      }
+      soft_delete_activity: { Args: { p_activity_id: string }; Returns: string }
     }
     Enums: {
+      activity_modality: "in_person" | "virtual" | "hybrid"
+      activity_status:
+        | "draft"
+        | "published"
+        | "finished"
+        | "archived"
+        | "cancelled"
+      activity_type: "event" | "training"
       document_type: "dni" | "ce"
       user_role: "student" | "operator" | "administrator"
     }
@@ -355,6 +604,15 @@ export const Constants = {
   },
   public: {
     Enums: {
+      activity_modality: ["in_person", "virtual", "hybrid"],
+      activity_status: [
+        "draft",
+        "published",
+        "finished",
+        "archived",
+        "cancelled",
+      ],
+      activity_type: ["event", "training"],
       document_type: ["dni", "ce"],
       user_role: ["student", "operator", "administrator"],
     },

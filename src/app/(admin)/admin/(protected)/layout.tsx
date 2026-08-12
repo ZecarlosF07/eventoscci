@@ -1,14 +1,12 @@
-import { WorkspaceShell } from "@/components/templates/WorkspaceShell";
+import { AdminShell } from "@/components/templates/AdminShell";
+import { requireAdmin } from "@/features/auth/services/admin-session";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await requireAdmin();
+
   return (
-    <WorkspaceShell
-      area="Administración"
-      description="La autenticación administrativa mínima se incorporará antes de habilitar mutaciones."
-    >
-      {children}
-    </WorkspaceShell>
+    <AdminShell email={session.email}>{children}</AdminShell>
   );
 }
