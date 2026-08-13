@@ -7,7 +7,7 @@ import { ADMIN_NAVIGATION } from "@/config/navigation";
 import { ROUTES } from "@/constants/routes";
 import { logoutAction } from "@/features/auth/mutations/auth.actions";
 
-export function AdminShell({ children, email }: AdminShellProps) {
+export function AdminShell({ children, email, name }: AdminShellProps) {
   return (
     <div className="min-h-screen bg-slate-100">
       <header className="border-b border-slate-200 bg-white">
@@ -32,7 +32,7 @@ export function AdminShell({ children, email }: AdminShellProps) {
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <Text size="sm">{email}</Text>
+            <div><Text size="sm">{name}</Text><Text size="sm">{email}</Text></div>
             <form action={logoutAction}>
               <Button type="submit" variant="secondary">
                 Cerrar sesión

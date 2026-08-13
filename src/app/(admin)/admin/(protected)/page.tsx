@@ -34,6 +34,10 @@ export default function AdminPage() {
           <Heading level={3}>Asistencia</Heading>
           <Text className="mt-2">Registra asistencia individual o masiva por actividad.</Text>
         </Link>
+        <Link className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md" href={ROUTES.adminCertificates}>
+          <Heading level={3}>Certificados</Heading>
+          <Text className="mt-2">Emite documentos a asistentes y administra su vigencia.</Text>
+        </Link>
       </div>
     </div>
   );

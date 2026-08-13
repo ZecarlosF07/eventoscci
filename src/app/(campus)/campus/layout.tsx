@@ -1,14 +1,9 @@
-import { WorkspaceShell } from "@/components/templates/WorkspaceShell";
+import { CampusShell } from "@/components/templates/CampusShell";
+import { requireActiveAccount } from "@/features/auth/services/account-guards";
 
-export default function CampusLayout({
+export default async function CampusLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <WorkspaceShell
-      area="Campus Virtual"
-      description="La autenticación y los cursos se implementarán en los hitos correspondientes."
-    >
-      {children}
-    </WorkspaceShell>
-  );
+  const account = await requireActiveAccount();
+  return <CampusShell account={account}>{children}</CampusShell>;
 }

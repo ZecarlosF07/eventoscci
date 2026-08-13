@@ -6,18 +6,19 @@ import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
 import { loginAction } from "@/features/auth/mutations/auth.actions";
-import type { LoginActionState } from "@/features/auth/types/auth.types";
+import type { LoginActionState, LoginFormProps } from "@/features/auth/types/auth.types";
 
 const INITIAL_STATE: LoginActionState = {};
 
-export function LoginForm() {
+export function LoginForm({ next }: LoginFormProps) {
   const [state, action, pending] = useActionState(loginAction, INITIAL_STATE);
 
   return (
     <form action={action} className="space-y-5">
+      <input name="next" type="hidden" value={next ?? ""} />
       <FormField
         error={state.errors?.email?.[0]}
-        label="Correo institucional"
+        label="Correo"
         name="email"
         required
       >
