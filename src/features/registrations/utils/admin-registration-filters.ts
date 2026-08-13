@@ -3,8 +3,11 @@ import type {
   RegistrationAdminFilters,
   RegistrationStatus,
 } from "@/features/registrations/types/registration.types";
+import type { ActivityType } from "@/features/activities/types/activity.types";
+import type { AttendanceStatus } from "@/features/attendance/types/attendance.types";
+import type { RegistrationType } from "@/features/registrations/types/registration.types";
 
-function firstValue(value?: string | string[]): string | undefined {
+export function firstValue(value?: string | string[]): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
 
@@ -20,6 +23,23 @@ function parseStatus(value?: string | string[]): RegistrationStatus | undefined 
     : undefined;
 }
 
+function parseActivityType(value?: string | string[]): ActivityType | undefined {
+  const type = firstValue(value);
+  return type === "event" || type === "training" ? type : undefined;
+}
+
+function parseAttendanceStatus(value?: string | string[]): AttendanceStatus | undefined {
+  const status = firstValue(value);
+  return status === "pending" || status === "attended" || status === "absent"
+    ? status
+    : undefined;
+}
+
+function parseRegistrationType(value?: string | string[]): RegistrationType | undefined {
+  const type = firstValue(value);
+  return type === "general" || type === "member" ? type : undefined;
+}
+
 export async function parseAdminRegistrationFilters(
   searchParams: AdminRegistrationsPageProps["searchParams"],
   fixedStatus?: RegistrationStatus,
@@ -27,7 +47,11 @@ export async function parseAdminRegistrationFilters(
   const params = await searchParams;
   return {
     activityId: firstValue(params.actividad),
+    activityType: parseActivityType(params.tipo_actividad),
+    attendanceStatus: parseAttendanceStatus(params.asistencia),
     page: parsePage(params.pagina),
+    query: firstValue(params.q)?.trim() || undefined,
+    registrationType: parseRegistrationType(params.tipo),
     status: fixedStatus ?? parseStatus(params.estado),
   };
 }

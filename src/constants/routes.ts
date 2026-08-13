@@ -1,10 +1,12 @@
 export const ROUTES = {
   admin: "/admin",
   adminActivities: "/admin/actividades",
+  adminAttendance: "/admin/asistencia",
   adminConfirmedRegistrations: "/admin/inscripciones/confirmados",
   adminEvents: "/admin/actividades/eventos",
   adminLogin: "/admin/login",
   adminPendingRegistrations: "/admin/inscripciones/preinscritos",
+  adminParticipants: "/admin/participantes",
   adminRegistrations: "/admin/inscripciones",
   adminTrainings: "/admin/actividades/capacitaciones",
   campus: "/campus",

@@ -98,6 +98,10 @@ export interface RegistrationAdminItem
   extends Pick<
     RegistrationRow,
     | "company_snapshot"
+    | "confirmed_at"
+    | "confirmed_by"
+    | "cancelled_at"
+    | "cancellation_reason"
     | "created_at"
     | "id"
     | "price_snapshot"
@@ -107,8 +111,10 @@ export interface RegistrationAdminItem
     | "status"
   > {
   activity: Pick<Tables<"activities">, "id" | "slug" | "title" | "type">;
+  attendance: Array<Pick<Tables<"attendance">, "id" | "status">>;
   person: Pick<
     Tables<"people">,
+    | "id"
     | "document_number"
     | "document_type"
     | "email"
@@ -121,7 +127,11 @@ export interface RegistrationAdminItem
 
 export interface RegistrationAdminFilters {
   activityId?: string;
+  activityType?: ActivityType;
+  attendanceStatus?: Enums<"attendance_status">;
   page: number;
+  query?: string;
+  registrationType?: RegistrationType;
   status?: RegistrationStatus;
 }
 
@@ -143,9 +153,20 @@ export interface RegistrationResultPageProps extends RegistrationRoutePageProps 
 export interface AdminRegistrationsPageProps {
   searchParams: Promise<{
     actividad?: string | string[];
+    asistencia?: string | string[];
     estado?: string | string[];
     pagina?: string | string[];
+    q?: string | string[];
+    resultado?: string | string[];
+    tipo?: string | string[];
+    tipo_actividad?: string | string[];
   }>;
+}
+
+export interface RegistrationActivityOption {
+  id: string;
+  title: string;
+  type: ActivityType;
 }
 
 export interface RegistrationFieldGroupProps {
@@ -185,6 +206,7 @@ export interface RegistrationCtaProps {
 
 export interface RegistrationsTableProps {
   registrations: RegistrationAdminItem[];
+  returnTo: string;
 }
 
 export interface RegistrationStatusBadgeProps {
@@ -192,7 +214,10 @@ export interface RegistrationStatusBadgeProps {
 }
 
 export interface RegistrationsAdminTemplateProps {
+  activities: RegistrationActivityOption[];
   data: RegistrationAdminPage;
+  filters: RegistrationAdminFilters;
+  result?: string;
   status?: RegistrationStatus;
   title: string;
 }

@@ -102,9 +102,18 @@ export const registrationAdminItemSchema = z.object({
     type: z.enum(["event", "training"]),
   }),
   company_snapshot: z.string().nullable(),
+  confirmed_at: z.string().nullable(),
+  confirmed_by: z.uuid().nullable(),
+  cancelled_at: z.string().nullable(),
+  cancellation_reason: z.string().nullable(),
   created_at: z.string(),
   id: z.uuid(),
+  attendance: z.array(z.object({
+    id: z.uuid(),
+    status: z.enum(["pending", "attended", "absent"]),
+  })),
   person: z.object({
+    id: z.uuid(),
     document_number: z.string(),
     document_type: z.enum(["dni", "ce"]),
     email: z.string(),

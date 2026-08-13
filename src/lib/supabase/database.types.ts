@@ -315,6 +315,48 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_user_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: unknown
+          metadata: Json | null
+          new_data: Json | null
+          old_data: Json | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_user_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          new_data?: Json | null
+          old_data?: Json | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_user_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          new_data?: Json | null
+          old_data?: Json | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -639,6 +681,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cancel_registration: {
+        Args: { p_reason?: string; p_registration_id: string }
+        Returns: Json
+      }
+      confirm_registration: {
+        Args: { p_registration_id: string }
+        Returns: Json
+      }
       get_activity_registration_availability: {
         Args: { p_activity_id: string }
         Returns: Json
@@ -667,7 +717,19 @@ export type Database = {
         }
         Returns: string
       }
+      set_attendance_status: {
+        Args: {
+          p_attendance_ids: string[]
+          p_notes?: string
+          p_status: Database["public"]["Enums"]["attendance_status"]
+        }
+        Returns: Json
+      }
       soft_delete_activity: { Args: { p_activity_id: string }; Returns: string }
+      update_participant: {
+        Args: { p_person: Json; p_person_id: string }
+        Returns: string
+      }
     }
     Enums: {
       activity_modality: "in_person" | "virtual" | "hybrid"
