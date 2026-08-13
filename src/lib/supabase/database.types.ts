@@ -588,6 +588,375 @@ export type Database = {
           },
         ]
       }
+      course_enrollments: {
+        Row: {
+          access_granted_at: string
+          access_granted_by: string | null
+          completed_at: string | null
+          course_id: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          person_id: string
+          price_snapshot: number
+          progress_percent: number
+          registration_type: Database["public"]["Enums"]["registration_type"]
+          revocation_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          status: Database["public"]["Enums"]["course_enrollment_status"]
+          updated_at: string
+        }
+        Insert: {
+          access_granted_at?: string
+          access_granted_by?: string | null
+          completed_at?: string | null
+          course_id: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          person_id: string
+          price_snapshot?: number
+          progress_percent?: number
+          registration_type?: Database["public"]["Enums"]["registration_type"]
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          status?: Database["public"]["Enums"]["course_enrollment_status"]
+          updated_at?: string
+        }
+        Update: {
+          access_granted_at?: string
+          access_granted_by?: string | null
+          completed_at?: string | null
+          course_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          person_id?: string
+          price_snapshot?: number
+          progress_percent?: number
+          registration_type?: Database["public"]["Enums"]["registration_type"]
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          status?: Database["public"]["Enums"]["course_enrollment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_enrollments_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_instructors: {
+        Row: {
+          course_id: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          is_primary: boolean
+          role_label: string | null
+          sort_order: number
+          speaker_id: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_primary?: boolean
+          role_label?: string | null
+          sort_order?: number
+          speaker_id: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_primary?: boolean
+          role_label?: string | null
+          sort_order?: number
+          speaker_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_instructors_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_instructors_speaker_id_fkey"
+            columns: ["speaker_id"]
+            isOneToOne: false
+            referencedRelation: "speakers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_materials: {
+        Row: {
+          course_id: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          external_url: string | null
+          file_size_bytes: number | null
+          id: string
+          material_type: Database["public"]["Enums"]["material_type"]
+          mime_type: string | null
+          sort_order: number
+          storage_path: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          external_url?: string | null
+          file_size_bytes?: number | null
+          id?: string
+          material_type: Database["public"]["Enums"]["material_type"]
+          mime_type?: string | null
+          sort_order?: number
+          storage_path?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          external_url?: string | null
+          file_size_bytes?: number | null
+          id?: string
+          material_type?: Database["public"]["Enums"]["material_type"]
+          mime_type?: string | null
+          sort_order?: number
+          storage_path?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_materials_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_modules: {
+        Row: {
+          course_id: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          id: string
+          is_published: boolean
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_modules_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          academic_hours: number | null
+          banner_path: string | null
+          contents_overview: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string
+          duration_text: string | null
+          general_price: number
+          id: string
+          is_free: boolean
+          member_price: number
+          objectives: string | null
+          published_at: string | null
+          short_description: string | null
+          slug: string
+          status: Database["public"]["Enums"]["course_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          academic_hours?: number | null
+          banner_path?: string | null
+          contents_overview?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description: string
+          duration_text?: string | null
+          general_price?: number
+          id?: string
+          is_free?: boolean
+          member_price?: number
+          objectives?: string | null
+          published_at?: string | null
+          short_description?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["course_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          academic_hours?: number | null
+          banner_path?: string | null
+          contents_overview?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string
+          duration_text?: string | null
+          general_price?: number
+          id?: string
+          is_free?: boolean
+          member_price?: number
+          objectives?: string | null
+          published_at?: string | null
+          short_description?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["course_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      lessons: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          duration_seconds: number | null
+          id: string
+          is_published: boolean
+          is_required: boolean
+          module_id: string
+          sort_order: number
+          title: string
+          updated_at: string
+          video_asset_id: string | null
+          video_provider: string | null
+          video_storage_path: string | null
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          duration_seconds?: number | null
+          id?: string
+          is_published?: boolean
+          is_required?: boolean
+          module_id: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+          video_asset_id?: string | null
+          video_provider?: string | null
+          video_storage_path?: string | null
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          duration_seconds?: number | null
+          id?: string
+          is_published?: boolean
+          is_required?: boolean
+          module_id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          video_asset_id?: string | null
+          video_provider?: string | null
+          video_storage_path?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "course_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_outbox: {
         Row: {
           attempts: number
@@ -920,6 +1289,8 @@ export type Database = {
         Args: { p_registration_id: string }
         Returns: Json
       }
+      current_person_id: { Args: never; Returns: string }
+      enroll_free_course: { Args: { p_course_id: string }; Returns: string }
       finalize_activity_certificate: {
         Args: {
           p_certificate_id: string
@@ -943,6 +1314,19 @@ export type Database = {
       get_public_registration_result: {
         Args: { p_registration_code: string }
         Returns: Json
+      }
+      grant_course_access: {
+        Args: {
+          p_course_id: string
+          p_person_id: string
+          p_price_snapshot?: number
+          p_registration_type: Database["public"]["Enums"]["registration_type"]
+        }
+        Returns: string
+      }
+      has_active_course_enrollment: {
+        Args: { p_course_id: string }
+        Returns: boolean
       }
       is_active_admin: { Args: never; Returns: boolean }
       prepare_activity_certificates: {
@@ -969,12 +1353,20 @@ export type Database = {
         Args: { p_certificate_id: string; p_reason: string }
         Returns: Json
       }
+      revoke_course_access: {
+        Args: { p_enrollment_id: string; p_reason: string }
+        Returns: undefined
+      }
       save_activity: {
         Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
         Returns: string
       }
       save_certificate_template: {
         Args: { p_signers: Json; p_template: Json }
+        Returns: string
+      }
+      save_course: {
+        Args: { p_course: Json; p_instructors: Json }
         Returns: string
       }
       set_activity_status: {
@@ -991,6 +1383,13 @@ export type Database = {
           p_status: Database["public"]["Enums"]["attendance_status"]
         }
         Returns: Json
+      }
+      set_course_status: {
+        Args: {
+          p_course_id: string
+          p_status: Database["public"]["Enums"]["course_status"]
+        }
+        Returns: undefined
       }
       soft_delete_activity: { Args: { p_activity_id: string }; Returns: string }
       soft_delete_certificate_template: {
@@ -1015,7 +1414,10 @@ export type Database = {
       attendance_status: "pending" | "attended" | "absent"
       certificate_status: "issued" | "revoked"
       certificate_type: "activity" | "course"
+      course_enrollment_status: "active" | "completed" | "revoked"
+      course_status: "draft" | "published" | "archived"
       document_type: "dni" | "ce"
+      material_type: "file" | "external_link"
       notification_status:
         | "pending"
         | "processing"
@@ -1167,7 +1569,10 @@ export const Constants = {
       attendance_status: ["pending", "attended", "absent"],
       certificate_status: ["issued", "revoked"],
       certificate_type: ["activity", "course"],
+      course_enrollment_status: ["active", "completed", "revoked"],
+      course_status: ["draft", "published", "archived"],
       document_type: ["dni", "ce"],
+      material_type: ["file", "external_link"],
       notification_status: [
         "pending",
         "processing",

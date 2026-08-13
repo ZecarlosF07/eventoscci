@@ -1,0 +1,1 @@
+export { CourseMaterialsManager } from "./CourseMaterialsManager";

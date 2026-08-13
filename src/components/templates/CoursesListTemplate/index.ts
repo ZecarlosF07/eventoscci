@@ -1,0 +1,1 @@
+export { CoursesListTemplate } from "./CoursesListTemplate";

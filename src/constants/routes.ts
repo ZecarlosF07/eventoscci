@@ -4,6 +4,7 @@ export const ROUTES = {
   adminAttendance: "/admin/asistencia",
   adminCertificates: "/admin/certificados",
   adminCertificatesActivities: "/admin/certificados/actividades",
+  adminCourses: "/admin/cursos",
   adminCertificateTemplates: "/admin/certificados/plantillas",
   adminConfirmedRegistrations: "/admin/inscripciones/confirmados",
   adminEvents: "/admin/actividades/eventos",
@@ -16,6 +17,7 @@ export const ROUTES = {
   authCallback: "/auth/callback",
   authConfirm: "/auth/confirm",
   campus: "/campus",
+  campusCourses: "/campus/cursos",
   campusProfile: "/campus/perfil",
   events: "/eventos",
   forgotPassword: "/recuperar-contrasena",
@@ -25,4 +27,5 @@ export const ROUTES = {
   resetPassword: "/restablecer-contrasena",
   trainings: "/capacitaciones",
   certificates: "/certificados",
+  courses: "/cursos",
 } as const;

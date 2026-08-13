@@ -1,0 +1,1 @@
+export { CourseInstructorFields } from "./CourseInstructorFields";

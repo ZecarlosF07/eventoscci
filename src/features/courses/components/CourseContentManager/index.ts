@@ -1,0 +1,1 @@
+export { CourseContentManager } from "./CourseContentManager";
