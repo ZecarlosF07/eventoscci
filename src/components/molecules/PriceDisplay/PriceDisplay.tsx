@@ -12,7 +12,7 @@ export function PriceDisplay({
 
   return (
     <div className="space-y-1">
-      <Text className="font-semibold text-slate-950" size="sm">
+      <Text className="font-semibold text-cci-950" size="sm">
         General: {formatActivityPrice(generalPrice)}
       </Text>
       <Text size="sm">Asociados: {formatActivityPrice(memberPrice)}</Text>

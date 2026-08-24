@@ -25,7 +25,7 @@ export function ActivityAttendanceTemplate({ data, filters, result }: ActivityAt
       <SectionHeading description={`${data.attendance.length} registros en el contexto filtrado. Los preinscritos se muestran diferenciados de los confirmados.`} eyebrow={data.activity.type === "event" ? "Evento" : "Capacitación"} title={data.activity.title} />
       <OperationNotice result={result} />
       <AttendanceFilters filters={filters} />
-      <div className="flex justify-end"><Link className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-50" href={`${ROUTES.adminRegistrations}/exportar?${exportValues}`}>Exportar CSV filtrado</Link></div>
+      <div className="flex justify-end"><Link className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-cci-50" href={`${ROUTES.adminRegistrations}/exportar?${exportValues}`}>Exportar CSV filtrado</Link></div>
       <AttendanceTable activityId={data.activity.id} attendance={data.attendance} returnTo={returnTo} />
     </div>
   );

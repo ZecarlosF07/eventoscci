@@ -1,8 +1,30 @@
 @import "tailwindcss";
 
 @theme inline {
+  --color-cci-50: #fbfdfc;
+  --color-cci-100: #e0eee6;
+  --color-cci-200: #bed5cc;
+  --color-cci-400: #7fa493;
+  --color-cci-600: #376756;
+  --color-cci-800: #183c32;
+  --color-cci-900: #123029;
+  --color-cci-950: #0c211c;
+  --color-cci-lime: #b6eb66;
+  --color-cci-sage: #a6c0b2;
+  --font-display: var(--font-charis);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes home-card-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

@@ -10,7 +10,7 @@ export function RegistrationResult({ result }: RegistrationResultProps) {
   const confirmed = result.status === "confirmed";
   return (
     <article className="mx-auto max-w-2xl py-14 sm:py-20">
-      <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm sm:p-10">
+      <div className="rounded-3xl border border-cci-100 bg-white p-7 shadow-sm sm:p-10">
         <Badge variant={confirmed ? "success" : "warning"}>
           {confirmed ? "Inscripción confirmada" : "Preinscripción registrada"}
         </Badge>
@@ -20,7 +20,7 @@ export function RegistrationResult({ result }: RegistrationResultProps) {
         <Text className="mt-4" size="lg">{result.activity_title}</Text>
         <div className="mt-7 rounded-2xl bg-slate-100 p-5">
           <Text size="sm">Código de inscripción</Text>
-          <p className="mt-1 font-mono text-2xl font-bold tracking-wide text-slate-950">
+          <p className="mt-1 font-mono text-2xl font-bold tracking-wide text-cci-950">
             {result.registration_code}
           </p>
         </div>
@@ -35,7 +35,7 @@ export function RegistrationResult({ result }: RegistrationResultProps) {
           </div>
         ) : null}
         <Link
-          className="mt-7 inline-flex min-h-11 items-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50"
+          className="mt-7 inline-flex min-h-11 items-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-cci-50"
           href={getPublicActivityRoute(result.activity_type, result.activity_slug)}
         >
           Volver a la actividad

@@ -32,7 +32,7 @@ export function CourseModulesList({
         const moduleLessons = lessons.filter((lesson) => lesson.module_id === module.id);
         const quiz = quizByModule.get(module.id);
         return (
-          <section className="rounded-2xl border border-slate-200 bg-white p-5" key={module.id}>
+          <section className="rounded-2xl border border-cci-100 bg-white p-5" key={module.id}>
             <Link href={`${getCampusCourseRoute(courseId)}/modulos/${module.id}`}>
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Módulo {index + 1}
@@ -70,7 +70,7 @@ export function CourseModulesList({
               {quiz ? (
                 <li className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
                   <Link
-                    className="font-semibold text-slate-950 hover:underline"
+                    className="font-semibold text-cci-950 hover:underline"
                     href={`${getCampusCourseRoute(courseId)}/modulos/${module.id}/quiz`}
                   >
                     Evaluación: {quiz.title}

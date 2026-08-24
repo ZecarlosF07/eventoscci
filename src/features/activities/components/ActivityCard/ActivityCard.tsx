@@ -21,15 +21,19 @@ export function ActivityCard({ activity }: ActivityCardProps) {
   const bannerUrl = getActivityBannerUrl(activity.banner_path);
 
   return (
-    <article className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-      <div className="relative aspect-[16/8] bg-slate-100">
+    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-cci-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-cci-200 hover:shadow-xl">
+      <div className="relative aspect-[16/9] overflow-hidden bg-cci-950">
         {bannerUrl ? (
-          <Image alt="" className="object-cover" fill sizes="(min-width: 768px) 33vw, 100vw" src={bannerUrl} />
+          <Image alt="" className="object-cover transition duration-500 group-hover:scale-[1.03]" fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" src={bannerUrl} />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">CCI</div>
+          <div className="relative flex h-full items-center justify-center overflow-hidden text-4xl font-bold tracking-[-0.08em] text-white/85">
+            <span className="absolute -right-10 -top-16 size-52 rounded-full border border-cci-lime/50" />
+            <span className="absolute -right-4 -top-10 size-40 rounded-full border border-cci-lime/25" />
+            <span>CCI</span>
+          </div>
         )}
       </div>
-      <div className="space-y-4 p-5">
+      <div className="flex flex-1 flex-col space-y-4 p-5">
         <div className="flex flex-wrap gap-2">
           <Badge>{ACTIVITY_TYPE_LABELS[activity.type]}</Badge>
           <Badge>{getModalityLabel(activity.modality)}</Badge>
@@ -41,10 +45,10 @@ export function ActivityCard({ activity }: ActivityCardProps) {
           {activity.category ? <Text className="mt-1" size="sm">{activity.category.name}</Text> : null}
         </div>
         {activity.short_description ? <Text size="sm">{activity.short_description}</Text> : null}
-        {nextDate ? <Text className="font-medium text-slate-800" size="sm">{formatActivityDate(nextDate.starts_at)}</Text> : null}
-        <div className="flex items-end justify-between gap-4 border-t border-slate-100 pt-4">
+        {nextDate ? <Text className="font-semibold text-cci-800" size="sm">{formatActivityDate(nextDate.starts_at)}</Text> : null}
+        <div className="mt-auto flex items-end justify-between gap-4 border-t border-cci-100 pt-4">
           <PriceDisplay generalPrice={activity.general_price} isFree={activity.is_free} memberPrice={activity.member_price} />
-          <Link className="text-sm font-semibold text-slate-950 underline-offset-4 hover:underline" href={getPublicActivityRoute(activity.type, activity.slug)}>Ver detalle</Link>
+          <Link className="shrink-0 text-sm font-bold text-cci-800 underline decoration-cci-lime decoration-2 underline-offset-4 hover:text-cci-950" href={getPublicActivityRoute(activity.type, activity.slug)}>Ver detalle</Link>
         </div>
       </div>
     </article>

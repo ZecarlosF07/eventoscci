@@ -13,7 +13,7 @@ const INITIAL_STATE: ProfileActionState = {};
 export function ProfileForm({ profile }: ProfileFormProps) {
   const [state, action, pending] = useActionState(updateProfileAction, INITIAL_STATE);
   const error = (name: string) => state.errors?.[name]?.[0];
-  return <form action={action} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 sm:p-8">
+  return <form action={action} className="space-y-6 rounded-3xl border border-cci-100 bg-white p-6 sm:p-8">
     <div className="grid gap-5 sm:grid-cols-2">
       <FormField label="Documento" name="document" hint="La identidad documental solo puede corregirse mediante la Cámara."><Input disabled id="document" value={`${profile.document_type.toUpperCase()} ${profile.document_number}`} /></FormField>
       <FormField label="Correo de acceso" name="email" hint="El correo de autenticación se gestiona de forma controlada."><Input disabled id="email" value={profile.email} /></FormField>

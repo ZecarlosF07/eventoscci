@@ -21,7 +21,7 @@ export function RegistrationCta({
   return (
     <div>
       <Link
-        className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-cci-950 px-4 py-2 text-sm font-semibold text-white hover:bg-cci-800"
         href={getRegistrationRoute(activityType, activitySlug)}
       >
         Inscribirme

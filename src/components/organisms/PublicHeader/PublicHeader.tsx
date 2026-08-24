@@ -1,41 +1,39 @@
 import Link from "next/link";
 
+import { BrandLogo } from "@/components/atoms/BrandLogo";
+import { NavigationLinks } from "@/components/molecules/NavigationLinks";
 import { UserMenu } from "@/components/organisms/UserMenu";
 import { PUBLIC_NAVIGATION } from "@/config/navigation";
-import { SITE_CONFIG } from "@/config/site";
 import { getCurrentAccount } from "@/features/auth/queries/get-current-account";
 
 export async function PublicHeader() {
   const account = await getCurrentAccount();
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-        <Link
-          className="flex items-center gap-3 font-semibold text-slate-950"
-          href="/"
-        >
-          <span className="flex size-10 items-center justify-center rounded-xl bg-slate-950 text-sm text-white">
-            CCI
-          </span>
-          <span>{SITE_CONFIG.name}</span>
+    <header className="sticky top-0 z-40 border-b border-cci-100 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex min-h-20 w-full max-w-7xl items-center justify-between gap-6 px-5 lg:px-8">
+        <Link aria-label="Ir al inicio" href="/">
+          <BrandLogo className="w-40 sm:w-44" preload />
         </Link>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="hidden items-center gap-4 lg:flex">
           <nav aria-label="Navegación principal">
-            <ul className="flex flex-wrap gap-1">
-            {PUBLIC_NAVIGATION.map((item) => (
-              <li key={item.href}>
-                <Link
-                  className="inline-flex rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950"
-                  href={item.href}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-            </ul>
+            <NavigationLinks items={PUBLIC_NAVIGATION} />
           </nav>
           <UserMenu account={account} />
         </div>
+        <details className="group relative lg:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-cci-200 px-3 text-sm font-semibold text-cci-950 marker:content-none">
+            <span aria-hidden="true" className="text-lg leading-none">☰</span>
+            Menú
+          </summary>
+          <div className="absolute right-0 top-14 w-[min(20rem,calc(100vw-2.5rem))] rounded-2xl border border-cci-100 bg-white p-4 shadow-xl">
+            <nav aria-label="Navegación principal móvil">
+              <NavigationLinks items={PUBLIC_NAVIGATION} />
+            </nav>
+            <div className="mt-4 border-t border-cci-100 pt-4">
+              <UserMenu account={account} />
+            </div>
+          </div>
+        </details>
       </div>
     </header>
   );

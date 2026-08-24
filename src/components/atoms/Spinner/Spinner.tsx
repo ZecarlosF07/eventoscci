@@ -10,7 +10,7 @@ export function Spinner({
       <span
         aria-hidden="true"
         className={classNames(
-          "size-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900",
+          "size-4 animate-spin rounded-full border-2 border-cci-200 border-t-cci-950",
           className,
         )}
       />

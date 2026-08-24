@@ -10,19 +10,19 @@ export function CourseProgressSummary({
   totalLessons,
 }: CourseProgressSummaryProps) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-cci-100 bg-white p-5 shadow-sm">
       <Heading level={2}>Tu progreso</Heading>
       <ProgressBar className="mt-4" label="Avance del curso" value={progressPercent} />
       <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-        <div className="rounded-xl bg-slate-50 p-3">
+        <div className="rounded-xl bg-cci-50 p-3">
           <Text size="sm">Completadas</Text>
-          <p className="mt-1 text-xl font-semibold text-slate-950">
+          <p className="mt-1 text-xl font-semibold text-cci-950">
             {completedLessons} de {totalLessons}
           </p>
         </div>
-        <div className="rounded-xl bg-slate-50 p-3">
+        <div className="rounded-xl bg-cci-50 p-3">
           <Text size="sm">Pendientes</Text>
-          <p className="mt-1 text-xl font-semibold text-slate-950">{pendingLessons}</p>
+          <p className="mt-1 text-xl font-semibold text-cci-950">{pendingLessons}</p>
         </div>
       </div>
       <Text className="mt-3" size="sm">

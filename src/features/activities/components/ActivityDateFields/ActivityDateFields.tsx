@@ -31,7 +31,7 @@ export function ActivityDateFields({ initialDates }: ActivityDateFieldsProps) {
   return (
     <div className="space-y-4">
       {dates.map((date, index) => (
-        <div className="grid gap-4 rounded-2xl border border-slate-200 p-4 md:grid-cols-4" key={`${date.starts_at}-${index}`}>
+        <div className="grid gap-4 rounded-2xl border border-cci-100 p-4 md:grid-cols-4" key={`${date.starts_at}-${index}`}>
           <FormField label="Etiqueta" name={`date_label_${index}`}>
             <Input
               defaultValue={date.label}

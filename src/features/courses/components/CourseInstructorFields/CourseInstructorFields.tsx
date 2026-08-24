@@ -24,7 +24,7 @@ export function CourseInstructorFields({ initialInstructors, speakers }: CourseI
     {speakers.map((speaker) => {
       const isSelected = selected.includes(speaker.id);
       const initial = initialInstructors.find((item) => item.speaker_id === speaker.id);
-      return <div className="rounded-2xl border border-slate-200 p-4" key={speaker.id}>
+      return <div className="rounded-2xl border border-cci-100 p-4" key={speaker.id}>
         <Label className="flex items-start gap-3" htmlFor={`instructor_${speaker.id}`}>
           <Checkbox checked={isSelected} id={`instructor_${speaker.id}`} name="instructor_id" onChange={() => toggleSpeaker(speaker.id)} value={speaker.id} />
           <span>{speaker.first_names} {speaker.last_names}{speaker.organization ? <span className="block text-sm font-normal text-slate-500">{speaker.organization}</span> : null}</span>

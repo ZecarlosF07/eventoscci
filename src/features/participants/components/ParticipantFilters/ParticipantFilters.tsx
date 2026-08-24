@@ -8,7 +8,7 @@ import type { ParticipantFiltersProps } from "@/features/participants/components
 
 export function ParticipantFilters({ filters }: ParticipantFiltersProps) {
   return (
-    <form className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-5 md:flex-row md:items-end">
+    <form className="flex flex-col gap-4 rounded-3xl border border-cci-100 bg-white p-5 md:flex-row md:items-end">
       <div className="flex-1">
         <FormField label="Buscar participante" name="q">
           <Input defaultValue={filters.query} id="q" name="q" placeholder="Documento, nombres, correo o teléfono" type="search" />

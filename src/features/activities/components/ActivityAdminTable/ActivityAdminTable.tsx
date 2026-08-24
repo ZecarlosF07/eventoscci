@@ -20,9 +20,9 @@ export function ActivityAdminTable({ activities }: ActivityAdminTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white">
+    <div className="overflow-x-auto rounded-3xl border border-cci-100 bg-white">
       <table className="w-full min-w-[1000px] text-left text-sm">
-        <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
+        <thead className="border-b border-cci-100 bg-cci-50 text-slate-600">
           <tr><th className="px-5 py-4">Actividad</th><th className="px-5 py-4">Modalidad</th><th className="px-5 py-4">Próxima fecha</th><th className="px-5 py-4">Precio</th><th className="px-5 py-4">Estado</th><th className="px-5 py-4">Publicación</th><th className="px-5 py-4">Acciones</th></tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -31,13 +31,13 @@ export function ActivityAdminTable({ activities }: ActivityAdminTableProps) {
             const editRoute = getAdminActivityRoute(activity.type, activity.id);
             return (
               <tr key={activity.id}>
-                <td className="px-5 py-4"><Link className="font-semibold text-slate-950 hover:underline" href={editRoute}>{activity.title}</Link><Text size="sm">{activity.category?.name ?? "Sin categoría"}</Text></td>
+                <td className="px-5 py-4"><Link className="font-semibold text-cci-950 hover:underline" href={editRoute}>{activity.title}</Link><Text size="sm">{activity.category?.name ?? "Sin categoría"}</Text></td>
                 <td className="px-5 py-4 text-slate-700">{getModalityLabel(activity.modality)}</td>
                 <td className="px-5 py-4 text-slate-700">{nextDate ? formatActivityDate(nextDate.starts_at) : "Sin fecha"}</td>
                 <td className="px-5 py-4"><PriceDisplay generalPrice={activity.general_price} isFree={activity.is_free} memberPrice={activity.member_price} /></td>
                 <td className="px-5 py-4"><StatusBadge status={activity.status} /></td>
                 <td className="px-5 py-4 text-slate-700">{activity.published_at ? formatActivityDate(activity.published_at) : "Sin publicar"}</td>
-                <td className="px-5 py-4"><div className="flex flex-wrap gap-2"><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-slate-50" href={editRoute}>Editar</Link><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-slate-50" href={`${ROUTES.adminRegistrations}?actividad=${activity.id}`}>Inscripciones</Link><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-slate-50" href={`${ROUTES.adminAttendance}/${activity.id}`}>Asistencia</Link><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-slate-50" href={`${ROUTES.adminCertificatesActivities}/${activity.id}`}>Certificados</Link>{activity.status !== "published" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "published")}><SubmitButton pendingLabel="Publicando…" variant="subtle">Publicar</SubmitButton></form> : null}{activity.status !== "cancelled" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "cancelled")}><SubmitButton pendingLabel="Cancelando…" variant="subtle">Cancelar</SubmitButton></form> : null}</div></td>
+                <td className="px-5 py-4"><div className="flex flex-wrap gap-2"><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-cci-50" href={editRoute}>Editar</Link><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-cci-50" href={`${ROUTES.adminRegistrations}?actividad=${activity.id}`}>Inscripciones</Link><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-cci-50" href={`${ROUTES.adminAttendance}/${activity.id}`}>Asistencia</Link><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-cci-50" href={`${ROUTES.adminCertificatesActivities}/${activity.id}`}>Certificados</Link>{activity.status !== "published" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "published")}><SubmitButton pendingLabel="Publicando…" variant="subtle">Publicar</SubmitButton></form> : null}{activity.status !== "cancelled" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "cancelled")}><SubmitButton pendingLabel="Cancelando…" variant="subtle">Cancelar</SubmitButton></form> : null}</div></td>
               </tr>
             );
           })}

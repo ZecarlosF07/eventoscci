@@ -4,9 +4,9 @@ import { formatActivityDate } from "@/features/activities/utils/activity-formatt
 
 export function ActivityDate({ date }: ActivityDateProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
+    <div className="rounded-xl border border-cci-100 bg-white p-4">
       {date.label ? (
-        <Text className="font-semibold text-slate-950" size="sm">
+        <Text className="font-semibold text-cci-950" size="sm">
           {date.label}
         </Text>
       ) : null}

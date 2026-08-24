@@ -7,5 +7,5 @@ import { getCertificateTemplates } from "@/features/certificates/queries/get-cer
 
 export default async function CertificateTemplatesPage() {
   const templates = await getCertificateTemplates();
-  return <div className="space-y-7"><SectionHeading description="Fondos privados, firmantes y reglas visuales de emisión." eyebrow="Configuración" title="Plantillas de certificados" /><div><Link className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white" href={`${ROUTES.adminCertificateTemplates}/nueva`}>Nueva plantilla</Link></div><CertificateTemplatesTable templates={templates} /></div>;
+  return <div className="space-y-7"><SectionHeading description="Fondos privados, firmantes y reglas visuales de emisión." eyebrow="Configuración" title="Plantillas de certificados" /><div><Link className="rounded-xl bg-cci-950 px-4 py-2 text-sm font-semibold text-white" href={`${ROUTES.adminCertificateTemplates}/nueva`}>Nueva plantilla</Link></div><CertificateTemplatesTable templates={templates} /></div>;
 }

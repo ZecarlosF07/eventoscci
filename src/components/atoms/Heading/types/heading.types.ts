@@ -1,7 +1,6 @@
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 
-export interface HeadingProps {
+export interface HeadingProps extends HTMLAttributes<HTMLHeadingElement> {
   children: ReactNode;
-  className?: string;
   level?: 1 | 2 | 3 | 4;
 }

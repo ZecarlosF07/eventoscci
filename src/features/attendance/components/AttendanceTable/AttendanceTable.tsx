@@ -15,19 +15,19 @@ export function AttendanceTable({ activityId, attendance, returnTo }: Attendance
   const action = updateAttendanceAction.bind(null, activityId, returnTo);
   return (
     <div className="space-y-4">
-      <form action={action} className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 md:grid-cols-[1fr_2fr_auto]" id="bulk-attendance-form">
+      <form action={action} className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 md:grid-cols-[1fr_2fr_auto]" id="bulk-attendance-form">
         <Select aria-label="Estado masivo" defaultValue="attended" name="status"><option value="attended">Marcar asistieron</option><option value="absent">Marcar no asistieron</option><option value="pending">Devolver a pendiente</option></Select>
         <Input aria-label="Nota masiva" maxLength={500} name="notes" placeholder="Nota opcional para los seleccionados" />
         <SubmitButton pendingLabel="Aplicando…">Aplicar a seleccionados</SubmitButton>
       </form>
-      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white">
+      <div className="overflow-x-auto rounded-3xl border border-cci-100 bg-white">
         <table className="w-full min-w-[1500px] text-left text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-slate-600"><tr><th className="px-4 py-4">Sel.</th><th className="px-4 py-4">Participante</th><th className="px-4 py-4">Contacto</th><th className="px-4 py-4">Inscripción</th><th className="px-4 py-4">Estado</th><th className="px-4 py-4">Asistencia</th><th className="px-4 py-4">Marcación</th><th className="px-4 py-4">Actualizar / corregir</th></tr></thead>
+          <thead className="border-b border-cci-100 bg-cci-50 text-slate-600"><tr><th className="px-4 py-4">Sel.</th><th className="px-4 py-4">Participante</th><th className="px-4 py-4">Contacto</th><th className="px-4 py-4">Inscripción</th><th className="px-4 py-4">Estado</th><th className="px-4 py-4">Asistencia</th><th className="px-4 py-4">Marcación</th><th className="px-4 py-4">Actualizar / corregir</th></tr></thead>
           <tbody className="divide-y divide-slate-100">
             {attendance.map((item) => (
               <tr key={item.id}>
                 <td className="px-4 py-4 align-top"><Checkbox aria-label={`Seleccionar ${item.registration.person.first_names}`} form="bulk-attendance-form" name="attendance_ids" value={item.id} /></td>
-                <td className="px-4 py-4 align-top"><p className="font-semibold text-slate-950">{item.registration.person.first_names} {item.registration.person.last_names}</p><Text size="sm">{item.registration.person.document_number}</Text><Text size="sm">{item.registration.company_snapshot ?? "Sin empresa"}</Text></td>
+                <td className="px-4 py-4 align-top"><p className="font-semibold text-cci-950">{item.registration.person.first_names} {item.registration.person.last_names}</p><Text size="sm">{item.registration.person.document_number}</Text><Text size="sm">{item.registration.company_snapshot ?? "Sin empresa"}</Text></td>
                 <td className="px-4 py-4 align-top text-slate-700">{item.registration.person.email}</td>
                 <td className="px-4 py-4 align-top"><p className="font-mono font-semibold">{item.registration.registration_code}</p><Text size="sm">{REGISTRATION_TYPE_LABELS[item.registration.registration_type]}</Text></td>
                 <td className="px-4 py-4 align-top"><RegistrationStatusBadge status={item.registration.status} /></td>

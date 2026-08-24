@@ -16,7 +16,7 @@ export function MyCertificatesList({ certificates }: MyCertificatesListProps) {
       {certificates.map((certificate) => {
         const revoked = certificate.status === "revoked";
         return (
-          <article className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6" key={certificate.id}>
+          <article className="space-y-4 rounded-3xl border border-cci-100 bg-white p-6" key={certificate.id}>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Badge>{certificate.certificateType === "course" ? "Curso" : "Actividad"}</Badge>
               <Badge variant={revoked ? "warning" : "success"}>{revoked ? "Revocado" : "Vigente"}</Badge>

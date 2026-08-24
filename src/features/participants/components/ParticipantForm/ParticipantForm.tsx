@@ -15,8 +15,8 @@ export function ParticipantForm({ participant }: ParticipantFormProps) {
   const actionWithId = updateParticipantAction.bind(null, participant.id);
   const [state, action, pending] = useActionState(actionWithId, INITIAL_STATE);
   return (
-    <form action={action} className="grid gap-5 rounded-3xl border border-slate-200 bg-white p-6 md:grid-cols-2">
-      <div className="md:col-span-2 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
+    <form action={action} className="grid gap-5 rounded-3xl border border-cci-100 bg-white p-6 md:grid-cols-2">
+      <div className="md:col-span-2 rounded-xl bg-cci-50 px-4 py-3 text-sm text-slate-700">
         Identidad: <strong>{participant.document_type.toUpperCase()} {participant.document_number}</strong>. El documento no se modifica desde esta ficha.
       </div>
       <FormField error={state.errors?.first_names?.[0]} label="Nombres" name="first_names" required><Input defaultValue={participant.first_names} id="first_names" name="first_names" required /></FormField>

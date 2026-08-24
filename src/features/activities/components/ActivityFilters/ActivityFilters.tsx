@@ -6,7 +6,7 @@ import type { ActivityFiltersProps } from "@/features/activities/components/Acti
 
 export function ActivityFilters({ categories, filters }: ActivityFiltersProps) {
   return (
-    <form className="grid gap-4 rounded-3xl border border-slate-200 bg-white p-5 lg:grid-cols-6">
+    <form className="grid gap-4 rounded-3xl border border-cci-100 bg-white p-5 shadow-lg shadow-cci-950/5 lg:grid-cols-6">
       <div className="lg:col-span-2">
         <FormField label="Buscar" name="q"><Input defaultValue={filters.query} id="q" name="q" placeholder="Título, descripción o categoría" /></FormField>
       </div>

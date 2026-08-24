@@ -20,7 +20,10 @@
     "smoke:production": "node --import tsx scripts/smoke-production.ts",
     "typecheck": "tsc --noEmit",
     "types:db": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
-    "types:db:linked": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts"
+    "types:db:linked": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts",
+    "video:render": "remotion render remotion/index.ts CampusCci public/assets/videos/campus-cci.mp4 --codec=h264 --crf=23 --pixel-format=yuv420p",
+    "video:still": "remotion still remotion/index.ts CampusCci public/assets/videos/campus-cci-poster.png --frame=210",
+    "video:studio": "remotion studio remotion/index.ts --no-open"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
@@ -34,6 +37,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@remotion/cli": "4.0.506",
+    "@remotion/transitions": "4.0.506",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.6",
@@ -41,6 +46,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "remotion": "4.0.506",
     "tailwindcss": "^4",
     "tsx": "^4.23.12",
     "typescript": "^5"

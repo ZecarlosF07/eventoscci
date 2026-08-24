@@ -58,11 +58,11 @@ export function StudentQuizForm({ initialAttempts, quiz }: StudentQuizFormProps)
       {result ? <QuizResult result={result} /> : null}
       <form className="space-y-6" onSubmit={handleSubmit}>
         {quiz.questions.map((question, index) => (
-          <fieldset className="rounded-2xl border border-slate-200 bg-white p-5" key={question.id}>
-            <legend className="px-1 font-semibold text-slate-950">{index + 1}. {question.prompt}</legend>
+          <fieldset className="rounded-2xl border border-cci-100 bg-white p-5" key={question.id}>
+            <legend className="px-1 font-semibold text-cci-950">{index + 1}. {question.prompt}</legend>
             <div className="mt-4 space-y-2">
               {question.options.map((option) => (
-                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-3 hover:bg-slate-50" key={option.id}>
+                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-cci-100 p-3 hover:bg-cci-50" key={option.id}>
                   <input
                     checked={answers[question.id] === option.id}
                     className="mt-1 size-4 accent-slate-950"

@@ -15,7 +15,7 @@ export function QuizOptionEditor({
   questionId,
 }: QuizOptionEditorProps) {
   return (
-    <div className="grid gap-2 rounded-xl bg-slate-50 p-3 sm:grid-cols-[auto_1fr_auto] sm:items-center">
+    <div className="grid gap-2 rounded-xl bg-cci-50 p-3 sm:grid-cols-[auto_1fr_auto] sm:items-center">
       <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
         <input
           checked={option.isCorrect}

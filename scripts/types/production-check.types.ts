@@ -5,6 +5,7 @@ export interface ProductionVariable {
 }
 
 export interface SmokeExpectation {
+  contains?: string;
   path: string;
   status: number;
 }

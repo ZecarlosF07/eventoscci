@@ -4,7 +4,7 @@ import { classNames } from "@/utils/class-names";
 export function Label({ className, ...props }: LabelProps) {
   return (
     <label
-      className={classNames("text-sm font-medium text-slate-800", className)}
+      className={classNames("text-sm font-medium text-cci-950", className)}
       {...props}
     />
   );

@@ -41,7 +41,7 @@ export function QuizEditor({ courseId, initialQuiz, moduleId, moduleTitle }: Qui
         <input name="id" type="hidden" value={state.quizId ?? initialQuiz?.id ?? ""} />
         <input name="module_id" type="hidden" value={moduleId} />
         <input name="questions" type="hidden" value={JSON.stringify(questions)} />
-        <section className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 md:grid-cols-2">
+        <section className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-5 md:grid-cols-2">
           <FormField error={state.errors?.title?.[0]} label="Título" name="quiz_title">
             <Input defaultValue={initialQuiz?.title ?? `Evaluación de ${moduleTitle}`} id="quiz_title" name="title" required />
           </FormField>

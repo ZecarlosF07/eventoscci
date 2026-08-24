@@ -2,10 +2,12 @@ import type { ButtonProps } from "@/components/atoms/Button/types/button.types";
 import { classNames } from "@/utils/class-names";
 
 const VARIANT_STYLES = {
-  primary: "bg-slate-950 text-white hover:bg-slate-800",
+  primary:
+    "bg-cci-950 text-white shadow-sm hover:bg-cci-800 hover:shadow-md focus-visible:outline-cci-lime",
   secondary:
-    "border border-slate-300 bg-white text-slate-900 hover:border-slate-400 hover:bg-slate-50",
-  subtle: "bg-slate-100 text-slate-800 hover:bg-slate-200",
+    "border border-cci-200 bg-white text-cci-950 hover:border-cci-400 hover:bg-cci-50 focus-visible:outline-cci-800",
+  subtle:
+    "bg-cci-100 text-cci-950 hover:bg-cci-200 focus-visible:outline-cci-800",
 };
 
 export function Button({
@@ -17,7 +19,7 @@ export function Button({
   return (
     <button
       className={classNames(
-        "inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-950 disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
         VARIANT_STYLES[variant],
         className,
       )}

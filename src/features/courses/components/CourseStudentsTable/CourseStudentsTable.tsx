@@ -22,7 +22,7 @@ export function CourseStudentsTable({
 }: CourseStudentsTableProps) {
   return (
     <div className="space-y-7">
-      <form className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 sm:grid-cols-[1fr_auto]">
+      <form className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-5 sm:grid-cols-[1fr_auto]">
         <FormField hint="Documento, nombre o correo." label="Buscar persona" name="q">
           <Input defaultValue={query} id="q" name="q" />
         </FormField>
@@ -66,7 +66,7 @@ export function CourseStudentsTable({
         <h2 className="text-lg font-semibold">Alumnos habilitados</h2>
         {!students.length ? <Text>Aún no hay alumnos matriculados.</Text> : null}
         {students.map((student) => (
-          <div className="rounded-2xl border border-slate-200 bg-white p-4" key={student.enrollmentId}>
+          <div className="rounded-2xl border border-cci-100 bg-white p-4" key={student.enrollmentId}>
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">

@@ -14,15 +14,21 @@ export function ActivitiesListTemplate({
   title,
 }: ActivitiesListTemplateProps) {
   return (
-    <div className="space-y-8 py-12 sm:py-16">
-      <SectionHeading description={description} eyebrow={eyebrow} title={title} />
-      <ActivityFilters categories={categories} filters={filters} />
+    <div className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+      <header className="overflow-hidden rounded-[2rem] bg-cci-950 px-6 py-10 sm:px-10">
+        <div className="max-w-3xl [&_h1]:text-white [&_p]:text-white/70">
+          <SectionHeading description={description} eyebrow={eyebrow} title={title} />
+        </div>
+      </header>
+      <div className="relative -mt-4 px-2 sm:px-5">
+        <ActivityFilters categories={categories} filters={filters} />
+      </div>
       {activities.length ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {activities.map((activity) => <ActivityCard activity={activity} key={activity.id} />)}
         </div>
       ) : (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center"><Text>{emptyMessage}</Text></div>
+        <div className="mt-10 rounded-3xl border border-dashed border-cci-200 bg-white px-6 py-16 text-center"><Text>{emptyMessage}</Text></div>
       )}
     </div>
   );

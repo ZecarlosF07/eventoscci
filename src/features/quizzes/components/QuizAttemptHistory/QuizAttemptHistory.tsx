@@ -8,7 +8,7 @@ export function QuizAttemptHistory({ attempts }: QuizAttemptHistoryProps) {
     <section className="space-y-4">
       <Heading level={2}>Historial de intentos</Heading>
       {!attempts.length ? <Text>Todavía no has enviado ningún intento.</Text> : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div className="overflow-hidden rounded-2xl border border-cci-100 bg-white">
           <ul className="divide-y divide-slate-100">
             {attempts.map((attempt) => (
               <li className="flex flex-wrap items-center justify-between gap-3 p-4" key={attempt.id}>

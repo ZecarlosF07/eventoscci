@@ -9,7 +9,7 @@ if (!baseUrlValue) throw new Error("Indica la URL: yarn smoke:production https:/
 const baseUrl = new URL(baseUrlValue);
 
 const PAGES: SmokeExpectation[] = [
-  { path: "/", status: 200 },
+  { contains: "¿Qué deseas aprender o descubrir?", path: "/", status: 200 },
   { path: "/eventos", status: 200 },
   { path: "/capacitaciones", status: 200 },
   { path: "/cursos", status: 200 },
@@ -22,6 +22,12 @@ async function assertPage(expectation: SmokeExpectation): Promise<void> {
   const response = await fetch(new URL(expectation.path, baseUrl), { redirect: "manual" });
   if (response.status !== expectation.status) {
     throw new Error(`${expectation.path}: esperado ${expectation.status}, recibido ${response.status}`);
+  }
+  if (expectation.contains) {
+    const body = await response.text();
+    if (!body.includes(expectation.contains)) {
+      throw new Error(`${expectation.path}: falta el contenido esperado`);
+    }
   }
   console.log(`OK ${expectation.status} ${expectation.path}`);
 }
@@ -37,7 +43,7 @@ async function assertProtectedRedirect(path: string, destination: string): Promi
 
 async function run(): Promise<void> {
   await Promise.all(PAGES.map(assertPage));
-  await assertProtectedRedirect("/admin", "/login");
+  await assertProtectedRedirect("/admin", "/admin/login");
   await assertProtectedRedirect("/campus", "/login");
 
   const health = await fetch(new URL("/api/health", baseUrl), { cache: "no-store" });

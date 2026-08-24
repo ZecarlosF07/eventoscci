@@ -15,7 +15,7 @@ import type { LessonFormProps } from "@/features/courses/components/LessonForm/t
 export function LessonForm({ courseId, lesson, moduleId }: LessonFormProps) {
   const [state, action, pending] = useActionState(saveLessonAction, {});
   const fieldSuffix = lesson?.id ?? `new_${moduleId}`;
-  return <form action={action} className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+  return <form action={action} className="space-y-4 rounded-xl border border-cci-100 bg-cci-50 p-4">
     <input name="course_id" type="hidden" value={courseId} /><input name="module_id" type="hidden" value={moduleId} /><input name="id" type="hidden" value={lesson?.id ?? ""} />
     <div className="grid gap-3 md:grid-cols-[1fr_100px]"><FormField error={state.errors?.title?.[0]} label="Clase" name={`lesson_title_${fieldSuffix}`}><Input defaultValue={lesson?.title} id={`lesson_title_${fieldSuffix}`} name="title" required /></FormField><FormField label="Orden" name={`lesson_order_${fieldSuffix}`}><Input defaultValue={lesson?.sort_order ?? 0} id={`lesson_order_${fieldSuffix}`} min="0" name="sort_order" type="number" /></FormField></div>
     <FormField label="Descripción" name={`lesson_description_${fieldSuffix}`}><Textarea defaultValue={lesson?.description ?? ""} id={`lesson_description_${fieldSuffix}`} name="description" /></FormField>

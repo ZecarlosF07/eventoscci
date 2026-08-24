@@ -20,3 +20,10 @@ export const ADMIN_NAVIGATION: NavigationItem[] = [
   { href: ROUTES.adminCertificates, label: "Certificados" },
   { href: ROUTES.adminNotifications, label: "Notificaciones" },
 ];
+
+export const CAMPUS_NAVIGATION: NavigationItem[] = [
+  { href: ROUTES.campus, label: "Inicio" },
+  { href: ROUTES.campusCourses, label: "Mis cursos" },
+  { href: ROUTES.campusCertificates, label: "Certificados" },
+  { href: ROUTES.campusProfile, label: "Mi perfil" },
+];

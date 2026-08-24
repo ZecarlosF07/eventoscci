@@ -75,7 +75,7 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
           {message}
         </div>
       ) : null}
-      <div className="border-t border-slate-200 pt-5">
+      <div className="border-t border-cci-100 pt-5">
         <Button className="w-full sm:w-auto" disabled={isPending} type="submit">
           {isPending ? <><Spinner className="mr-2" /> Procesando inscripción…</> : activity.isFree ? "Confirmar inscripción" : "Registrar preinscripción"}
         </Button>

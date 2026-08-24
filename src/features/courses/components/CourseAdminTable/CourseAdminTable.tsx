@@ -11,11 +11,11 @@ import { getAdminCourseContentRoute, getAdminCourseRoute, getAdminCourseStudents
 
 export function CourseAdminTable({ courses }: CourseAdminTableProps) {
   if (!courses.length) return <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center"><Text>No hay cursos que coincidan con los filtros.</Text></div>;
-  return <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+  return <div className="overflow-x-auto rounded-2xl border border-cci-100 bg-white">
     <table className="w-full text-left text-sm">
-      <thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr><th className="px-4 py-3">Curso</th><th className="px-4 py-3">Precio</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3">Acciones</th></tr></thead>
+      <thead className="bg-cci-50 text-xs uppercase text-slate-500"><tr><th className="px-4 py-3">Curso</th><th className="px-4 py-3">Precio</th><th className="px-4 py-3">Estado</th><th className="px-4 py-3">Acciones</th></tr></thead>
       <tbody className="divide-y divide-slate-100">{courses.map((course) => <tr key={course.id}>
-        <td className="px-4 py-4"><p className="font-semibold text-slate-950">{course.title}</p><p className="text-slate-500">/{course.slug}</p></td>
+        <td className="px-4 py-4"><p className="font-semibold text-cci-950">{course.title}</p><p className="text-slate-500">/{course.slug}</p></td>
         <td className="px-4 py-4">{course.is_free ? <Badge variant="success">Gratuito</Badge> : <span>{formatCoursePrice(course.general_price)}</span>}</td>
         <td className="px-4 py-4"><StatusBadge status={course.status} /></td>
         <td className="px-4 py-4"><div className="flex flex-wrap gap-3">

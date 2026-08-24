@@ -38,7 +38,7 @@ export function QuizQuestionEditor({
   }
 
   return (
-    <article className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5">
+    <article className="space-y-5 rounded-2xl border border-cci-100 bg-white p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Heading level={3}>Pregunta {index + 1}</Heading>
         <div className="flex gap-2">

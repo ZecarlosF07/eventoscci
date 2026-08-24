@@ -12,7 +12,7 @@ export function SectionHeading({
     <div className="max-w-2xl space-y-3">
       {eyebrow ? (
         <Text
-          className="font-semibold uppercase tracking-[0.18em] text-slate-500"
+          className="font-bold uppercase tracking-[0.18em] text-cci-600"
           size="sm"
         >
           {eyebrow}

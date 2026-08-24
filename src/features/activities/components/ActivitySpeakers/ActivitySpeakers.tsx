@@ -9,7 +9,7 @@ export function ActivitySpeakers({ speakers }: ActivitySpeakersProps) {
       <Heading level={2}>Expositores</Heading>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {speakers.map((speaker) => (
-          <article className="rounded-2xl border border-slate-200 bg-white p-5" key={speaker.id}>
+          <article className="rounded-2xl border border-cci-100 bg-white p-5" key={speaker.id}>
             <Heading level={3}>{speaker.first_names} {speaker.last_names}</Heading>
             {speaker.roleLabel ? <Text className="font-medium text-slate-800" size="sm">{speaker.roleLabel}</Text> : null}
             {speaker.professional_title ? <Text size="sm">{speaker.professional_title}</Text> : null}

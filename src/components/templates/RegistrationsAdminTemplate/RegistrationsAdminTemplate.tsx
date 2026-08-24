@@ -43,11 +43,11 @@ export function RegistrationsAdminTemplate({ activities, data, filters, result, 
       <OperationNotice result={result} />
       <nav aria-label="Filtros de inscripciones" className="flex flex-wrap gap-2">
         {FILTER_LINKS.map(([href, label]) => (
-          <Link className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50" href={href} key={href}>{label}</Link>
+          <Link className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-cci-50" href={href} key={href}>{label}</Link>
         ))}
       </nav>
       <RegistrationAdminFilters activities={activities} filters={filters} showStatus={!status} />
-      <div className="flex justify-end"><Link className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-50" href={`${ROUTES.adminRegistrations}/exportar${exportQuery ? `?${exportQuery}` : ""}`}>Exportar CSV</Link></div>
+      <div className="flex justify-end"><Link className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-cci-50" href={`${ROUTES.adminRegistrations}/exportar${exportQuery ? `?${exportQuery}` : ""}`}>Exportar CSV</Link></div>
       <RegistrationsTable registrations={data.registrations} returnTo={returnTo} />
       <Pagination page={data.page} pageCount={data.pageCount} pathname={baseRoute} searchParams={queryValues} />
     </div>

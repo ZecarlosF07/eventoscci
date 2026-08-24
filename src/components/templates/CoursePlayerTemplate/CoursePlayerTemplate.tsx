@@ -23,15 +23,15 @@ export function CoursePlayerTemplate({
 
   return (
     <div className="space-y-7">
-      <header>
-        <Link className="text-sm font-semibold text-slate-600" href="/campus/cursos">
+      <header className="rounded-[2rem] bg-cci-950 px-6 py-8 text-white sm:px-8">
+        <Link className="text-sm font-semibold text-cci-lime" href="/campus/cursos">
           ← Mis cursos
         </Link>
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <Heading level={1}>{content.course.title}</Heading>
+          <Heading className="text-white" level={1}>{content.course.title}</Heading>
           <Badge variant="success">{completed ? "Curso completado" : "Acceso activo"}</Badge>
         </div>
-        <Text className="mt-2">{completed ? "Completaste todos los requisitos académicos." : "Avanza libremente por los módulos publicados."}</Text>
+        <Text className="mt-2 text-white/70">{completed ? "Completaste todos los requisitos académicos." : "Avanza libremente por los módulos publicados."}</Text>
         <ProgressBar
           className="mt-4 max-w-xl"
           label="Avance general"
@@ -44,19 +44,19 @@ export function CoursePlayerTemplate({
             ) : content.courseCertificate.status === "revoked" ? (
               <Badge variant="warning">Certificado revocado</Badge>
             ) : content.courseCertificate.fileReady ? (
-              <Link className="font-semibold underline" href={`/certificados/${content.courseCertificate.accessToken}`}>Ver certificado</Link>
+              <Link className="font-semibold text-cci-lime underline" href={`/certificados/${content.courseCertificate.accessToken}`}>Ver certificado</Link>
             ) : (
               <CertificateGenerationStatus certificateId={content.courseCertificate.id} fileReady={false} />
             )}
           </div>
         ) : null}
       </header>
-      <nav className="flex gap-2 border-b border-slate-200 pb-3">
+      <nav className="flex gap-2 overflow-x-auto border-b border-cci-100 pb-3">
         {links.map((link) => (
           <Link
             className={section === link.id
-              ? "rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white"
-              : "rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"}
+              ? "shrink-0 rounded-xl bg-cci-950 px-4 py-2 text-sm font-semibold text-white"
+              : "shrink-0 rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-cci-100"}
             href={link.href}
             key={link.id}
           >

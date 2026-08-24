@@ -25,9 +25,9 @@ export function RegistrationsTable({ registrations, returnTo }: RegistrationsTab
   }
 
   return (
-    <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white">
+    <div className="overflow-x-auto rounded-3xl border border-cci-100 bg-white">
       <table className="w-full min-w-[1850px] text-left text-sm">
-        <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
+        <thead className="border-b border-cci-100 bg-cci-50 text-slate-600">
           <tr>
             <th className="px-4 py-4">Código / actividad</th>
             <th className="px-4 py-4">Participante</th>
@@ -45,13 +45,13 @@ export function RegistrationsTable({ registrations, returnTo }: RegistrationsTab
           {registrations.map((registration) => (
             <tr key={registration.id}>
               <td className="px-4 py-4 align-top">
-                <p className="font-mono font-semibold text-slate-950">{registration.registration_code}</p>
+                <p className="font-mono font-semibold text-cci-950">{registration.registration_code}</p>
                 <Link className="mt-1 block max-w-64 font-medium text-slate-700 hover:underline" href={getPublicActivityRoute(registration.activity.type, registration.activity.slug)}>
                   {registration.activity.title}
                 </Link>
               </td>
               <td className="px-4 py-4 align-top">
-                <Link className="font-semibold text-slate-950 hover:underline" href={`${ROUTES.adminParticipants}/${registration.person.id}`}>{registration.person.first_names} {registration.person.last_names}</Link>
+                <Link className="font-semibold text-cci-950 hover:underline" href={`${ROUTES.adminParticipants}/${registration.person.id}`}>{registration.person.first_names} {registration.person.last_names}</Link>
                 <Text size="sm">{registration.person.document_type.toUpperCase()} {registration.person.document_number}</Text>
                 <Text size="sm">{registration.person.job_title}</Text>
               </td>

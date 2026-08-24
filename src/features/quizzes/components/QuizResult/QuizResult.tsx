@@ -5,7 +5,7 @@ import type { QuizResultProps } from "@/features/quizzes/types/quiz.types";
 
 export function QuizResult({ result }: QuizResultProps) {
   return (
-    <section className="space-y-5 rounded-3xl border border-slate-200 bg-white p-6" aria-live="polite">
+    <section className="space-y-5 rounded-3xl border border-cci-100 bg-white p-6" aria-live="polite">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <Heading level={2}>Resultado: {result.scorePercent} %</Heading>

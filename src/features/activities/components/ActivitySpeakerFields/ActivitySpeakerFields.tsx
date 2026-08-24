@@ -36,7 +36,7 @@ export function ActivitySpeakerFields({
         )?.role_label;
 
         return (
-          <div className="rounded-2xl border border-slate-200 p-4" key={speaker.id}>
+          <div className="rounded-2xl border border-cci-100 p-4" key={speaker.id}>
             <Label className="flex items-start gap-3" htmlFor={`speaker_${speaker.id}`}>
               <Checkbox
                 checked={isSelected}

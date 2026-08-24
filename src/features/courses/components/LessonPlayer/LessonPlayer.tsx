@@ -7,7 +7,7 @@ export function LessonPlayer(props: LessonPlayerProps) {
   const source = getLessonVideoSource(props.lesson, props.signedStorageUrl);
   if (!source) {
     return (
-      <div className="flex aspect-video items-center justify-center rounded-2xl bg-slate-950 p-8 text-center text-white">
+      <div className="flex aspect-video items-center justify-center rounded-2xl bg-cci-950 p-8 text-center text-white">
         <Text className="text-slate-300">El video todavía no está disponible.</Text>
       </div>
     );

@@ -13,8 +13,8 @@ import { COURSE_STATUS_LABELS } from "@/features/courses/constants/course.consta
 
 export function CourseAdminListTemplate({ data, filters }: CourseAdminListTemplateProps) {
   return <div className="space-y-7">
-    <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><SectionHeading description={`${data.total} cursos activos en el sistema.`} eyebrow="Campus Virtual" title="Cursos" /><Link className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white" href={`${ROUTES.adminCourses}/nuevo`}>Nuevo curso</Link></div>
-    <form className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:grid-cols-[1fr_240px_auto]">
+    <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><SectionHeading description={`${data.total} cursos activos en el sistema.`} eyebrow="Campus Virtual" title="Cursos" /><Link className="inline-flex min-h-11 items-center justify-center rounded-xl bg-cci-950 px-4 py-2 text-sm font-semibold text-white" href={`${ROUTES.adminCourses}/nuevo`}>Nuevo curso</Link></div>
+    <form className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-4 sm:grid-cols-[1fr_240px_auto]">
       <FormField label="Buscar por título" name="q"><Input defaultValue={filters.query} id="q" name="q" /></FormField>
       <FormField label="Estado" name="estado"><Select defaultValue={filters.status ?? ""} id="estado" name="estado"><option value="">Todos</option>{Object.entries(COURSE_STATUS_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</Select></FormField>
       <div className="flex items-end"><Button type="submit">Filtrar</Button></div>

@@ -11,7 +11,7 @@ export default function NotFoundPage() {
         La dirección solicitada no existe o todavía no forma parte de este hito.
       </Text>
       <Link
-        className="mt-8 inline-flex w-fit rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+        className="mt-8 inline-flex w-fit rounded-xl bg-cci-950 px-4 py-3 text-sm font-semibold text-white hover:bg-cci-800"
         href="/"
       >
         Volver al inicio
