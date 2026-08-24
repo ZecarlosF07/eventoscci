@@ -51,6 +51,9 @@ yarn typecheck
 yarn build
 yarn db:test
 yarn db:test:linked
+yarn release:check
+yarn production:check
+yarn smoke:production https://dominio-productivo
 ```
 
 ## Activación en Supabase alojado
@@ -61,9 +64,12 @@ Cuando exista el proyecto remoto:
 supabase login
 supabase link --project-ref <project-ref>
 supabase db push --dry-run
-supabase db push --include-seed
+supabase db push --linked
 supabase gen types typescript --linked > src/lib/supabase/database.types.ts
 ```
+
+El seed local contiene fixtures demostrativos y no debe aplicarse en remoto.
+Para datos iniciales reales existe `supabase/seed.production.sql`.
 
 Después, configurar `NEXT_PUBLIC_SUPABASE_URL` y
 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` en `.env.local`.
@@ -81,3 +87,9 @@ El panel se encuentra en `/admin/login`. Para habilitar una cuenta interna:
 3. Asignar el rol `operator` o `administrator` y mantener la cuenta activa.
 
 No se incluyen contraseñas ni usuarios administrativos predeterminados en seeds.
+
+## Producción
+
+El hosting previsto es Vercel. La guía operativa, variables, smoke test y plan
+de reversión están en `docs/produccion/despliegue-vercel.md`; el cierre se
+registra con `docs/produccion/checklist-salida.md`.

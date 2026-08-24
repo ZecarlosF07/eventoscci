@@ -10,12 +10,13 @@ import type { LoginActionState, LoginFormProps } from "@/features/auth/types/aut
 
 const INITIAL_STATE: LoginActionState = {};
 
-export function LoginForm({ next }: LoginFormProps) {
+export function LoginForm({ next, portal = "public" }: LoginFormProps) {
   const [state, action, pending] = useActionState(loginAction, INITIAL_STATE);
 
   return (
     <form action={action} className="space-y-5">
       <input name="next" type="hidden" value={next ?? ""} />
+      <input name="portal" type="hidden" value={portal} />
       <FormField
         error={state.errors?.email?.[0]}
         label="Correo"

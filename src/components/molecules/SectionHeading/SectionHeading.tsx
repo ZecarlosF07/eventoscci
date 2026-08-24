@@ -5,6 +5,7 @@ import type { SectionHeadingProps } from "@/components/molecules/SectionHeading/
 export function SectionHeading({
   description,
   eyebrow,
+  level = 1,
   title,
 }: SectionHeadingProps) {
   return (
@@ -17,7 +18,7 @@ export function SectionHeading({
           {eyebrow}
         </Text>
       ) : null}
-      <Heading level={2}>{title}</Heading>
+      <Heading level={level}>{title}</Heading>
       {description ? <Text>{description}</Text> : null}
     </div>
   );

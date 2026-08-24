@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 import { Text } from "@/components/atoms/Text";
-import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
+import { SubmitButton } from "@/components/atoms/SubmitButton";
 import { ROUTES } from "@/constants/routes";
 import { AttendanceStatusBadge } from "@/features/attendance/components/AttendanceStatusBadge";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
@@ -68,11 +68,11 @@ export function RegistrationsTable({ registrations, returnTo }: RegistrationsTab
               <td className="px-4 py-4 align-top text-slate-700">{formatRegistrationDate(registration.created_at)}</td>
               <td className="px-4 py-4 align-top">
                 <div className="flex max-w-72 flex-col gap-2">
-                  {registration.status === "pending" ? <form action={confirmRegistrationAction.bind(null, registration.id, returnTo)}><Button className="w-full" type="submit">Confirmar</Button></form> : null}
+                  {registration.status === "pending" ? <form action={confirmRegistrationAction.bind(null, registration.id, returnTo)}><SubmitButton className="w-full" pendingLabel="Confirmando…">Confirmar</SubmitButton></form> : null}
                   {registration.status !== "cancelled" ? (
                     <form action={cancelRegistrationAction.bind(null, registration.id, returnTo)} className="flex gap-2">
                       <Input aria-label="Motivo de cancelación" className="min-w-40" maxLength={500} name="cancellation_reason" placeholder="Motivo opcional" />
-                      <Button type="submit" variant="subtle">Cancelar</Button>
+                      <SubmitButton pendingLabel="Cancelando…" variant="subtle">Cancelar</SubmitButton>
                     </form>
                   ) : <Text size="sm">{registration.cancellation_reason ?? "Sin motivo registrado"}</Text>}
                 </div>

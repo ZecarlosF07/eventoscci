@@ -34,8 +34,7 @@ export function getSiteUrl(): string {
 export function getNotificationServerEnv(): NotificationServerEnv {
   return {
     ...getCertificateServerEnv(),
-    cronSecret: required("CRON_SECRET"),
-    n8nWebhookSecret: process.env.N8N_WEBHOOK_SECRET?.trim() || undefined,
+    n8nWebhookSecret: required("N8N_WEBHOOK_SECRET"),
     n8nWebhookUrl: validUrl(required("N8N_WEBHOOK_URL"), "N8N_WEBHOOK_URL"),
   };
 }

@@ -8,3 +8,10 @@ export function safeAuthRedirect(value: string | null | undefined, fallback: str
     ? value
     : fallback;
 }
+
+export function safeAdminRedirect(value: string | null | undefined): string {
+  if (!value?.startsWith("/") || value.startsWith("//")) return ROUTES.admin;
+  return value === ROUTES.admin || value.startsWith(`${ROUTES.admin}/`)
+    ? value
+    : ROUTES.admin;
+}

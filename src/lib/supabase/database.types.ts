@@ -1737,6 +1737,16 @@ export type Database = {
         Returns: Json
       }
       get_admin_quiz: { Args: { p_module_id: string }; Returns: Json }
+      get_certificate_activity_summaries: {
+        Args: never
+        Returns: {
+          eligible_count: number
+          id: string
+          issued_count: number
+          title: string
+          type: Database["public"]["Enums"]["activity_type"]
+        }[]
+      }
       get_my_certificates: { Args: never; Returns: Json }
       get_my_course_certificate: {
         Args: { p_course_id: string }

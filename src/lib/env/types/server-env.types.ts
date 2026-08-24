@@ -5,7 +5,6 @@ export interface CertificateServerEnv {
 }
 
 export interface NotificationServerEnv extends CertificateServerEnv {
-  cronSecret: string;
-  n8nWebhookSecret?: string;
+  n8nWebhookSecret: string;
   n8nWebhookUrl: string;
 }

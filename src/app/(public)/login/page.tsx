@@ -10,7 +10,7 @@ import type { AuthPageProps } from "@/features/auth/types/auth.types";
 import { loginErrorMessage } from "@/features/auth/utils/auth-errors";
 import { safeAuthRedirect } from "@/features/auth/utils/safe-auth-redirect";
 
-export const metadata: Metadata = { description: "Accede al Campus Virtual o a la administración de Eventos CCI.", title: "Iniciar sesión" };
+export const metadata: Metadata = { description: "Accede a tu cuenta del Campus Virtual de la Cámara de Comercio de Ica.", title: "Iniciar sesión" };
 
 export default async function LoginPage({ searchParams }: AuthPageProps) {
   const params = await searchParams;

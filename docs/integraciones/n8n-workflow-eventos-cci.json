@@ -1,0 +1,119 @@
+{
+  "name": "Eventos CCI - Notificaciones transaccionales",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "eventos-cci",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "6f92c31a-a584-4fd8-8865-f4d96e355be4",
+      "name": "Recibir notificación CCI",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        -160
+      ],
+      "webhookId": "ad48732f-cbed-44ab-aa64-85aca30f8a5f"
+    },
+    {
+      "parameters": {
+        "jsCode": "const request = $json.body ?? $json;\nconst { event_type: eventType, notification_id: notificationId, payload = {}, recipient_email: recipientEmail } = request;\n\nconst allowedEvents = new Set([\n  'activity_free_registration_confirmed',\n  'activity_paid_preregistration_created',\n  'activity_paid_registration_confirmed',\n  'activity_certificate_issued',\n  'course_certificate_issued',\n]);\n\nif (!allowedEvents.has(eventType)) {\n  throw new Error(`Evento no soportado: ${eventType ?? 'vacío'}`);\n}\nif (typeof notificationId !== 'string' || !notificationId) {\n  throw new Error('notification_id es obligatorio');\n}\nif (typeof recipientEmail !== 'string' || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(recipientEmail)) {\n  throw new Error('recipient_email no es válido');\n}\n\nconst escapeHtml = (value) => String(value ?? '')\n  .replaceAll('&', '&amp;')\n  .replaceAll('<', '&lt;')\n  .replaceAll('>', '&gt;')\n  .replaceAll('\\\"', '&quot;')\n  .replaceAll(\"'\", '&#039;');\n\nconst requiredText = (key) => {\n  const value = payload[key];\n  if (typeof value !== 'string' || !value.trim()) {\n    throw new Error(`payload.${key} es obligatorio para ${eventType}`);\n  }\n  return value.trim();\n};\n\nconst siteUrl = 'https://REEMPLAZAR-DOMINIO';\nconst brand = '#072c25';\nconst accent = '#b4d65c';\nconst activityTitle = payload.activity_title ? escapeHtml(payload.activity_title) : '';\nconst registrationCode = payload.registration_code ? escapeHtml(payload.registration_code) : '';\n\nlet subject = '';\nlet heading = '';\nlet message = '';\nlet actionUrl = '';\nlet actionLabel = '';\n\nif (eventType === 'activity_free_registration_confirmed') {\n  requiredText('activity_title');\n  requiredText('registration_code');\n  subject = `Inscripción confirmada — ${payload.activity_title}`;\n  heading = 'Tu inscripción está confirmada';\n  message = `Te registraste correctamente en <strong>${activityTitle}</strong>.<br><br>Tu código de inscripción es <strong>${registrationCode}</strong>.`;\n}\n\nif (eventType === 'activity_paid_preregistration_created') {\n  requiredText('activity_title');\n  requiredText('registration_code');\n  subject = `Preinscripción recibida — ${payload.activity_title}`;\n  heading = 'Recibimos tu preinscripción';\n  message = `Registramos tu solicitud para <strong>${activityTitle}</strong>.<br><br>Tu código es <strong>${registrationCode}</strong>. La Cámara de Comercio de Ica verificará el pago y te enviará una confirmación.`;\n}\n\nif (eventType === 'activity_paid_registration_confirmed') {\n  requiredText('activity_title');\n  requiredText('registration_code');\n  subject = `Inscripción confirmada — ${payload.activity_title}`;\n  heading = 'Tu inscripción está confirmada';\n  message = `El pago y la inscripción para <strong>${activityTitle}</strong> fueron confirmados.<br><br>Tu código de inscripción es <strong>${registrationCode}</strong>.`;\n}\n\nif (eventType.startsWith('activity_') && payload.activity_slug) {\n  const section = payload.activity_type === 'event' ? 'eventos' : 'capacitaciones';\n  actionUrl = `${siteUrl}/${section}/${encodeURIComponent(payload.activity_slug)}`;\n  actionLabel = 'Ver actividad';\n}\n\nif (eventType === 'activity_certificate_issued') {\n  const title = requiredText('activity_title');\n  const participantName = requiredText('participant_name');\n  const certificateCode = requiredText('certificate_code');\n  const certificateUrl = requiredText('certificate_url');\n  if (!certificateUrl.startsWith('https://')) throw new Error('payload.certificate_url debe usar HTTPS');\n  subject = `Tu certificado ya está disponible — ${title}`;\n  heading = `Felicitaciones, ${escapeHtml(participantName)}`;\n  message = `Ya puedes consultar y descargar tu certificado de <strong>${escapeHtml(title)}</strong>.<br><br>Código: <strong>${escapeHtml(certificateCode)}</strong>.`;\n  actionUrl = certificateUrl;\n  actionLabel = 'Ver certificado';\n}\n\nif (eventType === 'course_certificate_issued') {\n  const title = requiredText('course_title');\n  const participantName = requiredText('participant_name');\n  const certificateCode = requiredText('certificate_code');\n  const certificateUrl = requiredText('certificate_url');\n  if (!certificateUrl.startsWith('https://')) throw new Error('payload.certificate_url debe usar HTTPS');\n  subject = `Tu certificado ya está disponible — ${title}`;\n  heading = `Felicitaciones, ${escapeHtml(participantName)}`;\n  message = `Completaste satisfactoriamente <strong>${escapeHtml(title)}</strong>. Ya puedes consultar y descargar tu certificado.<br><br>Código: <strong>${escapeHtml(certificateCode)}</strong>.`;\n  actionUrl = certificateUrl;\n  actionLabel = 'Ver certificado';\n}\n\nconst button = actionUrl\n  ? `<p style=\"margin:28px 0\"><a href=\"${escapeHtml(actionUrl)}\" style=\"display:inline-block;background:${brand};color:#fff;text-decoration:none;padding:13px 22px;border-radius:8px;font-weight:700\">${escapeHtml(actionLabel)}</a></p>`\n  : '';\n\nconst html = `<!doctype html><html><body style=\"margin:0;background:#f4f6f5;font-family:Arial,sans-serif;color:#25302d\"><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td align=\"center\" style=\"padding:32px 16px\"><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width:620px;background:#fff;border-radius:14px;overflow:hidden\"><tr><td style=\"height:10px;background:${accent}\"></td></tr><tr><td style=\"padding:34px\"><p style=\"margin:0 0 24px;color:${brand};font-size:18px;font-weight:800\">CÁMARA DE COMERCIO DE ICA</p><h1 style=\"margin:0 0 20px;color:${brand};font-size:27px;line-height:1.25\">${heading}</h1><p style=\"margin:0;font-size:16px;line-height:1.65\">${message}</p>${button}<p style=\"margin:32px 0 0;border-top:1px solid #e5e9e7;padding-top:20px;color:#67736f;font-size:13px;line-height:1.5\">Este es un mensaje automático. Si no reconoces esta operación, comunícate con la Cámara de Comercio de Ica.</p></td></tr></table></td></tr></table></body></html>`;\n\nreturn [{\n  json: {\n    html,\n    notificationId,\n    subject,\n    to: recipientEmail,\n  },\n}];"
+      },
+      "id": "3354b1d9-af1c-4a64-a34b-a688eb516299",
+      "name": "Preparar correo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -380,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Cámara de Comercio de Ica"
+        }
+      },
+      "id": "ef19445d-7acc-4973-adf5-7ac6e64b6866",
+      "name": "Enviar correo Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -100,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"accepted\": true, \"notification_id\": $('Preparar correo').item.json.notificationId } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "686e7bdf-9cd7-47cd-aa6f-049be4fe31d4",
+      "name": "Confirmar entrega",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        180,
+        -160
+      ]
+    }
+  ],
+  "connections": {
+    "Recibir notificación CCI": {
+      "main": [
+        [
+          {
+            "node": "Preparar correo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar correo": {
+      "main": [
+        [
+          {
+            "node": "Enviar correo Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar correo Gmail": {
+      "main": [
+        [
+          {
+            "node": "Confirmar entrega",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Lima"
+  },
+  "versionId": "b092918a-8852-4bd3-ae04-2c07d2295bd4",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

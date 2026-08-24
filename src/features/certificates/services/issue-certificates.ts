@@ -5,6 +5,7 @@ import { getCertificateGenerationData } from "@/features/certificates/queries/ge
 import { prepareCertificateResultSchema } from "@/features/certificates/schemas/certificate-mutation.schema";
 import { storeCertificatePdf } from "@/features/certificates/services/store-certificate-pdf";
 import type { CertificateIssueState } from "@/features/certificates/types/certificate.types";
+import { deliverNotificationImmediately } from "@/features/notifications/services/process-notifications";
 import { getSiteUrl } from "@/lib/env/server-env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -22,9 +23,15 @@ async function generateAndStoreCertificate(certificateId: string): Promise<void>
     p_file_path: filePath,
     p_public_base_url: siteUrl,
   });
-  if (!finalized.error) return;
-  await client.storage.from(CERTIFICATE_BUCKET).remove([filePath]);
-  throw new Error("CERTIFICATE_FINALIZE_FAILED", { cause: finalized.error });
+  if (finalized.error) {
+    await client.storage.from(CERTIFICATE_BUCKET).remove([filePath]);
+    throw new Error("CERTIFICATE_FINALIZE_FAILED", { cause: finalized.error });
+  }
+  await deliverNotificationImmediately({
+    eventType: "activity_certificate_issued",
+    relatedEntityId: certificate.id,
+    relatedEntityType: "certificate",
+  });
 }
 
 export async function issueActivityCertificates(

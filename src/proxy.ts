@@ -1,29 +1,35 @@
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 import { ROUTES } from "@/constants/routes";
+import { redirectWithSupabaseCookies } from "@/features/auth/utils/proxy-redirect";
 import { refreshSupabaseSession } from "@/lib/supabase/proxy";
 
 export async function proxy(request: NextRequest) {
   const { accountAccess, authenticated, response } = await refreshSupabaseSession(request);
   const pathname = request.nextUrl.pathname;
-  const isLoginRoute = request.nextUrl.pathname === ROUTES.adminLogin;
+  const isAdminLogin = pathname === ROUTES.adminLogin;
+  const isAdminRoute = pathname === ROUTES.admin || pathname.startsWith(`${ROUTES.admin}/`);
 
-  const redirectWithCookies = (destination: string) => {
-    const url = new URL(destination, request.url);
-    const redirectResponse = NextResponse.redirect(url);
-    response.cookies.getAll().forEach((cookie) => redirectResponse.cookies.set(cookie));
-    return redirectResponse;
-  };
-
-  if (isLoginRoute) return redirectWithCookies(`${ROUTES.login}?next=${encodeURIComponent(ROUTES.admin)}`);
+  if (isAdminLogin) {
+    if (!authenticated || !accountAccess?.isActive) return response;
+    const destination = accountAccess.role === "student" ? ROUTES.campus : ROUTES.admin;
+    return redirectWithSupabaseCookies(request, response, destination);
+  }
 
   if (!authenticated) {
-    return redirectWithCookies(`${ROUTES.login}?next=${encodeURIComponent(pathname)}`);
+    const loginRoute = isAdminRoute ? ROUTES.adminLogin : ROUTES.login;
+    return redirectWithSupabaseCookies(request, response, `${loginRoute}?next=${encodeURIComponent(pathname)}`);
   }
-  if (!accountAccess) return redirectWithCookies(`${ROUTES.login}?error=not-linked`);
-  if (!accountAccess.isActive) return redirectWithCookies(`${ROUTES.login}?error=inactive`);
-  if (pathname.startsWith(ROUTES.admin) && accountAccess.role === "student") {
-    return redirectWithCookies(ROUTES.campus);
+  if (!accountAccess) {
+    const destination = isAdminRoute ? `${ROUTES.adminLogin}?error=unauthorized` : `${ROUTES.login}?error=not-linked`;
+    return redirectWithSupabaseCookies(request, response, destination);
+  }
+  if (!accountAccess.isActive) {
+    const destination = isAdminRoute ? `${ROUTES.adminLogin}?error=unauthorized` : `${ROUTES.login}?error=inactive`;
+    return redirectWithSupabaseCookies(request, response, destination);
+  }
+  if (isAdminRoute && accountAccess.role === "student") {
+    return redirectWithSupabaseCookies(request, response, ROUTES.campus);
   }
 
   return response;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Badge } from "@/components/atoms/Badge";
+import { SubmitButton } from "@/components/atoms/SubmitButton";
 import { Text } from "@/components/atoms/Text";
 import { StatusBadge } from "@/components/molecules/StatusBadge";
 import type { CourseAdminTableProps } from "@/features/courses/components/CourseAdminTable/types/course-admin-table.types";
@@ -21,8 +22,8 @@ export function CourseAdminTable({ courses }: CourseAdminTableProps) {
           <Link className="font-semibold hover:underline" href={getAdminCourseRoute(course.id)}>Editar</Link>
           <Link className="font-semibold hover:underline" href={getAdminCourseContentRoute(course.id)}>Contenido</Link>
           <Link className="font-semibold hover:underline" href={getAdminCourseStudentsRoute(course.id)}>Alumnos</Link>
-          {course.status !== "published" ? <form action={changeCourseStatusAction.bind(null, course.id, "published")}><button className="font-semibold text-emerald-800 hover:underline" type="submit">Publicar</button></form> : null}
-          {course.status === "published" ? <form action={changeCourseStatusAction.bind(null, course.id, "archived")}><button className="font-semibold text-amber-800 hover:underline" type="submit">Archivar</button></form> : null}
+          {course.status !== "published" ? <form action={changeCourseStatusAction.bind(null, course.id, "published")}><SubmitButton pendingLabel="Publicando…" variant="subtle">Publicar</SubmitButton></form> : null}
+          {course.status === "published" ? <form action={changeCourseStatusAction.bind(null, course.id, "archived")}><SubmitButton pendingLabel="Archivando…" variant="subtle">Archivar</SubmitButton></form> : null}
         </div></td>
       </tr>)}</tbody>
     </table>

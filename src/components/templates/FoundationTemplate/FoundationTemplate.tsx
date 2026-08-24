@@ -15,8 +15,8 @@ export function FoundationTemplate({
           Base técnica para eventos y formación
         </Heading>
         <Text className="mt-6" size="lg">
-          Una sola plataforma preparada para el portal público, el Campus
-          Virtual y la administración de la Cámara de Comercio de Ica.
+          Una sola plataforma para descubrir actividades y acceder al Campus
+          Virtual de la Cámara de Comercio de Ica.
         </Text>
       </section>
       <div className="mt-12">

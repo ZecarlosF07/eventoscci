@@ -1,7 +1,7 @@
-import { Button } from "@/components/atoms/Button";
 import { Checkbox } from "@/components/atoms/Checkbox";
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
+import { SubmitButton } from "@/components/atoms/SubmitButton";
 import { Text } from "@/components/atoms/Text";
 import { AttendanceStatusBadge } from "@/features/attendance/components/AttendanceStatusBadge";
 import type { AttendanceTableProps } from "@/features/attendance/components/AttendanceTable/types/attendance-table.types";
@@ -18,7 +18,7 @@ export function AttendanceTable({ activityId, attendance, returnTo }: Attendance
       <form action={action} className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 md:grid-cols-[1fr_2fr_auto]" id="bulk-attendance-form">
         <Select aria-label="Estado masivo" defaultValue="attended" name="status"><option value="attended">Marcar asistieron</option><option value="absent">Marcar no asistieron</option><option value="pending">Devolver a pendiente</option></Select>
         <Input aria-label="Nota masiva" maxLength={500} name="notes" placeholder="Nota opcional para los seleccionados" />
-        <Button type="submit">Aplicar a seleccionados</Button>
+        <SubmitButton pendingLabel="Aplicando…">Aplicar a seleccionados</SubmitButton>
       </form>
       <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white">
         <table className="w-full min-w-[1500px] text-left text-sm">
@@ -33,7 +33,7 @@ export function AttendanceTable({ activityId, attendance, returnTo }: Attendance
                 <td className="px-4 py-4 align-top"><RegistrationStatusBadge status={item.registration.status} /></td>
                 <td className="px-4 py-4 align-top"><AttendanceStatusBadge status={item.status} /></td>
                 <td className="px-4 py-4 align-top text-slate-700"><p>{item.marked_at ? formatRegistrationDate(item.marked_at) : "Sin marcar"}</p><p>{item.notes ?? ""}</p></td>
-                <td className="px-4 py-4 align-top"><form action={action} className="flex min-w-[430px] gap-2"><input name="attendance_ids" type="hidden" value={item.id} /><Select aria-label="Nuevo estado" className="w-36" defaultValue={item.status} name="status"><option value="pending">Pendiente</option><option value="attended">Asistió</option><option value="absent">No asistió</option></Select><Input aria-label="Notas" defaultValue={item.notes ?? ""} maxLength={500} name="notes" placeholder="Nota opcional" /><Button type="submit" variant="subtle">Guardar</Button></form></td>
+                <td className="px-4 py-4 align-top"><form action={action} className="flex min-w-[430px] gap-2"><input name="attendance_ids" type="hidden" value={item.id} /><Select aria-label="Nuevo estado" className="w-36" defaultValue={item.status} name="status"><option value="pending">Pendiente</option><option value="attended">Asistió</option><option value="absent">No asistió</option></Select><Input aria-label="Notas" defaultValue={item.notes ?? ""} maxLength={500} name="notes" placeholder="Nota opcional" /><SubmitButton pendingLabel="Guardando…" variant="subtle">Guardar</SubmitButton></form></td>
               </tr>
             ))}
           </tbody>

@@ -1,4 +1,5 @@
 import type { ActivityType } from "@/features/activities/types/activity.types";
+import type { NotificationEventType } from "@/features/notifications/types/notification.types";
 import type { Enums, Tables } from "@/lib/supabase/database.types";
 
 export type RegistrationType = Enums<"registration_type">;
@@ -25,7 +26,7 @@ export interface RegistrationRpcResult {
   activity_title: string;
   activity_type: ActivityType;
   attendance_id: string;
-  notification_event: string;
+  notification_event: NotificationEventType;
   price_snapshot: number;
   registration_code: string;
   registration_id: string;

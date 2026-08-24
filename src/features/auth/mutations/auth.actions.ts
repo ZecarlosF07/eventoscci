@@ -10,7 +10,10 @@ import {
 import { loginSchema } from "@/features/auth/schemas/login.schema";
 import type { LoginActionState } from "@/features/auth/types/auth.types";
 import { formText } from "@/features/auth/utils/auth-form-data";
-import { safeAuthRedirect } from "@/features/auth/utils/safe-auth-redirect";
+import {
+  safeAdminRedirect,
+  safeAuthRedirect,
+} from "@/features/auth/utils/safe-auth-redirect";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function loginAction(
@@ -20,6 +23,7 @@ export async function loginAction(
   const parsed = loginSchema.safeParse({
     email: formText(formData, "email"),
     password: formText(formData, "password"),
+    portal: formText(formData, "portal") || "public",
   });
 
   if (!parsed.success) {
@@ -27,25 +31,34 @@ export async function loginAction(
   }
 
   const client = await createServerSupabaseClient();
-  const { data, error: loginError } = await client.auth.signInWithPassword(parsed.data);
+  const { email, password } = parsed.data;
+  const { data, error: loginError } = await client.auth.signInWithPassword({ email, password });
 
   if (loginError) {
     return { message: "El correo o la contraseña no son correctos." };
   }
 
   const accountAccess = data.user ? await getAccountAccessForUser(client, data.user) : null;
+  const isAdminPortal = parsed.data.portal === "admin";
+  const deniedAdminAccess = isAdminPortal && accountAccess?.role === "student";
+  if (deniedAdminAccess) {
+    await client.auth.signOut();
+    return { message: "El correo o la contraseña no son correctos." };
+  }
   if (accountAccess && !accountAccess.isActive) {
     await client.auth.signOut();
-    return { message: "La cuenta está inactiva. Comunícate con la Cámara." };
+    return { message: isAdminPortal ? "El correo o la contraseña no son correctos." : "La cuenta está inactiva. Comunícate con la Cámara." };
   }
 
   const account = data.user ? await getAccountForUser(client, data.user) : null;
   if (!account) {
     await client.auth.signOut();
-    return { message: "La cuenta no está vinculada a una ficha institucional." };
+    return { message: isAdminPortal ? "El correo o la contraseña no son correctos." : "La cuenta no está vinculada a una ficha institucional." };
   }
   const fallback = account.role === "student" ? ROUTES.campus : ROUTES.admin;
-  const requested = safeAuthRedirect(formText(formData, "next"), fallback);
+  const requested = isAdminPortal
+    ? safeAdminRedirect(formText(formData, "next"))
+    : safeAuthRedirect(formText(formData, "next"), fallback);
   const destination = account.role === "student" ? ROUTES.campus : requested;
 
   redirect(destination);

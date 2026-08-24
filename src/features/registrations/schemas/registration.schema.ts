@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { REGISTRATION_NOTIFICATION_EVENT_TYPES } from "@/features/notifications/constants/notification.constants";
+
 const optionalText = z.string().trim().max(250, "Usa como máximo 250 caracteres.");
 
 export const registrationFormSchema = z
@@ -68,7 +70,7 @@ export const registrationRpcResultSchema = z.object({
   activity_title: z.string(),
   activity_type: z.enum(["event", "training"]),
   attendance_id: z.uuid(),
-  notification_event: z.string(),
+  notification_event: z.enum(REGISTRATION_NOTIFICATION_EVENT_TYPES),
   price_snapshot: z.number(),
   registration_code: z.string(),
   registration_id: z.uuid(),

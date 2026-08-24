@@ -7,7 +7,6 @@ export const PUBLIC_NAVIGATION: NavigationItem[] = [
   { href: ROUTES.trainings, label: "Capacitaciones" },
   { href: ROUTES.courses, label: "Cursos" },
   { href: ROUTES.campus, label: "Campus" },
-  { href: ROUTES.admin, label: "Administración" },
 ];
 
 export const ADMIN_NAVIGATION: NavigationItem[] = [

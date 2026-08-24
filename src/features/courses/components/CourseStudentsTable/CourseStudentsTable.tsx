@@ -2,6 +2,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
+import { SubmitButton } from "@/components/atoms/SubmitButton";
 import { Text } from "@/components/atoms/Text";
 import { FormField } from "@/components/molecules/FormField";
 import type { CourseStudentsTableProps } from "@/features/courses/components/CourseStudentsTable/types/course-students-table.types";
@@ -55,7 +56,7 @@ export function CourseStudentsTable({
                 step="0.01"
                 type="number"
               />
-              <Button type="submit">Habilitar</Button>
+              <SubmitButton pendingLabel="Habilitando…">Habilitar</SubmitButton>
             </form>
           ))}
         </div>
@@ -95,7 +96,7 @@ export function CourseStudentsTable({
                     placeholder="Motivo"
                     required
                   />
-                  <Button type="submit" variant="secondary">Revocar</Button>
+                  <SubmitButton pendingLabel="Revocando…" variant="secondary">Revocar</SubmitButton>
                 </form>
               ) : (
                 <Text size="sm">{student.revocationReason}</Text>

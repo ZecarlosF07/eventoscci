@@ -2,6 +2,21 @@ import type { Enums, Json } from "@/lib/supabase/database.types";
 
 export type NotificationStatus = Enums<"notification_status">;
 
+export type NotificationEventType =
+  | "activity_certificate_issued"
+  | "activity_free_registration_confirmed"
+  | "activity_paid_preregistration_created"
+  | "activity_paid_registration_confirmed"
+  | "course_certificate_issued";
+
+export type NotificationEntityType = "certificate" | "registration";
+
+export interface NotificationReference {
+  eventType: NotificationEventType;
+  relatedEntityId: string;
+  relatedEntityType: NotificationEntityType;
+}
+
 export interface NotificationItem {
   attempts: number;
   created_at: string;
@@ -20,12 +35,6 @@ export interface NotificationPage {
   page: number;
   pageCount: number;
   total: number;
-}
-
-export interface NotificationDeliveryResult {
-  failed: number;
-  processed: number;
-  sent: number;
 }
 
 export interface NotificationsAdminPageProps {

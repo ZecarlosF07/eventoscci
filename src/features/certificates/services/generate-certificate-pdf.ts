@@ -5,7 +5,12 @@ import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import QRCode from "qrcode";
 
 import type { CertificateDocumentInput, CertificateDocumentSigner } from "@/features/certificates/types/certificate.types";
-import { centeredTextX, wrapPdfText } from "@/features/certificates/utils/certificate-pdf-layout";
+import {
+  centeredTextX,
+  fitPdfTextSize,
+  fitWrappedPdfText,
+  wrapPdfText,
+} from "@/features/certificates/utils/certificate-pdf-layout";
 
 const PAGE_WIDTH = 595.28;
 const PAGE_HEIGHT = 841.89;
@@ -53,11 +58,12 @@ export async function generateCertificatePdf(input: CertificateDocumentInput): P
   const intro = "La Cámara de Comercio de Ica otorga el presente certificado a:";
   page.drawText(intro, { color: TEXT_COLOR, font: regular, size: 11, x: centeredTextX(intro, regular, 11, PAGE_WIDTH), y: 690 });
 
-  const titleLines = wrapPdfText(input.title, titleFont, 27, 390).slice(0, 3);
-  titleLines.forEach((line, index) => page.drawText(line, { color: TEXT_COLOR, font: titleFont, size: 27, x: centeredTextX(line, titleFont, 27, PAGE_WIDTH), y: 645 - index * 31 }));
+  const [titleLines, titleSize] = fitWrappedPdfText(input.title, titleFont, 410, 4, 27, 20);
+  const titleLineHeight = titleSize + 4;
+  titleLines.forEach((line, index) => page.drawText(line, { color: TEXT_COLOR, font: titleFont, size: titleSize, x: centeredTextX(line, titleFont, titleSize, PAGE_WIDTH), y: 645 - index * titleLineHeight }));
 
   const nameY = 535 - Math.max(0, titleLines.length - 1) * 16;
-  const nameSize = input.participantName.length > 40 ? 19 : 22;
+  const nameSize = fitPdfTextSize(input.participantName, bold, 430, 22, 15);
   page.drawText(input.participantName, { color: DARK_COLOR, font: bold, size: nameSize, x: centeredTextX(input.participantName, bold, nameSize, PAGE_WIDTH), y: nameY });
   page.drawLine({ color: TEXT_COLOR, start: { x: 95, y: nameY - 10 }, end: { x: 500, y: nameY - 10 }, thickness: 0.8 });
 

@@ -65,7 +65,7 @@ descargas públicas de certificados. El token público no concede listado ni acc
 - La exportación CSV verifica una cuenta interna activa.
 - La generación de certificados de curso valida UUID, sesión y ownership antes de usar
   `service_role`.
-- El procesador de notificaciones exige `CRON_SECRET` y devuelve errores genéricos.
+- La entrega de notificaciones usa `N8N_WEBHOOK_SECRET` exclusivamente en el servidor.
 - Las descargas de materiales dependen de RLS y matrícula; las de certificados resuelven un único
   archivo mediante token y generan una URL temporal.
 - Los callbacks de autenticación limitan redirecciones a rutas internas seguras.

@@ -43,3 +43,12 @@ El registro envía datos validados como metadatos de Auth. El trigger `handle_ca
 4. crea una sola `user_account` activa con rol `student`.
 
 Si cualquier paso falla, también se revierte la creación de `auth.users`.
+
+## Separación del acceso interno
+
+- La navegación pública no publica enlaces al módulo administrativo.
+- `/admin/login` es un portal independiente, sin opción de registro y con metadata `noindex`.
+- Las rutas `/admin/*` redirigen al acceso interno cuando no existe sesión.
+- El formulario administrativo rechaza cuentas `student` con un mensaje genérico.
+- Conocer la URL no concede acceso: Proxy realiza una comprobación temprana y cada layout, Server Action, Route Handler, RPC y política RLS vuelve a validar el rol.
+- Las cuentas `operator` y `administrator` se aprovisionan de forma interna; el registro público continúa creando exclusivamente `student`.

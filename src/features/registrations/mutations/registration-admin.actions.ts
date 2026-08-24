@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { ROUTES } from "@/constants/routes";
 import { requireAdmin } from "@/features/auth/services/admin-session";
+import { deliverNotificationImmediately } from "@/features/notifications/services/process-notifications";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { withAdminResult } from "@/utils/admin-return-url";
 
@@ -23,12 +24,20 @@ export async function confirmRegistrationAction(
   });
 
   if (error) redirect(withAdminResult(returnTo, ROUTES.adminRegistrations, "error-confirmar"));
+  const changed = didChange(data);
+  if (changed) {
+    await deliverNotificationImmediately({
+      eventType: "activity_paid_registration_confirmed",
+      relatedEntityId: registrationId,
+      relatedEntityType: "registration",
+    });
+  }
   revalidatePath(ROUTES.adminRegistrations);
   revalidatePath(ROUTES.adminParticipants);
   redirect(withAdminResult(
     returnTo,
     ROUTES.adminRegistrations,
-    didChange(data) ? "confirmada" : "ya-confirmada",
+    changed ? "confirmada" : "ya-confirmada",
   ));
 }
 

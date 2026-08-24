@@ -1,3 +1,6 @@
+"use server";
+
+import { deliverNotificationImmediately } from "@/features/notifications/services/process-notifications";
 import { REGISTRATION_ERROR_MESSAGES } from "@/features/registrations/constants/registration.constants";
 import {
   registrationFormSchema,
@@ -9,7 +12,7 @@ import type {
 } from "@/features/registrations/types/registration.types";
 import { getRegistrationErrorCode } from "@/features/registrations/utils/registration-errors";
 import type { Json } from "@/lib/supabase/database.types";
-import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function registerActivity(
   activityId: string,
@@ -26,7 +29,7 @@ export async function registerActivity(
     };
   }
 
-  const client = createBrowserSupabaseClient();
+  const client = await createServerSupabaseClient();
   const payload: Json = parsed.data;
   const { data, error } = await client.rpc("register_activity", {
     p_activity_id: activityId,
@@ -50,6 +53,12 @@ export async function registerActivity(
       success: false,
     };
   }
+
+  await deliverNotificationImmediately({
+    eventType: result.data.notification_event,
+    relatedEntityId: result.data.registration_id,
+    relatedEntityType: "registration",
+  });
 
   return { data: result.data, success: true };
 }

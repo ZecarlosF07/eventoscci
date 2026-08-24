@@ -38,6 +38,7 @@ export interface PasswordActionState {
 
 export interface LoginFormProps {
   next?: string;
+  portal?: "admin" | "public";
 }
 
 export interface AuthPageSearchParams {
