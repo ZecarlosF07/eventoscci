@@ -41,6 +41,10 @@ export interface LoginFormProps {
   portal?: "admin" | "public";
 }
 
+export interface RegisterFormProps {
+  next?: string;
+}
+
 export interface AuthPageSearchParams {
   error?: string | string[];
   next?: string | string[];

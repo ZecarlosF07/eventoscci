@@ -7,6 +7,7 @@ import { registerSchema } from "@/features/auth/schemas/register.schema";
 import type { RegisterActionState } from "@/features/auth/types/auth.types";
 import { formText, registrationMetadata } from "@/features/auth/utils/auth-form-data";
 import { signUpErrorMessage } from "@/features/auth/utils/auth-errors";
+import { safeAuthRedirect } from "@/features/auth/utils/safe-auth-redirect";
 import { getSiteUrl } from "@/lib/env/server-env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -31,6 +32,7 @@ export async function registerAction(
   if (!parsed.success) return { errors: parsed.error.flatten().fieldErrors };
 
   const { email, password } = parsed.data;
+  const destination = safeAuthRedirect(formText(formData, "next"), ROUTES.campus);
   const profile = {
     address: parsed.data.address,
     company: parsed.data.company,
@@ -47,7 +49,7 @@ export async function registerAction(
     email,
     options: {
       data: registrationMetadata(profile),
-      emailRedirectTo: `${getSiteUrl()}${ROUTES.authConfirm}?next=${encodeURIComponent(ROUTES.campus)}`,
+      emailRedirectTo: `${getSiteUrl()}${ROUTES.authConfirm}?next=${encodeURIComponent(destination)}`,
     },
     password,
   });
@@ -55,7 +57,7 @@ export async function registerAction(
   if (!data.user?.identities?.length) {
     return { message: "Este correo ya tiene una cuenta. Inicia sesión o recupera tu contraseña." };
   }
-  if (data.session) redirect(ROUTES.campus);
+  if (data.session) redirect(destination);
   return {
     message: "Cuenta creada. Revisa tu correo para confirmar el acceso al Campus.",
     success: true,

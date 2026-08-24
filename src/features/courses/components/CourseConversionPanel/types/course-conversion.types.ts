@@ -1,8 +1,8 @@
-import type { CurrentAccount } from "@/features/auth/types/auth.types";
 import type { CourseDetail, CourseEnrollmentStatus } from "@/features/courses/types/course.types";
 
-export interface CourseDetailTemplateProps {
-  account: CurrentAccount | null;
+export interface CourseConversionProps {
   course: CourseDetail;
   enrollmentStatus: CourseEnrollmentStatus | null;
+  isAuthenticated: boolean;
+  nextPath: string;
 }

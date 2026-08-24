@@ -7,16 +7,17 @@ import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
 import { FormField } from "@/components/molecules/FormField";
 import { registerAction } from "@/features/auth/mutations/register.actions";
-import type { RegisterActionState } from "@/features/auth/types/auth.types";
+import type { RegisterActionState, RegisterFormProps } from "@/features/auth/types/auth.types";
 
 const INITIAL_STATE: RegisterActionState = {};
 
-export function RegisterForm() {
+export function RegisterForm({ next }: RegisterFormProps) {
   const [state, action, pending] = useActionState(registerAction, INITIAL_STATE);
   const error = (name: string) => state.errors?.[name]?.[0];
 
   return (
     <form action={action} className="space-y-7">
+      <input name="next" type="hidden" value={next ?? ""} />
       <div className="grid gap-5 sm:grid-cols-2">
         <FormField error={error("document_type")} label="Tipo de documento" name="document_type" required>
           <Select defaultValue="dni" id="document_type" name="document_type"><option value="dni">DNI</option><option value="ce">Carné de Extranjería</option></Select>

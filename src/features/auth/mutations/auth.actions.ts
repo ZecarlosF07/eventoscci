@@ -56,10 +56,9 @@ export async function loginAction(
     return { message: isAdminPortal ? "El correo o la contraseña no son correctos." : "La cuenta no está vinculada a una ficha institucional." };
   }
   const fallback = account.role === "student" ? ROUTES.campus : ROUTES.admin;
-  const requested = isAdminPortal
+  const destination = isAdminPortal
     ? safeAdminRedirect(formText(formData, "next"))
     : safeAuthRedirect(formText(formData, "next"), fallback);
-  const destination = account.role === "student" ? ROUTES.campus : requested;
 
   redirect(destination);
 }

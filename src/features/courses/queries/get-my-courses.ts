@@ -1,7 +1,7 @@
 import "server-only";
 
 import { mapCourseInstructors } from "@/features/courses/services/map-course-data";
-import type { MyCourse, StudentCourseContent } from "@/features/courses/types/course.types";
+import type { CourseEnrollmentStatus, MyCourse, StudentCourseContent } from "@/features/courses/types/course.types";
 import { requireActiveAccount } from "@/features/auth/services/account-guards";
 import { getMyCourseCertificate } from "@/features/certificates/queries/get-my-certificates";
 import { getCourseLessonProgress } from "@/features/progress/queries/get-lesson-progress";
@@ -89,11 +89,14 @@ export async function getStudentCourseContent(courseId: string): Promise<Student
   };
 }
 
-export async function hasCourseEnrollment(courseId: string, personId: string): Promise<boolean> {
+export async function getCourseEnrollmentStatus(
+  courseId: string,
+  personId: string,
+): Promise<CourseEnrollmentStatus | null> {
   const client = await createServerSupabaseClient();
-  const { count, error } = await client.from("course_enrollments").select("id", { count: "exact", head: true })
+  const { data, error } = await client.from("course_enrollments").select("status")
     .eq("course_id", courseId).eq("person_id", personId)
-    .in("status", ["active", "completed"]).is("deleted_at", null);
-  if (error) return false;
-  return (count ?? 0) > 0;
+    .is("deleted_at", null).maybeSingle();
+  if (error) throw new Error("No fue posible validar tu acceso al curso.", { cause: error });
+  return data?.status ?? null;
 }

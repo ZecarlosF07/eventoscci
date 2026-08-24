@@ -1,46 +1,71 @@
 import Image from "next/image";
 import Link from "next/link";
+
 import { Badge } from "@/components/atoms/Badge";
 import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
-import { PriceDisplay } from "@/components/molecules/PriceDisplay";
 import type { CourseDetailTemplateProps } from "@/components/templates/CourseDetailTemplate/types/course-detail-template.types";
+import { CourseConversionPanel } from "@/features/courses/components/CourseConversionPanel";
+import { CourseCurriculumPreview } from "@/features/courses/components/CourseCurriculumPreview";
 import { CourseEnrollmentCta } from "@/features/courses/components/CourseEnrollmentCta";
+import { CourseMobileEnrollmentBar } from "@/features/courses/components/CourseMobileEnrollmentBar";
 import { getCourseBannerUrl, getInstructorName } from "@/features/courses/utils/course-formatters";
 import { getPublicCourseRoute } from "@/features/courses/utils/course-routes";
 
-export function CourseDetailTemplate({ account, course, isEnrolled }: CourseDetailTemplateProps) {
+export function CourseDetailTemplate({ account, course, enrollmentStatus }: CourseDetailTemplateProps) {
   const bannerUrl = getCourseBannerUrl(course.banner_path);
   const primary = course.instructors.find((item) => item.isPrimary) ?? course.instructors[0];
+  const nextPath = getPublicCourseRoute(course.slug);
+  const conversionProps = { course, enrollmentStatus, isAuthenticated: Boolean(account), nextPath };
+
   return (
-    <article className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+    <article className="mx-auto w-full max-w-7xl px-5 pb-28 pt-10 sm:px-8 sm:pt-14 lg:pb-16">
       <Link className="text-sm font-bold text-cci-700 hover:text-cci-950" href="/cursos">← Volver a cursos</Link>
-      <header className="mt-6 grid gap-8 rounded-[2rem] bg-cci-950 px-6 py-8 lg:grid-cols-[1.3fr_0.7fr] lg:px-10 lg:py-10">
+
+      <header className="mt-6 grid gap-8 rounded-[2rem] bg-cci-950 px-6 py-8 text-white lg:grid-cols-[1fr_22rem] lg:items-center lg:px-10 lg:py-10">
         <div>
           <div className="flex flex-wrap gap-2"><Badge>Curso grabado</Badge>{course.is_free ? <Badge variant="success">Gratuito</Badge> : null}</div>
-          <Heading className="mt-5 text-white" level={1}>{course.title}</Heading>
-          {course.short_description ? <Text className="mt-4 text-white/70" size="lg">{course.short_description}</Text> : null}
-          {primary ? <Text className="mt-4 text-white/70"><strong className="text-white">Instructor:</strong> {getInstructorName(primary.speaker.first_names, primary.speaker.last_names)}</Text> : null}
+          <Heading className="mt-5 max-w-3xl text-white" level={1}>{course.title}</Heading>
+          {course.short_description ? <Text className="mt-4 max-w-2xl text-white/72" size="lg">{course.short_description}</Text> : null}
+          {primary ? <Text className="mt-5 text-white/70"><strong className="text-white">Con {getInstructorName(primary.speaker.first_names, primary.speaker.last_names)}</strong>{primary.speaker.organization ? ` · ${primary.speaker.organization}` : ""}</Text> : null}
+          <dl className="mt-7 grid max-w-2xl gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl bg-white/8 p-4"><dt className="text-xs font-bold uppercase tracking-wide text-cci-lime">Modalidad</dt><dd className="mt-1 font-semibold">A tu ritmo</dd></div>
+            <div className="rounded-2xl bg-white/8 p-4"><dt className="text-xs font-bold uppercase tracking-wide text-cci-lime">Duración</dt><dd className="mt-1 font-semibold">{course.duration_text || "Flexible"}</dd></div>
+            <div className="rounded-2xl bg-white/8 p-4"><dt className="text-xs font-bold uppercase tracking-wide text-cci-lime">Certificación</dt><dd className="mt-1 font-semibold">Al completar</dd></div>
+          </dl>
         </div>
-        <aside className="space-y-4 rounded-3xl bg-white p-6 shadow-lg">
-          <PriceDisplay generalPrice={course.general_price} isFree={course.is_free} memberPrice={course.member_price} />
-          {course.duration_text ? <Text size="sm"><strong>Duración:</strong> {course.duration_text}</Text> : null}
-          {course.academic_hours !== null ? <Text size="sm"><strong>Horas académicas:</strong> {course.academic_hours}</Text> : null}
-          <CourseEnrollmentCta courseId={course.id} isAuthenticated={Boolean(account)} isEnrolled={isEnrolled} isFree={course.is_free} nextPath={getPublicCourseRoute(course.slug)} />
-        </aside>
+        <CourseConversionPanel {...conversionProps} />
       </header>
+
       {bannerUrl ? <div className="relative mt-8 aspect-[16/7] overflow-hidden rounded-3xl bg-cci-100"><Image alt={`Portada de ${course.title}`} className="object-cover" fill preload sizes="(min-width: 1280px) 1216px, 100vw" src={bannerUrl} /></div> : null}
-      <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_0.45fr]">
+
+      <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_0.48fr] lg:items-start">
         <div className="space-y-8 rounded-3xl bg-white p-6 sm:p-8">
-          <section><Heading level={2}>Acerca del curso</Heading><Text className="mt-3 whitespace-pre-line">{course.description}</Text></section>
-          {course.objectives ? <section><Heading level={2}>Objetivos</Heading><Text className="mt-3 whitespace-pre-line">{course.objectives}</Text></section> : null}
-          {course.contents_overview ? <section><Heading level={2}>Contenido general</Heading><Text className="mt-3 whitespace-pre-line">{course.contents_overview}</Text></section> : null}
+          <section><Heading level={2}>Lo que encontrarás en este curso</Heading><Text className="mt-3 whitespace-pre-line leading-7">{course.description}</Text></section>
+          {course.objectives ? <section className="border-t border-cci-100 pt-7"><Heading level={2}>Qué lograrás</Heading><Text className="mt-3 whitespace-pre-line leading-7">{course.objectives}</Text></section> : null}
+          {course.contents_overview ? <section className="border-t border-cci-100 pt-7"><Heading level={2}>Contenido general</Heading><Text className="mt-3 whitespace-pre-line leading-7">{course.contents_overview}</Text></section> : null}
         </div>
-        <aside className="rounded-3xl border border-cci-100 bg-cci-100 p-6">
-          <Heading level={2}>Módulos</Heading>
-          {course.modules.length ? <ol className="mt-4 space-y-3">{course.modules.map((module, index) => <li className="rounded-xl border border-cci-100 bg-white p-4" key={module.id}><span className="text-xs font-bold uppercase text-cci-600">Módulo {index + 1}</span><p className="mt-1 font-semibold">{module.title}</p></li>)}</ol> : <Text className="mt-3">El contenido se publicará próximamente.</Text>}
-        </aside>
+
+        <div className="space-y-6">
+          <CourseCurriculumPreview modules={course.modules} />
+          {primary ? (
+            <section className="rounded-3xl border border-cci-100 bg-white p-6">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-600">Instructor</p>
+              <Heading className="mt-2" level={2}>{getInstructorName(primary.speaker.first_names, primary.speaker.last_names)}</Heading>
+              {primary.speaker.professional_title ? <Text className="mt-2 font-semibold text-cci-800" size="sm">{primary.speaker.professional_title}</Text> : null}
+              {primary.speaker.organization ? <Text className="mt-1" size="sm">{primary.speaker.organization}</Text> : null}
+              {primary.speaker.bio ? <Text className="mt-4 line-clamp-5" size="sm">{primary.speaker.bio}</Text> : null}
+            </section>
+          ) : null}
+        </div>
       </div>
+
+      <section className="mt-10 hidden items-center justify-between gap-10 rounded-3xl bg-cci-lime px-8 py-7 lg:flex">
+        <div><p className="text-sm font-bold uppercase tracking-[0.16em] text-cci-700">Tu siguiente paso</p><Heading className="mt-2" level={2}>{enrollmentStatus ? "Retoma tu aprendizaje cuando quieras" : "Empieza a aprender hoy"}</Heading></div>
+        <div className="w-72 shrink-0"><CourseEnrollmentCta courseId={course.id} courseTitle={course.title} enrollmentStatus={enrollmentStatus} isAuthenticated={Boolean(account)} isFree={course.is_free} nextPath={nextPath} /></div>
+      </section>
+
+      <CourseMobileEnrollmentBar {...conversionProps} />
     </article>
   );
 }

@@ -1,6 +1,6 @@
 import { ROUTES } from "@/constants/routes";
 
-const ALLOWED_PREFIXES = [ROUTES.admin, ROUTES.campus];
+const ALLOWED_PREFIXES = [ROUTES.campus, ROUTES.courses];
 
 export function safeAuthRedirect(value: string | null | undefined, fallback: string = ROUTES.campus): string {
   if (!value?.startsWith("/") || value.startsWith("//")) return fallback;
