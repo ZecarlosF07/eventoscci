@@ -30,7 +30,7 @@ export async function saveMaterialMetadataAction(input: MaterialMetadataInput): 
     ? client.from("course_materials").update(payload).eq("id", parsed.data.materialId)
     : client.from("course_materials").insert(payload);
   const { error } = await request;
-  if (error) return { message: error.message };
+  if (error) return { message: "No fue posible guardar el material." };
   revalidatePath(getAdminCourseMaterialsRoute(parsed.data.courseId));
   return { message: "Material guardado.", success: true };
 }

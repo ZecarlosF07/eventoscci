@@ -1,0 +1,2 @@
+export { VimeoLessonVideo } from "./VimeoLessonVideo";
+

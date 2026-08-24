@@ -566,6 +566,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "certificates_course_enrollment_id_fkey"
+            columns: ["course_enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "course_enrollments"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "certificates_person_id_fkey"
             columns: ["person_id"]
             isOneToOne: false
@@ -823,6 +830,67 @@ export type Database = {
           },
         ]
       }
+      course_ratings: {
+        Row: {
+          comment: string | null
+          course_id: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          enrollment_id: string
+          id: string
+          person_id: string
+          rating: number
+          updated_at: string
+        }
+        Insert: {
+          comment?: string | null
+          course_id: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          enrollment_id: string
+          id?: string
+          person_id: string
+          rating: number
+          updated_at?: string
+        }
+        Update: {
+          comment?: string | null
+          course_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          enrollment_id?: string
+          id?: string
+          person_id?: string
+          rating?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_ratings_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_ratings_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "course_enrollments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_ratings_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           academic_hours: number | null
@@ -894,6 +962,72 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: []
+      }
+      lesson_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          duration_seconds_snapshot: number | null
+          enrollment_id: string
+          id: string
+          is_completed: boolean
+          last_position_seconds: number
+          last_watched_at: string | null
+          lesson_id: string
+          progress_percent: number
+          updated_at: string
+          watched_seconds: number
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          duration_seconds_snapshot?: number | null
+          enrollment_id: string
+          id?: string
+          is_completed?: boolean
+          last_position_seconds?: number
+          last_watched_at?: string | null
+          lesson_id: string
+          progress_percent?: number
+          updated_at?: string
+          watched_seconds?: number
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          duration_seconds_snapshot?: number | null
+          enrollment_id?: string
+          id?: string
+          is_completed?: boolean
+          last_position_seconds?: number
+          last_watched_at?: string | null
+          lesson_id?: string
+          progress_percent?: number
+          updated_at?: string
+          watched_seconds?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_progress_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "course_enrollments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lessons: {
         Row: {
@@ -1076,6 +1210,280 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_attempt_answers: {
+        Row: {
+          attempt_id: string
+          correct_option_text_snapshot: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          explanation_snapshot: string | null
+          id: string
+          is_correct: boolean
+          question_id: string
+          question_text_snapshot: string
+          selected_option_id: string
+          selected_option_text_snapshot: string
+        }
+        Insert: {
+          attempt_id: string
+          correct_option_text_snapshot: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          explanation_snapshot?: string | null
+          id?: string
+          is_correct: boolean
+          question_id: string
+          question_text_snapshot: string
+          selected_option_id: string
+          selected_option_text_snapshot: string
+        }
+        Update: {
+          attempt_id?: string
+          correct_option_text_snapshot?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          explanation_snapshot?: string | null
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          question_text_snapshot?: string
+          selected_option_id?: string
+          selected_option_text_snapshot?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempt_answers_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_attempt_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_attempt_answers_selected_option_id_fkey"
+            columns: ["selected_option_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_options"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_attempts: {
+        Row: {
+          attempt_number: number
+          correct_answers: number
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          enrollment_id: string
+          id: string
+          is_passed: boolean
+          quiz_id: string
+          score_percent: number
+          started_at: string
+          submitted_at: string
+          total_questions: number
+          updated_at: string
+        }
+        Insert: {
+          attempt_number: number
+          correct_answers: number
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          enrollment_id: string
+          id?: string
+          is_passed: boolean
+          quiz_id: string
+          score_percent: number
+          started_at?: string
+          submitted_at?: string
+          total_questions: number
+          updated_at?: string
+        }
+        Update: {
+          attempt_number?: number
+          correct_answers?: number
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          enrollment_id?: string
+          id?: string
+          is_passed?: boolean
+          quiz_id?: string
+          score_percent?: number
+          started_at?: string
+          submitted_at?: string
+          total_questions?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "course_enrollments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_options: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          is_correct: boolean
+          option_text: string
+          question_id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_correct?: boolean
+          option_text: string
+          question_id: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_correct?: boolean
+          option_text?: string
+          question_id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_options_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          explanation: string | null
+          id: string
+          is_active: boolean
+          prompt: string
+          quiz_id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          explanation?: string | null
+          id?: string
+          is_active?: boolean
+          prompt: string
+          quiz_id: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          explanation?: string | null
+          id?: string
+          is_active?: boolean
+          prompt?: string
+          quiz_id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          id: string
+          is_published: boolean
+          module_id: string
+          passing_score: number
+          title: string
+          unlimited_attempts: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          module_id: string
+          passing_score?: number
+          title: string
+          unlimited_attempts?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          module_id?: string
+          passing_score?: number
+          title?: string
+          unlimited_attempts?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quizzes_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "course_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       registrations: {
         Row: {
           activity_id: string
@@ -1246,9 +1654,17 @@ export type Database = {
         Args: { p_certificate_id: string }
         Returns: boolean
       }
+      authorize_course_certificate_generation: {
+        Args: { p_certificate_id: string }
+        Returns: boolean
+      }
       cancel_registration: {
         Args: { p_reason?: string; p_registration_id: string }
         Returns: Json
+      }
+      check_course_completion: {
+        Args: { p_enrollment_id: string }
+        Returns: boolean
       }
       claim_notification_batch: {
         Args: { p_limit?: number }
@@ -1289,9 +1705,26 @@ export type Database = {
         Args: { p_registration_id: string }
         Returns: Json
       }
+      current_course_enrollment: {
+        Args: { p_course_id: string }
+        Returns: string
+      }
       current_person_id: { Args: never; Returns: string }
+      current_user_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
+      delete_course_rating: { Args: { p_course_id: string }; Returns: boolean }
       enroll_free_course: { Args: { p_course_id: string }; Returns: string }
       finalize_activity_certificate: {
+        Args: {
+          p_certificate_id: string
+          p_file_path: string
+          p_public_base_url: string
+        }
+        Returns: Json
+      }
+      finalize_course_certificate: {
         Args: {
           p_certificate_id: string
           p_file_path: string
@@ -1303,6 +1736,13 @@ export type Database = {
         Args: { p_activity_id: string }
         Returns: Json
       }
+      get_admin_quiz: { Args: { p_module_id: string }; Returns: Json }
+      get_my_certificates: { Args: never; Returns: Json }
+      get_my_course_certificate: {
+        Args: { p_course_id: string }
+        Returns: Json
+      }
+      get_my_course_rating: { Args: { p_course_id: string }; Returns: Json }
       get_public_certificate: {
         Args: { p_access_token: string }
         Returns: Json
@@ -1313,6 +1753,19 @@ export type Database = {
       }
       get_public_registration_result: {
         Args: { p_registration_code: string }
+        Returns: Json
+      }
+      get_quiz_attempt_result: { Args: { p_attempt_id: string }; Returns: Json }
+      get_quiz_attempts: {
+        Args: { p_enrollment_id: string; p_quiz_id: string }
+        Returns: Json
+      }
+      get_student_course_quiz_summaries: {
+        Args: { p_course_id: string }
+        Returns: Json
+      }
+      get_student_quiz: {
+        Args: { p_course_id: string; p_module_id: string }
         Returns: Json
       }
       grant_course_access: {
@@ -1329,6 +1782,8 @@ export type Database = {
         Returns: boolean
       }
       is_active_admin: { Args: never; Returns: boolean }
+      is_administrator: { Args: never; Returns: boolean }
+      is_internal_user: { Args: never; Returns: boolean }
       prepare_activity_certificates: {
         Args: {
           p_condition?: string
@@ -1336,6 +1791,10 @@ export type Database = {
           p_template_id: string
         }
         Returns: Json
+      }
+      recalculate_course_progress: {
+        Args: { p_enrollment_id: string }
+        Returns: number
       }
       register_activity: {
         Args: { p_activity_id: string; p_registration: Json }
@@ -1369,6 +1828,11 @@ export type Database = {
         Args: { p_course: Json; p_instructors: Json }
         Returns: string
       }
+      save_course_rating: {
+        Args: { p_comment?: string; p_course_id: string; p_rating: number }
+        Returns: string
+      }
+      save_quiz: { Args: { p_questions: Json; p_quiz: Json }; Returns: string }
       set_activity_status: {
         Args: {
           p_activity_id: string
@@ -1395,6 +1859,19 @@ export type Database = {
       soft_delete_certificate_template: {
         Args: { p_template_id: string }
         Returns: string
+      }
+      submit_quiz_attempt: {
+        Args: { p_answers: Json; p_enrollment_id: string; p_quiz_id: string }
+        Returns: Json
+      }
+      update_lesson_progress: {
+        Args: {
+          p_enrollment_id: string
+          p_last_position_seconds: number
+          p_lesson_id: string
+          p_watched_seconds: number
+        }
+        Returns: Json
       }
       update_own_profile: { Args: { p_profile: Json }; Returns: string }
       update_participant: {

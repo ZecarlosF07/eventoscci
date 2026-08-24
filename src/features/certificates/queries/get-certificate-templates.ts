@@ -1,11 +1,16 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { certificateSignerSchema, certificateTemplateSchema } from "@/features/certificates/schemas/certificate-query.schema";
 import type { CertificateSigner, CertificateTemplate } from "@/features/certificates/types/certificate.types";
+import type { Database } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-export async function getCertificateTemplates(activeOnly = false): Promise<CertificateTemplate[]> {
-  const client = await createServerSupabaseClient();
+export async function getCertificateTemplatesWithClient(
+  client: SupabaseClient<Database>,
+  activeOnly = false,
+): Promise<CertificateTemplate[]> {
   let templateQuery = client
     .from("certificate_templates")
     .select("id, name, scope, background_path, template_config, is_default, is_active, updated_at")
@@ -39,7 +44,19 @@ export async function getCertificateTemplates(activeOnly = false): Promise<Certi
   });
 }
 
+export async function getCertificateTemplates(activeOnly = false): Promise<CertificateTemplate[]> {
+  return getCertificateTemplatesWithClient(await createServerSupabaseClient(), activeOnly);
+}
+
 export async function getCertificateTemplateById(id: string): Promise<CertificateTemplate | null> {
   const templates = await getCertificateTemplates();
+  return templates.find((template) => template.id === id) ?? null;
+}
+
+export async function getCertificateTemplateByIdWithClient(
+  client: SupabaseClient<Database>,
+  id: string,
+): Promise<CertificateTemplate | null> {
+  const templates = await getCertificateTemplatesWithClient(client);
   return templates.find((template) => template.id === id) ?? null;
 }

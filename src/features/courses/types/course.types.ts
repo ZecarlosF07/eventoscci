@@ -1,3 +1,5 @@
+import type { MyCertificate } from "@/features/certificates/types/certificate.types";
+import type { QuizSummary } from "@/features/quizzes/types/quiz.types";
 import type { Enums, Tables } from "@/lib/supabase/database.types";
 
 export type CourseStatus = Enums<"course_status">;
@@ -8,6 +10,7 @@ export type CourseModule = Tables<"course_modules">;
 export type Lesson = Tables<"lessons">;
 export type CourseMaterial = Tables<"course_materials">;
 export type CourseEnrollment = Tables<"course_enrollments">;
+export type LessonProgress = Tables<"lesson_progress">;
 
 export interface CourseInstructor {
   id: string;
@@ -88,12 +91,15 @@ export interface MyCourse extends CourseListItem {
 }
 
 export interface StudentCourseContent {
+  courseCertificate: MyCertificate | null;
   course: CourseRow;
   enrollment: CourseEnrollment;
   instructors: CourseInstructor[];
+  lessonProgress: LessonProgress[];
   lessons: Lesson[];
   materials: CourseMaterial[];
   modules: CourseModule[];
+  quizSummaries: QuizSummary[];
 }
 
 export interface MaterialAccess {

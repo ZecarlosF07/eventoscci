@@ -3,6 +3,9 @@ import "server-only";
 import { mapCourseInstructors } from "@/features/courses/services/map-course-data";
 import type { MyCourse, StudentCourseContent } from "@/features/courses/types/course.types";
 import { requireActiveAccount } from "@/features/auth/services/account-guards";
+import { getMyCourseCertificate } from "@/features/certificates/queries/get-my-certificates";
+import { getCourseLessonProgress } from "@/features/progress/queries/get-lesson-progress";
+import { getStudentCourseQuizSummaries } from "@/features/quizzes/queries/get-quizzes";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const MY_COURSE_SELECT = `
@@ -53,13 +56,18 @@ export async function getStudentCourseContent(courseId: string): Promise<Student
   if (courseError) throw new Error("No fue posible cargar el curso.", { cause: courseError });
   if (!course) return null;
 
-  const [moduleResult, materialResult] = await Promise.all([
+  const [moduleResult, materialResult, lessonProgress, quizSummaries, courseCertificate] = await Promise.all([
     client.from("course_modules").select("*").eq("course_id", courseId)
       .eq("is_published", true).is("deleted_at", null).order("sort_order"),
     client.from("course_materials").select("*").eq("course_id", courseId)
       .is("deleted_at", null).order("sort_order"),
+    getCourseLessonProgress(enrollment.id),
+    getStudentCourseQuizSummaries(courseId),
+    getMyCourseCertificate(courseId),
   ]);
-  if (moduleResult.error || materialResult.error) throw new Error("No fue posible cargar el contenido del curso.");
+  if (moduleResult.error || materialResult.error) {
+    throw new Error("No fue posible cargar el contenido y avance del curso.");
+  }
   const modules = moduleResult.data ?? [];
   const moduleIds = modules.map((module) => module.id);
   const { data: lessons, error: lessonsError } = moduleIds.length
@@ -69,12 +77,15 @@ export async function getStudentCourseContent(courseId: string): Promise<Student
   if (lessonsError) throw new Error("No fue posible cargar las clases.", { cause: lessonsError });
   const { instructor_links: instructorLinks, ...courseRow } = course;
   return {
+    courseCertificate,
     course: courseRow,
     enrollment,
     instructors: mapCourseInstructors(instructorLinks),
+    lessonProgress,
     lessons: lessons ?? [],
     materials: materialResult.data ?? [],
     modules,
+    quizSummaries,
   };
 }
 

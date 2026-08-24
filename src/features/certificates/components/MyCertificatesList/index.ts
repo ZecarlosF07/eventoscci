@@ -1,0 +1,1 @@
+export { MyCertificatesList } from "./MyCertificatesList";

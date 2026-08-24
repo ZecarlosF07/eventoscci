@@ -62,7 +62,7 @@ export async function saveCourseAction(
     p_course: course as Json,
     p_instructors: parsed.data.instructors as Json,
   });
-  if (error || !data) return { message: error?.message ?? "No fue posible guardar el curso." };
+  if (error || !data) return { message: "No fue posible guardar el curso." };
 
   if (banner instanceof File && banner.size) {
     try {

@@ -18,7 +18,7 @@ Todas son exclusivas del servidor. `N8N_WEBHOOK_SECRET` se envía a n8n mediante
 ```json
 {
   "notification_id": "uuid",
-  "event_type": "activity_certificate_issued",
+  "event_type": "activity_certificate_issued | course_certificate_issued",
   "recipient_email": "participante@example.com",
   "payload": {}
 }
@@ -36,6 +36,9 @@ Authorization: Bearer <CRON_SECRET>
 ```
 
 El administrador también puede procesar la cola o reintentar un registro desde `/admin/notificaciones`.
+
+La notificación `course_certificate_issued` se encola únicamente después de que el PDF quedó
+almacenado. Un error del webhook nunca revierte la matrícula completada ni el certificado emitido.
 
 ## Decisión sobre fechas en certificados
 

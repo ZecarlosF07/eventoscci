@@ -23,6 +23,12 @@ El bucket `course-videos` es privado. Su estructura esperada es:
 
 La aplicación genera una URL firmada únicamente después de validar la matrícula. La elección de un proveedor definitivo puede realizarse posteriormente sin modificar el modelo académico.
 
+El seguimiento y la reanudación de estos proveedores están documentados en
+[`progreso-campus.md`](./progreso-campus.md).
+
+Los quizzes opcionales por módulo y su integración con la aprobación académica están documentados
+en [`quizzes-campus.md`](./quizzes-campus.md).
+
 ## Portadas y materiales
 
 - `course-banners` es público y almacena únicamente portadas.

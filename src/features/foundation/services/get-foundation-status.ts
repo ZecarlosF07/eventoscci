@@ -32,7 +32,7 @@ export async function getFoundationStatus(): Promise<FoundationStatus> {
     };
   } catch (error) {
     unstable_rethrow(error);
-    console.error("Falló la verificación del núcleo de Supabase.", error);
+    console.error("Falló la verificación del núcleo de Supabase.");
 
     return {
       categories: [],

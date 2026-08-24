@@ -17,6 +17,7 @@ export const ROUTES = {
   authCallback: "/auth/callback",
   authConfirm: "/auth/confirm",
   campus: "/campus",
+  campusCertificates: "/campus/certificados",
   campusCourses: "/campus/cursos",
   campusProfile: "/campus/perfil",
   events: "/eventos",

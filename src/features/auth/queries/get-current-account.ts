@@ -5,7 +5,7 @@ import { cache } from "react";
 import type { User } from "@supabase/supabase-js";
 
 import { currentAccountRowSchema } from "@/features/auth/schemas/current-account.schema";
-import type { CurrentAccount } from "@/features/auth/types/auth.types";
+import type { AccountAccess, CurrentAccount } from "@/features/auth/types/auth.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { TypedSupabaseClient } from "@/lib/supabase/types/supabase-client.types";
 
@@ -26,6 +26,21 @@ export async function getAccountForUser(
     person: parsed.data.person,
     role: parsed.data.role,
     userId: parsed.data.user_id,
+  };
+}
+
+export async function getAccountAccessForUser(
+  client: TypedSupabaseClient,
+  user: User,
+): Promise<AccountAccess | null> {
+  const { data, error } = await client.from("user_accounts")
+    .select("role, is_active, deleted_at")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (error || !data) return null;
+  return {
+    isActive: data.is_active && data.deleted_at === null,
+    role: data.role,
   };
 }
 

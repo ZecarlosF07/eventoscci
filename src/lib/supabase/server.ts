@@ -20,11 +20,8 @@ export async function createServerSupabaseClient() {
           cookiesToSet.forEach(({ name, options, value }) => {
             cookieStore.set(name, value, options);
           });
-        } catch (error) {
-          console.warn(
-            "No fue posible persistir cookies desde el componente de servidor.",
-            error,
-          );
+        } catch {
+          console.warn("No fue posible persistir cookies desde el componente de servidor.");
         }
       },
     },

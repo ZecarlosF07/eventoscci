@@ -6,7 +6,7 @@ import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
 
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
-  console.error("Error de renderizado en la aplicación.", error);
+  console.error("Error de renderizado en la aplicación.", { digest: error.digest });
 
   return (
     <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center px-6">

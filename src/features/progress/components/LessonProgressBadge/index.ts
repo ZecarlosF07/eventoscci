@@ -1,0 +1,2 @@
+export { LessonProgressBadge } from "./LessonProgressBadge";
+

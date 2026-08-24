@@ -20,6 +20,10 @@ export interface StudentLessonPageProps {
   params: Promise<{ courseId: string; lessonId: string; moduleId: string }>;
 }
 
+export interface StudentQuizPageProps {
+  params: Promise<{ courseId: string; moduleId: string }>;
+}
+
 export function parseCourseAdminFilters(
   params: Record<string, string | string[] | undefined>,
 ): { page: number; query?: string; status?: CourseStatus } {

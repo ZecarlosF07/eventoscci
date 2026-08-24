@@ -3,7 +3,10 @@
 import { redirect } from "next/navigation";
 
 import { ROUTES } from "@/constants/routes";
-import { getAccountForUser } from "@/features/auth/queries/get-current-account";
+import {
+  getAccountAccessForUser,
+  getAccountForUser,
+} from "@/features/auth/queries/get-current-account";
 import { loginSchema } from "@/features/auth/schemas/login.schema";
 import type { LoginActionState } from "@/features/auth/types/auth.types";
 import { formText } from "@/features/auth/utils/auth-form-data";
@@ -30,16 +33,17 @@ export async function loginAction(
     return { message: "El correo o la contraseña no son correctos." };
   }
 
+  const accountAccess = data.user ? await getAccountAccessForUser(client, data.user) : null;
+  if (accountAccess && !accountAccess.isActive) {
+    await client.auth.signOut();
+    return { message: "La cuenta está inactiva. Comunícate con la Cámara." };
+  }
+
   const account = data.user ? await getAccountForUser(client, data.user) : null;
   if (!account) {
     await client.auth.signOut();
     return { message: "La cuenta no está vinculada a una ficha institucional." };
   }
-  if (!account.isActive) {
-    await client.auth.signOut();
-    return { message: "La cuenta está inactiva. Comunícate con la Cámara." };
-  }
-
   const fallback = account.role === "student" ? ROUTES.campus : ROUTES.admin;
   const requested = safeAuthRedirect(formText(formData, "next"), fallback);
   const destination = account.role === "student" ? ROUTES.campus : requested;

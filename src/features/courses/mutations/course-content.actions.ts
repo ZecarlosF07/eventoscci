@@ -42,7 +42,7 @@ export async function saveModuleAction(
     ? client.from("course_modules").update(payload).eq("id", parsed.data.id)
     : client.from("course_modules").insert(payload);
   const { error } = await request;
-  if (error) return { message: error.message };
+  if (error) return { message: "No fue posible guardar el módulo." };
   revalidatePath(getAdminCourseContentRoute(parsed.data.courseId));
   return { message: "Módulo guardado." };
 }
@@ -85,7 +85,7 @@ export async function saveLessonAction(
     ? client.from("lessons").update(payload).eq("id", parsed.data.id)
     : client.from("lessons").insert(payload);
   const { error } = await request;
-  if (error) return { message: error.message };
+  if (error) return { message: "No fue posible guardar la clase." };
   revalidatePath(getAdminCourseContentRoute(parsed.data.courseId));
   return { message: "Clase guardada." };
 }

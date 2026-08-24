@@ -3,10 +3,8 @@ import "server-only";
 import { CERTIFICATE_BUCKET } from "@/features/certificates/constants/certificate.constants";
 import { getCertificateGenerationData } from "@/features/certificates/queries/get-certificate-generation-data";
 import { prepareCertificateResultSchema } from "@/features/certificates/schemas/certificate-mutation.schema";
-import { loadCertificateDocumentAssets } from "@/features/certificates/services/certificate-assets";
-import { generateCertificatePdf } from "@/features/certificates/services/generate-certificate-pdf";
+import { storeCertificatePdf } from "@/features/certificates/services/store-certificate-pdf";
 import type { CertificateIssueState } from "@/features/certificates/types/certificate.types";
-import { certificateTemplateShowsDate } from "@/features/certificates/utils/certificate-template-config";
 import { getSiteUrl } from "@/lib/env/server-env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -17,27 +15,7 @@ async function generateAndStoreCertificate(certificateId: string): Promise<void>
   if (certificate.file_path) return;
 
   const siteUrl = getSiteUrl();
-  const assets = await loadCertificateDocumentAssets(client, certificate);
-  const pdf = await generateCertificatePdf({
-    academicHours: certificate.academic_hours_snapshot,
-    accessUrl: `${siteUrl}/certificados/${certificate.access_token}`,
-    backgroundBytes: assets.backgroundBytes,
-    certificateCode: certificate.certificate_code,
-    certificateType: certificate.certificate_type,
-    condition: certificate.condition_snapshot,
-    dateText: certificate.certificate_type === "course" || !certificateTemplateShowsDate(certificate.template.template_config)
-      ? null
-      : certificate.date_text_snapshot,
-    participantName: certificate.participant_name_snapshot,
-    signers: assets.signers,
-    title: certificate.title_snapshot,
-  });
-  const filePath = `issued/${certificate.id}/${certificate.certificate_code}.pdf`;
-  const upload = await client.storage.from(CERTIFICATE_BUCKET).upload(filePath, pdf, {
-    contentType: "application/pdf",
-    upsert: false,
-  });
-  if (upload.error) throw new Error("CERTIFICATE_UPLOAD_FAILED", { cause: upload.error });
+  const filePath = await storeCertificatePdf(client, certificate, siteUrl);
 
   const finalized = await client.rpc("finalize_activity_certificate", {
     p_certificate_id: certificate.id,

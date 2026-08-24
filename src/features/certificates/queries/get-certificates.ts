@@ -9,8 +9,8 @@ export async function getCertificates(page: number): Promise<CertificateAdminPag
   const client = await createServerSupabaseClient();
   const from = (page - 1) * CERTIFICATE_PAGE_SIZE;
   const { count, data, error } = await client.from("certificates")
-    .select("id, certificate_code, status, participant_name_snapshot, title_snapshot, condition_snapshot, file_path, issued_at, revocation_reason, registration:registrations(activity_id)", { count: "exact" })
-    .eq("certificate_type", "activity").is("deleted_at", null)
+    .select("id, certificate_code, certificate_type, status, participant_name_snapshot, title_snapshot, condition_snapshot, file_path, issued_at, revocation_reason, registration:registrations(activity_id)", { count: "exact" })
+    .is("deleted_at", null)
     .order("issued_at", { ascending: false }).range(from, from + CERTIFICATE_PAGE_SIZE - 1);
   if (error) throw new Error("No fue posible consultar los certificados.", { cause: error });
   const certificates: CertificateAdminItem[] = (data ?? []).map((item) => {

@@ -50,6 +50,7 @@ export const certificateCandidateRegistrationSchema = z.object({
 
 export const certificateAdminItemSchema = z.object({
   certificate_code: z.string(),
+  certificate_type: z.enum(["activity", "course"]),
   condition_snapshot: z.string().nullable(),
   file_path: z.string().nullable(),
   id: z.uuid(),
@@ -59,4 +60,19 @@ export const certificateAdminItemSchema = z.object({
   revocation_reason: z.string().nullable(),
   status: z.enum(["issued", "revoked"]),
   title_snapshot: z.string(),
+});
+
+export const myCertificateSchema = z.object({
+  access_token: z.uuid(),
+  academic_hours: z.number().nullable(),
+  certificate_code: z.string(),
+  certificate_type: z.enum(["activity", "course"]),
+  condition: z.string().nullable(),
+  course_id: z.uuid().nullable(),
+  file_ready: z.boolean(),
+  id: z.uuid(),
+  issued_at: z.string(),
+  revocation_reason: z.string().nullable(),
+  status: z.enum(["issued", "revoked"]),
+  title: z.string(),
 });

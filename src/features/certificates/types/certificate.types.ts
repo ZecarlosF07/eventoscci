@@ -57,10 +57,40 @@ export interface ActivityCertificateData {
 }
 
 export interface CertificateAdminItem extends Pick<CertificateRow,
-  "certificate_code" | "condition_snapshot" | "file_path" | "id" | "issued_at" |
+  "certificate_code" | "certificate_type" | "condition_snapshot" | "file_path" | "id" | "issued_at" |
   "participant_name_snapshot" | "revocation_reason" | "status" | "title_snapshot"
 > {
   registration: { activity_id: string } | null;
+}
+
+export interface MyCertificate {
+  accessToken: string;
+  academicHours: number | null;
+  certificateCode: string;
+  certificateType: CertificateType;
+  condition: string | null;
+  courseId: string | null;
+  fileReady: boolean;
+  id: string;
+  issuedAt: string;
+  revocationReason: string | null;
+  status: CertificateStatus;
+  title: string;
+}
+
+export interface MyCertificatesListProps {
+  certificates: MyCertificate[];
+}
+
+export interface CertificateGenerationStatusProps {
+  certificateId: string;
+  fileReady: boolean;
+}
+
+export type CertificateGenerationState = "error" | "pending" | "ready";
+
+export interface CourseCertificateGenerationRouteContext {
+  params: Promise<{ certificateId: string }>;
 }
 
 export interface CertificateAdminPage {

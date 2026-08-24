@@ -80,7 +80,7 @@ export async function saveActivityAction(
   });
 
   if (error || !activityId) {
-    return { message: error?.message ?? "No fue posible guardar la actividad." };
+    return { message: "No fue posible guardar la actividad." };
   }
 
   if (banner instanceof File && banner.size) {
