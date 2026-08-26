@@ -9,6 +9,7 @@ import type { MaterialFormState, MaterialMetadataInput } from "@/features/course
 import { getAdminCourseMaterialsRoute } from "@/features/courses/utils/course-routes";
 import { requireAdmin } from "@/features/auth/services/admin-session";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getSupabaseErrorMessage, logSupabaseError } from "@/lib/supabase/supabase-error";
 
 export async function saveMaterialMetadataAction(input: MaterialMetadataInput): Promise<MaterialFormState> {
   await requireAdmin();
@@ -30,7 +31,14 @@ export async function saveMaterialMetadataAction(input: MaterialMetadataInput): 
     ? client.from("course_materials").update(payload).eq("id", parsed.data.materialId)
     : client.from("course_materials").insert(payload);
   const { error } = await request;
-  if (error) return { message: "No fue posible guardar el material." };
+  if (error) {
+    logSupabaseError("course_material_save_failed", error, { courseId: parsed.data.courseId });
+    return {
+      message: getSupabaseErrorMessage(error, {
+        fallback: "No se pudo guardar el material. Actualiza la página e inténtalo nuevamente.",
+      }),
+    };
+  }
   revalidatePath(getAdminCourseMaterialsRoute(parsed.data.courseId));
   return { message: "Material guardado.", success: true };
 }
@@ -56,7 +64,20 @@ export async function saveMaterialAction(
     storagePath = `${courseId}/${crypto.randomUUID()}.${extension}`;
     const { error } = await client.storage.from(COURSE_MATERIAL_BUCKET)
       .upload(storagePath, file, { contentType: file.type, upsert: false });
-    if (error) return { message: "No fue posible subir el archivo." };
+    if (error) {
+      logSupabaseError("course_material_upload_failed", error, { courseId });
+      return {
+        errors: {
+          file: [getSupabaseErrorMessage(error, {
+            fallback: "No se pudo subir el archivo. Revisa tu conexión y vuelve a seleccionarlo.",
+            messages: {
+              "BUCKET NOT FOUND": "El almacenamiento de materiales no está disponible. Comunícate con el administrador.",
+              "MIME TYPE": "El tipo de archivo no está permitido para este material.",
+            },
+          })],
+        },
+      };
+    }
     mimeType = file.type;
     fileSizeBytes = file.size;
   }
@@ -73,7 +94,10 @@ export async function saveMaterialAction(
     storagePath,
     title: String(formData.get("title") ?? ""),
   });
-  if (!result.success && storagePath !== existingPath) await client.storage.from(COURSE_MATERIAL_BUCKET).remove([storagePath]);
+  if (!result.success && storagePath !== existingPath) {
+    const { error } = await client.storage.from(COURSE_MATERIAL_BUCKET).remove([storagePath]);
+    if (error) logSupabaseError("course_material_cleanup_failed", error, { courseId });
+  }
   return result;
 }
 

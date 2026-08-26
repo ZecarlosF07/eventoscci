@@ -1,11 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
-
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
+import { FormActionNotice } from "@/components/molecules/FormActionNotice";
 import type { ParticipantFormProps } from "@/features/participants/components/ParticipantForm/types/participant-form.types";
+import { usePersistentAction } from "@/hooks/use-persistent-action";
 import { updateParticipantAction } from "@/features/participants/mutations/participant.actions";
 import type { ParticipantFormState } from "@/features/participants/types/participant.types";
 
@@ -13,9 +13,9 @@ const INITIAL_STATE: ParticipantFormState = {};
 
 export function ParticipantForm({ participant }: ParticipantFormProps) {
   const actionWithId = updateParticipantAction.bind(null, participant.id);
-  const [state, action, pending] = useActionState(actionWithId, INITIAL_STATE);
+  const { onSubmit, pending, state } = usePersistentAction(actionWithId, INITIAL_STATE);
   return (
-    <form action={action} className="grid gap-5 rounded-3xl border border-cci-100 bg-white p-6 md:grid-cols-2">
+    <form className="grid gap-5 rounded-3xl border border-cci-100 bg-white p-6 md:grid-cols-2" method="post" onSubmit={onSubmit}>
       <div className="md:col-span-2 rounded-xl bg-cci-50 px-4 py-3 text-sm text-slate-700">
         Identidad: <strong>{participant.document_type.toUpperCase()} {participant.document_number}</strong>. El documento no se modifica desde esta ficha.
       </div>
@@ -29,7 +29,7 @@ export function ParticipantForm({ participant }: ParticipantFormProps) {
       <FormField error={state.errors?.address?.[0]} label="Dirección" name="address"><Input defaultValue={participant.address ?? ""} id="address" name="address" /></FormField>
       <div className="md:col-span-2 flex flex-wrap items-center gap-4">
         <Button disabled={pending} type="submit">{pending ? "Guardando…" : "Guardar correcciones"}</Button>
-        {state.message ? <p className={`text-sm font-medium ${state.success ? "text-emerald-700" : "text-rose-700"}`} role={state.success ? "status" : "alert"}>{state.message}</p> : null}
+        <FormActionNotice compact message={state.message} success={state.success} />
       </div>
     </form>
   );

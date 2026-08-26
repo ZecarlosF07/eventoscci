@@ -1,7 +1,5 @@
 "use client";
 
-import { useActionState } from "react";
-
 import { Button } from "@/components/atoms/Button";
 import { Checkbox } from "@/components/atoms/Checkbox";
 import { Input } from "@/components/atoms/Input";
@@ -9,6 +7,7 @@ import { Label } from "@/components/atoms/Label";
 import { Select } from "@/components/atoms/Select";
 import { Textarea } from "@/components/atoms/Textarea";
 import { FormField } from "@/components/molecules/FormField";
+import { FormActionNotice } from "@/components/molecules/FormActionNotice";
 import { ActivityDateFields } from "@/features/activities/components/ActivityDateFields";
 import { ActivityFormSection } from "@/features/activities/components/ActivityFormSection";
 import { ActivitySpeakerFields } from "@/features/activities/components/ActivitySpeakerFields";
@@ -19,6 +18,7 @@ import type {
   ActivityFormState,
 } from "@/features/activities/types/activity-form.types";
 import { formatDateTimeLocal } from "@/features/activities/utils/activity-formatters";
+import { usePersistentAction } from "@/hooks/use-persistent-action";
 
 const INITIAL_STATE: ActivityFormState = {};
 
@@ -28,7 +28,7 @@ export function ActivityForm({
   speakers,
   type,
 }: ActivityFormProps) {
-  const [state, action, pending] = useActionState(saveActivityAction, INITIAL_STATE);
+  const { onSubmit, pending, state } = usePersistentAction(saveActivityAction, INITIAL_STATE);
   const error = (name: string) => state.errors?.[name]?.[0];
   const selectedSpeakers = activity?.speakers.map((speaker) => ({
     role_label: speaker.roleLabel ?? "",
@@ -43,15 +43,15 @@ export function ActivityForm({
   })) ?? [];
 
   return (
-    <form action={action} className="space-y-6">
-      <input name="id" type="hidden" value={activity?.id ?? ""} />
+    <form className="space-y-6" method="post" onSubmit={onSubmit}>
+      <input name="id" type="hidden" value={state.savedId ?? activity?.id ?? ""} />
       <input name="type" type="hidden" value={type} />
       <ActivityFormSection title="Información general">
         <div className="grid gap-5 md:grid-cols-2">
           <FormField error={error("title")} label="Título" name="title" required>
             <Input defaultValue={activity?.title} id="title" name="title" required />
           </FormField>
-          <FormField hint="Déjalo vacío para generarlo desde el título." label="Slug" name="slug">
+          <FormField error={error("slug")} hint="Déjalo vacío para generarlo desde el título." label="Slug" name="slug">
             <Input defaultValue={activity?.slug} id="slug" name="slug" />
           </FormField>
           <FormField label="Categoría" name="category_id">
@@ -141,7 +141,7 @@ export function ActivityForm({
           </Select>
         </FormField>
         <div className="space-y-2 sm:text-right">
-          {state.message ? <p className={state.success ? "text-sm text-amber-800" : "text-sm text-rose-700"}>{state.message}</p> : null}
+          <FormActionNotice compact message={state.message} success={state.success} warning={state.warning} />
           <Button disabled={pending} type="submit">{pending ? "Guardando…" : activity ? "Guardar cambios" : "Crear actividad"}</Button>
         </div>
       </div>

@@ -1,20 +1,19 @@
 "use client";
 
-import { useActionState } from "react";
-
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
 import { loginAction } from "@/features/auth/mutations/auth.actions";
 import type { LoginActionState, LoginFormProps } from "@/features/auth/types/auth.types";
+import { usePersistentAction } from "@/hooks/use-persistent-action";
 
 const INITIAL_STATE: LoginActionState = {};
 
 export function LoginForm({ next, portal = "public" }: LoginFormProps) {
-  const [state, action, pending] = useActionState(loginAction, INITIAL_STATE);
+  const { onSubmit, pending, state } = usePersistentAction(loginAction, INITIAL_STATE);
 
   return (
-    <form action={action} className="space-y-5">
+    <form className="space-y-5" method="post" onSubmit={onSubmit}>
       <input name="next" type="hidden" value={next ?? ""} />
       <input name="portal" type="hidden" value={portal} />
       <FormField

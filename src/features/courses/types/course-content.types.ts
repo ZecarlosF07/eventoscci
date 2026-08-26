@@ -3,13 +3,12 @@ import type { CourseMaterial, CourseModule, Lesson, MaterialType } from "@/featu
 export interface ModuleFormState {
   errors?: Record<string, string[]>;
   message?: string;
+  success?: boolean;
 }
 
 export type LessonFormState = ModuleFormState;
 
-export interface MaterialFormState extends ModuleFormState {
-  success?: boolean;
-}
+export type MaterialFormState = ModuleFormState;
 
 export interface CourseContentManagerProps {
   courseId: string;

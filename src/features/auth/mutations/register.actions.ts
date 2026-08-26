@@ -6,10 +6,11 @@ import { ROUTES } from "@/constants/routes";
 import { registerSchema } from "@/features/auth/schemas/register.schema";
 import type { RegisterActionState } from "@/features/auth/types/auth.types";
 import { formText, registrationMetadata } from "@/features/auth/utils/auth-form-data";
-import { signUpErrorMessage } from "@/features/auth/utils/auth-errors";
+import { getSignUpErrorState } from "@/features/auth/utils/auth-errors";
 import { safeAuthRedirect } from "@/features/auth/utils/safe-auth-redirect";
 import { getSiteUrl } from "@/lib/env/server-env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { logSupabaseError } from "@/lib/supabase/supabase-error";
 
 export async function registerAction(
   _previousState: RegisterActionState,
@@ -53,9 +54,12 @@ export async function registerAction(
     },
     password,
   });
-  if (error) return { message: signUpErrorMessage(error) };
+  if (error) {
+    logSupabaseError("account_registration_failed", error);
+    return getSignUpErrorState(error);
+  }
   if (!data.user?.identities?.length) {
-    return { message: "Este correo ya tiene una cuenta. Inicia sesión o recupera tu contraseña." };
+    return { errors: { email: ["Este correo ya tiene una cuenta. Inicia sesión o recupera tu contraseña."] } };
   }
   if (data.session) redirect(destination);
   return {

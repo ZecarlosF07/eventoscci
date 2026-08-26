@@ -28,7 +28,9 @@ export interface CourseFormInput {
 export interface CourseFormState {
   errors?: Record<string, string[]>;
   message?: string;
+  savedId?: string;
   success?: boolean;
+  warning?: boolean;
 }
 
 export interface CourseFormProps {

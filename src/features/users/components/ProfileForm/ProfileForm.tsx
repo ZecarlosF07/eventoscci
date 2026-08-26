@@ -1,19 +1,19 @@
 "use client";
 
-import { useActionState } from "react";
-
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
+import { FormActionNotice } from "@/components/molecules/FormActionNotice";
 import { updateProfileAction } from "@/features/users/mutations/profile.actions";
 import type { ProfileActionState, ProfileFormProps } from "@/features/users/types/user-profile.types";
+import { usePersistentAction } from "@/hooks/use-persistent-action";
 
 const INITIAL_STATE: ProfileActionState = {};
 
 export function ProfileForm({ profile }: ProfileFormProps) {
-  const [state, action, pending] = useActionState(updateProfileAction, INITIAL_STATE);
+  const { onSubmit, pending, state } = usePersistentAction(updateProfileAction, INITIAL_STATE);
   const error = (name: string) => state.errors?.[name]?.[0];
-  return <form action={action} className="space-y-6 rounded-3xl border border-cci-100 bg-white p-6 sm:p-8">
+  return <form className="space-y-6 rounded-3xl border border-cci-100 bg-white p-6 sm:p-8" method="post" onSubmit={onSubmit}>
     <div className="grid gap-5 sm:grid-cols-2">
       <FormField label="Documento" name="document" hint="La identidad documental solo puede corregirse mediante la Cámara."><Input disabled id="document" value={`${profile.document_type.toUpperCase()} ${profile.document_number}`} /></FormField>
       <FormField label="Correo de acceso" name="email" hint="El correo de autenticación se gestiona de forma controlada."><Input disabled id="email" value={profile.email} /></FormField>
@@ -25,7 +25,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       <FormField error={error("ruc")} label="RUC" name="ruc"><Input defaultValue={profile.ruc ?? ""} id="ruc" inputMode="numeric" maxLength={11} name="ruc" /></FormField>
       <div className="sm:col-span-2"><FormField error={error("address")} label="Dirección" name="address"><Input defaultValue={profile.address ?? ""} id="address" maxLength={300} name="address" /></FormField></div>
     </div>
-    {state.message ? <p className={`rounded-xl p-4 text-sm font-medium ${state.success ? "bg-emerald-50 text-emerald-800" : "bg-rose-50 text-rose-800"}`} role="status">{state.message}</p> : null}
+    <FormActionNotice message={state.message} success={state.success} />
     <Button disabled={pending} type="submit">{pending ? "Guardando…" : "Guardar cambios"}</Button>
   </form>;
 }

@@ -46,8 +46,10 @@ export function StudentQuizForm({ initialAttempts, quiz }: StudentQuizFormProps)
       setAttempts((current) => [nextAttempt, ...current]);
       setAnswers({});
       router.refresh();
-    } catch {
-      setError("No fue posible entregar la evaluación. Inténtalo nuevamente.");
+    } catch (submissionError) {
+      setError(submissionError instanceof Error
+        ? submissionError.message
+        : "No fue posible entregar la evaluación. Tus respuestas siguen seleccionadas; inténtalo nuevamente.");
     } finally {
       setIsPending(false);
     }

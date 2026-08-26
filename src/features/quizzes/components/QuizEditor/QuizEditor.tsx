@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/atoms/Button";
 import { Checkbox } from "@/components/atoms/Checkbox";
@@ -11,6 +11,7 @@ import { Label } from "@/components/atoms/Label";
 import { Text } from "@/components/atoms/Text";
 import { Textarea } from "@/components/atoms/Textarea";
 import { FormField } from "@/components/molecules/FormField";
+import { FormActionNotice } from "@/components/molecules/FormActionNotice";
 import { QuizQuestionEditor } from "@/features/quizzes/components/QuizQuestionEditor";
 import { saveQuizAction } from "@/features/quizzes/mutations/quiz.actions";
 import type {
@@ -18,9 +19,10 @@ import type {
   QuizQuestionDraft,
 } from "@/features/quizzes/types/quiz.types";
 import { createQuizQuestion, moveItem } from "@/features/quizzes/utils/quiz";
+import { usePersistentAction } from "@/hooks/use-persistent-action";
 
 export function QuizEditor({ courseId, initialQuiz, moduleId, moduleTitle }: QuizEditorProps) {
-  const [state, action, pending] = useActionState(saveQuizAction, {});
+  const { onSubmit, pending, state } = usePersistentAction(saveQuizAction, {});
   const [questions, setQuestions] = useState<QuizQuestionDraft[]>(initialQuiz?.questions ?? []);
 
   function updateQuestion(index: number, question: QuizQuestionDraft) {
@@ -36,7 +38,7 @@ export function QuizEditor({ courseId, initialQuiz, moduleId, moduleTitle }: Qui
         <Heading className="mt-4" level={1}>Quiz de {moduleTitle}</Heading>
         <Text className="mt-2">La nota mínima es 80 % y los intentos del alumno son ilimitados.</Text>
       </header>
-      <form action={action} className="space-y-6">
+      <form className="space-y-6" method="post" onSubmit={onSubmit}>
         <input name="course_id" type="hidden" value={courseId} />
         <input name="id" type="hidden" value={state.quizId ?? initialQuiz?.id ?? ""} />
         <input name="module_id" type="hidden" value={moduleId} />
@@ -77,11 +79,7 @@ export function QuizEditor({ courseId, initialQuiz, moduleId, moduleTitle }: Qui
             questionCount={questions.length}
           />
         ))}
-        {state.message ? (
-          <p className={state.success ? "text-sm font-medium text-emerald-700" : "text-sm font-medium text-rose-700"} role="status">
-            {state.message}
-          </p>
-        ) : null}
+        <FormActionNotice message={state.message} success={state.success} />
         <Button disabled={pending} type="submit">{pending ? "Guardando…" : "Guardar quiz"}</Button>
       </form>
     </div>

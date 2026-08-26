@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const optionalText = (maximum: number) => z.string().trim().max(maximum);
+const optionalText = (maximum: number) => z.string().trim().max(maximum, `Usa como máximo ${maximum} caracteres.`);
 
 export const registerSchema = z.object({
   address: optionalText(300),
@@ -9,9 +9,9 @@ export const registerSchema = z.object({
   document_number: z.string().trim().toUpperCase(),
   document_type: z.enum(["dni", "ce"]),
   email: z.email("Ingresa un correo válido.").trim().toLowerCase(),
-  first_names: z.string().trim().min(2, "Ingresa tus nombres.").max(120),
-  job_title: z.string().trim().min(2, "Ingresa tu cargo.").max(160),
-  last_names: z.string().trim().min(2, "Ingresa tus apellidos.").max(120),
+  first_names: z.string().trim().min(2, "Ingresa tus nombres.").max(120, "Los nombres no pueden superar 120 caracteres."),
+  job_title: z.string().trim().min(2, "Ingresa tu cargo.").max(160, "El cargo no puede superar 160 caracteres."),
+  last_names: z.string().trim().min(2, "Ingresa tus apellidos.").max(120, "Los apellidos no pueden superar 120 caracteres."),
   password: z.string()
     .min(8, "Usa al menos 8 caracteres.")
     .regex(/[a-z]/, "Incluye una letra minúscula.")

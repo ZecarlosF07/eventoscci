@@ -1,23 +1,23 @@
 "use client";
 
-import { useActionState } from "react";
-
 import { Button } from "@/components/atoms/Button";
 import { Heading } from "@/components/atoms/Heading";
 import { Textarea } from "@/components/atoms/Textarea";
 import { FormField } from "@/components/molecules/FormField";
+import { FormActionNotice } from "@/components/molecules/FormActionNotice";
 import {
   deleteCourseRatingAction,
   saveCourseRatingAction,
 } from "@/features/ratings/mutations/rating.actions";
 import type { CourseRatingFormProps } from "@/features/ratings/types/rating.types";
+import { usePersistentAction } from "@/hooks/use-persistent-action";
 
 export function CourseRatingForm({ courseId, rating }: CourseRatingFormProps) {
-  const [state, action, pending] = useActionState(saveCourseRatingAction, {});
+  const { onSubmit, pending, state } = usePersistentAction(saveCourseRatingAction, {});
   return (
     <section className="space-y-4 rounded-3xl border border-cci-100 bg-white p-6">
       <Heading level={2}>¿Cómo calificarías este curso?</Heading>
-      <form action={action} className="space-y-5">
+      <form className="space-y-5" method="post" onSubmit={onSubmit}>
         <input name="course_id" type="hidden" value={courseId} />
         <fieldset>
           <legend className="mb-2 text-sm font-medium text-slate-700">Valoración</legend>
@@ -34,7 +34,7 @@ export function CourseRatingForm({ courseId, rating }: CourseRatingFormProps) {
         <FormField error={state.errors?.comment?.[0]} label="Comentario (opcional)" name="rating_comment">
           <Textarea defaultValue={rating?.comment ?? ""} id="rating_comment" maxLength={2000} name="comment" />
         </FormField>
-        {state.message ? <p className={state.success ? "text-sm font-medium text-emerald-700" : "text-sm font-medium text-rose-700"}>{state.message}</p> : null}
+        <FormActionNotice message={state.message} success={state.success} />
         <div className="flex flex-wrap gap-3">
           <Button disabled={pending} type="submit">{pending ? "Guardando…" : rating ? "Actualizar valoración" : "Guardar valoración"}</Button>
         </div>

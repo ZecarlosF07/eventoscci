@@ -57,7 +57,9 @@ export interface ActivityFormInput {
 export interface ActivityFormState {
   errors?: Record<string, string[]>;
   message?: string;
+  savedId?: string;
   success?: boolean;
+  warning?: boolean;
 }
 
 export interface ActivityFormProps {

@@ -7,6 +7,7 @@ import { quizSaveFormSchema } from "@/features/quizzes/schemas/quiz.schema";
 import type { QuizSaveState } from "@/features/quizzes/types/quiz.types";
 import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getSupabaseErrorMessage, logSupabaseError, matchesSupabaseError } from "@/lib/supabase/supabase-error";
 
 function value(formData: FormData, key: string): string {
   return String(formData.get(key) ?? "").trim();
@@ -55,7 +56,32 @@ export async function saveQuizAction(
       title: parsed.data.title,
     },
   });
-  if (error) return { message: "No fue posible guardar el quiz. Revisa las preguntas y alternativas." };
+  if (error) {
+    logSupabaseError("quiz_save_failed", error, { moduleId: parsed.data.moduleId });
+    if (matchesSupabaseError(error, "QUIZ_TITLE_REQUIRED")) {
+      return { errors: { title: ["El título del quiz debe tener al menos 3 caracteres."] } };
+    }
+    if ([
+      "INVALID_QUESTIONS",
+      "PUBLISHED_QUIZ_REQUIRES_QUESTIONS",
+      "QUESTION_PROMPT_REQUIRED",
+      "INVALID_QUESTION_OPTIONS",
+      "QUESTION_REQUIRES_TWO_OPTIONS",
+      "QUESTION_REQUIRES_ONE_CORRECT_OPTION",
+      "OPTION_TEXT_REQUIRED",
+    ].some((token) => matchesSupabaseError(error, token))) {
+      return { errors: { questions: ["Revisa que cada pregunta tenga texto, al menos dos alternativas y una sola respuesta correcta."] } };
+    }
+    return {
+      message: getSupabaseErrorMessage(error, {
+        fallback: "No se pudo guardar el quiz. Actualiza la página e inténtalo nuevamente.",
+        messages: {
+          MODULE_NOT_FOUND: "El módulo ya no está disponible. Regresa al contenido del curso y vuelve a abrirlo.",
+          QUIZ_NOT_FOUND: "El quiz ya no está disponible. Actualiza la página antes de volver a guardarlo.",
+        },
+      }),
+    };
+  }
 
   revalidatePath(`/admin/cursos/${parsed.data.courseId}/contenido`);
   revalidatePath(`/admin/cursos/${parsed.data.courseId}/modulos/${parsed.data.moduleId}/quiz`);

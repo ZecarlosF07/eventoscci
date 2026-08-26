@@ -8,6 +8,7 @@ import { participantFormSchema } from "@/features/participants/schemas/participa
 import type { ParticipantFormState } from "@/features/participants/types/participant.types";
 import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getSupabaseErrorMessage, logSupabaseError } from "@/lib/supabase/supabase-error";
 
 export async function updateParticipantAction(
   participantId: string,
@@ -32,7 +33,18 @@ export async function updateParticipantAction(
     p_person: parsed.data as Json,
     p_person_id: participantId,
   });
-  if (error) return { message: "No fue posible actualizar al participante." };
+  if (error) {
+    logSupabaseError("participant_update_failed", error, { participantId });
+    return {
+      message: getSupabaseErrorMessage(error, {
+        fallback: "No se pudo actualizar al participante. Actualiza la página e inténtalo nuevamente.",
+        messages: {
+          PARTICIPANT_NOT_FOUND: "El participante ya no está disponible. Regresa al listado y vuelve a abrir su ficha.",
+          VALIDATION_ERROR: "Los datos del participante no cumplen las reglas institucionales. Revisa los campos indicados.",
+        },
+      }),
+    };
+  }
 
   revalidatePath(ROUTES.adminParticipants);
   revalidatePath(`${ROUTES.adminParticipants}/${participantId}`);

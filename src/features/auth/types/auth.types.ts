@@ -30,6 +30,21 @@ export interface RegisterActionState {
   success?: boolean;
 }
 
+export interface RegisterFormValues {
+  address: string;
+  company: string;
+  confirm_password: string;
+  document_number: string;
+  document_type: "ce" | "dni";
+  email: string;
+  first_names: string;
+  job_title: string;
+  last_names: string;
+  password: string;
+  phone: string;
+  ruc: string;
+}
+
 export interface PasswordActionState {
   errors?: Record<string, string[]>;
   message?: string;

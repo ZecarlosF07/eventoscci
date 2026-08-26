@@ -6,6 +6,7 @@ import { requireActiveAccount } from "@/features/auth/services/account-guards";
 import { courseRatingFormSchema } from "@/features/ratings/schemas/rating.schema";
 import type { CourseRatingFormState } from "@/features/ratings/types/rating.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getSupabaseErrorMessage, logSupabaseError } from "@/lib/supabase/supabase-error";
 
 export async function saveCourseRatingAction(
   _previousState: CourseRatingFormState,
@@ -24,7 +25,19 @@ export async function saveCourseRatingAction(
     p_course_id: parsed.data.courseId,
     p_rating: parsed.data.rating,
   });
-  if (error) return { message: "Solo puedes valorar un curso completado." };
+  if (error) {
+    logSupabaseError("course_rating_save_failed", error, { courseId: parsed.data.courseId });
+    return {
+      message: getSupabaseErrorMessage(error, {
+        fallback: "No se pudo guardar tu valoración. Revisa tu conexión e inténtalo nuevamente.",
+        messages: {
+          ACCOUNT_NOT_LINKED: "Tu cuenta no está vinculada a una ficha institucional. Comunícate con la Cámara.",
+          COURSE_NOT_COMPLETED: "Solo puedes valorar el curso después de completarlo.",
+          VALIDATION_ERROR: "La valoración debe estar entre 1 y 5 y el comentario no puede superar 2000 caracteres.",
+        },
+      }),
+    };
+  }
   revalidatePath(`/campus/cursos/${parsed.data.courseId}`);
   return { message: "Valoración guardada.", success: true };
 }

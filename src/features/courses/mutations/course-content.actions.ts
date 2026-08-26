@@ -11,6 +11,7 @@ import type { LessonFormState, ModuleFormState } from "@/features/courses/types/
 import { getAdminCourseContentRoute } from "@/features/courses/utils/course-routes";
 import { requireAdmin } from "@/features/auth/services/admin-session";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getSupabaseErrorMessage, logSupabaseError } from "@/lib/supabase/supabase-error";
 
 function value(formData: FormData, key: string): string {
   return String(formData.get(key) ?? "").trim();
@@ -42,9 +43,17 @@ export async function saveModuleAction(
     ? client.from("course_modules").update(payload).eq("id", parsed.data.id)
     : client.from("course_modules").insert(payload);
   const { error } = await request;
-  if (error) return { message: "No fue posible guardar el módulo." };
+  if (error) {
+    logSupabaseError("course_module_save_failed", error, { courseId: parsed.data.courseId });
+    return {
+      message: getSupabaseErrorMessage(error, {
+        fallback: "No se pudo guardar el módulo. Actualiza la página e inténtalo nuevamente.",
+        messages: { COURSE_NOT_FOUND: "El curso ya no está disponible. Regresa al listado y vuelve a abrirlo." },
+      }),
+    };
+  }
   revalidatePath(getAdminCourseContentRoute(parsed.data.courseId));
-  return { message: "Módulo guardado." };
+  return { message: "Módulo guardado correctamente.", success: true };
 }
 
 export async function saveLessonAction(
@@ -85,9 +94,17 @@ export async function saveLessonAction(
     ? client.from("lessons").update(payload).eq("id", parsed.data.id)
     : client.from("lessons").insert(payload);
   const { error } = await request;
-  if (error) return { message: "No fue posible guardar la clase." };
+  if (error) {
+    logSupabaseError("course_lesson_save_failed", error, { moduleId: parsed.data.moduleId });
+    return {
+      message: getSupabaseErrorMessage(error, {
+        fallback: "No se pudo guardar la clase. Actualiza la página e inténtalo nuevamente.",
+        messages: { MODULE_NOT_FOUND: "El módulo ya no está disponible. Actualiza el contenido del curso." },
+      }),
+    };
+  }
   revalidatePath(getAdminCourseContentRoute(parsed.data.courseId));
-  return { message: "Clase guardada." };
+  return { message: "Clase guardada correctamente.", success: true };
 }
 
 async function softDeleteContent(

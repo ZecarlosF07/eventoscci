@@ -14,6 +14,7 @@ import { slugify } from "@/features/activities/utils/slugify";
 import { requireAdmin } from "@/features/auth/services/admin-session";
 import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getSupabaseErrorMessage, logSupabaseError, matchesSupabaseError } from "@/lib/supabase/supabase-error";
 
 const MAX_BANNER_SIZE = 5 * 1024 * 1024;
 const BANNER_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -37,25 +38,36 @@ async function uploadBanner(file: File, activityId: string): Promise<string> {
     .from(ACTIVITY_IMAGE_BUCKET)
     .upload(path, file, { contentType: file.type, upsert: false });
 
-  if (error) throw new Error("La actividad se guardó, pero el banner no pudo cargarse.");
+  if (error) {
+    logSupabaseError("activity_banner_upload_failed", error, { activityId });
+    throw new Error(getSupabaseErrorMessage(error, {
+      fallback: "La actividad se guardó, pero el banner no pudo cargarse. Puedes volver a intentarlo al editarla.",
+      messages: {
+        "BUCKET NOT FOUND": "La actividad se guardó, pero el almacenamiento de banners no está disponible. Comunícate con el administrador.",
+        "MIME TYPE": "La actividad se guardó, pero el formato del banner no está permitido. Usa JPG, PNG o WebP.",
+        "PAYLOAD TOO LARGE": "La actividad se guardó, pero el banner supera el tamaño permitido de 5 MB.",
+      },
+    }));
+  }
   return path;
 }
 
 export async function saveActivityAction(
-  _previousState: ActivityFormState,
+  previousState: ActivityFormState,
   formData: FormData,
 ): Promise<ActivityFormState> {
   await requireAdmin();
   const input = parseActivityFormData(formData);
+  const savedId = input.id || previousState.savedId;
   const parsed = activityFormSchema.safeParse(input);
   const banner = formData.get("banner");
 
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors };
+    return { errors: parsed.error.flatten().fieldErrors, savedId };
   }
   if (banner instanceof File) {
     const bannerError = validateBanner(banner);
-    if (bannerError) return { errors: { banner: [bannerError] } };
+    if (bannerError) return { errors: { banner: [bannerError] }, savedId };
   }
 
   const { dates, speakers, ...activityInput } = parsed.data;
@@ -79,8 +91,23 @@ export async function saveActivityAction(
     p_speakers: speakers as Json,
   });
 
-  if (error || !activityId) {
-    return { message: "No fue posible guardar la actividad." };
+  if (error) {
+    logSupabaseError("activity_save_failed", error, { activityType: parsed.data.type });
+    if (error.code === "23505" && matchesSupabaseError(error, "slug")) {
+      return { errors: { slug: ["Este slug ya pertenece a otra actividad. Modifícalo o déjalo vacío para generarlo nuevamente."] }, savedId };
+    }
+    return {
+      message: getSupabaseErrorMessage(error, {
+        fallback: "No se pudo guardar la actividad. Actualiza la página e inténtalo nuevamente.",
+        messages: {
+          "La actividad requiere al menos una fecha": "Agrega al menos una fecha y horario para guardar la actividad.",
+        },
+      }),
+      savedId,
+    };
+  }
+  if (!activityId) {
+    return { message: "La actividad no pudo confirmarse después de guardarla. Actualiza la lista antes de volver a intentarlo.", savedId };
   }
 
   if (banner instanceof File && banner.size) {
@@ -90,14 +117,19 @@ export async function saveActivityAction(
         .from("activities")
         .update({ banner_path: bannerPath })
         .eq("id", activityId);
-      if (updateError) throw updateError;
+      if (updateError) {
+        logSupabaseError("activity_banner_link_failed", updateError, { activityId });
+        throw new Error("La actividad se guardó, pero el banner no pudo asociarse. Puedes volver a cargarlo al editarla.");
+      }
     } catch (uploadError) {
       return {
         message:
           uploadError instanceof Error
             ? uploadError.message
             : "La actividad se guardó sin banner.",
+        savedId: activityId,
         success: true,
+        warning: true,
       };
     }
   }

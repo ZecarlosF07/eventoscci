@@ -17,6 +17,7 @@ import { slugify } from "@/features/activities/utils/slugify";
 import { requireAdmin } from "@/features/auth/services/admin-session";
 import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getSupabaseErrorMessage, logSupabaseError, matchesSupabaseError } from "@/lib/supabase/supabase-error";
 
 const BANNER_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
@@ -33,22 +34,33 @@ async function uploadBanner(file: File, courseId: string): Promise<string> {
   const client = await createServerSupabaseClient();
   const { error } = await client.storage.from(COURSE_BANNER_BUCKET)
     .upload(path, file, { contentType: file.type, upsert: false });
-  if (error) throw new Error("El curso se guardó, pero la portada no pudo cargarse.");
+  if (error) {
+    logSupabaseError("course_banner_upload_failed", error, { courseId });
+    throw new Error(getSupabaseErrorMessage(error, {
+      fallback: "El curso se guardó, pero la portada no pudo cargarse. Puedes volver a intentarlo al editarlo.",
+      messages: {
+        "BUCKET NOT FOUND": "El curso se guardó, pero el almacenamiento de portadas no está disponible. Comunícate con el administrador.",
+        "MIME TYPE": "El curso se guardó, pero el formato de la portada no está permitido. Usa JPG, PNG o WebP.",
+        "PAYLOAD TOO LARGE": "El curso se guardó, pero la portada supera el tamaño permitido de 5 MB.",
+      },
+    }));
+  }
   return path;
 }
 
 export async function saveCourseAction(
-  _previousState: CourseFormState,
+  previousState: CourseFormState,
   formData: FormData,
 ): Promise<CourseFormState> {
   await requireAdmin();
   const input = parseCourseFormData(formData);
+  const savedId = input.id || previousState.savedId;
   const parsed = courseFormSchema.safeParse(input);
-  if (!parsed.success) return { errors: parsed.error.flatten().fieldErrors };
+  if (!parsed.success) return { errors: parsed.error.flatten().fieldErrors, savedId };
   const banner = formData.get("banner");
   if (banner instanceof File) {
     const bannerError = validateBanner(banner);
-    if (bannerError) return { errors: { banner: [bannerError] } };
+    if (bannerError) return { errors: { banner: [bannerError] }, savedId };
   }
 
   const courseId = parsed.data.id || crypto.randomUUID();
@@ -62,18 +74,39 @@ export async function saveCourseAction(
     p_course: course as Json,
     p_instructors: parsed.data.instructors as Json,
   });
-  if (error || !data) return { message: "No fue posible guardar el curso." };
+  if (error) {
+    logSupabaseError("course_save_failed", error, { courseId });
+    if (error.code === "23505" && matchesSupabaseError(error, "slug")) {
+      return { errors: { slug: ["Este slug ya pertenece a otro curso. Modifícalo o déjalo vacío para generarlo nuevamente."] }, savedId };
+    }
+    return {
+      message: getSupabaseErrorMessage(error, {
+        fallback: "No se pudo guardar el curso. Actualiza la página e inténtalo nuevamente.",
+        messages: {
+          COURSE_NOT_FOUND: "El curso ya no está disponible. Regresa al listado y vuelve a abrirlo.",
+          INVALID_INSTRUCTORS: "La configuración de instructores no es válida. Revisa los instructores seleccionados.",
+        },
+      }),
+      savedId,
+    };
+  }
+  if (!data) return { message: "El curso no pudo confirmarse después de guardarlo. Actualiza la lista antes de volver a intentarlo.", savedId };
 
   if (banner instanceof File && banner.size) {
     try {
       const bannerPath = await uploadBanner(banner, courseId);
       const { error: updateError } = await client.from("courses")
         .update({ banner_path: bannerPath }).eq("id", courseId);
-      if (updateError) throw updateError;
+      if (updateError) {
+        logSupabaseError("course_banner_link_failed", updateError, { courseId });
+        throw new Error("El curso se guardó, pero la portada no pudo asociarse. Puedes volver a cargarla al editarlo.");
+      }
     } catch (uploadError) {
       return {
         message: uploadError instanceof Error ? uploadError.message : "El curso se guardó sin portada.",
+        savedId: courseId,
         success: true,
+        warning: true,
       };
     }
   }

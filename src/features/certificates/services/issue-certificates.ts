@@ -8,6 +8,7 @@ import type { CertificateIssueState } from "@/features/certificates/types/certif
 import { deliverNotificationImmediately } from "@/features/notifications/services/process-notifications";
 import { getSiteUrl } from "@/lib/env/server-env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getSupabaseErrorMessage, logSupabaseError } from "@/lib/supabase/supabase-error";
 
 async function generateAndStoreCertificate(certificateId: string): Promise<void> {
   const client = await createServerSupabaseClient();
@@ -45,9 +46,23 @@ export async function issueActivityCertificates(
     p_registration_ids: registrationIds,
     p_template_id: templateId,
   });
-  if (preparedResult.error) return { message: "No fue posible validar la emisión." };
+  if (preparedResult.error) {
+    logSupabaseError("activity_certificate_prepare_failed", preparedResult.error, { templateId });
+    return {
+      message: getSupabaseErrorMessage(preparedResult.error, {
+        fallback: "No se pudo preparar la emisión. Actualiza la página e inténtalo nuevamente.",
+        messages: {
+          TEMPLATE_NOT_AVAILABLE: "La plantilla seleccionada está inactiva o ya no está disponible. Selecciona otra plantilla.",
+          VALIDATION_ERROR: "La selección contiene participantes o condiciones no válidas. Revisa los datos e inténtalo nuevamente.",
+        },
+      }),
+    };
+  }
   const parsed = prepareCertificateResultSchema.safeParse(preparedResult.data);
-  if (!parsed.success) return { message: "La respuesta de emisión no tiene el formato esperado." };
+  if (!parsed.success) {
+    logSupabaseError("activity_certificate_response_invalid", { message: parsed.error.message }, { templateId });
+    return { message: "La emisión no pudo confirmarse. Actualiza la página antes de volver a intentarlo." };
+  }
 
   const pendingIds = [
     ...parsed.data.prepared.map((item) => item.certificate_id),
@@ -59,16 +74,20 @@ export async function issueActivityCertificates(
     try {
       await generateAndStoreCertificate(certificateId);
       issuedCount += 1;
-    } catch {
+    } catch (error) {
       errorCount += 1;
-      await client.rpc("abandon_unfinalized_certificate", { p_certificate_id: certificateId });
+      logSupabaseError("activity_certificate_generation_failed", error instanceof Error ? error : { message: "Unknown generation error" }, { certificateId });
+      const abandoned = await client.rpc("abandon_unfinalized_certificate", { p_certificate_id: certificateId });
+      if (abandoned.error) logSupabaseError("activity_certificate_cleanup_failed", abandoned.error, { certificateId });
     }
   }
   const alreadyReady = parsed.data.existing.filter((item) => item.file_ready).length;
   return {
     errorCount,
     issuedCount,
-    message: `${issuedCount} certificados emitidos, ${alreadyReady} ya existentes y ${errorCount} no procesados.`,
+    message: errorCount
+      ? `${issuedCount} certificados emitidos y ${alreadyReady} ya existentes. ${errorCount} no pudieron procesarse; revisa que los participantes sigan siendo elegibles y vuelve a intentarlo.`
+      : `${issuedCount} certificados emitidos y ${alreadyReady} ya existentes.`,
     success: errorCount === 0,
   };
 }

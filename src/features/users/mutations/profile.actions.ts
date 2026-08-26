@@ -8,6 +8,7 @@ import { formText } from "@/features/auth/utils/auth-form-data";
 import { profileSchema } from "@/features/users/schemas/profile.schema";
 import type { ProfileActionState } from "@/features/users/types/user-profile.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getSupabaseErrorMessage, logSupabaseError } from "@/lib/supabase/supabase-error";
 
 export async function updateProfileAction(
   _previousState: ProfileActionState,
@@ -26,7 +27,19 @@ export async function updateProfileAction(
   if (!parsed.success) return { errors: parsed.error.flatten().fieldErrors };
   const client = await createServerSupabaseClient();
   const { error } = await client.rpc("update_own_profile", { p_profile: parsed.data });
-  if (error) return { message: "No fue posible actualizar el perfil." };
+  if (error) {
+    logSupabaseError("profile_update_failed", error);
+    return {
+      message: getSupabaseErrorMessage(error, {
+        fallback: "No se pudo actualizar tu perfil. Revisa tu conexión e inténtalo nuevamente.",
+        messages: {
+          ACCOUNT_NOT_ACTIVE: "Tu cuenta está inactiva. Comunícate con la Cámara para actualizar tus datos.",
+          PROFILE_NOT_FOUND: "No encontramos tu ficha institucional. Comunícate con la Cámara para regularizarla.",
+          PROFILE_VALIDATION_ERROR: "Uno o más datos no cumplen las reglas de tu perfil. Revisa los campos indicados.",
+        },
+      }),
+    };
+  }
   revalidatePath(ROUTES.campus, "layout");
   return { message: "Perfil actualizado correctamente.", success: true };
 }
