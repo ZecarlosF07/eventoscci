@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Text } from "@/components/atoms/Text";
 import { Input } from "@/components/atoms/Input";
 import { SubmitButton } from "@/components/atoms/SubmitButton";
+import { ResponsiveTableFrame } from "@/components/molecules/ResponsiveTableFrame";
 import { ROUTES } from "@/constants/routes";
 import { AttendanceStatusBadge } from "@/features/attendance/components/AttendanceStatusBadge";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
@@ -25,7 +26,7 @@ export function RegistrationsTable({ registrations, returnTo }: RegistrationsTab
   }
 
   return (
-    <div className="overflow-x-auto rounded-3xl border border-cci-100 bg-white">
+    <ResponsiveTableFrame className="rounded-3xl" label="Listado de inscripciones">
       <table className="w-full min-w-[1850px] text-left text-sm">
         <thead className="border-b border-cci-100 bg-cci-50 text-slate-600">
           <tr>
@@ -81,6 +82,6 @@ export function RegistrationsTable({ registrations, returnTo }: RegistrationsTab
           ))}
         </tbody>
       </table>
-    </div>
+    </ResponsiveTableFrame>
   );
 }

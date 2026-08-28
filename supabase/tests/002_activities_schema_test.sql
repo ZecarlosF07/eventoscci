@@ -1,6 +1,6 @@
 begin;
 
-select plan(31);
+select plan(37);
 
 select ok(to_regtype('public.activity_type') is not null, 'activity_type enum exists');
 select ok(to_regtype('public.activity_modality') is not null, 'activity_modality enum exists');
@@ -29,6 +29,46 @@ select ok(
 select ok(
   to_regprocedure('public.set_activity_status(uuid,public.activity_status)') is not null,
   'status function exists'
+);
+select ok(
+  exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'activities'
+      and column_name = 'maps_embed_url'
+  ),
+  'activities stores a Google Maps embed URL'
+);
+select ok(
+  exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'activities'
+      and column_name = 'program_image_paths'
+      and data_type = 'ARRAY'
+  ),
+  'activities stores ordered visual program images'
+);
+select ok(
+  exists (
+    select 1 from pg_constraint
+    where conname = 'activities_program_image_limit'
+  ),
+  'visual programs are limited to ten images'
+);
+select ok(
+  exists (
+    select 1 from pg_constraint
+    where conname = 'activities_published_map_required'
+  ),
+  'published in-person activities require a map'
+);
+select ok(
+  exists (
+    select 1 from pg_constraint
+    where conname = 'activities_published_whatsapp_required'
+  ),
+  'published activities require a valid WhatsApp number'
 );
 select ok(
   to_regprocedure('public.soft_delete_activity(uuid)') is not null,
@@ -196,6 +236,7 @@ select lives_ok(
       "slug":"actividad-transaccional",
       "description":"Actividad creada desde la función atómica de prueba.",
       "modality":"virtual",
+      "maps_embed_url":"https://www.google.com/maps/embed?pb=test",
       "virtual_url":"https://example.test/activity",
       "is_free":true,
       "general_price":"0",
@@ -214,6 +255,11 @@ select is(
   (select count(*) from public.activities where slug = 'actividad-transaccional'),
   1::bigint,
   'atomic save persists the activity'
+);
+select is(
+  (select maps_embed_url from public.activities where slug = 'actividad-transaccional'),
+  'https://www.google.com/maps/embed?pb=test',
+  'atomic save persists the map URL'
 );
 select is(
   (

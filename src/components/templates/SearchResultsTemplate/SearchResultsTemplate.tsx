@@ -10,8 +10,8 @@ export function SearchResultsTemplate({ query, results }: SearchResultsTemplateP
   const hasQuery = Boolean(query);
 
   return (
-    <main className="mx-auto w-full max-w-[90rem] px-5 py-10 sm:px-8 sm:py-14">
-      <header className="overflow-hidden rounded-[2rem] bg-cci-950 px-6 py-9 text-white sm:px-10 sm:py-11">
+    <main className="mx-auto w-full max-w-[90rem] px-4 py-7 sm:px-6 sm:py-12 lg:px-8">
+      <header className="overflow-hidden rounded-2xl bg-cci-950 px-5 py-8 text-white sm:rounded-[2rem] sm:px-10 sm:py-11">
         <p className="text-sm font-bold uppercase tracking-[0.18em] text-cci-lime">Búsqueda general</p>
         <Heading className="mt-3 max-w-3xl text-white" level={1}>Encuentra actividades y cursos en un solo lugar</Heading>
         <Text className="mt-4 max-w-2xl text-white/70" size="lg">Busca simultáneamente en eventos, capacitaciones y cursos del Campus Virtual.</Text>

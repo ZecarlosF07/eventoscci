@@ -4,8 +4,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { ROUTES } from "@/constants/routes";
-import { ACTIVITY_IMAGE_BUCKET } from "@/features/activities/constants/activity.constants";
 import { activityFormSchema } from "@/features/activities/schemas/activity.schema";
+import {
+  getActivityMediaInput,
+  syncActivityMedia,
+  validateActivityMedia,
+} from "@/features/activities/services/activity-media.service";
 import type { ActivityFormState } from "@/features/activities/types/activity-form.types";
 import type { ActivityStatus, ActivityType } from "@/features/activities/types/activity.types";
 import { toDatabaseTimestamp } from "@/features/activities/utils/activity-formatters";
@@ -16,40 +20,14 @@ import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getSupabaseErrorMessage, logSupabaseError, matchesSupabaseError } from "@/lib/supabase/supabase-error";
 
-const MAX_BANNER_SIZE = 5 * 1024 * 1024;
-const BANNER_TYPES = ["image/jpeg", "image/png", "image/webp"];
-
 function adminListRoute(type: ActivityType): string {
   return type === "event" ? ROUTES.adminEvents : ROUTES.adminTrainings;
 }
 
-function validateBanner(file: File): string | null {
-  if (!file.size) return null;
-  if (!BANNER_TYPES.includes(file.type)) return "Usa una imagen JPG, PNG o WebP.";
-  if (file.size > MAX_BANNER_SIZE) return "El banner no debe superar 5 MB.";
-  return null;
-}
-
-async function uploadBanner(file: File, activityId: string): Promise<string> {
-  const extension = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-  const path = `${activityId}/${crypto.randomUUID()}.${extension}`;
-  const client = await createServerSupabaseClient();
-  const { error } = await client.storage
-    .from(ACTIVITY_IMAGE_BUCKET)
-    .upload(path, file, { contentType: file.type, upsert: false });
-
-  if (error) {
-    logSupabaseError("activity_banner_upload_failed", error, { activityId });
-    throw new Error(getSupabaseErrorMessage(error, {
-      fallback: "La actividad se guardó, pero el banner no pudo cargarse. Puedes volver a intentarlo al editarla.",
-      messages: {
-        "BUCKET NOT FOUND": "La actividad se guardó, pero el almacenamiento de banners no está disponible. Comunícate con el administrador.",
-        "MIME TYPE": "La actividad se guardó, pero el formato del banner no está permitido. Usa JPG, PNG o WebP.",
-        "PAYLOAD TOO LARGE": "La actividad se guardó, pero el banner supera el tamaño permitido de 5 MB.",
-      },
-    }));
-  }
-  return path;
+function revalidateActivityPages(type: ActivityType): void {
+  revalidatePath(ROUTES.events);
+  revalidatePath(ROUTES.trainings);
+  revalidatePath(adminListRoute(type));
 }
 
 export async function saveActivityAction(
@@ -60,15 +38,13 @@ export async function saveActivityAction(
   const input = parseActivityFormData(formData);
   const savedId = input.id || previousState.savedId;
   const parsed = activityFormSchema.safeParse(input);
-  const banner = formData.get("banner");
+  const mediaInput = getActivityMediaInput(formData);
+  const mediaErrors = validateActivityMedia(mediaInput);
 
   if (!parsed.success) {
     return { errors: parsed.error.flatten().fieldErrors, savedId };
   }
-  if (banner instanceof File) {
-    const bannerError = validateBanner(banner);
-    if (bannerError) return { errors: { banner: [bannerError] }, savedId };
-  }
+  if (Object.keys(mediaErrors).length) return { errors: mediaErrors, savedId };
 
   const { dates, speakers, ...activityInput } = parsed.data;
   const activity = {
@@ -100,6 +76,9 @@ export async function saveActivityAction(
       message: getSupabaseErrorMessage(error, {
         fallback: "No se pudo guardar la actividad. Actualiza la página e inténtalo nuevamente.",
         messages: {
+          "activities_maps_embed_url_valid": "La URL del mapa no corresponde a una inserción válida de Google Maps.",
+          "activities_published_map_required": "Agrega el mapa antes de publicar una actividad presencial o híbrida.",
+          "activities_published_whatsapp_required": "Ingresa un número de WhatsApp válido antes de publicar.",
           "La actividad requiere al menos una fecha": "Agrega al menos una fecha y horario para guardar la actividad.",
         },
       }),
@@ -110,33 +89,19 @@ export async function saveActivityAction(
     return { message: "La actividad no pudo confirmarse después de guardarla. Actualiza la lista antes de volver a intentarlo.", savedId };
   }
 
-  if (banner instanceof File && banner.size) {
-    try {
-      const bannerPath = await uploadBanner(banner, activityId);
-      const { error: updateError } = await client
-        .from("activities")
-        .update({ banner_path: bannerPath })
-        .eq("id", activityId);
-      if (updateError) {
-        logSupabaseError("activity_banner_link_failed", updateError, { activityId });
-        throw new Error("La actividad se guardó, pero el banner no pudo asociarse. Puedes volver a cargarlo al editarla.");
-      }
-    } catch (uploadError) {
-      return {
-        message:
-          uploadError instanceof Error
-            ? uploadError.message
-            : "La actividad se guardó sin banner.",
-        savedId: activityId,
-        success: true,
-        warning: true,
-      };
-    }
+  try {
+    await syncActivityMedia(mediaInput, activityId);
+  } catch (uploadError) {
+    revalidateActivityPages(parsed.data.type);
+    return {
+      message: uploadError instanceof Error ? uploadError.message : "La actividad se guardó sin completar sus imágenes.",
+      savedId: activityId,
+      success: true,
+      warning: true,
+    };
   }
 
-  revalidatePath(ROUTES.events);
-  revalidatePath(ROUTES.trainings);
-  revalidatePath(adminListRoute(parsed.data.type));
+  revalidateActivityPages(parsed.data.type);
   redirect(`${adminListRoute(parsed.data.type)}/${activityId}/editar?guardado=1`);
 }
 
@@ -151,7 +116,15 @@ export async function changeActivityStatusAction(
     p_activity_id: activityId,
     p_status: status,
   });
-  if (error) throw new Error("No fue posible cambiar el estado.", { cause: error });
+  if (error) {
+    throw new Error(getSupabaseErrorMessage(error, {
+      fallback: "No fue posible cambiar el estado.",
+      messages: {
+        "activities_published_map_required": "Agrega el mapa antes de publicar una actividad presencial o híbrida.",
+        "activities_published_whatsapp_required": "Ingresa un número de WhatsApp válido antes de publicar.",
+      },
+    }), { cause: error });
+  }
 
   revalidatePath(adminListRoute(type));
   revalidatePath(ROUTES.events);

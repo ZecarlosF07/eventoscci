@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+import { normalizeWhatsAppPhone } from "@/features/activities/utils/activity-contact";
+import { isGoogleMapsEmbedUrl } from "@/features/activities/utils/activity-maps";
+
 const optionalText = z.string().trim();
 const nonnegativeNumber = z
   .string()
@@ -39,11 +42,16 @@ export const activityFormSchema = z
     id: z.union([z.uuid(), z.literal("")]),
     is_free: z.boolean(),
     location_name: optionalText,
+    maps_embed_url: optionalText.refine(
+      (value) => !value || isGoogleMapsEmbedUrl(value),
+      "Ingresa una URL de inserción válida de Google Maps.",
+    ),
     member_price: nonnegativeNumber,
     members_only: z.boolean(),
     modality: z.enum(["in_person", "virtual", "hybrid"]),
     objective: optionalText,
     program: optionalText,
+    program_image_paths: z.array(z.string().min(1)).max(10),
     registration_close_at: optionalText,
     registration_open_at: optionalText,
     registrations_closed_manually: z.boolean(),
@@ -79,5 +87,23 @@ export const activityFormSchema = z
     }
     if (data.modality === "virtual" && !data.virtual_url) {
       context.addIssue({ code: "custom", message: "Indica el enlace de la actividad virtual.", path: ["virtual_url"] });
+    }
+    if (
+      data.status === "published" &&
+      data.modality !== "virtual" &&
+      !data.maps_embed_url
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "Agrega el mapa antes de publicar una actividad presencial o híbrida.",
+        path: ["maps_embed_url"],
+      });
+    }
+    if (data.status === "published" && !normalizeWhatsAppPhone(data.contact_phone)) {
+      context.addIssue({
+        code: "custom",
+        message: "Ingresa un número de WhatsApp válido antes de publicar.",
+        path: ["contact_phone"],
+      });
     }
   });

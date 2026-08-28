@@ -15,9 +15,9 @@ export function AuthTemplate({ children, description, eyebrow = "Campus Virtual 
         <div aria-hidden="true" className="absolute -bottom-32 -right-24 size-96 rounded-full border border-cci-lime/35" />
         <div aria-hidden="true" className="absolute -bottom-20 -right-12 size-72 rounded-full border border-cci-lime/20" />
       </div>
-      <div className="flex items-center px-5 py-12 sm:px-10 lg:px-16">
+      <div className="flex items-center px-4 py-8 sm:px-8 sm:py-12 lg:px-16">
         <div className="w-full max-w-2xl">
-          <div className="mb-8 lg:hidden"><BrandLogo className="w-44" preload /></div>
+          <div className="mb-7 lg:hidden"><BrandLogo className="w-40 sm:w-44" preload /></div>
           <Text className="font-bold uppercase tracking-[0.18em] text-cci-600" size="sm">{eyebrow}</Text>
           <Heading className="mt-3" level={1}>{title}</Heading>
           <Text className="mb-8 mt-3">{description}</Text>

@@ -7,7 +7,7 @@ import { SITE_CONFIG } from "@/config/site";
 export function PublicFooter() {
   return (
     <footer className="bg-cci-950 text-white">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-5 py-12 sm:px-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto grid w-full max-w-7xl gap-9 px-4 py-10 sm:px-6 sm:py-12 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
         <div className="md:col-span-2 lg:col-span-1">
           <BrandLogo className="w-48" light />
           <p className="mt-5 max-w-sm text-sm leading-6 text-white/70">

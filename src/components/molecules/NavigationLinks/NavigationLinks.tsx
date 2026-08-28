@@ -20,7 +20,7 @@ const VARIANT_STYLES = {
   workspace: {
     active: "bg-cci-950 text-white",
     base: "text-slate-600 hover:bg-cci-100 hover:text-cci-950",
-    list: "flex flex-col gap-1 md:flex-row",
+    list: "flex flex-col gap-1 lg:flex-row",
   },
 } as const;
 

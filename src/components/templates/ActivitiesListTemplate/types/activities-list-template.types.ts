@@ -7,6 +7,7 @@ export interface ActivitiesListTemplateProps {
   description: string;
   emptyMessage: string;
   eyebrow: string;
+  featuredActivities: ActivityListItem[];
   filters: ActivityFilters;
   title: string;
 }

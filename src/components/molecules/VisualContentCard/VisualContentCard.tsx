@@ -19,7 +19,7 @@ export function VisualContentCard({
     <article className={`group motion-safe:animate-[home-card-reveal_600ms_cubic-bezier(0.22,1,0.36,1)_both] ${animationDelay}`}>
       <Link
         aria-label={`Ver ${title}`}
-        className="relative block aspect-video overflow-hidden rounded-3xl bg-cci-950 shadow-lg shadow-cci-950/15 outline-none ring-1 ring-cci-950/5 transition duration-500 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-cci-950/25 hover:ring-cci-lime/60 focus-visible:ring-4 focus-visible:ring-cci-lime focus-visible:ring-offset-4 motion-reduce:transform-none motion-reduce:transition-none"
+        className="relative block aspect-[4/3] overflow-hidden rounded-2xl bg-cci-950 shadow-lg shadow-cci-950/15 outline-none ring-1 ring-cci-950/5 transition duration-500 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-cci-950/25 hover:ring-cci-lime/60 focus-visible:ring-4 focus-visible:ring-cci-lime focus-visible:ring-offset-4 sm:aspect-video sm:rounded-3xl motion-reduce:transform-none motion-reduce:transition-none"
         href={href}
       >
         {bannerUrl ? (

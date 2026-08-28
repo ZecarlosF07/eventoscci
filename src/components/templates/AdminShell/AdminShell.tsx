@@ -23,13 +23,13 @@ export function AdminShell({ children, email, name }: AdminShellProps) {
         </div>
       </aside>
       <div className="min-w-0">
-        <header className="sticky top-0 z-40 border-b border-cci-100 bg-white/95 px-5 py-4 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-40 border-b border-cci-100 bg-white/95 px-4 py-4 backdrop-blur sm:px-6 lg:hidden">
           <div className="flex items-center justify-between gap-4">
             <Link href={ROUTES.admin}><BrandLogo className="w-36" /></Link>
-            <details className="relative"><summary className="flex min-h-11 cursor-pointer list-none items-center rounded-xl border border-cci-200 px-3 text-sm font-semibold marker:content-none">☰ Menú</summary><div className="absolute right-0 top-14 w-[min(20rem,calc(100vw-2.5rem))] rounded-2xl bg-cci-950 p-4 shadow-xl"><nav aria-label="Navegación administrativa móvil"><NavigationLinks items={ADMIN_NAVIGATION} variant="admin" /></nav><div className="mt-4 border-t border-white/10 pt-4"><Text className="text-white" size="sm">{name}</Text><form action={logoutAction} className="mt-3"><Button className="w-full" type="submit" variant="secondary">Cerrar sesión</Button></form></div></div></details>
+            <details className="relative"><summary className="flex min-h-11 cursor-pointer list-none items-center rounded-xl border border-cci-200 px-3 text-sm font-semibold marker:content-none">☰ Menú</summary><div className="absolute right-0 top-14 max-h-[calc(100dvh-6rem)] w-[min(20rem,calc(100vw-2rem))] overflow-y-auto overscroll-contain rounded-2xl bg-cci-950 p-4 shadow-xl"><nav aria-label="Navegación administrativa móvil"><NavigationLinks items={ADMIN_NAVIGATION} variant="admin" /></nav><div className="mt-4 border-t border-white/10 pt-4"><Text className="break-all text-white" size="sm">{name}</Text><form action={logoutAction} className="mt-3"><Button className="w-full" type="submit" variant="secondary">Cerrar sesión</Button></form></div></div></details>
           </div>
         </header>
-        <main className="mx-auto w-full max-w-[96rem] px-5 py-8 sm:px-8 lg:py-10">{children}</main>
+        <main className="mx-auto w-full max-w-[96rem] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">{children}</main>
       </div>
     </div>
   );

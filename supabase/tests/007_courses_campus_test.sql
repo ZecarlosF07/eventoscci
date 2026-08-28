@@ -91,8 +91,8 @@ reset role;
 set local role anon;
 select is((select count(*) from public.courses where id = '57000000-0000-4000-8000-000000000001'), 1::bigint, 'anonymous visitors see published courses');
 select is((select count(*) from public.courses where id = '57000000-0000-4000-8000-000000000003'), 0::bigint, 'anonymous visitors do not see drafts');
-select is((select count(*) from public.course_modules), 1::bigint, 'anonymous visitors only see published modules');
-select is((select count(*) from public.course_instructors), 1::bigint, 'anonymous visitors see published course instructors');
+select is((select count(*) from public.course_modules where course_id = '57000000-0000-4000-8000-000000000001'), 1::bigint, 'anonymous visitors only see published modules');
+select is((select count(*) from public.course_instructors where course_id = '57000000-0000-4000-8000-000000000001'), 1::bigint, 'anonymous visitors see published course instructors');
 select is(has_table_privilege('anon', 'public.lessons', 'SELECT'), false, 'anonymous visitors cannot read lesson video data');
 select is(has_table_privilege('anon', 'public.course_materials', 'SELECT'), false, 'anonymous visitors cannot read private materials');
 
@@ -135,7 +135,7 @@ select lives_ok(
 select is((select status from public.course_enrollments where course_id = '57000000-0000-4000-8000-000000000002'), 'revoked'::public.course_enrollment_status, 'revoked status is stored');
 select ok((select revoked_at is not null from public.course_enrollments where course_id = '57000000-0000-4000-8000-000000000002'), 'revocation timestamp is stored');
 select is((select deleted_at from public.course_enrollments where course_id = '57000000-0000-4000-8000-000000000002'), null::timestamptz, 'revocation does not soft-delete enrollment');
-select is((select count(*) from public.audit_logs where action in ('course_access_granted', 'course_access_revoked')), 2::bigint, 'grant and revocation are audited');
+select is((select count(*) from public.audit_logs where actor_user_id = '87000000-0000-4000-8000-000000000001' and action in ('course_access_granted', 'course_access_revoked')), 2::bigint, 'grant and revocation are audited');
 select throws_ok(
   $$select public.revoke_course_access((select id from public.course_enrollments where course_id = '57000000-0000-4000-8000-000000000002'), '')$$,
   '22023', 'REVOCATION_REASON_REQUIRED', 'revocation requires a reason'

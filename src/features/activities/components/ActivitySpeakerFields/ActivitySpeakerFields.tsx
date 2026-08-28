@@ -55,7 +55,7 @@ export function ActivitySpeakerFields({
               </span>
             </Label>
             {isSelected ? (
-              <div className="mt-3 grid grid-cols-[1fr_90px] gap-2">
+              <div className="mt-3 grid gap-2 sm:grid-cols-[minmax(0,1fr)_90px]">
                 <Input
                   defaultValue={initialRole ?? ""}
                   name={`speaker_role_${speaker.id}`}

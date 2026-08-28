@@ -23,7 +23,7 @@ export function CoursePlayerTemplate({
 
   return (
     <div className="space-y-7">
-      <header className="rounded-[2rem] bg-cci-950 px-6 py-8 text-white sm:px-8">
+      <header className="rounded-2xl bg-cci-950 px-5 py-7 text-white sm:rounded-[2rem] sm:px-8 sm:py-8">
         <Link className="text-sm font-semibold text-cci-lime" href="/campus/cursos">
           ← Mis cursos
         </Link>
@@ -51,7 +51,7 @@ export function CoursePlayerTemplate({
           </div>
         ) : null}
       </header>
-      <nav className="flex gap-2 overflow-x-auto border-b border-cci-100 pb-3">
+      <nav aria-label="Secciones del curso" className="flex gap-2 overflow-x-auto overscroll-x-contain border-b border-cci-100 pb-3">
         {links.map((link) => (
           <Link
             className={section === link.id

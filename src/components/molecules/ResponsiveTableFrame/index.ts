@@ -1,0 +1,1 @@
+export { ResponsiveTableFrame } from "./ResponsiveTableFrame";

@@ -22,11 +22,11 @@ export function CourseStudentsTable({
 }: CourseStudentsTableProps) {
   return (
     <div className="space-y-7">
-      <form className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-5 sm:grid-cols-[1fr_auto]">
+      <form className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_auto]">
         <FormField hint="Documento, nombre o correo." label="Buscar persona" name="q">
           <Input defaultValue={query} id="q" name="q" />
         </FormField>
-        <div className="flex items-end"><Button type="submit">Buscar</Button></div>
+        <div className="flex items-end"><Button className="w-full lg:w-auto" type="submit">Buscar</Button></div>
       </form>
 
       {people.length ? (
@@ -35,7 +35,7 @@ export function CourseStudentsTable({
           {people.map((person) => (
             <form
               action={grantCourseAccessAction}
-              className="grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-[1fr_150px_150px_auto]"
+              className="grid gap-3 rounded-2xl border bg-white p-4 lg:grid-cols-[minmax(0,1fr)_150px_150px_auto]"
               key={person.id}
             >
               <input name="course_id" type="hidden" value={course.id} />
@@ -56,7 +56,7 @@ export function CourseStudentsTable({
                 step="0.01"
                 type="number"
               />
-              <SubmitButton pendingLabel="Habilitando…">Habilitar</SubmitButton>
+              <SubmitButton className="w-full lg:w-auto" pendingLabel="Habilitando…">Habilitar</SubmitButton>
             </form>
           ))}
         </div>
@@ -87,7 +87,7 @@ export function CourseStudentsTable({
                 />
               </div>
               {student.status !== "revoked" ? (
-                <form action={revokeCourseAccessAction} className="flex gap-2">
+                <form action={revokeCourseAccessAction} className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
                   <input name="course_id" type="hidden" value={course.id} />
                   <input name="enrollment_id" type="hidden" value={student.enrollmentId} />
                   <Input
@@ -96,7 +96,7 @@ export function CourseStudentsTable({
                     placeholder="Motivo"
                     required
                   />
-                  <SubmitButton pendingLabel="Revocando…" variant="secondary">Revocar</SubmitButton>
+                  <SubmitButton className="w-full sm:w-auto" pendingLabel="Revocando…" variant="secondary">Revocar</SubmitButton>
                 </form>
               ) : (
                 <Text size="sm">{student.revocationReason}</Text>

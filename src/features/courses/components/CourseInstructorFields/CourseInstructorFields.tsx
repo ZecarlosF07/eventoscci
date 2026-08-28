@@ -33,7 +33,7 @@ export function CourseInstructorFields({ initialInstructors, speakers }: CourseI
           <Label className="flex items-center gap-2" htmlFor={`primary_${speaker.id}`}>
             <input defaultChecked={initialPrimary === speaker.id} id={`primary_${speaker.id}`} name="primary_instructor_id" type="radio" value={speaker.id} /> Principal
           </Label>
-          <div className="grid grid-cols-[1fr_90px] gap-2">
+          <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_90px]">
             <Input defaultValue={initial?.role_label ?? ""} name={`instructor_role_${speaker.id}`} placeholder="Rol docente" />
             <Input aria-label={`Orden de ${speaker.first_names}`} defaultValue={initial?.sort_order ?? selected.indexOf(speaker.id)} min="0" name={`instructor_order_${speaker.id}`} type="number" />
           </div>

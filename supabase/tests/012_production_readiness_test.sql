@@ -43,10 +43,10 @@ insert into public.user_accounts (user_id, person_id, role) values (
   'administrator'
 );
 insert into public.activities (
-  id, type, title, slug, description, modality, is_free, status, published_at
+  id, type, title, slug, description, modality, is_free, contact_phone, status, published_at
 ) values (
   '4c000000-0000-4000-8000-000000000001', 'training', 'Capacitación H12',
-  'capacitacion-h12', 'Validación integral', 'virtual', true, 'published', now()
+  'capacitacion-h12', 'Validación integral', 'virtual', true, '900000012', 'published', now()
 );
 insert into public.people (
   id, document_type, document_number, first_names, last_names, email, phone, job_title
@@ -55,12 +55,12 @@ insert into public.people (
   'Participante', 'Producción', 'student12@example.test', '924000002', 'Analista'
 );
 insert into public.registrations (
-  id, activity_id, person_id, registration_code, registration_type, status
+  id, activity_id, person_id, registration_code, registration_type, status, confirmed_at
 ) values (
   '7c000000-0000-4000-8000-000000000001',
   '4c000000-0000-4000-8000-000000000001',
   '3c000000-0000-4000-8000-000000000002',
-  'CCI-H12-0001', 'general', 'confirmed'
+  'CCI-H12-0001', 'general', 'confirmed', now()
 );
 insert into public.attendance (registration_id, status, marked_at) values (
   '7c000000-0000-4000-8000-000000000001', 'attended', now()

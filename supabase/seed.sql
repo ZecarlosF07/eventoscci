@@ -76,7 +76,7 @@ on conflict (document_type, document_number) do update set
 
 insert into public.activities (
   id, category_id, type, title, slug, short_description, description,
-  objective, target_audience, modality, location_name, address, virtual_url,
+  objective, target_audience, modality, location_name, address, maps_embed_url, virtual_url,
   duration_text, academic_hours, program, syllabus, is_free, general_price,
   member_price, members_only, capacity, registration_open_at,
   registration_close_at, contact_name, contact_phone, contact_email,
@@ -96,6 +96,7 @@ values
     'hybrid',
     'Auditorio de la Cámara de Comercio de Ica',
     'Calle Lima 123, Ica',
+    'https://www.google.com/maps/embed?pb=demo-cci-ica',
     'https://meet.example.test/encuentro-cci',
     'Dos jornadas',
     12,
@@ -126,6 +127,7 @@ values
     'Diseñar una hoja de ruta digital accionable para una pyme.',
     'Propietarios, administradores y responsables comerciales de pymes.',
     'virtual',
+    null,
     null,
     null,
     'https://meet.example.test/taller-digital',
@@ -159,6 +161,7 @@ on conflict (id) do update set
   modality = excluded.modality,
   location_name = excluded.location_name,
   address = excluded.address,
+  maps_embed_url = excluded.maps_embed_url,
   virtual_url = excluded.virtual_url,
   duration_text = excluded.duration_text,
   academic_hours = excluded.academic_hours,

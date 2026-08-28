@@ -14,10 +14,10 @@ import { usePersistentAction } from "@/hooks/use-persistent-action";
 export function ModuleForm({ courseId, module }: ModuleFormProps) {
   const { onSubmit, pending, state } = usePersistentAction(saveModuleAction, {});
   const fieldSuffix = module?.id ?? "new";
-  return <form className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-5 md:grid-cols-[1fr_120px_auto]" method="post" onSubmit={onSubmit}>
+  return <form className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_120px_auto]" method="post" onSubmit={onSubmit}>
     <input name="course_id" type="hidden" value={courseId} /><input name="id" type="hidden" value={module?.id ?? ""} />
     <div className="space-y-3"><FormField error={state.errors?.title?.[0]} label="Título del módulo" name={`module_title_${fieldSuffix}`}><Input defaultValue={module?.title} id={`module_title_${fieldSuffix}`} name="title" required /></FormField><FormField error={state.errors?.description?.[0]} label="Descripción" name={`module_description_${fieldSuffix}`}><Textarea defaultValue={module?.description ?? ""} id={`module_description_${fieldSuffix}`} name="description" /></FormField><Label className="flex items-center gap-2"><Checkbox defaultChecked={module?.is_published} name="is_published" /> Visible para alumnos</Label><FormActionNotice compact message={state.message} success={state.success} /></div>
     <FormField error={state.errors?.sortOrder?.[0]} label="Orden" name={`module_order_${fieldSuffix}`}><Input defaultValue={module?.sort_order ?? 0} id={`module_order_${fieldSuffix}`} min="0" name="sort_order" type="number" /></FormField>
-    <div className="flex items-end"><Button disabled={pending} type="submit">{pending ? "Guardando…" : module ? "Actualizar" : "Agregar"}</Button></div>
+    <div className="flex items-end"><Button className="w-full lg:w-auto" disabled={pending} type="submit">{pending ? "Guardando…" : module ? "Actualizar" : "Agregar"}</Button></div>
   </form>;
 }

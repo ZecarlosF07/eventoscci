@@ -46,37 +46,42 @@ select is(has_table_privilege('anon', 'public.registrations', 'SELECT'), false, 
 insert into public.activities (
   id, type, title, slug, description, modality, is_free, general_price,
   member_price, members_only, capacity, registration_open_at,
-  registration_close_at, status, published_at
+  registration_close_at, maps_embed_url, contact_phone, status, published_at
 )
 values
   (
     '71000000-0000-4000-8000-000000000001', 'event', 'Evento gratuito de prueba',
     'evento-gratuito-hito-3', 'Actividad temporal de pruebas.', 'in_person', true,
     0, 0, false, 3, now() - interval '1 day', now() + interval '1 day',
+    'https://www.google.com/maps/embed?pb=hito3-1', '900000001',
     'published', now()
   ),
   (
     '71000000-0000-4000-8000-000000000002', 'training', 'Capacitación pagada de prueba',
     'capacitacion-pagada-hito-3', 'Actividad temporal de pruebas.', 'virtual', false,
     150, 90, false, null, now() - interval '1 day', now() + interval '1 day',
+    null, '900000002',
     'published', now()
   ),
   (
     '71000000-0000-4000-8000-000000000003', 'event', 'Evento cerrado de prueba',
     'evento-cerrado-hito-3', 'Actividad temporal de pruebas.', 'in_person', true,
     0, 0, false, null, now() - interval '2 days', now() - interval '1 day',
+    'https://www.google.com/maps/embed?pb=hito3-3', '900000003',
     'published', now() - interval '3 days'
   ),
   (
     '71000000-0000-4000-8000-000000000004', 'event', 'Evento de un cupo',
     'evento-un-cupo-hito-3', 'Actividad temporal de pruebas.', 'in_person', true,
     0, 0, false, 1, now() - interval '1 day', now() + interval '1 day',
+    'https://www.google.com/maps/embed?pb=hito3-4', '900000004',
     'published', now()
   ),
   (
     '71000000-0000-4000-8000-000000000005', 'event', 'Evento exclusivo de prueba',
     'evento-exclusivo-hito-3', 'Actividad temporal de pruebas.', 'in_person', false,
     120, 70, true, null, now() - interval '1 day', now() + interval '1 day',
+    'https://www.google.com/maps/embed?pb=hito3-5', '900000005',
     'published', now()
   );
 

@@ -3,6 +3,7 @@ import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
 import { SubmitButton } from "@/components/atoms/SubmitButton";
 import { Text } from "@/components/atoms/Text";
+import { ResponsiveTableFrame } from "@/components/molecules/ResponsiveTableFrame";
 import { AttendanceStatusBadge } from "@/features/attendance/components/AttendanceStatusBadge";
 import type { AttendanceTableProps } from "@/features/attendance/components/AttendanceTable/types/attendance-table.types";
 import { updateAttendanceAction } from "@/features/attendance/mutations/attendance.actions";
@@ -20,7 +21,7 @@ export function AttendanceTable({ activityId, attendance, returnTo }: Attendance
         <Input aria-label="Nota masiva" maxLength={500} name="notes" placeholder="Nota opcional para los seleccionados" />
         <SubmitButton pendingLabel="Aplicando…">Aplicar a seleccionados</SubmitButton>
       </form>
-      <div className="overflow-x-auto rounded-3xl border border-cci-100 bg-white">
+      <ResponsiveTableFrame className="rounded-3xl" label="Control de asistencia">
         <table className="w-full min-w-[1500px] text-left text-sm">
           <thead className="border-b border-cci-100 bg-cci-50 text-slate-600"><tr><th className="px-4 py-4">Sel.</th><th className="px-4 py-4">Participante</th><th className="px-4 py-4">Contacto</th><th className="px-4 py-4">Inscripción</th><th className="px-4 py-4">Estado</th><th className="px-4 py-4">Asistencia</th><th className="px-4 py-4">Marcación</th><th className="px-4 py-4">Actualizar / corregir</th></tr></thead>
           <tbody className="divide-y divide-slate-100">
@@ -38,7 +39,7 @@ export function AttendanceTable({ activityId, attendance, returnTo }: Attendance
             ))}
           </tbody>
         </table>
-      </div>
+      </ResponsiveTableFrame>
     </div>
   );
 }

@@ -10,11 +10,11 @@ export function HomePageTemplate({ content }: HomePageTemplateProps) {
     <div>
       <HomeHero activity={content.featuredActivity} />
       <HomeSearch />
-      <div className="mx-auto max-w-[90rem] px-5 pb-20 pt-2 sm:px-8 sm:pt-4">
+      <div className="mx-auto max-w-[90rem] px-4 pb-16 pt-2 sm:px-6 sm:pb-20 sm:pt-4 lg:px-8">
         <HomeActivitySection activities={content.events} description="Encuentros para conectar con oportunidades, conocimiento y comunidad empresarial." href="/eventos" title="Próximos eventos" />
         <HomeActivitySection activities={content.trainings} description="Experiencias prácticas para fortalecer tus capacidades y las de tu empresa." href="/capacitaciones" title="Capacitaciones destacadas" />
         <HomeCourseSection />
-        <section className="mt-16 overflow-hidden rounded-[2rem] border border-cci-100 bg-cci-100 px-6 py-10 sm:px-10 lg:flex lg:items-center lg:justify-between lg:gap-12">
+        <section className="mt-12 overflow-hidden rounded-2xl border border-cci-100 bg-cci-100 px-5 py-8 sm:mt-16 sm:rounded-[2rem] sm:px-10 sm:py-10 lg:flex lg:items-center lg:justify-between lg:gap-12">
           <div className="max-w-2xl">
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-cci-600">Comunidad empresarial</p>
             <Heading className="mt-3" level={2}>Más oportunidades para los asociados CCI</Heading>

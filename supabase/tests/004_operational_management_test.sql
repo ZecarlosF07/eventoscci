@@ -43,12 +43,14 @@ values
 insert into public.activities (
   id, type, title, slug, description, modality, is_free, general_price,
   member_price, capacity, registration_open_at, registration_close_at,
+  maps_embed_url, contact_phone,
   status, published_at
 )
 values (
   '73000000-0000-4000-8000-000000000001', 'event', 'Operación Hito 4',
   'operacion-hito-4', 'Actividad temporal para pruebas operativas.', 'in_person',
   false, 150, 90, 10, now() - interval '1 day', now() + interval '1 day',
+  'https://www.google.com/maps/embed?pb=hito4', '900000004',
   'published', now()
 );
 

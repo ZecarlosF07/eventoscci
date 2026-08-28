@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Text } from "@/components/atoms/Text";
+import { ResponsiveTableFrame } from "@/components/molecules/ResponsiveTableFrame";
 import { AttendanceStatusBadge } from "@/features/attendance/components/AttendanceStatusBadge";
 import type { ParticipantHistoryProps } from "@/features/participants/components/ParticipantHistory/types/participant-history.types";
 import { RegistrationStatusBadge } from "@/features/registrations/components/RegistrationStatusBadge";
@@ -10,7 +11,7 @@ import { formatRegistrationDate, formatRegistrationPrice } from "@/features/regi
 export function ParticipantHistory({ history }: ParticipantHistoryProps) {
   if (!history.length) return <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center"><Text>Este participante todavía no registra actividades.</Text></div>;
   return (
-    <div className="overflow-x-auto rounded-3xl border border-cci-100 bg-white">
+    <ResponsiveTableFrame className="rounded-3xl" label="Historial del participante">
       <table className="w-full min-w-[1050px] text-left text-sm">
         <thead className="border-b border-cci-100 bg-cci-50 text-slate-600"><tr><th className="px-5 py-4">Actividad</th><th className="px-5 py-4">Código</th><th className="px-5 py-4">Registro</th><th className="px-5 py-4">Snapshots</th><th className="px-5 py-4">Estado</th><th className="px-5 py-4">Asistencia</th></tr></thead>
         <tbody className="divide-y divide-slate-100">
@@ -26,6 +27,6 @@ export function ParticipantHistory({ history }: ParticipantHistoryProps) {
           ))}
         </tbody>
       </table>
-    </div>
+    </ResponsiveTableFrame>
   );
 }

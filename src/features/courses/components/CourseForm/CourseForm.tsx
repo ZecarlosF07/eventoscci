@@ -58,9 +58,9 @@ export function CourseForm({ course, speakers }: CourseFormProps) {
       </div>
       <Label className="flex items-center gap-2" htmlFor="is_free"><Checkbox defaultChecked={course?.is_free} id="is_free" name="is_free" /> Curso gratuito</Label>
     </ActivityFormSection>
-    <div className="sticky bottom-4 flex items-center justify-between gap-4 rounded-2xl border border-cci-100 bg-white/95 p-4 shadow-lg backdrop-blur">
+    <div className="sticky bottom-3 flex flex-col items-stretch gap-3 rounded-2xl border border-cci-100 bg-white/95 p-4 shadow-lg backdrop-blur sm:bottom-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <FormActionNotice compact message={state.message} success={state.success} warning={state.warning} />
-      <Button disabled={pending} type="submit">{pending ? "Guardando…" : course ? "Guardar cambios" : "Crear curso"}</Button>
+      <Button className="w-full sm:w-auto" disabled={pending} type="submit">{pending ? "Guardando…" : course ? "Guardar cambios" : "Crear curso"}</Button>
     </div>
   </form>;
 }

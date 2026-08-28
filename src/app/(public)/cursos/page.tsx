@@ -6,6 +6,8 @@ export default async function CoursesPage({ searchParams }: CourseCatalogPagePro
   const params = await searchParams;
   const queryValue = Array.isArray(params.q) ? params.q[0] : params.q;
   const query = queryValue?.trim() || undefined;
-  const courses = await getPublishedCourses(query);
-  return <CoursesListTemplate courses={courses} query={query} />;
+  const coursesPromise = getPublishedCourses(query);
+  const featuredPromise = query ? getPublishedCourses() : coursesPromise;
+  const [courses, featuredCourses] = await Promise.all([coursesPromise, featuredPromise]);
+  return <CoursesListTemplate courses={courses} featuredCourses={featuredCourses} query={query} />;
 }

@@ -111,10 +111,10 @@ insert into public.speakers (id, first_names, last_names) values
 
 insert into public.activities (
   id, category_id, type, title, slug, description, modality, is_free,
-  general_price, member_price, status, published_at
+  general_price, member_price, contact_phone, status, published_at
 ) values
-  ('4b000000-0000-4000-8000-000000000001', '1b000000-0000-4000-8000-000000000001', 'event', 'Evento publicado H11', 'evento-publicado-h11', 'Visible', 'virtual', true, 0, 0, 'published', now()),
-  ('4b000000-0000-4000-8000-000000000002', '1b000000-0000-4000-8000-000000000001', 'event', 'Evento borrador H11', 'evento-borrador-h11', 'Privado', 'virtual', true, 0, 0, 'draft', null);
+  ('4b000000-0000-4000-8000-000000000001', '1b000000-0000-4000-8000-000000000001', 'event', 'Evento publicado H11', 'evento-publicado-h11', 'Visible', 'virtual', true, 0, 0, '900000011', 'published', now()),
+  ('4b000000-0000-4000-8000-000000000002', '1b000000-0000-4000-8000-000000000001', 'event', 'Evento borrador H11', 'evento-borrador-h11', 'Privado', 'virtual', true, 0, 0, null, 'draft', null);
 
 insert into public.activity_speakers (activity_id, speaker_id) values
   ('4b000000-0000-4000-8000-000000000001', '2b000000-0000-4000-8000-000000000001');

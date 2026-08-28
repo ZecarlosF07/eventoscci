@@ -16,12 +16,12 @@ export function RegistrationPageTemplate({
   const detailRoute = getPublicActivityRoute(activity.type, activity.slug);
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+    <section className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-12 lg:px-8">
       <Link className="text-sm font-bold text-cci-700 hover:text-cci-950" href={detailRoute}>
         ← Volver a la actividad
       </Link>
       <div className="mt-7 grid gap-8 lg:grid-cols-[0.7fr_0.3fr] lg:items-start">
-        <div className="rounded-3xl border border-cci-100 bg-white p-6 shadow-lg shadow-cci-950/5 sm:p-8">
+        <div className="rounded-2xl border border-cci-100 bg-white p-5 shadow-lg shadow-cci-950/5 sm:rounded-3xl sm:p-8">
           <Badge>{activity.isFree ? "Inscripción gratuita" : "Preinscripción"}</Badge>
           <Heading className="mt-4" level={1}>Inscripción</Heading>
           <Text className="mt-3" size="lg">{activity.title}</Text>

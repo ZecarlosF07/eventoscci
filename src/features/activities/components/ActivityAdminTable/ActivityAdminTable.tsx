@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SubmitButton } from "@/components/atoms/SubmitButton";
 import { Text } from "@/components/atoms/Text";
 import { PriceDisplay } from "@/components/molecules/PriceDisplay";
+import { ResponsiveTableFrame } from "@/components/molecules/ResponsiveTableFrame";
 import { StatusBadge } from "@/components/molecules/StatusBadge";
 import { ROUTES } from "@/constants/routes";
 import type { ActivityAdminTableProps } from "@/features/activities/components/ActivityAdminTable/types/activity-admin-table.types";
@@ -20,7 +21,7 @@ export function ActivityAdminTable({ activities }: ActivityAdminTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-3xl border border-cci-100 bg-white">
+    <ResponsiveTableFrame className="rounded-3xl" label="Listado de actividades administrativas">
       <table className="w-full min-w-[1000px] text-left text-sm">
         <thead className="border-b border-cci-100 bg-cci-50 text-slate-600">
           <tr><th className="px-5 py-4">Actividad</th><th className="px-5 py-4">Modalidad</th><th className="px-5 py-4">Próxima fecha</th><th className="px-5 py-4">Precio</th><th className="px-5 py-4">Estado</th><th className="px-5 py-4">Publicación</th><th className="px-5 py-4">Acciones</th></tr>
@@ -43,6 +44,6 @@ export function ActivityAdminTable({ activities }: ActivityAdminTableProps) {
           })}
         </tbody>
       </table>
-    </div>
+    </ResponsiveTableFrame>
   );
 }

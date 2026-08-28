@@ -9,8 +9,9 @@ if (!baseUrlValue) throw new Error("Indica la URL: yarn smoke:production https:/
 const baseUrl = new URL(baseUrlValue);
 
 const PAGES: SmokeExpectation[] = [
-  { contains: "¿Qué deseas aprender o descubrir?", path: "/", status: 200 },
+  { contains: "¿Qué deseas encontrar?", path: "/", status: 200 },
   { path: "/eventos", status: 200 },
+  { contains: "Reserva tu lugar", path: "/eventos/encuentro-empresarial-cci-2026", status: 200 },
   { path: "/capacitaciones", status: 200 },
   { path: "/cursos", status: 200 },
   { path: "/login", status: 200 },

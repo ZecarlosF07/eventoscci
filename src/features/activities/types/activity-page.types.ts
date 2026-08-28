@@ -42,6 +42,10 @@ export function parsePublicFilters(
   };
 }
 
+export function hasPublicActivityFilters(filters: ActivityFilters): boolean {
+  return Object.values(filters).some(Boolean);
+}
+
 export function parseAdminFilters(
   params: Record<string, string | string[] | undefined>,
   type: ActivityType,

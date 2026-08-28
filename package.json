@@ -13,6 +13,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test:unit": "node --import tsx --test tests/unit/**/*.test.ts",
     "lint": "eslint",
     "preview:certificate": "node --import tsx scripts/render-certificate-preview.ts",
     "production:check": "node --import tsx scripts/production-check.ts",

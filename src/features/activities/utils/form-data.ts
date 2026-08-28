@@ -50,11 +50,13 @@ export function parseActivityFormData(formData: FormData): ActivityFormInput {
     id: stringValue(formData, "id"),
     is_free: formData.get("is_free") === "on",
     location_name: stringValue(formData, "location_name"),
+    maps_embed_url: stringValue(formData, "maps_embed_url"),
     member_price: stringValue(formData, "member_price"),
     members_only: formData.get("members_only") === "on",
     modality: stringValue(formData, "modality") as ActivityFormInput["modality"],
     objective: stringValue(formData, "objective"),
     program: stringValue(formData, "program"),
+    program_image_paths: formData.getAll("program_image_paths").map(String),
     registration_close_at: stringValue(formData, "registration_close_at"),
     registration_open_at: stringValue(formData, "registration_open_at"),
     registrations_closed_manually:

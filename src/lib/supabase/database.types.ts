@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.17"
   }
   graphql_public: {
     Tables: {
@@ -60,11 +60,13 @@ export type Database = {
           id: string
           is_free: boolean
           location_name: string | null
+          maps_embed_url: string | null
           member_price: number
           members_only: boolean
           modality: Database["public"]["Enums"]["activity_modality"]
           objective: string | null
           program: string | null
+          program_image_paths: string[]
           published_at: string | null
           registration_close_at: string | null
           registration_open_at: string | null
@@ -100,11 +102,13 @@ export type Database = {
           id?: string
           is_free?: boolean
           location_name?: string | null
+          maps_embed_url?: string | null
           member_price?: number
           members_only?: boolean
           modality: Database["public"]["Enums"]["activity_modality"]
           objective?: string | null
           program?: string | null
+          program_image_paths?: string[]
           published_at?: string | null
           registration_close_at?: string | null
           registration_open_at?: string | null
@@ -140,11 +144,13 @@ export type Database = {
           id?: string
           is_free?: boolean
           location_name?: string | null
+          maps_embed_url?: string | null
           member_price?: number
           members_only?: boolean
           modality?: Database["public"]["Enums"]["activity_modality"]
           objective?: string | null
           program?: string | null
+          program_image_paths?: string[]
           published_at?: string | null
           registration_close_at?: string | null
           registration_open_at?: string | null

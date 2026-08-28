@@ -19,10 +19,10 @@ export function CourseDetailTemplate({ account, course, enrollmentStatus }: Cour
   const conversionProps = { course, enrollmentStatus, isAuthenticated: Boolean(account), nextPath };
 
   return (
-    <article className="mx-auto w-full max-w-7xl px-5 pb-28 pt-10 sm:px-8 sm:pt-14 lg:pb-16">
+    <article className="mx-auto w-full max-w-7xl px-4 pb-28 pt-7 sm:px-6 sm:pt-12 lg:px-8 lg:pb-16">
       <Link className="text-sm font-bold text-cci-700 hover:text-cci-950" href="/cursos">← Volver a cursos</Link>
 
-      <header className="mt-6 grid gap-8 rounded-[2rem] bg-cci-950 px-6 py-8 text-white lg:grid-cols-[1fr_22rem] lg:items-center lg:px-10 lg:py-10">
+      <header className="mt-5 grid gap-7 rounded-2xl bg-cci-950 px-5 py-7 text-white sm:mt-6 sm:rounded-[2rem] sm:px-7 sm:py-8 lg:grid-cols-[1fr_22rem] lg:items-center lg:px-10 lg:py-10">
         <div>
           <div className="flex flex-wrap gap-2"><Badge>Curso grabado</Badge>{course.is_free ? <Badge variant="success">Gratuito</Badge> : null}</div>
           <Heading className="mt-5 max-w-3xl text-white" level={1}>{course.title}</Heading>
@@ -37,10 +37,10 @@ export function CourseDetailTemplate({ account, course, enrollmentStatus }: Cour
         <CourseConversionPanel {...conversionProps} />
       </header>
 
-      {bannerUrl ? <div className="relative mt-8 aspect-[16/7] overflow-hidden rounded-3xl bg-cci-100"><Image alt={`Portada de ${course.title}`} className="object-cover" fill preload sizes="(min-width: 1280px) 1216px, 100vw" src={bannerUrl} /></div> : null}
+      {bannerUrl ? <div className="relative mt-6 aspect-[4/3] overflow-hidden rounded-2xl bg-cci-100 sm:mt-8 sm:aspect-[16/7] sm:rounded-3xl"><Image alt={`Portada de ${course.title}`} className="object-cover" fill preload sizes="(min-width: 1280px) 1216px, 100vw" src={bannerUrl} /></div> : null}
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_0.48fr] lg:items-start">
-        <div className="space-y-8 rounded-3xl bg-white p-6 sm:p-8">
+        <div className="space-y-8 rounded-2xl bg-white p-5 sm:rounded-3xl sm:p-8">
           <section><Heading level={2}>Lo que encontrarás en este curso</Heading><Text className="mt-3 whitespace-pre-line leading-7">{course.description}</Text></section>
           {course.objectives ? <section className="border-t border-cci-100 pt-7"><Heading level={2}>Qué lograrás</Heading><Text className="mt-3 whitespace-pre-line leading-7">{course.objectives}</Text></section> : null}
           {course.contents_overview ? <section className="border-t border-cci-100 pt-7"><Heading level={2}>Contenido general</Heading><Text className="mt-3 whitespace-pre-line leading-7">{course.contents_overview}</Text></section> : null}

@@ -1,6 +1,6 @@
 export function HomeSearch() {
   return (
-    <section aria-labelledby="home-search-title" className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-5 sm:px-8">
+    <section aria-labelledby="home-search-title" className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4 sm:px-6 lg:px-8">
       <form action="/buscar" className="rounded-3xl border border-cci-100 bg-white p-4 shadow-xl shadow-cci-950/8 sm:p-5">
         <label className="font-semibold text-cci-950" htmlFor="home-search" id="home-search-title">
           ¿Qué deseas encontrar?

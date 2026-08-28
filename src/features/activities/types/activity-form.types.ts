@@ -35,11 +35,13 @@ export interface ActivityFormInput {
   id: string;
   is_free: boolean;
   location_name: string;
+  maps_embed_url: string;
   member_price: string;
   members_only: boolean;
   modality: ActivityModality;
   objective: string;
   program: string;
+  program_image_paths: string[];
   registration_close_at: string;
   registration_open_at: string;
   registrations_closed_manually: boolean;

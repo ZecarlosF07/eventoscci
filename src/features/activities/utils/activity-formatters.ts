@@ -59,12 +59,22 @@ export function getNextActivityDate(dates: ActivityDateRow[]): ActivityDateRow |
   return upcoming ?? activeDates[0] ?? null;
 }
 
-export function getActivityBannerUrl(path: string | null): string | null {
+export function getUpcomingActivityDate(dates: ActivityDateRow[]): ActivityDateRow | null {
+  return dates
+    .filter((date) => !date.deleted_at && new Date(date.starts_at) >= new Date())
+    .sort((first, second) => first.starts_at.localeCompare(second.starts_at))[0] ?? null;
+}
+
+export function getActivityImageUrl(path: string | null): string | null {
   if (!path) return null;
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
 
   const { supabaseUrl } = getPublicEnv();
   return `${supabaseUrl}/storage/v1/object/public/activity-images/${path}`;
+}
+
+export function getActivityBannerUrl(path: string | null): string | null {
+  return getActivityImageUrl(path);
 }
 
 export function getModalityLabel(modality: ActivityModality): string {
