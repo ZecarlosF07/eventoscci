@@ -67,7 +67,7 @@ export function getUpcomingActivityDate(dates: ActivityDateRow[]): ActivityDateR
 
 export function getActivityImageUrl(path: string | null): string | null {
   if (!path) return null;
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  if (path.startsWith("/") || path.startsWith("http://") || path.startsWith("https://")) return path;
 
   const { supabaseUrl } = getPublicEnv();
   return `${supabaseUrl}/storage/v1/object/public/activity-images/${path}`;

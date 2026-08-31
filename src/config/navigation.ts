@@ -6,7 +6,6 @@ export const PUBLIC_NAVIGATION: NavigationItem[] = [
   { href: ROUTES.events, label: "Eventos" },
   { href: ROUTES.trainings, label: "Capacitaciones" },
   { href: ROUTES.courses, label: "Cursos" },
-  { href: ROUTES.campus, label: "Campus" },
 ];
 
 export const ADMIN_NAVIGATION: NavigationItem[] = [

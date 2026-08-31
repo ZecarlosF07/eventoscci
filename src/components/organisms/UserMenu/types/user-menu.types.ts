@@ -1,5 +1,8 @@
-import type { CurrentAccount } from "@/features/auth/types/auth.types";
+import type { PublicHeaderAccount, PublicHeaderTone } from "@/components/organisms/PublicHeader/types/public-header.types";
 
 export interface UserMenuProps {
-  account: CurrentAccount | null;
+  account: PublicHeaderAccount | null;
+  layout?: "desktop" | "mobile";
+  onNavigate?: () => void;
+  tone?: PublicHeaderTone;
 }

@@ -45,7 +45,7 @@ export function LoginForm({ next, portal = "public" }: LoginFormProps) {
         </p>
       ) : null}
       <Button className="w-full" disabled={pending} type="submit">
-        {pending ? "Verificando…" : "Ingresar"}
+        {pending ? "Verificando…" : portal === "public" ? "Ingresar al Campus" : "Ingresar"}
       </Button>
     </form>
   );

@@ -11,10 +11,10 @@ const baseUrl = new URL(baseUrlValue);
 const PAGES: SmokeExpectation[] = [
   { contains: "¿Qué deseas encontrar?", path: "/", status: 200 },
   { path: "/eventos", status: 200 },
-  { contains: "Reserva tu lugar", path: "/eventos/encuentro-empresarial-cci-2026", status: 200 },
   { path: "/capacitaciones", status: 200 },
+  { contains: "Reserva tu lugar", path: "/capacitaciones/laboratorio-ventas-digitales-cci", status: 200 },
   { path: "/cursos", status: 200 },
-  { path: "/login", status: 200 },
+  { contains: "Ingresa a tu Campus CCI", path: "/login", status: 200 },
   { path: "/registro", status: 200 },
   { path: "/ruta-inexistente-hito-12", status: 404 },
 ];

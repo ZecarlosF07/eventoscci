@@ -74,81 +74,60 @@ on conflict (document_type, document_number) do update set
   deleted_at = null,
   deleted_by = null;
 
+delete from public.registrations
+where activity_id in (
+  '40000000-0000-4000-8000-000000000001',
+  '40000000-0000-4000-8000-000000000002'
+);
+
+delete from public.activities
+where id in (
+  '40000000-0000-4000-8000-000000000001',
+  '40000000-0000-4000-8000-000000000002'
+);
+
 insert into public.activities (
   id, category_id, type, title, slug, short_description, description,
   objective, target_audience, modality, location_name, address, maps_embed_url, virtual_url,
-  duration_text, academic_hours, program, syllabus, is_free, general_price,
+  duration_text, academic_hours, program, syllabus, program_image_paths, is_free, general_price,
   member_price, members_only, capacity, registration_open_at,
   registration_close_at, contact_name, contact_phone, contact_email,
   additional_info, status, published_at
 )
-values
-  (
-    '40000000-0000-4000-8000-000000000001',
-    '10000000-0000-4000-8000-000000000001',
-    'event',
-    'Encuentro Empresarial CCI 2026',
-    'encuentro-empresarial-cci-2026',
-    'Conexiones y perspectivas para impulsar empresas de la región.',
-    'Una jornada para compartir experiencias, generar alianzas y conocer oportunidades para el crecimiento empresarial de Ica.',
-    'Fortalecer el ecosistema empresarial regional mediante conocimiento y relacionamiento.',
-    'Empresarios, emprendedores y equipos directivos.',
-    'hybrid',
-    'Auditorio de la Cámara de Comercio de Ica',
-    'Calle Lima 123, Ica',
-    'https://www.google.com/maps/embed?pb=demo-cci-ica',
-    'https://meet.example.test/encuentro-cci',
-    'Dos jornadas',
-    12,
-    'Conferencias, panel empresarial y rueda de contactos.',
-    'Innovación regional, liderazgo y oportunidades de inversión.',
-    false,
-    120,
-    80,
-    false,
-    180,
-    '2026-08-01 13:00:00+00',
-    '2026-09-18 23:59:00+00',
-    'Área de Eventos CCI',
-    '956000000',
-    'eventos@example.test',
-    'Los asociados deberán presentar su identificación institucional.',
-    'published',
-    '2026-08-12 18:00:00+00'
-  ),
-  (
-    '40000000-0000-4000-8000-000000000002',
-    '10000000-0000-4000-8000-000000000005',
-    'training',
-    'Taller de Transformación Digital para Pymes',
-    'taller-transformacion-digital-pymes',
-    'Herramientas prácticas para digitalizar procesos comerciales.',
-    'Capacitación aplicada para identificar oportunidades de automatización, ordenar procesos y mejorar la experiencia de clientes.',
-    'Diseñar una hoja de ruta digital accionable para una pyme.',
-    'Propietarios, administradores y responsables comerciales de pymes.',
-    'virtual',
-    null,
-    null,
-    null,
-    'https://meet.example.test/taller-digital',
-    'Tres sesiones',
-    9,
-    'Diagnóstico, herramientas digitales y plan de implementación.',
-    'Procesos, ventas digitales, métricas y automatización.',
-    true,
-    0,
-    0,
-    false,
-    60,
-    '2026-08-01 13:00:00+00',
-    '2026-10-01 23:59:00+00',
-    'Área de Capacitaciones CCI',
-    '956000001',
-    'capacitaciones@example.test',
-    null,
-    'published',
-    '2026-08-12 18:00:00+00'
-  )
+values (
+  '4d000000-0000-4000-8000-000000000001',
+  '10000000-0000-4000-8000-000000000005',
+  'training',
+  'Laboratorio de ventas digitales CCI',
+  'laboratorio-ventas-digitales-cci',
+  'Convierte tu estrategia digital en un plan práctico para atraer y fidelizar clientes.',
+  'Una experiencia aplicada para fortalecer la presencia digital de tu empresa, optimizar cada punto de contacto y convertir oportunidades en relaciones comerciales sostenibles.',
+  'Diseñar un plan de ventas digitales accionable y medible para la empresa.',
+  'Emprendedores, responsables comerciales y equipos de marketing de pequeñas y medianas empresas.',
+  'virtual',
+  null,
+  null,
+  null,
+  'https://camaraica.org.pe/',
+  '4 horas',
+  4,
+  null,
+  null,
+  array['/demo/programa-laboratorio-ventas-digitales-cci.png']::text[],
+  true,
+  0,
+  0,
+  false,
+  60,
+  '2026-08-28 05:00:00+00',
+  '2026-10-21 23:00:00+00',
+  'Cámara de Comercio de Ica',
+  '956000001',
+  'eventos@camaraica.org.pe',
+  'El enlace de acceso será enviado a los participantes inscritos.',
+  'published',
+  '2026-08-28 14:00:00+00'
+)
 on conflict (id) do update set
   category_id = excluded.category_id,
   type = excluded.type,
@@ -167,6 +146,7 @@ on conflict (id) do update set
   academic_hours = excluded.academic_hours,
   program = excluded.program,
   syllabus = excluded.syllabus,
+  program_image_paths = excluded.program_image_paths,
   is_free = excluded.is_free,
   general_price = excluded.general_price,
   member_price = excluded.member_price,
@@ -188,36 +168,12 @@ insert into public.activity_dates (
 )
 values
   (
-    '50000000-0000-4000-8000-000000000001',
-    '40000000-0000-4000-8000-000000000001',
-    '2026-09-21 14:00:00+00',
-    '2026-09-21 22:00:00+00',
-    'Día 1',
+    '5d000000-0000-4000-8000-000000000001',
+    '4d000000-0000-4000-8000-000000000001',
+    '2026-10-22 14:00:00+00',
+    '2026-10-22 18:00:00+00',
+    'Sesión virtual en vivo',
     0
-  ),
-  (
-    '50000000-0000-4000-8000-000000000002',
-    '40000000-0000-4000-8000-000000000001',
-    '2026-09-22 14:00:00+00',
-    '2026-09-22 19:00:00+00',
-    'Día 2',
-    1
-  ),
-  (
-    '50000000-0000-4000-8000-000000000003',
-    '40000000-0000-4000-8000-000000000002',
-    '2026-10-05 23:00:00+00',
-    '2026-10-06 02:00:00+00',
-    'Sesión 1',
-    0
-  ),
-  (
-    '50000000-0000-4000-8000-000000000004',
-    '40000000-0000-4000-8000-000000000002',
-    '2026-10-07 23:00:00+00',
-    '2026-10-08 02:00:00+00',
-    'Sesión 2',
-    1
   )
 on conflict (id) do update set
   activity_id = excluded.activity_id,
@@ -231,17 +187,10 @@ insert into public.activity_speakers (
 )
 values
   (
-    '60000000-0000-4000-8000-000000000001',
-    '40000000-0000-4000-8000-000000000001',
+    '6d000000-0000-4000-8000-000000000001',
+    '4d000000-0000-4000-8000-000000000001',
     '20000000-0000-4000-8000-000000000001',
-    'Ponente principal',
-    0
-  ),
-  (
-    '60000000-0000-4000-8000-000000000002',
-    '40000000-0000-4000-8000-000000000002',
-    '20000000-0000-4000-8000-000000000001',
-    'Especialista invitada',
+    'Facilitadora',
     0
   )
 on conflict (activity_id, speaker_id) where deleted_at is null do update set

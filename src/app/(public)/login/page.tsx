@@ -10,7 +10,7 @@ import type { AuthPageProps } from "@/features/auth/types/auth.types";
 import { loginErrorMessage } from "@/features/auth/utils/auth-errors";
 import { safeAuthRedirect } from "@/features/auth/utils/safe-auth-redirect";
 
-export const metadata: Metadata = { description: "Accede a tu cuenta del Campus Virtual de la Cámara de Comercio de Ica.", title: "Iniciar sesión" };
+export const metadata: Metadata = { description: "Ingresa al Campus Virtual de la Cámara de Comercio de Ica para continuar tu formación.", title: "Ingresa a tu Campus CCI" };
 
 export default async function LoginPage({ searchParams }: AuthPageProps) {
   const params = await searchParams;
@@ -24,5 +24,5 @@ export default async function LoginPage({ searchParams }: AuthPageProps) {
   }
   const errorCode = typeof params.error === "string" ? params.error : undefined;
   const registerHref = hasCourseIntent ? `${ROUTES.register}?next=${encodeURIComponent(destination)}` : ROUTES.register;
-  return <AuthTemplate description={hasCourseIntent ? "Ingresa a tu cuenta para volver al curso y completar la inscripción." : "Usa el correo y la contraseña de tu cuenta."} footer={<div className="flex flex-wrap justify-between gap-3"><Link className="font-semibold" href={ROUTES.forgotPassword}>Olvidé mi contraseña</Link><Link className="font-semibold" href={registerHref}>Crear cuenta para el Campus</Link></div>} title={hasCourseIntent ? "Continúa tu inscripción" : "Iniciar sesión"}><LoginForm next={hasCourseIntent ? destination : nextValue} />{errorCode ? <p className="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">{loginErrorMessage(errorCode)}</p> : null}</AuthTemplate>;
+  return <AuthTemplate description={hasCourseIntent ? "Ingresa a tu cuenta para volver al curso y completar la inscripción." : "Continúa tus cursos, revisa tu progreso y descarga tus certificados desde un solo lugar."} footer={<div className="flex flex-wrap justify-between gap-3"><Link className="font-semibold" href={ROUTES.forgotPassword}>Olvidé mi contraseña</Link><Link className="font-semibold" href={registerHref}>Crear cuenta para el Campus</Link></div>} title={hasCourseIntent ? "Continúa tu inscripción" : "Ingresa a tu Campus CCI"}><LoginForm next={hasCourseIntent ? destination : nextValue} />{errorCode ? <p className="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">{loginErrorMessage(errorCode)}</p> : null}</AuthTemplate>;
 }

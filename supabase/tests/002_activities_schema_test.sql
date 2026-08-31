@@ -1,6 +1,6 @@
 begin;
 
-select plan(37);
+select plan(39);
 
 select ok(to_regtype('public.activity_type') is not null, 'activity_type enum exists');
 select ok(to_regtype('public.activity_modality') is not null, 'activity_modality enum exists');
@@ -111,46 +111,51 @@ select is(
   (
     select count(*)
     from public.activities
-    where id in (
-      '40000000-0000-4000-8000-000000000001',
-      '40000000-0000-4000-8000-000000000002'
-    )
+    where id = '4d000000-0000-4000-8000-000000000001'
       and deleted_at is null
   ),
-  2::bigint,
-  'two seeded activities exist'
+  1::bigint,
+  'one visual-program activity is seeded'
+);
+select is(
+  (
+    select count(*) from public.activity_dates
+    where activity_id = '4d000000-0000-4000-8000-000000000001'
+      and deleted_at is null
+  ),
+  1::bigint,
+  'seeded activity includes its date'
+);
+select is(
+  (
+    select cardinality(program_image_paths)
+    from public.activities
+    where id = '4d000000-0000-4000-8000-000000000001'
+  ),
+  1,
+  'seeded activity uses one visual program page'
 );
 select is(
   (
     select count(*)
-    from (
-      select activity_id
-      from public.activity_dates
-      where activity_id in (
-        '40000000-0000-4000-8000-000000000001',
-        '40000000-0000-4000-8000-000000000002'
-      )
-        and deleted_at is null
-      group by activity_id
-      having count(*) >= 2
-    ) seeded_activity_dates
+    from public.activities
+    where id = '4d000000-0000-4000-8000-000000000001'
+      and program is null
+      and syllabus is null
   ),
-  2::bigint,
-  'seeded activities include multiple dates'
+  1::bigint,
+  'seeded activity does not duplicate program as text'
 );
 select is(
   (
     select count(*)
     from public.activity_speakers
-    where activity_id in (
-      '40000000-0000-4000-8000-000000000001',
-      '40000000-0000-4000-8000-000000000002'
-    )
+    where activity_id = '4d000000-0000-4000-8000-000000000001'
       and speaker_id = '20000000-0000-4000-8000-000000000001'
       and deleted_at is null
   ),
-  2::bigint,
-  'seeded activities include speakers'
+  1::bigint,
+  'seeded activity includes its speaker'
 );
 
 insert into public.activities (
@@ -168,9 +173,9 @@ insert into public.activities (
 set local role anon;
 
 select is(
-  (select count(*) from public.activities where type = 'event'),
+  (select count(*) from public.activities where type = 'training'),
   1::bigint,
-  'anonymous visitors only see public events'
+  'anonymous visitors see the published training'
 );
 select is(
   (select count(*) from public.activities where slug = 'borrador-no-publico'),
@@ -217,7 +222,7 @@ select set_config('request.jwt.claim.sub', '80000000-0000-4000-8000-000000000001
 
 select is(public.is_active_admin(), false, 'student is not an active administrator');
 select throws_ok(
-  $$select public.set_activity_status('40000000-0000-4000-8000-000000000001', 'cancelled')$$,
+  $$select public.set_activity_status('4d000000-0000-4000-8000-000000000001', 'cancelled')$$,
   '42501',
   'No autorizado para cambiar el estado.',
   'student cannot mutate activity status'
@@ -273,7 +278,7 @@ select is(
   'atomic save persists multiple dates'
 );
 select lives_ok(
-  $$select public.set_activity_status('40000000-0000-4000-8000-000000000001', 'cancelled')$$,
+  $$select public.set_activity_status('4d000000-0000-4000-8000-000000000001', 'cancelled')$$,
   'administrator can mutate activity status'
 );
 
