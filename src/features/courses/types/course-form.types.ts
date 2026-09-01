@@ -1,4 +1,5 @@
 import type { CourseDetail, CourseStatus } from "@/features/courses/types/course.types";
+import type { SpeakerSummary } from "@/features/speakers/types/speaker.types";
 
 export interface CourseInstructorInput {
   is_primary: boolean;
@@ -35,12 +36,7 @@ export interface CourseFormState {
 
 export interface CourseFormProps {
   course?: CourseDetail;
-  speakers: Array<{
-    first_names: string;
-    id: string;
-    last_names: string;
-    organization: string | null;
-  }>;
+  speakers: SpeakerSummary[];
 }
 
 export interface CourseInstructorFieldsProps {

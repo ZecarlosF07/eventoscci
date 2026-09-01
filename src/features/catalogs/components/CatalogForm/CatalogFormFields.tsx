@@ -1,0 +1,34 @@
+import Image from "next/image";
+
+import { Checkbox } from "@/components/atoms/Checkbox";
+import { Input } from "@/components/atoms/Input";
+import { Label } from "@/components/atoms/Label";
+import { Textarea } from "@/components/atoms/Textarea";
+import { FormField } from "@/components/molecules/FormField";
+import type { ActiveFieldProps, CatalogFormFieldsProps } from "@/features/catalogs/components/CatalogForm/types/catalog-form.types";
+import type { ActivityContact, CategoryRecord, SpeakerAdminRecord, Venue } from "@/features/catalogs/types/catalog.types";
+import { getSpeakerImageUrl } from "@/features/speakers/utils/speaker-image";
+
+export function CatalogFormFields({ errors, kind, record }: CatalogFormFieldsProps) {
+  const error = (name: string) => errors?.[name]?.[0];
+  if (kind === "venues") {
+    const venue = record as Venue | undefined;
+    return <div className="grid gap-5 md:grid-cols-2"><FormField error={error("name")} label="Nombre del lugar" name="name" required><Input defaultValue={venue?.name} id="name" name="name" required /></FormField><FormField error={error("address")} label="Dirección" name="address" required><Input defaultValue={venue?.address} id="address" name="address" required /></FormField><div className="md:col-span-2"><FormField error={error("maps_embed_url")} hint="Usa Compartir → Insertar un mapa y copia el atributo src." label="URL de inserción de Google Maps" name="maps_embed_url" required><Input defaultValue={venue?.maps_embed_url} id="maps_embed_url" name="maps_embed_url" required type="url" /></FormField></div><FormField error={error("reference")} label="Referencia" name="reference"><Input defaultValue={venue?.reference ?? ""} id="reference" name="reference" /></FormField><ActiveField value={venue?.is_active ?? true} /></div>;
+  }
+  if (kind === "contacts") {
+    const contact = record as ActivityContact | undefined;
+    return <div className="grid gap-5 md:grid-cols-2"><FormField error={error("label")} label="Nombre identificador" name="label" required><Input defaultValue={contact?.label} id="label" name="label" required /></FormField><FormField error={error("contact_name")} label="Responsable" name="contact_name" required><Input defaultValue={contact?.contact_name} id="contact_name" name="contact_name" required /></FormField><FormField error={error("whatsapp_phone")} label="WhatsApp" name="whatsapp_phone" required><Input defaultValue={contact?.whatsapp_phone} id="whatsapp_phone" name="whatsapp_phone" required type="tel" /></FormField><FormField error={error("email")} label="Correo" name="email"><Input defaultValue={contact?.email ?? ""} id="email" name="email" type="email" /></FormField><ActiveField value={contact?.is_active ?? true} /><Label className="flex items-center gap-2" htmlFor="is_default"><Checkbox defaultChecked={contact?.is_default} id="is_default" name="is_default" /> Predeterminado</Label></div>;
+  }
+  if (kind === "categories") {
+    const category = record as CategoryRecord | undefined;
+    return <div className="grid gap-5 md:grid-cols-2"><FormField error={error("name")} label="Nombre" name="name" required><Input defaultValue={category?.name} id="name" name="name" required /></FormField><FormField error={error("slug")} hint="Vacío: se genera desde el nombre." label="Slug" name="slug"><Input defaultValue={category?.slug} id="slug" name="slug" /></FormField><div className="md:col-span-2"><FormField error={error("description")} label="Descripción" name="description"><Textarea defaultValue={category?.description ?? ""} id="description" name="description" /></FormField></div><FormField error={error("sort_order")} label="Orden" name="sort_order"><Input defaultValue={category?.sort_order ?? 0} id="sort_order" min="0" name="sort_order" type="number" /></FormField><ActiveField value={category?.is_active ?? true} /></div>;
+  }
+  const speaker = record as SpeakerAdminRecord | undefined;
+  const privateDetails = speaker?.private_details;
+  const photoUrl = getSpeakerImageUrl(speaker?.photo_path ?? null);
+  return <div className="grid gap-5 md:grid-cols-2"><FormField error={error("first_names")} label="Nombres" name="first_names" required><Input defaultValue={speaker?.first_names} id="first_names" name="first_names" required /></FormField><FormField error={error("last_names")} label="Apellidos" name="last_names" required><Input defaultValue={speaker?.last_names} id="last_names" name="last_names" required /></FormField><FormField error={error("professional_title")} label="Cargo o título profesional" name="professional_title"><Input defaultValue={speaker?.professional_title ?? ""} id="professional_title" name="professional_title" /></FormField><FormField error={error("organization")} label="Organización" name="organization"><Input defaultValue={speaker?.organization ?? ""} id="organization" name="organization" /></FormField><div className="md:col-span-2"><FormField error={error("specialties")} hint="Separadas por comas." label="Especialidades" name="specialties"><Input defaultValue={speaker?.specialties.join(", ")} id="specialties" name="specialties" /></FormField></div><FormField error={error("linkedin_url")} label="LinkedIn público" name="linkedin_url"><Input defaultValue={speaker?.linkedin_url ?? ""} id="linkedin_url" name="linkedin_url" type="url" /></FormField><FormField error={error("website_url")} label="Sitio web público" name="website_url"><Input defaultValue={speaker?.website_url ?? ""} id="website_url" name="website_url" type="url" /></FormField><div className="md:col-span-2"><FormField error={error("bio")} label="Biografía pública" name="bio"><Textarea defaultValue={speaker?.bio ?? ""} id="bio" name="bio" /></FormField></div><FormField error={error("email")} label="Correo interno" name="email"><Input defaultValue={privateDetails?.email ?? ""} id="email" name="email" type="email" /></FormField><FormField error={error("phone")} label="Teléfono interno" name="phone"><Input defaultValue={privateDetails?.phone ?? ""} id="phone" name="phone" type="tel" /></FormField><div className="md:col-span-2"><FormField error={error("notes")} label="Notas internas" name="notes"><Textarea defaultValue={privateDetails?.notes ?? ""} id="notes" name="notes" /></FormField></div><FormField error={error("photo")} hint="JPG, PNG o WebP. Máximo 5 MB." label="Fotografía" name="photo"><Input accept="image/jpeg,image/png,image/webp" id="photo" name="photo" type="file" /></FormField>{photoUrl ? <Image alt={`Fotografía de ${speaker?.first_names ?? "ponente"}`} className="size-24 rounded-2xl object-cover" height={96} src={photoUrl} width={96} /> : null}<ActiveField value={speaker?.is_active ?? true} /></div>;
+}
+
+function ActiveField({ value }: ActiveFieldProps) {
+  return <Label className="flex items-center gap-2" htmlFor="is_active"><Checkbox defaultChecked={value} id="is_active" name="is_active" /> Disponible para nuevas selecciones</Label>;
+}

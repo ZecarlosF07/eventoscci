@@ -77,8 +77,8 @@ export async function saveActivityAction(
         fallback: "No se pudo guardar la actividad. Actualiza la página e inténtalo nuevamente.",
         messages: {
           "activities_maps_embed_url_valid": "La URL del mapa no corresponde a una inserción válida de Google Maps.",
-          "activities_published_map_required": "Agrega el mapa antes de publicar una actividad presencial o híbrida.",
-          "activities_published_whatsapp_required": "Ingresa un número de WhatsApp válido antes de publicar.",
+          "activities_published_venue_required": "Selecciona un lugar activo antes de publicar una actividad presencial o híbrida.",
+          "activities_published_contact_required": "Selecciona un contacto activo antes de publicar.",
           "La actividad requiere al menos una fecha": "Agrega al menos una fecha y horario para guardar la actividad.",
         },
       }),
@@ -120,8 +120,8 @@ export async function changeActivityStatusAction(
     throw new Error(getSupabaseErrorMessage(error, {
       fallback: "No fue posible cambiar el estado.",
       messages: {
-        "activities_published_map_required": "Agrega el mapa antes de publicar una actividad presencial o híbrida.",
-        "activities_published_whatsapp_required": "Ingresa un número de WhatsApp válido antes de publicar.",
+        "activities_published_venue_required": "Selecciona un lugar activo antes de publicar una actividad presencial o híbrida.",
+        "activities_published_contact_required": "Selecciona un contacto activo antes de publicar.",
       },
     }), { cause: error });
   }

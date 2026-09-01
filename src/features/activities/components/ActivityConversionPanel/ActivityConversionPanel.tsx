@@ -20,7 +20,7 @@ export function ActivityConversionPanel({
   availability,
   initialNow,
 }: ActivityConversionPanelProps) {
-  const whatsAppUrl = getWhatsAppUrl(activity.contact_phone, activity.title);
+  const whatsAppUrl = getWhatsAppUrl(activity.contact?.whatsapp_phone ?? null, activity.title);
   const canCountDown = Boolean(
     availability?.is_open &&
     activity.registration_close_at &&
@@ -46,8 +46,8 @@ export function ActivityConversionPanel({
       {whatsAppUrl ? <a className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-cci-300 bg-white px-4 py-2 text-sm font-semibold text-cci-950 transition hover:border-cci-600 hover:bg-cci-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-800" href={whatsAppUrl} rel="noreferrer" target="_blank"><WhatsAppIcon /> Quiero más información</a> : null}
       <dl className="mt-6 space-y-3 border-t border-cci-100 pt-5 text-sm">
         {activity.capacity ? <div className="flex justify-between gap-4"><dt className="text-slate-500">Capacidad</dt><dd className="font-semibold text-cci-950">{activity.capacity} personas</dd></div> : null}
-        {activity.location_name ? <div><dt className="text-slate-500">Lugar</dt><dd className="mt-1 font-semibold text-cci-950">{activity.location_name}</dd></div> : null}
-        {activity.contact_name ? <div><dt className="text-slate-500">Contacto</dt><dd className="mt-1 font-semibold text-cci-950">{activity.contact_name}</dd></div> : null}
+        {activity.venue ? <div><dt className="text-slate-500">Lugar</dt><dd className="mt-1 font-semibold text-cci-950">{activity.venue.name}</dd></div> : null}
+        {activity.contact ? <div><dt className="text-slate-500">Contacto</dt><dd className="mt-1 font-semibold text-cci-950">{activity.contact.contact_name}</dd></div> : null}
       </dl>
     </aside>
   );

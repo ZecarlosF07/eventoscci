@@ -1,8 +1,5 @@
 import { z } from "zod";
 
-import { normalizeWhatsAppPhone } from "@/features/activities/utils/activity-contact";
-import { isGoogleMapsEmbedUrl } from "@/features/activities/utils/activity-maps";
-
 const optionalText = z.string().trim();
 const nonnegativeNumber = z
   .string()
@@ -25,27 +22,19 @@ export const activityFormSchema = z
   .object({
     academic_hours: nonnegativeNumber,
     additional_info: optionalText,
-    address: optionalText,
     banner_path: optionalText,
     capacity: z
       .string()
       .refine((value) => !value || Number.isInteger(Number(value)), "Debe ser un número entero.")
       .refine((value) => !value || Number(value) > 0, "Debe ser mayor que cero."),
     category_id: z.union([z.uuid(), z.literal("")]),
-    contact_email: z.union([z.email("Ingresa un correo válido."), z.literal("")]),
-    contact_name: optionalText,
-    contact_phone: optionalText,
+    contact_id: z.union([z.uuid(), z.literal("")]),
     dates: z.array(activityDateSchema).min(1, "Agrega al menos una fecha."),
     description: z.string().trim().min(10, "La descripción debe tener al menos 10 caracteres."),
     duration_text: optionalText,
     general_price: nonnegativeNumber,
     id: z.union([z.uuid(), z.literal("")]),
     is_free: z.boolean(),
-    location_name: optionalText,
-    maps_embed_url: optionalText.refine(
-      (value) => !value || isGoogleMapsEmbedUrl(value),
-      "Ingresa una URL de inserción válida de Google Maps.",
-    ),
     member_price: nonnegativeNumber,
     members_only: z.boolean(),
     modality: z.enum(["in_person", "virtual", "hybrid"]),
@@ -69,6 +58,7 @@ export const activityFormSchema = z
     target_audience: optionalText,
     title: z.string().trim().min(3, "El título debe tener al menos 3 caracteres."),
     type: z.enum(["event", "training"]),
+    venue_id: z.union([z.uuid(), z.literal("")]),
     virtual_url: z.union([z.url("Ingresa una URL válida."), z.literal("")]),
   })
   .superRefine((data, context) => {
@@ -82,28 +72,25 @@ export const activityFormSchema = z
     ) {
       context.addIssue({ code: "custom", message: "El cierre debe ser posterior a la apertura.", path: ["registration_close_at"] });
     }
-    if (data.modality === "in_person" && !data.location_name) {
-      context.addIssue({ code: "custom", message: "Indica el lugar de la actividad presencial.", path: ["location_name"] });
-    }
     if (data.modality === "virtual" && !data.virtual_url) {
       context.addIssue({ code: "custom", message: "Indica el enlace de la actividad virtual.", path: ["virtual_url"] });
     }
     if (
       data.status === "published" &&
       data.modality !== "virtual" &&
-      !data.maps_embed_url
+      !data.venue_id
     ) {
       context.addIssue({
         code: "custom",
-        message: "Agrega el mapa antes de publicar una actividad presencial o híbrida.",
-        path: ["maps_embed_url"],
+        message: "Selecciona un lugar activo antes de publicar una actividad presencial o híbrida.",
+        path: ["venue_id"],
       });
     }
-    if (data.status === "published" && !normalizeWhatsAppPhone(data.contact_phone)) {
+    if (data.status === "published" && !data.contact_id) {
       context.addIssue({
         code: "custom",
-        message: "Ingresa un número de WhatsApp válido antes de publicar.",
-        path: ["contact_phone"],
+        message: "Selecciona un contacto antes de publicar.",
+        path: ["contact_id"],
       });
     }
   });

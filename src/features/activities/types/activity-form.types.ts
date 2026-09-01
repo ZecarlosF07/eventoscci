@@ -4,6 +4,11 @@ import type {
   ActivityStatus,
   ActivityType,
 } from "@/features/activities/types/activity.types";
+import type {
+  ActivityContactSummary,
+  VenueSummary,
+} from "@/features/catalogs/types/catalog.types";
+import type { SpeakerSummary } from "@/features/speakers/types/speaker.types";
 
 export interface ActivityDateInput {
   ends_at: string;
@@ -21,21 +26,16 @@ export interface ActivitySpeakerInput {
 export interface ActivityFormInput {
   academic_hours: string;
   additional_info: string;
-  address: string;
   banner_path: string;
   capacity: string;
   category_id: string;
-  contact_email: string;
-  contact_name: string;
-  contact_phone: string;
+  contact_id: string;
   dates: ActivityDateInput[];
   description: string;
   duration_text: string;
   general_price: string;
   id: string;
   is_free: boolean;
-  location_name: string;
-  maps_embed_url: string;
   member_price: string;
   members_only: boolean;
   modality: ActivityModality;
@@ -53,6 +53,7 @@ export interface ActivityFormInput {
   target_audience: string;
   title: string;
   type: ActivityType;
+  venue_id: string;
   virtual_url: string;
 }
 
@@ -66,12 +67,9 @@ export interface ActivityFormState {
 
 export interface ActivityFormProps {
   activity?: ActivityDetail;
+  contacts: ActivityContactSummary[];
   categories: Array<{ id: string; name: string }>;
-  speakers: Array<{
-    first_names: string;
-    id: string;
-    last_names: string;
-    organization: string | null;
-  }>;
+  speakers: SpeakerSummary[];
   type: ActivityType;
+  venues: VenueSummary[];
 }

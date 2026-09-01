@@ -7,8 +7,9 @@ export async function getActiveSpeakers(
   const { data, error } = await client
     .from("speakers")
     .select(
-      "id, first_names, last_names, professional_title, organization",
+      "id, first_names, last_names, professional_title, organization, photo_path, linkedin_url, website_url, specialties, is_active",
     )
+    .eq("is_active", true)
     .is("deleted_at", null)
     .order("last_names", { ascending: true })
     .order("first_names", { ascending: true });

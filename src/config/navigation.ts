@@ -13,6 +13,7 @@ export const ADMIN_NAVIGATION: NavigationItem[] = [
   { href: ROUTES.adminEvents, label: "Eventos" },
   { href: ROUTES.adminTrainings, label: "Capacitaciones" },
   { href: ROUTES.adminCourses, label: "Cursos" },
+  { href: ROUTES.adminCatalogs, label: "Catálogos" },
   { href: ROUTES.adminRegistrations, label: "Inscripciones" },
   { href: ROUTES.adminParticipants, label: "Participantes" },
   { href: ROUTES.adminAttendance, label: "Asistencia" },

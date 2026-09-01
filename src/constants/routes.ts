@@ -1,6 +1,7 @@
 export const ROUTES = {
   admin: "/admin",
   adminActivities: "/admin/actividades",
+  adminCatalogs: "/admin/catalogos",
   adminAttendance: "/admin/asistencia",
   adminCertificates: "/admin/certificados",
   adminCertificatesActivities: "/admin/certificados/actividades",

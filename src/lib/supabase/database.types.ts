@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.17"
+    PostgrestVersion: "14.5"
   }
   graphql_public: {
     Tables: {
@@ -48,6 +48,7 @@ export type Database = {
           capacity: number | null
           category_id: string | null
           contact_email: string | null
+          contact_id: string | null
           contact_name: string | null
           contact_phone: string | null
           created_at: string
@@ -80,6 +81,7 @@ export type Database = {
           type: Database["public"]["Enums"]["activity_type"]
           updated_at: string
           updated_by: string | null
+          venue_id: string | null
           virtual_url: string | null
         }
         Insert: {
@@ -90,6 +92,7 @@ export type Database = {
           capacity?: number | null
           category_id?: string | null
           contact_email?: string | null
+          contact_id?: string | null
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
@@ -122,6 +125,7 @@ export type Database = {
           type: Database["public"]["Enums"]["activity_type"]
           updated_at?: string
           updated_by?: string | null
+          venue_id?: string | null
           virtual_url?: string | null
         }
         Update: {
@@ -132,6 +136,7 @@ export type Database = {
           capacity?: number | null
           category_id?: string | null
           contact_email?: string | null
+          contact_id?: string | null
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
@@ -164,6 +169,7 @@ export type Database = {
           type?: Database["public"]["Enums"]["activity_type"]
           updated_at?: string
           updated_by?: string | null
+          venue_id?: string | null
           virtual_url?: string | null
         }
         Relationships: [
@@ -174,7 +180,63 @@ export type Database = {
             referencedRelation: "categories"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "activities_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "activity_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      activity_contacts: {
+        Row: {
+          contact_name: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          email: string | null
+          id: string
+          is_active: boolean
+          is_default: boolean
+          label: string
+          updated_at: string
+          whatsapp_phone: string
+        }
+        Insert: {
+          contact_name: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          label: string
+          updated_at?: string
+          whatsapp_phone: string
+        }
+        Update: {
+          contact_name?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          label?: string
+          updated_at?: string
+          whatsapp_phone?: string
+        }
+        Relationships: []
       }
       activity_dates: {
         Row: {
@@ -1568,6 +1630,41 @@ export type Database = {
           },
         ]
       }
+      speaker_private_details: {
+        Row: {
+          created_at: string
+          email: string | null
+          notes: string | null
+          phone: string | null
+          speaker_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          notes?: string | null
+          phone?: string | null
+          speaker_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          notes?: string | null
+          phone?: string | null
+          speaker_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "speaker_private_details_speaker_id_fkey"
+            columns: ["speaker_id"]
+            isOneToOne: true
+            referencedRelation: "speakers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       speakers: {
         Row: {
           bio: string | null
@@ -1576,11 +1673,15 @@ export type Database = {
           deleted_by: string | null
           first_names: string
           id: string
+          is_active: boolean
           last_names: string
+          linkedin_url: string | null
           organization: string | null
           photo_path: string | null
           professional_title: string | null
+          specialties: string[]
           updated_at: string
+          website_url: string | null
         }
         Insert: {
           bio?: string | null
@@ -1589,11 +1690,15 @@ export type Database = {
           deleted_by?: string | null
           first_names: string
           id?: string
+          is_active?: boolean
           last_names: string
+          linkedin_url?: string | null
           organization?: string | null
           photo_path?: string | null
           professional_title?: string | null
+          specialties?: string[]
           updated_at?: string
+          website_url?: string | null
         }
         Update: {
           bio?: string | null
@@ -1602,11 +1707,15 @@ export type Database = {
           deleted_by?: string | null
           first_names?: string
           id?: string
+          is_active?: boolean
           last_names?: string
+          linkedin_url?: string | null
           organization?: string | null
           photo_path?: string | null
           professional_title?: string | null
+          specialties?: string[]
           updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
       }
@@ -1650,6 +1759,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      venues: {
+        Row: {
+          address: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          is_active: boolean
+          maps_embed_url: string
+          name: string
+          reference: string | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_active?: boolean
+          maps_embed_url: string
+          name: string
+          reference?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_active?: boolean
+          maps_embed_url?: string
+          name?: string
+          reference?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {

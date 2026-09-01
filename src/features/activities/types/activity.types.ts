@@ -14,15 +14,28 @@ export type ActivityCategory = Pick<
   "id" | "name" | "slug"
 >;
 
+export type ActivityVenue = Pick<
+  Tables<"venues">,
+  "address" | "id" | "maps_embed_url" | "name" | "reference"
+>;
+
+export type ActivityContact = Pick<
+  Tables<"activity_contacts">,
+  "contact_name" | "email" | "id" | "label" | "whatsapp_phone"
+>;
+
 export type ActivitySpeaker = Pick<
   Tables<"speakers">,
   | "bio"
   | "first_names"
   | "id"
+  | "linkedin_url"
   | "last_names"
   | "organization"
   | "photo_path"
   | "professional_title"
+  | "specialties"
+  | "website_url"
 > & {
   roleLabel: string | null;
   sortOrder: number;
@@ -54,8 +67,10 @@ export type ActivityListItem = Pick<
 
 export type ActivityDetail = ActivityRow & {
   category: ActivityCategory | null;
+  contact: ActivityContact | null;
   dates: ActivityDateRow[];
   speakers: ActivitySpeaker[];
+  venue: ActivityVenue | null;
 };
 
 export interface ActivityFilters {

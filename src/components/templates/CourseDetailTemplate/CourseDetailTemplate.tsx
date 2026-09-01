@@ -11,6 +11,7 @@ import { CourseEnrollmentCta } from "@/features/courses/components/CourseEnrollm
 import { CourseMobileEnrollmentBar } from "@/features/courses/components/CourseMobileEnrollmentBar";
 import { getCourseBannerUrl, getInstructorName } from "@/features/courses/utils/course-formatters";
 import { getPublicCourseRoute } from "@/features/courses/utils/course-routes";
+import { getSpeakerImageUrl } from "@/features/speakers/utils/speaker-image";
 
 export function CourseDetailTemplate({ account, course, enrollmentStatus }: CourseDetailTemplateProps) {
   const bannerUrl = getCourseBannerUrl(course.banner_path);
@@ -51,7 +52,7 @@ export function CourseDetailTemplate({ account, course, enrollmentStatus }: Cour
           {primary ? (
             <section className="rounded-3xl border border-cci-100 bg-white p-6">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-600">Instructor</p>
-              <Heading className="mt-2" level={2}>{getInstructorName(primary.speaker.first_names, primary.speaker.last_names)}</Heading>
+              <div className="mt-4 flex items-center gap-4">{getSpeakerImageUrl(primary.speaker.photo_path) ? <Image alt={`Fotografía de ${getInstructorName(primary.speaker.first_names, primary.speaker.last_names)}`} className="size-20 rounded-2xl object-cover" height={80} src={getSpeakerImageUrl(primary.speaker.photo_path)!} width={80} /> : <span aria-hidden="true" className="grid size-20 place-items-center rounded-2xl bg-cci-950 text-2xl font-bold text-cci-lime">{primary.speaker.first_names.charAt(0)}{primary.speaker.last_names.charAt(0)}</span>}<Heading level={2}>{getInstructorName(primary.speaker.first_names, primary.speaker.last_names)}</Heading></div>
               {primary.speaker.professional_title ? <Text className="mt-2 font-semibold text-cci-800" size="sm">{primary.speaker.professional_title}</Text> : null}
               {primary.speaker.organization ? <Text className="mt-1" size="sm">{primary.speaker.organization}</Text> : null}
               {primary.speaker.bio ? <Text className="mt-4 line-clamp-5" size="sm">{primary.speaker.bio}</Text> : null}

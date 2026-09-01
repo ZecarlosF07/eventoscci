@@ -6,11 +6,14 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 const ADMIN_ACTIVITY_DETAIL_SELECT = `
   *,
   category:categories!activities_category_id_fkey(id, name, slug),
+  contact:activity_contacts!activities_contact_id_fkey(id, label, contact_name, whatsapp_phone, email),
+  venue:venues!activities_venue_id_fkey(id, name, address, reference, maps_embed_url),
   dates:activity_dates(*),
   speaker_links:activity_speakers(
     role_label, sort_order, deleted_at,
     speaker:speakers!activity_speakers_speaker_id_fkey(
-      id, first_names, last_names, professional_title, organization, bio, photo_path
+      id, first_names, last_names, professional_title, organization, bio, photo_path,
+      linkedin_url, website_url, specialties
     )
   )
 `;

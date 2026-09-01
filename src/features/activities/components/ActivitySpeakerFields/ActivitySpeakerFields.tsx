@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 import { Checkbox } from "@/components/atoms/Checkbox";
@@ -7,6 +8,9 @@ import { Input } from "@/components/atoms/Input";
 import { Label } from "@/components/atoms/Label";
 import { Text } from "@/components/atoms/Text";
 import type { ActivitySpeakerFieldsProps } from "@/features/activities/components/ActivitySpeakerFields/types/activity-speaker-fields.types";
+import { CatalogQuickCreateDialog } from "@/features/catalogs/components/CatalogQuickCreateDialog";
+import type { CatalogOption } from "@/features/catalogs/types/catalog.types";
+import { getSpeakerImageUrl } from "@/features/speakers/utils/speaker-image";
 
 export function ActivitySpeakerFields({
   initialSpeakers,
@@ -14,6 +18,12 @@ export function ActivitySpeakerFields({
 }: ActivitySpeakerFieldsProps) {
   const initialIds = initialSpeakers.map((speaker) => speaker.speaker_id);
   const [selected, setSelected] = useState(initialIds);
+  const [options, setOptions] = useState<CatalogOption[]>(speakers.map((speaker) => ({
+    description: [speaker.professional_title, speaker.organization].filter(Boolean).join(" · "),
+    id: speaker.id,
+    imageUrl: getSpeakerImageUrl(speaker.photo_path),
+    label: `${speaker.first_names} ${speaker.last_names}`,
+  })));
 
   function toggleSpeaker(id: string) {
     setSelected((current) =>
@@ -23,13 +33,12 @@ export function ActivitySpeakerFields({
     );
   }
 
-  if (!speakers.length) {
-    return <Text>No hay expositores activos disponibles.</Text>;
-  }
-
   return (
-    <div className="grid gap-3 md:grid-cols-2">
-      {speakers.map((speaker) => {
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4"><Text>Selecciona uno o varios perfiles.</Text><CatalogQuickCreateDialog kind="speakers" onCreated={(option) => setOptions((current) => [...current, option])} /></div>
+      {!options.length ? <Text>No hay expositores activos disponibles.</Text> : null}
+      <div className="grid gap-3 md:grid-cols-2">
+      {options.map((speaker) => {
         const isSelected = selected.includes(speaker.id);
         const initialRole = initialSpeakers.find(
           (item) => item.speaker_id === speaker.id,
@@ -45,13 +54,10 @@ export function ActivitySpeakerFields({
                 onChange={() => toggleSpeaker(speaker.id)}
                 value={speaker.id}
               />
+              {speaker.imageUrl ? <Image alt="" className="size-11 rounded-full object-cover" height={44} src={speaker.imageUrl} width={44} /> : <span aria-hidden="true" className="grid size-11 place-items-center rounded-full bg-cci-100 font-bold text-cci-800">{speaker.label.charAt(0)}</span>}
               <span>
-                {speaker.first_names} {speaker.last_names}
-                {speaker.organization ? (
-                  <span className="block text-sm font-normal text-slate-500">
-                    {speaker.organization}
-                  </span>
-                ) : null}
+                {speaker.label}
+                {speaker.description ? <span className="block text-sm font-normal text-slate-500">{speaker.description}</span> : null}
               </span>
             </Label>
             {isSelected ? (
@@ -62,7 +68,7 @@ export function ActivitySpeakerFields({
                   placeholder="Rol: ponente, moderador…"
                 />
                 <Input
-                  aria-label={`Orden de ${speaker.first_names} ${speaker.last_names}`}
+                  aria-label={`Orden de ${speaker.label}`}
                   defaultValue={
                     initialSpeakers.find((item) => item.speaker_id === speaker.id)
                       ?.sort_order ?? selected.indexOf(speaker.id)
@@ -76,6 +82,7 @@ export function ActivitySpeakerFields({
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

@@ -9,5 +9,5 @@ export default async function EditTrainingPage({ params, searchParams }: AdminAc
   const { id } = await params;
   const [activity, options, query] = await Promise.all([getAdminActivityById(id), getActivityFormOptions(), searchParams]);
   if (!activity || activity.type !== "training") notFound();
-  return <ActivityAdminFormTemplate activity={activity} categories={options.categories} saved={query.guardado === "1"} speakers={options.speakers} type="training" />;
+  return <ActivityAdminFormTemplate activity={activity} {...options} saved={query.guardado === "1"} type="training" />;
 }

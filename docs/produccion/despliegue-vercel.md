@@ -34,6 +34,16 @@ Ejecutar `yarn production:check` con el entorno productivo descargado mediante V
 
 `supabase/seed.sql` es exclusivamente local y contiene datos demostrativos. `supabase/seed.production.sql` no crea usuarios, personas, actividades ni credenciales.
 
+### Registro de migraciones aplicadas manualmente
+
+- `202609010005_fix_catalog_policy_recursion.sql` fue aplicada manualmente mediante Supabase SQL Editor el 1 de septiembre de 2026. Para alinear el historial de Supabase CLI sin volver a ejecutar el SQL, registrar una sola vez:
+
+  ```bash
+  supabase migration repair --status applied 202609010005
+  ```
+
+Después del registro, confirmar con `supabase migration list --linked` que la versión aparece aplicada tanto local como remotamente.
+
 ## Auth y dominio
 
 En Supabase Auth configurar:

@@ -233,16 +233,22 @@ set local role authenticated;
 select set_config('request.jwt.claim.sub', '80000000-0000-4000-8000-000000000002', true);
 
 select is(public.is_active_admin(), true, 'active administrator is authorized');
+insert into public.venues (id, name, address, maps_embed_url)
+values (
+  '85000000-0000-4000-8000-000000000001',
+  'Sede para prueba transaccional',
+  'Av. Prueba 123, Ica',
+  'https://www.google.com/maps/embed?pb=test'
+);
 select lives_ok(
   $$select public.save_activity(
     '{
+      "venue_id":"85000000-0000-4000-8000-000000000001",
       "type":"training",
       "title":"Actividad transaccional",
       "slug":"actividad-transaccional",
       "description":"Actividad creada desde la función atómica de prueba.",
-      "modality":"virtual",
-      "maps_embed_url":"https://www.google.com/maps/embed?pb=test",
-      "virtual_url":"https://example.test/activity",
+      "modality":"in_person",
       "is_free":true,
       "general_price":"0",
       "member_price":"0",

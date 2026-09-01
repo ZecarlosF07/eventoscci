@@ -3,3 +3,7 @@ import type { ActivityDateInput } from "@/features/activities/types/activity-for
 export interface ActivityDateFieldsProps {
   initialDates: ActivityDateInput[];
 }
+
+export interface ActivityDateFieldItem extends ActivityDateInput {
+  fieldId: string;
+}

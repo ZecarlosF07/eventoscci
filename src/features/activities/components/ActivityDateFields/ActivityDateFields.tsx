@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
-import type { ActivityDateFieldsProps } from "@/features/activities/components/ActivityDateFields/types/activity-date-fields.types";
+import type { ActivityDateFieldItem, ActivityDateFieldsProps } from "@/features/activities/components/ActivityDateFields/types/activity-date-fields.types";
 import type { ActivityDateInput } from "@/features/activities/types/activity-form.types";
 
 const EMPTY_DATE: ActivityDateInput = {
@@ -16,12 +16,15 @@ const EMPTY_DATE: ActivityDateInput = {
 };
 
 export function ActivityDateFields({ initialDates }: ActivityDateFieldsProps) {
-  const [dates, setDates] = useState(
-    initialDates.length ? initialDates : [EMPTY_DATE],
+  const initialItems = initialDates.length ? initialDates : [EMPTY_DATE];
+  const nextFieldId = useRef(initialItems.length);
+  const [dates, setDates] = useState<ActivityDateFieldItem[]>(() =>
+    initialItems.map((date, index) => ({ ...date, fieldId: `initial-${index}` })),
   );
 
   function addDate() {
-    setDates((current) => [...current, { ...EMPTY_DATE, sort_order: current.length }]);
+    const fieldId = `added-${nextFieldId.current++}`;
+    setDates((current) => [...current, { ...EMPTY_DATE, fieldId, sort_order: current.length }]);
   }
 
   function removeDate(index: number) {
@@ -31,7 +34,16 @@ export function ActivityDateFields({ initialDates }: ActivityDateFieldsProps) {
   return (
     <div className="space-y-4">
       {dates.map((date, index) => (
-        <div className="grid gap-4 rounded-2xl border border-cci-100 p-4 md:grid-cols-4" key={`${date.starts_at}-${index}`}>
+        <div className="grid gap-4 rounded-2xl border border-cci-100 p-4 md:grid-cols-3" key={date.fieldId}>
+          <input name="date_sort_order" type="hidden" value={index} />
+          <div className="flex items-center justify-between gap-4 md:col-span-3">
+            <strong className="text-sm text-cci-950">Fecha {index + 1}</strong>
+            {dates.length > 1 ? (
+              <Button className="min-h-9 px-3" onClick={() => removeDate(index)} variant="subtle">
+                Quitar fecha
+              </Button>
+            ) : null}
+          </div>
           <FormField label="Etiqueta" name={`date_label_${index}`}>
             <Input
               defaultValue={date.label}
@@ -49,30 +61,14 @@ export function ActivityDateFields({ initialDates }: ActivityDateFieldsProps) {
               type="datetime-local"
             />
           </FormField>
-          <FormField label="Orden" name={`date_sort_order_${index}`}>
+          <FormField label="Fin" name={`date_ends_at_${index}`}>
             <Input
-              defaultValue={date.sort_order}
-              id={`date_sort_order_${index}`}
-              min="0"
-              name="date_sort_order"
-              type="number"
+              defaultValue={date.ends_at}
+              id={`date_ends_at_${index}`}
+              name="date_ends_at"
+              type="datetime-local"
             />
           </FormField>
-          <div className="flex items-end gap-2">
-            <FormField label="Fin" name={`date_ends_at_${index}`}>
-              <Input
-                defaultValue={date.ends_at}
-                id={`date_ends_at_${index}`}
-                name="date_ends_at"
-                type="datetime-local"
-              />
-            </FormField>
-            {dates.length > 1 ? (
-              <Button className="mb-0.5" onClick={() => removeDate(index)} variant="subtle">
-                Quitar
-              </Button>
-            ) : null}
-          </div>
         </div>
       ))}
       <Button onClick={addDate} variant="secondary">
