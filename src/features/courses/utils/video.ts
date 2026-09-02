@@ -2,7 +2,18 @@ import type { Lesson } from "@/features/courses/types/course.types";
 import type { VideoSource } from "@/features/courses/types/course-content.types";
 
 export function normalizeVideoAssetId(value: string): string {
-  return value.trim().replace(/[^a-zA-Z0-9_-]/g, "");
+  const trimmed = value.trim();
+  try {
+    const url = new URL(trimmed);
+    if (url.hostname === "youtu.be") return url.pathname.split("/").filter(Boolean)[0] ?? "";
+    if (url.hostname.includes("youtube.com")) {
+      return url.searchParams.get("v") ?? url.pathname.split("/").filter(Boolean).at(-1) ?? "";
+    }
+    if (url.hostname.includes("vimeo.com")) return url.pathname.split("/").filter(Boolean).at(-1) ?? "";
+  } catch {
+    return trimmed.replace(/[^a-zA-Z0-9_-]/g, "");
+  }
+  return trimmed.replace(/[^a-zA-Z0-9_-]/g, "");
 }
 
 export function getLessonVideoSource(lesson: Lesson, signedStorageUrl?: string): VideoSource | null {

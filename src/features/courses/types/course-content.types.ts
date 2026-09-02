@@ -16,6 +16,22 @@ export interface CourseContentManagerProps {
   modules: CourseModule[];
 }
 
+export type CourseEditorSelection =
+  | { kind: "new_module" }
+  | { kind: "module"; moduleId: string }
+  | { kind: "new_lesson"; moduleId: string }
+  | { kind: "lesson"; lessonId: string; moduleId: string };
+
+export interface CourseContentTreeProps extends CourseContentManagerProps {
+  onSelect: (selection: CourseEditorSelection) => void;
+  selection: CourseEditorSelection;
+}
+
+export interface CourseContentEditorProps extends CourseContentManagerProps {
+  onSelect: (selection: CourseEditorSelection) => void;
+  selection: CourseEditorSelection;
+}
+
 export interface ModuleEditorProps {
   courseId: string;
   lessons: Lesson[];

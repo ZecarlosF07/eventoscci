@@ -1,23 +1,9 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
-import { CoursePlayerTemplate } from "@/components/templates/CoursePlayerTemplate";
-import { CourseModulesList } from "@/features/courses/components/CourseModulesList";
-import { getStudentCourseContent } from "@/features/courses/queries/get-my-courses";
 import type { StudentCoursePageProps } from "@/features/courses/types/course-page.types";
+import { getCampusCourseRoute } from "@/features/courses/utils/course-routes";
 
-export default async function CourseContentPage({ params }: StudentCoursePageProps) {
+export default async function CourseContentPage({ params }: Pick<StudentCoursePageProps, "params">) {
   const { courseId } = await params;
-  const content = await getStudentCourseContent(courseId);
-  if (!content) notFound();
-  return (
-    <CoursePlayerTemplate content={content} section="content">
-      <CourseModulesList
-        courseId={courseId}
-        lessonProgress={content.lessonProgress}
-        lessons={content.lessons}
-        modules={content.modules}
-        quizSummaries={content.quizSummaries}
-      />
-    </CoursePlayerTemplate>
-  );
+  redirect(getCampusCourseRoute(courseId));
 }

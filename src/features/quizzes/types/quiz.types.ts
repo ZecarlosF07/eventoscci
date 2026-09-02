@@ -122,15 +122,19 @@ export interface QuizOptionEditorProps {
 
 export interface StudentQuizFormProps {
   initialAttempts: QuizAttempt[];
+  onAttemptSubmitted?: (result: QuizAttemptResult) => void;
   quiz: StudentQuiz;
+  tone?: "dark" | "light";
 }
 
 export interface QuizResultProps {
   result: QuizAttemptResult;
+  tone?: "dark" | "light";
 }
 
 export interface QuizAttemptHistoryProps {
   attempts: QuizAttempt[];
+  tone?: "dark" | "light";
 }
 
 export interface AdminQuizPageProps {

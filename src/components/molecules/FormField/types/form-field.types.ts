@@ -7,4 +7,5 @@ export interface FormFieldProps {
   label: string;
   name: string;
   required?: boolean;
+  tone?: "dark" | "light";
 }

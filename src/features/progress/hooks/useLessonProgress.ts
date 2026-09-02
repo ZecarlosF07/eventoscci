@@ -28,6 +28,7 @@ function createInitialState(options: UseLessonProgressOptions): LessonProgressSt
 export function useLessonProgress(
   options: UseLessonProgressOptions,
 ): LessonProgressController {
+  const onProgressChange = options.onProgressChange;
   const router = useRouter();
   const [progress, setProgress] = useState(() => createInitialState(options));
   const [isSaving, setIsSaving] = useState(false);
@@ -59,6 +60,7 @@ export function useLessonProgress(
         watchedSeconds: snapshot.watchedSeconds,
       });
       setProgress(result);
+      onProgressChange?.(result);
       setSaveError(null);
       if (result.courseCompletionReady && !completionRefreshRef.current) {
         completionRefreshRef.current = true;
@@ -72,7 +74,7 @@ export function useLessonProgress(
       isSavingRef.current = false;
       setIsSaving(false);
     }
-  }, [options.enrollmentId, options.lessonId, router]);
+  }, [onProgressChange, options.enrollmentId, options.lessonId, router]);
 
   const onTimeChange = useCallback((positionSeconds: number) => {
     const position = clampVideoPosition(positionSeconds, options.durationSeconds);

@@ -1,33 +1,14 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
-import { Heading } from "@/components/atoms/Heading";
-import { Text } from "@/components/atoms/Text";
-import { CoursePlayerTemplate } from "@/components/templates/CoursePlayerTemplate";
-import { CourseModulesList } from "@/features/courses/components/CourseModulesList";
 import { getStudentCourseContent } from "@/features/courses/queries/get-my-courses";
 import type { StudentModulePageProps } from "@/features/courses/types/course-page.types";
+import { getCampusCourseRoute } from "@/features/courses/utils/course-routes";
 
 export default async function CourseModulePage({ params }: StudentModulePageProps) {
   const { courseId, moduleId } = await params;
   const content = await getStudentCourseContent(courseId);
-  if (!content) notFound();
-  const courseModule = content.modules.find((item) => item.id === moduleId);
-  if (!courseModule) notFound();
-  const lessons = content.lessons.filter((item) => item.module_id === moduleId);
-
-  return (
-    <CoursePlayerTemplate content={content} section="content">
-      <div className="space-y-5">
-        <Heading level={2}>{courseModule.title}</Heading>
-        {courseModule.description ? <Text>{courseModule.description}</Text> : null}
-        <CourseModulesList
-          courseId={courseId}
-          lessonProgress={content.lessonProgress}
-          lessons={lessons}
-          modules={[courseModule]}
-          quizSummaries={content.quizSummaries.filter((quiz) => quiz.moduleId === moduleId)}
-        />
-      </div>
-    </CoursePlayerTemplate>
-  );
+  if (!content || !content.modules.some((module) => module.id === moduleId)) notFound();
+  const lesson = content.lessons.find((item) => item.module_id === moduleId);
+  const suffix = lesson ? `?clase=${encodeURIComponent(lesson.id)}` : "";
+  redirect(`${getCampusCourseRoute(courseId)}${suffix}`);
 }

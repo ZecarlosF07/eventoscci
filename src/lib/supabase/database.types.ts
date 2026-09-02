@@ -1915,6 +1915,10 @@ export type Database = {
         Args: { p_access_token: string }
         Returns: string
       }
+      get_public_course_curriculum: {
+        Args: { p_course_id: string }
+        Returns: Json
+      }
       get_public_registration_result: {
         Args: { p_registration_code: string }
         Returns: Json

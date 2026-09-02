@@ -17,4 +17,5 @@ export interface CourseRatingFormState {
 export interface CourseRatingFormProps {
   courseId: string;
   rating: CourseRating | null;
+  tone?: "dark" | "light";
 }

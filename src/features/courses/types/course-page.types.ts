@@ -10,6 +10,7 @@ export interface PublicCoursePageProps {
 
 export interface StudentCoursePageProps {
   params: Promise<{ courseId: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export interface StudentModulePageProps {

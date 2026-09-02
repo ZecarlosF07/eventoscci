@@ -5,13 +5,14 @@ export function ProgressBar({
   className,
   label = "Progreso",
   showValue = true,
+  tone = "light",
   value,
 }: ProgressBarProps) {
   const normalizedValue = Math.min(Math.max(Math.round(value), 0), 100);
   return (
     <div className={classNames("space-y-1.5", className)}>
       {showValue ? (
-        <div className="flex justify-between gap-3 text-xs font-medium text-slate-600">
+        <div className={tone === "dark" ? "flex justify-between gap-3 text-xs font-medium text-slate-300" : "flex justify-between gap-3 text-xs font-medium text-slate-600"}>
           <span>{label}</span>
           <span>{normalizedValue}%</span>
         </div>
@@ -21,15 +22,14 @@ export function ProgressBar({
         aria-valuemax={100}
         aria-valuemin={0}
         aria-valuenow={normalizedValue}
-        className="h-2 overflow-hidden rounded-full bg-slate-100"
+        className={tone === "dark" ? "h-2 overflow-hidden rounded-full bg-white/15" : "h-2 overflow-hidden rounded-full bg-slate-100"}
         role="progressbar"
       >
         <div
-          className="h-full rounded-full bg-slate-900 transition-[width] duration-300"
+          className={tone === "dark" ? "h-full rounded-full bg-cci-lime transition-[width] duration-300" : "h-full rounded-full bg-slate-900 transition-[width] duration-300"}
           style={{ width: `${normalizedValue}%` }}
         />
       </div>
     </div>
   );
 }
-

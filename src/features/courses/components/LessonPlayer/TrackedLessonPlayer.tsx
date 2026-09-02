@@ -16,6 +16,7 @@ export function TrackedLessonPlayer({
   initialCourseProgressPercent,
   initialProgress,
   lesson,
+  onProgressChange,
   signedStorageUrl,
 }: TrackedLessonPlayerProps) {
   const controller = useLessonProgress({
@@ -24,6 +25,7 @@ export function TrackedLessonPlayer({
     initialCourseProgressPercent,
     initialProgress,
     lessonId: lesson.id,
+    onProgressChange,
   });
   const source = getLessonVideoSource(lesson, signedStorageUrl);
   const trackerProps = {
@@ -55,26 +57,27 @@ export function TrackedLessonPlayer({
   return (
     <div className="space-y-4">
       {player ?? (
-        <div className="flex aspect-video items-center justify-center rounded-2xl bg-cci-950 p-8 text-center">
-          <Text className="text-slate-300">No se pudo cargar este proveedor de video.</Text>
+        <div className="flex aspect-video items-center justify-center rounded-2xl border border-white/10 bg-black p-8 text-center">
+          <Text className="text-slate-400">No se pudo cargar este proveedor de video.</Text>
         </div>
       )}
-      <div className="rounded-2xl border border-cci-100 bg-white p-4">
+      <div className="rounded-2xl border border-white/10 bg-[#111614] p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <LessonProgressBadge
             isCompleted={controller.progress.isCompleted}
             progressPercent={controller.progress.progressPercent}
           />
-          <Text size="sm">
+          <Text className="text-slate-400" size="sm">
             {controller.isSaving ? "Guardando avance…" : "Avance sincronizado"}
           </Text>
         </div>
         <ProgressBar
           className="mt-3"
           label="Progreso de esta clase"
+          tone="dark"
           value={controller.progress.progressPercent}
         />
-        <Text className="mt-2" size="sm">
+        <Text className="mt-2 text-slate-400" size="sm">
           Avance general del curso: {Math.round(controller.progress.courseProgressPercent)}%
         </Text>
         {controller.saveError ? (

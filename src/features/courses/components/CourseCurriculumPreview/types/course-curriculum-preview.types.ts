@@ -1,5 +1,5 @@
-import type { CourseModule } from "@/features/courses/types/course.types";
+import type { PublicCourseCurriculumModule } from "@/features/courses/types/public-course-curriculum.types";
 
 export interface CourseCurriculumPreviewProps {
-  modules: CourseModule[];
+  modules: PublicCourseCurriculumModule[];
 }

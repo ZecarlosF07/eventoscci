@@ -61,11 +61,11 @@ export async function saveLessonAction(
   formData: FormData,
 ): Promise<LessonFormState> {
   await requireAdmin();
-  const durationValue = value(formData, "duration_seconds");
+  const durationMinutes = value(formData, "duration_minutes");
   const parsed = lessonFormSchema.safeParse({
     courseId: value(formData, "course_id"),
     description: value(formData, "description"),
-    durationSeconds: durationValue ? Number(durationValue) : null,
+    durationSeconds: durationMinutes ? Math.round(Number(durationMinutes) * 60) : null,
     id: value(formData, "id"),
     isPublished: formData.get("is_published") === "on",
     isRequired: formData.get("is_required") === "on",

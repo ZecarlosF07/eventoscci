@@ -7,8 +7,8 @@ export function LessonPlayer(props: LessonPlayerProps) {
   const source = getLessonVideoSource(props.lesson, props.signedStorageUrl);
   if (!source) {
     return (
-      <div className="flex aspect-video items-center justify-center rounded-2xl bg-cci-950 p-8 text-center text-white">
-        <Text className="text-slate-300">El video todavía no está disponible.</Text>
+      <div className="flex aspect-video items-center justify-center rounded-2xl border border-white/10 bg-black p-8 text-center text-white">
+        <Text className="text-slate-400">El video todavía no está disponible.</Text>
       </div>
     );
   }
@@ -30,7 +30,7 @@ export function LessonPlayer(props: LessonPlayerProps) {
         ) : (
           <video className="aspect-video w-full rounded-2xl bg-black" controls src={source.url} />
         )}
-        <Text className="rounded-xl bg-amber-50 p-3 text-amber-900" size="sm">
+        <Text className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-3 text-amber-200" size="sm">
           Esta clase necesita una duración configurada para registrar el progreso.
         </Text>
       </div>

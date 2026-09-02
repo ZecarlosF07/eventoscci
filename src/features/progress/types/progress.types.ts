@@ -31,6 +31,7 @@ export interface UseLessonProgressOptions {
   initialCourseProgressPercent: number;
   initialProgress?: LessonProgress | null;
   lessonId: string;
+  onProgressChange?: (result: LessonProgressUpdateResult) => void;
 }
 
 export interface LessonProgressController {
@@ -57,4 +58,3 @@ export interface CourseProgressCounts {
   pending: number;
   total: number;
 }
-
