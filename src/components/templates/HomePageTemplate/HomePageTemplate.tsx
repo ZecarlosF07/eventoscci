@@ -8,7 +8,7 @@ import { HomeSearch } from "@/features/home/components/HomeSearch";
 export function HomePageTemplate({ content }: HomePageTemplateProps) {
   return (
     <div>
-      <HomeHero activity={content.featuredActivity} />
+      <HomeHero activities={[...content.events, ...content.trainings]} />
       <HomeSearch />
       <div className="mx-auto max-w-[90rem] px-4 pb-16 pt-2 sm:px-6 sm:pb-20 sm:pt-4 lg:px-8">
         <HomeActivitySection activities={content.events} description="Encuentros para conectar con oportunidades, conocimiento y comunidad empresarial." href="/eventos" title="Próximos eventos" />

@@ -19,8 +19,8 @@ export function ActivitiesListTemplate({
 
   return (
     <div>
-      <CatalogHeroCarousel description={description} emptyMessage={`La nueva agenda de ${title.toLocaleLowerCase("es-PE")} se está preparando.`} eyebrow={eyebrow} slides={slides} title={title} />
-      <div className="mx-auto w-full max-w-7xl px-5 pb-14 sm:px-8 sm:pb-20">
+      <CatalogHeroCarousel browseLabel={`Explorar ${title.toLocaleLowerCase("es-PE")}`} description={description} emptyMessage={`La nueva agenda de ${title.toLocaleLowerCase("es-PE")} se está preparando.`} eyebrow={eyebrow} slides={slides} title={title} />
+      <div className="mx-auto w-full max-w-7xl scroll-mt-28 px-5 pb-14 sm:px-8 sm:pb-20" id="catalogo">
         <div className="relative z-30 -mt-4 px-2 sm:px-5">
           <ActivityFilters categories={categories} filters={filters} />
         </div>

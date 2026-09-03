@@ -1,0 +1,3 @@
+export const HERO_PRIMARY_LINK = "inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-cci-lime px-6 py-3 text-sm font-bold text-cci-950 shadow-lg shadow-black/10 transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cci-lime motion-reduce:transition-none";
+
+export const HERO_SECONDARY_LINK = "inline-flex min-h-12 items-center justify-center gap-3 rounded-xl border border-white/25 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/60 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cci-lime motion-reduce:transition-none";

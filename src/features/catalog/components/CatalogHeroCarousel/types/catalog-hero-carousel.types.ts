@@ -1,5 +1,8 @@
 export interface CatalogCarouselSlide {
   badge: string;
+  ctaLabel: string;
+  kindLabel: string;
+  priceLabel: string;
   bannerUrl: string | null;
   description: string | null;
   href: string;
@@ -9,6 +12,7 @@ export interface CatalogCarouselSlide {
 }
 
 export interface CatalogHeroCarouselProps {
+  browseLabel: string;
   description: string;
   emptyMessage: string;
   eyebrow: string;

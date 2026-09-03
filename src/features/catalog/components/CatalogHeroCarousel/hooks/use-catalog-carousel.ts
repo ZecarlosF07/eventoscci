@@ -1,14 +1,31 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 import type { UseCatalogCarouselResult } from "@/features/catalog/components/CatalogHeroCarousel/hooks/types/use-catalog-carousel.types";
 
 const AUTOPLAY_DELAY_MS = 6500;
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribeReducedMotion(listener: () => void) {
+  const query = window.matchMedia(REDUCED_MOTION_QUERY);
+  query.addEventListener("change", listener);
+  return () => query.removeEventListener("change", listener);
+}
+
+function getReducedMotion() {
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches;
+}
+
+function getServerReducedMotion() {
+  return false;
+}
 
 export function useCatalogCarousel(itemCount: number, interactionPaused: boolean): UseCatalogCarouselResult {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [playbackChoice, setPlaybackChoice] = useState<boolean | null>(null);
+  const reducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotion, getServerReducedMotion);
+  const isAutoPlaying = playbackChoice ?? !reducedMotion;
 
   const select = useCallback((index: number) => {
     if (!itemCount) return;
@@ -20,20 +37,28 @@ export function useCatalogCarousel(itemCount: number, interactionPaused: boolean
 
   useEffect(() => {
     if (itemCount < 2 || interactionPaused || !isAutoPlaying) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const timeoutId = window.setTimeout(() => {
-      setCurrentIndex((index) => (index + 1) % itemCount);
-    }, AUTOPLAY_DELAY_MS);
-    return () => window.clearTimeout(timeoutId);
+    let timeoutId: number | undefined;
+    function scheduleNext() {
+      window.clearTimeout(timeoutId);
+      if (document.hidden) return;
+      timeoutId = window.setTimeout(() => {
+        setCurrentIndex((index) => (index + 1) % itemCount);
+      }, AUTOPLAY_DELAY_MS);
+    }
+    scheduleNext();
+    document.addEventListener("visibilitychange", scheduleNext);
+    return () => {
+      window.clearTimeout(timeoutId);
+      document.removeEventListener("visibilitychange", scheduleNext);
+    };
   }, [currentIndex, interactionPaused, isAutoPlaying, itemCount]);
 
   return {
     currentIndex,
     isAutoPlaying,
     next,
-    pause: () => setIsAutoPlaying(false),
-    play: () => setIsAutoPlaying(true),
+    pause: () => setPlaybackChoice(false),
+    play: () => setPlaybackChoice(true),
     previous,
     select,
   };
