@@ -58,17 +58,21 @@ select ok(
 );
 select ok(
   exists (
-    select 1 from pg_constraint
-    where conname = 'activities_published_map_required'
+    select 1 from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'activities'
+      and column_name = 'venue_id'
   ),
-  'published in-person activities require a map'
+  'activities use a reusable venue'
 );
 select ok(
   exists (
-    select 1 from pg_constraint
-    where conname = 'activities_published_whatsapp_required'
+    select 1 from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'activities'
+      and column_name = 'contact_id'
   ),
-  'published activities require a valid WhatsApp number'
+  'activities use a reusable contact'
 );
 select ok(
   to_regprocedure('public.soft_delete_activity(uuid)') is not null,

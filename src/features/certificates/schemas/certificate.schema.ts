@@ -3,6 +3,7 @@ import { z } from "zod";
 export const certificatePublicSchema = z.object({
   academic_hours: z.number().nullable(),
   certificate_code: z.string(),
+  certificate_type: z.enum(["activity", "course"]),
   condition: z.string().nullable(),
   date_text: z.string().nullable(),
   download_available: z.boolean(),
@@ -11,6 +12,9 @@ export const certificatePublicSchema = z.object({
   revocation_reason: z.string().nullable(),
   revoked_at: z.string().nullable(),
   status: z.enum(["issued", "revoked"]),
+  source_activity_id: z.uuid().nullable(),
+  source_activity_type: z.enum(["event", "training"]).nullable(),
+  source_category_id: z.uuid().nullable(),
   title: z.string(),
 });
 

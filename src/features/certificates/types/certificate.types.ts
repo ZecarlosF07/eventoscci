@@ -1,4 +1,4 @@
-import type { ActivityType } from "@/features/activities/types/activity.types";
+import type { ActivityListItem, ActivityType } from "@/features/activities/types/activity.types";
 import type { AttendanceStatus } from "@/features/attendance/types/attendance.types";
 import type { RegistrationStatus } from "@/features/registrations/types/registration.types";
 import type { Enums, Json, Tables } from "@/lib/supabase/database.types";
@@ -103,6 +103,7 @@ export interface CertificateAdminPage {
 export interface CertificatePublicData {
   academic_hours: number | null;
   certificate_code: string;
+  certificate_type: CertificateType;
   condition: string | null;
   date_text: string | null;
   download_available: boolean;
@@ -111,7 +112,67 @@ export interface CertificatePublicData {
   revocation_reason: string | null;
   revoked_at: string | null;
   status: CertificateStatus;
+  source_activity_id: string | null;
+  source_activity_type: ActivityType | null;
+  source_category_id: string | null;
   title: string;
+}
+
+export type PublicCertificateSearchStatus = "error" | "found" | "idle" | "invalid" | "not_found" | "rate_limited";
+
+export interface PublicCertificateSearchItem {
+  access_token: string;
+  academic_hours: number | null;
+  certificate_code: string;
+  certificate_type: CertificateType;
+  condition: string | null;
+  date_text: string | null;
+  download_available: boolean;
+  issued_at: string;
+  participant_name: string;
+  revocation_reason: string | null;
+  status: CertificateStatus;
+  title: string;
+}
+
+export interface CertificateRecommendationContext {
+  source_activity_id: string;
+  source_activity_type: ActivityType;
+  source_category_id: string | null;
+}
+
+export interface PublicCertificateSearchState {
+  certificates: PublicCertificateSearchItem[];
+  message?: string;
+  participantName?: string;
+  recommendations: ActivityListItem[];
+  status: PublicCertificateSearchStatus;
+}
+
+export interface CertificateQueryLogFilters {
+  dateFrom?: string;
+  dateTo?: string;
+  documentNumber?: string;
+  outcome?: Exclude<PublicCertificateSearchStatus, "error" | "idle">;
+  page: number;
+}
+
+export interface CertificateQueryLogItem {
+  actorLabel: string | null;
+  createdAt: string;
+  documentNumber: string;
+  id: string;
+  ipAddress: string | null;
+  outcome: Exclude<PublicCertificateSearchStatus, "error" | "idle">;
+  resultCount: number;
+  userAgent: string | null;
+}
+
+export interface CertificateQueryLogPage {
+  items: CertificateQueryLogItem[];
+  page: number;
+  pageCount: number;
+  total: number;
 }
 
 export interface CertificateDocumentInput {
@@ -162,6 +223,16 @@ export interface ActivityCertificatesPageProps {
 
 export interface CertificatesAdminPageProps {
   searchParams: Promise<{ pagina?: string | string[]; resultado?: string | string[] }>;
+}
+
+export interface CertificateQueryLogsPageProps {
+  searchParams: Promise<{
+    desde?: string | string[];
+    dni?: string | string[];
+    hasta?: string | string[];
+    pagina?: string | string[];
+    resultado?: string | string[];
+  }>;
 }
 
 export interface CertificateTemplateEditPageProps {
