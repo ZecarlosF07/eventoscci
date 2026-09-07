@@ -22,9 +22,9 @@ export function ActivityCard({ activity }: ActivityCardProps) {
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-cci-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-cci-200 hover:shadow-xl">
-      <div className="relative aspect-[16/9] overflow-hidden bg-cci-950">
+      <div className="relative aspect-[5/2] overflow-hidden bg-cci-950">
         {bannerUrl ? (
-          <Image alt="" className="object-cover transition duration-500 group-hover:scale-[1.03]" fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" src={bannerUrl} />
+          <Image alt="" className="object-contain transition duration-300 group-hover:brightness-110" fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" src={bannerUrl} />
         ) : (
           <div className="relative flex h-full items-center justify-center overflow-hidden text-4xl font-bold tracking-[-0.08em] text-white/85">
             <span className="absolute -right-10 -top-16 size-52 rounded-full border border-cci-lime/50" />

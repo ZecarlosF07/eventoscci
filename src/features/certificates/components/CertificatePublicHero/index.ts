@@ -1,0 +1,1 @@
+export { CertificatePublicHero } from "./CertificatePublicHero";

@@ -23,12 +23,22 @@ function InstitutionalArtwork() {
 
 export function ActivityDetailHero({ activity }: ActivityDetailHeroProps) {
   const bannerUrl = getActivityBannerUrl(activity.banner_path);
+
+  if (bannerUrl) {
+    return (
+      <header className="mt-5 sm:mt-6">
+        <h1 className="sr-only">{activity.title}</h1>
+        <div className="relative aspect-[5/2] overflow-hidden rounded-2xl border border-cci-100 bg-cci-950 shadow-xl shadow-cci-950/15 sm:rounded-3xl">
+          <Image alt="" className="object-contain" fill preload sizes="(min-width: 1280px) 1216px, 100vw" src={bannerUrl} />
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className="mt-5 overflow-hidden rounded-3xl bg-cci-950 text-white shadow-xl shadow-cci-950/15 sm:mt-6 lg:grid lg:grid-cols-[0.92fr_1.08fr]">
       <div className="relative aspect-[16/10] min-h-60 lg:order-2 lg:aspect-auto lg:min-h-[25rem]">
-        {bannerUrl ? (
-          <Image alt={`Banner de ${activity.title}`} className="object-cover" fill preload sizes="(min-width: 1024px) 54vw, 100vw" src={bannerUrl} />
-        ) : <InstitutionalArtwork />}
+        <InstitutionalArtwork />
         <div className="absolute inset-0 bg-gradient-to-t from-cci-950/35 to-transparent lg:bg-gradient-to-r" />
       </div>
       <div className="flex flex-col justify-center px-5 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-12">

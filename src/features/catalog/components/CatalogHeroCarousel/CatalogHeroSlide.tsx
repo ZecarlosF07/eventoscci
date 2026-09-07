@@ -5,6 +5,20 @@ import { HERO_PRIMARY_LINK, HERO_SECONDARY_LINK } from "@/features/catalog/compo
 import type { CatalogHeroSlideProps } from "@/features/catalog/components/CatalogHeroCarousel/types/catalog-hero-slide.types";
 
 export function CatalogHeroSlide({ browseLabel, slide }: CatalogHeroSlideProps) {
+  if (slide.bannerUrl && slide.visualMode === "banner") {
+    return (
+      <article aria-label={slide.title}>
+        <Link
+          aria-label={`${slide.ctaLabel}: ${slide.title}`}
+          className="block transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cci-lime"
+          href={slide.href}
+        >
+          <CatalogHeroVisual bannerUrl={slide.bannerUrl} eager title={slide.title} wide />
+        </Link>
+      </article>
+    );
+  }
+
   return (
     <article
       aria-label={slide.title}

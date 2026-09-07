@@ -9,6 +9,7 @@ export interface CatalogCarouselSlide {
   id: string;
   meta: string | null;
   title: string;
+  visualMode: "banner" | "feature";
 }
 
 export interface CatalogHeroCarouselProps {

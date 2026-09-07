@@ -9,6 +9,7 @@ export interface HomeHeroArtworkProps {
   bannerUrl: string | null;
   eager?: boolean;
   title: string;
+  wide?: boolean;
 }
 
 export interface HomeHeroCarouselProps {

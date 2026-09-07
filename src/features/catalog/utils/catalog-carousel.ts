@@ -31,6 +31,7 @@ export function createActivityCarouselSlides(activities: ActivityListItem[]): Ca
       id: activity.id,
       meta: nextDate ? `${formatActivityDate(nextDate.starts_at)} · ${getModalityLabel(activity.modality)}` : null,
       title: activity.title,
+      visualMode: "banner",
     }));
 }
 
@@ -49,5 +50,6 @@ export function createCourseCarouselSlides(courses: CourseListItem[]): CatalogCa
       id: course.id,
       meta: course.duration_text ?? (course.academic_hours ? `${course.academic_hours} horas académicas` : "Aprende a tu ritmo"),
       title: course.title,
+      visualMode: "feature",
     }));
 }

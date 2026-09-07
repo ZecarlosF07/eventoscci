@@ -30,10 +30,19 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
       <HeroBackdrop />
       <h1 className="sr-only">Eventos, capacitaciones y formación CCI</h1>
       {slides.length > 1 ? (
-        <div className="absolute right-4 top-4 z-20 flex gap-1 rounded-full border border-white/25 bg-cci-950/80 p-1 text-white backdrop-blur-sm">
+        <div className="absolute right-5 top-5 z-20 flex items-center gap-1 rounded-full border border-white/20 bg-cci-950/85 p-1 text-white shadow-lg backdrop-blur-sm sm:right-8 sm:top-8">
+        <span className="px-2 text-[0.65rem] font-bold tabular-nums text-white/65"><span className="text-white">{String(currentIndex + 1).padStart(2, "0")}</span> / {String(slides.length).padStart(2, "0")}</span>
+        <button
+          aria-label="Mostrar actividad anterior"
+          className="flex size-9 items-center justify-center rounded-full text-lg transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-lime"
+          onClick={() => { carousel.pause(); carousel.previous(); }}
+          type="button"
+        >
+          <span aria-hidden="true">‹</span>
+        </button>
         <button
           aria-label={carousel.isAutoPlaying ? "Pausar actividades destacadas" : "Reanudar actividades destacadas"}
-          className="flex size-10 items-center justify-center rounded-full text-sm transition hover:bg-cci-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-lime"
+          className="flex size-9 items-center justify-center rounded-full text-xs transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-lime"
           onClick={carousel.isAutoPlaying ? carousel.pause : carousel.play}
           type="button"
         >
@@ -41,7 +50,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
         </button>
         <button
           aria-label="Mostrar siguiente actividad"
-          className="flex size-10 items-center justify-center rounded-full text-xl transition hover:bg-cci-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-lime"
+          className="flex size-9 items-center justify-center rounded-full text-lg transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-lime"
           onClick={() => { carousel.pause(); carousel.next(); }}
           type="button"
         >

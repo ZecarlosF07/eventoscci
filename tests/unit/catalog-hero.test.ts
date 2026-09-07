@@ -4,6 +4,7 @@ import test from "node:test";
 import type { ActivityListItem } from "@/features/activities/types/activity.types";
 import { createActivityCarouselSlides, createCourseCarouselSlides } from "@/features/catalog/utils/catalog-carousel";
 import type { CourseListItem } from "@/features/courses/types/course.types";
+import { createHomeHeroSlides } from "@/features/home/utils/home-hero-slides";
 
 const FUTURE_DATE = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -34,6 +35,7 @@ test("el banner de eventos conserva la tarifa general y lleva al detalle correct
   assert.equal(slide.ctaLabel, "Conocer el evento");
   assert.match(slide.priceLabel, /80[.,]00/);
   assert.equal(slide.bannerUrl, null);
+  assert.equal(slide.visualMode, "banner");
 });
 
 test("las capacitaciones gratuitas tienen su propia acción y precio", () => {
@@ -59,6 +61,7 @@ test("los cursos muestran el acceso, duración y precio sin prometer matrícula 
   assert.equal(paid.href, "/cursos/curso");
   assert.equal(paid.ctaLabel, "Ver curso y acceso");
   assert.equal(paid.meta, "20 horas académicas");
+  assert.equal(paid.visualMode, "feature");
   assert.match(paid.priceLabel, /120[.,]00/);
   assert.equal(free.priceLabel, "Acceso gratuito");
 });
@@ -79,4 +82,16 @@ test("el inicio combina eventos y capacitaciones por fecha, con un máximo de ci
   assert.equal(slides[1].kindLabel, "Capacitación destacada");
   assert.deepEqual(createActivityCarouselSlides([]), []);
   assert.equal(createActivityCarouselSlides([activity]).length, 1);
+});
+
+test("el inicio mantiene un carrusel editorial cuando no hay actividades próximas", () => {
+  const slides = createHomeHeroSlides([]);
+  assert.equal(slides.length, 3);
+  assert.deepEqual(slides.map(({ href }) => href), ["/eventos", "/capacitaciones", "/cursos"]);
+});
+
+test("el inicio reemplaza el contenido editorial cuando existen actividades reales", () => {
+  const slides = createHomeHeroSlides([activity]);
+  assert.equal(slides[0].id, activity.id);
+  assert.equal(slides.length, 1);
 });

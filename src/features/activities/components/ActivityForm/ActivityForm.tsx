@@ -97,7 +97,7 @@ export function ActivityForm({
       </ActivityFormSection>
 
       <ActivityFormSection title="Contenido">
-        <FormField error={error("banner")} hint="JPG, PNG o WebP. Máximo 5 MB." label="Banner" name="banner">
+        <FormField error={error("banner")} hint="Usa proporción horizontal 5:2 (por ejemplo, 2500 × 1000 px). JPG, PNG o WebP; máximo 5 MB." label="Banner" name="banner">
           <Input accept="image/jpeg,image/png,image/webp" id="banner" name="banner" type="file" />
         </FormField>
         <input name="banner_path" type="hidden" value={activity?.banner_path ?? ""} />
