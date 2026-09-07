@@ -5,6 +5,7 @@ export const ROUTES = {
   adminAttendance: "/admin/asistencia",
   adminCertificates: "/admin/certificados",
   adminCertificatesActivities: "/admin/certificados/actividades",
+  adminCertificateAccess: "/admin/certificados/accesos",
   adminCertificateQueries: "/admin/certificados/consultas",
   adminCourses: "/admin/cursos",
   adminCertificateTemplates: "/admin/certificados/plantillas",
