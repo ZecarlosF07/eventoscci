@@ -44,6 +44,8 @@ gestionan el alcance operativo actual, mientras que la auditoría queda reservad
   pasan por RPC con validación de ownership y estado académico.
 - Las RPC se revocan por defecto para `public`, `anon` y `authenticated`, y luego se concede una
   lista explícita. Las funciones futuras tampoco heredan `EXECUTE` público.
+- La regeneración de certificados usa una RPC interna con bloqueo, comparación de ruta previa y
+  auditoría; nunca acepta el nombre desde el navegador.
 - `service_role` está encapsulado en módulos `server-only` y solo se usa para generación de
   certificados y procesamiento de notificaciones.
 

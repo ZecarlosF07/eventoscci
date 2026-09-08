@@ -34,34 +34,6 @@ export const certificateGenerationSchema = z.object({
   title_snapshot: z.string(),
 });
 
-export const certificateCandidateRegistrationSchema = z.object({
-  attendance: z.array(z.object({ status: z.enum(["pending", "attended", "absent"]) })),
-  company_snapshot: z.string().nullable(),
-  id: z.uuid(),
-  person: z.object({
-    document_number: z.string(),
-    email: z.string(),
-    first_names: z.string(),
-    last_names: z.string(),
-  }),
-  registration_code: z.string(),
-  status: z.enum(["pending", "confirmed", "cancelled"]),
-});
-
-export const certificateAdminItemSchema = z.object({
-  certificate_code: z.string(),
-  certificate_type: z.enum(["activity", "course"]),
-  condition_snapshot: z.string().nullable(),
-  file_path: z.string().nullable(),
-  id: z.uuid(),
-  issued_at: z.string(),
-  participant_name_snapshot: z.string(),
-  registration: z.object({ activity_id: z.uuid() }).nullable(),
-  revocation_reason: z.string().nullable(),
-  status: z.enum(["issued", "revoked"]),
-  title_snapshot: z.string(),
-});
-
 export const myCertificateSchema = z.object({
   access_token: z.uuid(),
   academic_hours: z.number().nullable(),

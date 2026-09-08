@@ -372,6 +372,11 @@ Esto permitirá que cambios posteriores en:
 
 no modifiquen retroactivamente la información de un certificado ya emitido.
 
+La única excepción posterior aprobada es la corrección administrativa del nombre del participante.
+Debe realizarse primero en su ficha institucional y luego mediante una regeneración explícita,
+confirmada y auditada que conserva el código y el token, reemplaza el PDF privado y no altera los
+demás snapshots.
+
 ---
 
 # 16. Condición del certificado

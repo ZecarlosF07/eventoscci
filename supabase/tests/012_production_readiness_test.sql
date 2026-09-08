@@ -3,16 +3,16 @@ begin;
 select no_plan();
 
 select ok(
-  to_regprocedure('public.get_certificate_activity_summaries()') is not null,
+  to_regprocedure('public.get_certificate_activity_summaries(text,public.activity_type,integer,integer)') is not null,
   'certificate activity aggregation RPC exists'
 );
 select is(
-  has_function_privilege('anon', 'public.get_certificate_activity_summaries()', 'EXECUTE'),
+  has_function_privilege('anon', 'public.get_certificate_activity_summaries(text,public.activity_type,integer,integer)', 'EXECUTE'),
   false,
   'anonymous users cannot read operational certificate counters'
 );
 select ok(
-  has_function_privilege('authenticated', 'public.get_certificate_activity_summaries()', 'EXECUTE'),
+  has_function_privilege('authenticated', 'public.get_certificate_activity_summaries(text,public.activity_type,integer,integer)', 'EXECUTE'),
   'authenticated internal users can invoke the protected aggregation'
 );
 select ok(

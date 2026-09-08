@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { Button } from "@/components/atoms/Button";
 import { Checkbox } from "@/components/atoms/Checkbox";
 import { Input } from "@/components/atoms/Input";
@@ -7,6 +9,7 @@ import { Select } from "@/components/atoms/Select";
 import { Text } from "@/components/atoms/Text";
 import { FormActionNotice } from "@/components/molecules/FormActionNotice";
 import { ResponsiveTableFrame } from "@/components/molecules/ResponsiveTableFrame";
+import { ROUTES } from "@/constants/routes";
 import { AttendanceStatusBadge } from "@/features/attendance/components/AttendanceStatusBadge";
 import { CertificateStatusBadge } from "@/features/certificates/components/CertificateStatusBadge";
 import type { CertificateCandidatesTableProps } from "@/features/certificates/components/CertificateCandidatesTable/types/certificate-candidates-table.types";
@@ -30,7 +33,7 @@ export function CertificateCandidatesTable({ activityId, candidates, templates }
     <FormActionNotice message={state.message} success={state.success} />
     <ResponsiveTableFrame className="rounded-3xl" label="Candidatos a certificados"><table className="w-full min-w-[1200px] text-left text-sm"><thead className="border-b border-cci-100 bg-cci-50 text-slate-600"><tr><th className="px-4 py-4">Sel.</th><th className="px-4 py-4">Participante</th><th className="px-4 py-4">Inscripción</th><th className="px-4 py-4">Estado</th><th className="px-4 py-4">Asistencia</th><th className="px-4 py-4">Elegibilidad</th><th className="px-4 py-4">Certificado</th></tr></thead><tbody className="divide-y divide-slate-100">{candidates.map((candidate) => {
       const eligible = candidate.status === "confirmed" && candidate.attendance.status === "attended" && !candidate.certificate;
-      return <tr key={candidate.id}><td className="px-4 py-4"><Checkbox aria-label={`Seleccionar ${candidate.person.first_names}`} disabled={!eligible} name="registration_ids" value={candidate.id} /></td><td className="px-4 py-4"><p className="font-semibold text-cci-950">{candidate.person.first_names} {candidate.person.last_names}</p><Text size="sm">{candidate.person.document_number} · {candidate.person.email}</Text></td><td className="px-4 py-4 font-mono">{candidate.registration_code}</td><td className="px-4 py-4"><RegistrationStatusBadge status={candidate.status} /></td><td className="px-4 py-4"><AttendanceStatusBadge status={candidate.attendance.status} /></td><td className="px-4 py-4 text-slate-700">{eligible ? "Listo para emitir" : candidate.certificate ? "Ya emitido" : "No cumple condiciones"}</td><td className="px-4 py-4">{candidate.certificate ? <div className="space-y-1"><CertificateStatusBadge status={candidate.certificate.status} /><p className="font-mono text-xs">{candidate.certificate.certificate_code}</p></div> : "—"}</td></tr>;
+      return <tr key={candidate.id}><td className="px-4 py-4"><Checkbox aria-label={`Seleccionar ${candidate.person.first_names}`} disabled={!eligible} name="registration_ids" value={candidate.id} /></td><td className="px-4 py-4"><Link className="font-semibold text-cci-950 hover:underline" href={`${ROUTES.adminParticipants}/${candidate.person.id}`}>{candidate.person.first_names} {candidate.person.last_names}</Link><Text size="sm">{candidate.person.document_number} · {candidate.person.email}</Text></td><td className="px-4 py-4 font-mono">{candidate.registration_code}</td><td className="px-4 py-4"><RegistrationStatusBadge status={candidate.status} /></td><td className="px-4 py-4"><AttendanceStatusBadge status={candidate.attendance.status} /></td><td className="px-4 py-4 text-slate-700">{eligible ? "Listo para emitir" : candidate.certificate ? "Ya emitido" : "No cumple condiciones"}</td><td className="px-4 py-4">{candidate.certificate ? <div className="space-y-1"><CertificateStatusBadge status={candidate.certificate.status} /><p className="font-mono text-xs">{candidate.certificate.certificate_code}</p></div> : "—"}</td></tr>;
     })}</tbody></table></ResponsiveTableFrame>
   </form>;
 }

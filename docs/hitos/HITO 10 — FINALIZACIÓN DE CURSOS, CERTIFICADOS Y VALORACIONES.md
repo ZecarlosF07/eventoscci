@@ -581,6 +581,11 @@ en el momento de emisión y conservarlo posteriormente mediante snapshot.
 
 Un cambio futuro del perfil no deberá modificar retroactivamente el documento emitido.
 
+Una corrección administrativa del nombre sí podrá aplicarse mediante el flujo común de
+regeneración de certificados. Esta operación conservará la identidad pública del certificado,
+reemplazará únicamente el PDF y el snapshot del nombre, excluirá certificados revocados y quedará
+registrada en auditoría.
+
 ---
 
 # 30. Nombre del curso

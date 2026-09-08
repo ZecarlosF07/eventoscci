@@ -17,19 +17,31 @@ const PARTICIPANT_DETAIL_SELECT = `
 
 export async function getParticipantById(id: string): Promise<ParticipantDetail | null> {
   const client = await createServerSupabaseClient();
-  const { data, error } = await client
-    .from("people")
-    .select(PARTICIPANT_DETAIL_SELECT)
-    .eq("id", id)
-    .is("deleted_at", null)
-    .is("registrations.deleted_at", null)
-    .is("registrations.attendance.deleted_at", null)
-    .order("created_at", { ascending: false, referencedTable: "registrations" })
-    .maybeSingle();
+  const [participantResult, certificateResult] = await Promise.all([
+    client
+      .from("people")
+      .select(PARTICIPANT_DETAIL_SELECT)
+      .eq("id", id)
+      .is("deleted_at", null)
+      .is("registrations.deleted_at", null)
+      .is("registrations.attendance.deleted_at", null)
+      .order("created_at", { ascending: false, referencedTable: "registrations" })
+      .maybeSingle(),
+    client
+      .from("certificates")
+      .select("id, certificate_code, certificate_type, status, participant_name_snapshot, title_snapshot, issued_at, revocation_reason")
+      .eq("person_id", id)
+      .is("deleted_at", null)
+      .order("issued_at", { ascending: false }),
+  ]);
 
+  const error = participantResult.error ?? certificateResult.error;
   if (error) throw new Error("No fue posible consultar la ficha del participante.", { cause: error });
-  if (!data) return null;
-  const parsed = participantDetailSchema.safeParse(data);
+  if (!participantResult.data) return null;
+  const parsed = participantDetailSchema.safeParse({
+    ...participantResult.data,
+    certificates: certificateResult.data ?? [],
+  });
   if (!parsed.success) throw new Error("La ficha del participante no tiene el formato esperado.");
   return parsed.data;
 }

@@ -1,49 +1,64 @@
 import "server-only";
 
-import { certificateCandidateRegistrationSchema } from "@/features/certificates/schemas/certificate-query.schema";
+import { CERTIFICATE_CANDIDATE_PAGE_SIZE } from "@/features/certificates/constants/certificate.constants";
 import { getCertificateTemplates } from "@/features/certificates/queries/get-certificate-templates";
-import type { ActivityCertificateData, CertificateCandidate } from "@/features/certificates/types/certificate.types";
+import type {
+  ActivityCertificateData,
+  CertificateCandidate,
+  CertificateCandidateFilters,
+} from "@/features/certificates/types/certificate.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-export async function getActivityCertificateData(activityId: string): Promise<ActivityCertificateData | null> {
+export async function getActivityCertificateData(
+  activityId: string,
+  filters: CertificateCandidateFilters,
+): Promise<ActivityCertificateData | null> {
   const client = await createServerSupabaseClient();
-  const [activityResult, registrationResult, templates] = await Promise.all([
+  const [activityResult, candidateResult, templates] = await Promise.all([
     client.from("activities").select("id, title, type").eq("id", activityId).is("deleted_at", null).maybeSingle(),
-    client.from("registrations")
-      .select("id, registration_code, status, company_snapshot, person:people!inner(document_number, first_names, last_names, email), attendance(status)")
-      .eq("activity_id", activityId).is("deleted_at", null).is("person.deleted_at", null).is("attendance.deleted_at", null)
-      .order("created_at", { ascending: false }),
+    client.rpc("get_activity_certificate_candidates", {
+      p_activity_id: activityId,
+      p_limit: CERTIFICATE_CANDIDATE_PAGE_SIZE,
+      p_offset: (filters.page - 1) * CERTIFICATE_CANDIDATE_PAGE_SIZE,
+      p_query: filters.query,
+    }),
     getCertificateTemplates(true),
   ]);
-  const error = activityResult.error ?? registrationResult.error;
+  const error = activityResult.error ?? candidateResult.error;
   if (error) throw new Error("No fue posible consultar los candidatos a certificado.", { cause: error });
   if (!activityResult.data) return null;
 
-  const registrationIds = (registrationResult.data ?? []).map((item) => item.id);
-  const certificateResult = registrationIds.length
-    ? await client.from("certificates")
-      .select("id, registration_id, certificate_code, status, file_path")
-      .eq("certificate_type", "activity").in("registration_id", registrationIds).is("deleted_at", null)
-    : { data: [], error: null };
-  if (certificateResult.error) {
-    throw new Error("No fue posible consultar los certificados emitidos.", { cause: certificateResult.error });
-  }
-
-  const certificates = new Map((certificateResult.data ?? []).map((item) => [item.registration_id, item]));
-  const candidates: CertificateCandidate[] = (registrationResult.data ?? []).map((item) => {
-    const parsed = certificateCandidateRegistrationSchema.safeParse(item);
-    if (!parsed.success || !parsed.data.attendance[0]) throw new Error("La respuesta de elegibilidad no tiene el formato esperado.");
-    const certificate = certificates.get(parsed.data.id);
+  const candidates: CertificateCandidate[] = (candidateResult.data ?? []).map((item) => {
     return {
-      ...parsed.data,
-      attendance: parsed.data.attendance[0],
-      certificate: certificate ? {
-        certificate_code: certificate.certificate_code,
-        file_path: certificate.file_path,
-        id: certificate.id,
-        status: certificate.status,
+      attendance: { status: item.attendance_status },
+      certificate: item.certificate_id && item.certificate_code && item.certificate_status ? {
+        certificate_code: item.certificate_code,
+        file_path: item.file_path,
+        id: item.certificate_id,
+        status: item.certificate_status,
       } : null,
+      company_snapshot: item.company_snapshot,
+      id: item.registration_id,
+      person: {
+        document_number: item.document_number,
+        email: item.email,
+        first_names: item.first_names,
+        id: item.person_id,
+        last_names: item.last_names,
+      },
+      registration_code: item.registration_code,
+      status: item.registration_status,
     };
   });
-  return { activity: activityResult.data, candidates, templates: templates.filter((template) => template.scope === "activity") };
+  const total = Number(candidateResult.data?.[0]?.total_count ?? 0);
+  return {
+    activity: activityResult.data,
+    candidatePage: {
+      candidates,
+      page: filters.page,
+      pageCount: Math.max(1, Math.ceil(total / CERTIFICATE_CANDIDATE_PAGE_SIZE)),
+      total,
+    },
+    templates: templates.filter((template) => template.scope === "activity"),
+  };
 }

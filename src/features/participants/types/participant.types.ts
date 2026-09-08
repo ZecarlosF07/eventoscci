@@ -1,5 +1,6 @@
 import type { ActivityType } from "@/features/activities/types/activity.types";
 import type { AttendanceStatus } from "@/features/attendance/types/attendance.types";
+import type { CertificateStatus, CertificateType } from "@/features/certificates/types/certificate.types";
 import type { RegistrationStatus, RegistrationType } from "@/features/registrations/types/registration.types";
 import type { Tables } from "@/lib/supabase/database.types";
 
@@ -25,10 +26,22 @@ export interface ParticipantHistoryItem {
   status: RegistrationStatus;
 }
 
+export interface ParticipantCertificateItem {
+  certificate_code: string;
+  certificate_type: CertificateType;
+  id: string;
+  issued_at: string;
+  participant_name_snapshot: string;
+  revocation_reason: string | null;
+  status: CertificateStatus;
+  title_snapshot: string;
+}
+
 export interface ParticipantDetail extends Pick<ParticipantRow,
   "address" | "company" | "created_at" | "document_number" | "document_type" |
   "email" | "first_names" | "id" | "job_title" | "last_names" | "phone" | "ruc"
 > {
+  certificates: ParticipantCertificateItem[];
   registrations: ParticipantHistoryItem[];
 }
 

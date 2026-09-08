@@ -21,6 +21,16 @@ export const participantListItemSchema = z.object({
 
 export const participantDetailSchema = participantListItemSchema.omit({ registrations: true }).extend({
   address: z.string().nullable(),
+  certificates: z.array(z.object({
+    certificate_code: z.string(),
+    certificate_type: z.enum(["activity", "course"]),
+    id: z.uuid(),
+    issued_at: z.string(),
+    participant_name_snapshot: z.string(),
+    revocation_reason: z.string().nullable(),
+    status: z.enum(["issued", "revoked"]),
+    title_snapshot: z.string(),
+  })),
   created_at: z.string(),
   registrations: z.array(z.object({
     activity: z.object({

@@ -1890,14 +1890,45 @@ export type Database = {
         Args: { p_activity_id: string }
         Returns: Json
       }
+      get_activity_certificate_candidates: {
+        Args: {
+          p_activity_id: string
+          p_limit?: number
+          p_offset?: number
+          p_query?: string
+        }
+        Returns: {
+          attendance_status: Database["public"]["Enums"]["attendance_status"]
+          certificate_code: string | null
+          certificate_id: string | null
+          certificate_status: Database["public"]["Enums"]["certificate_status"] | null
+          company_snapshot: string | null
+          document_number: string
+          email: string
+          file_path: string | null
+          first_names: string
+          last_names: string
+          person_id: string
+          registration_code: string
+          registration_id: string
+          registration_status: Database["public"]["Enums"]["registration_status"]
+          total_count: number
+        }[]
+      }
       get_admin_quiz: { Args: { p_module_id: string }; Returns: Json }
       get_certificate_activity_summaries: {
-        Args: never
+        Args: {
+          p_limit?: number
+          p_offset?: number
+          p_query?: string
+          p_type?: Database["public"]["Enums"]["activity_type"]
+        }
         Returns: {
           eligible_count: number
           id: string
           issued_count: number
           title: string
+          total_count: number
           type: Database["public"]["Enums"]["activity_type"]
         }[]
       }
@@ -1987,6 +2018,16 @@ export type Database = {
       retry_notification: {
         Args: { p_notification_id: string }
         Returns: string
+      }
+      replace_certificate_document: {
+        Args: {
+          p_certificate_id: string
+          p_expected_file_path: string | null
+          p_expected_participant_name: string
+          p_expected_person_id: string
+          p_new_file_path: string
+        }
+        Returns: Json
       }
       revoke_certificate: {
         Args: { p_certificate_id: string; p_reason: string }

@@ -28,6 +28,10 @@ pero conservan nombre, curso, condición, horas académicas, firmantes, código 
 determinista y admite reintentos; un fallo documental no revierte la matrícula ni crea otro
 certificado.
 
+Si administración corrige el nombre en la ficha de la persona, el certificado de curso participa
+en el mismo reemplazo auditado que los certificados de actividades. Mantiene su código, token,
+finalización y demás snapshots, no se regenera si está revocado y no produce un nuevo correo.
+
 Al finalizar el archivo, `finalize_course_certificate()` encola `course_certificate_issued` para
 n8n. La entrega de correo permanece desacoplada del cumplimiento académico.
 

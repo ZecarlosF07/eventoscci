@@ -48,5 +48,6 @@ export async function updateParticipantAction(
 
   revalidatePath(ROUTES.adminParticipants);
   revalidatePath(`${ROUTES.adminParticipants}/${participantId}`);
+  revalidatePath(ROUTES.adminCertificatesActivities, "layout");
   return { message: "Datos del participante actualizados.", success: true };
 }

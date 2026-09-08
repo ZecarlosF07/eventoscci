@@ -1,11 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 import { ROUTES } from "@/constants/routes";
 import { requireAdmin } from "@/features/auth/services/admin-session";
 import { issueActivityCertificates } from "@/features/certificates/services/issue-certificates";
-import type { CertificateIssueState } from "@/features/certificates/types/certificate.types";
+import { regenerateParticipantCertificates } from "@/features/certificates/services/regenerate-participant-certificates";
+import type {
+  CertificateIssueState,
+  CertificateRegenerationState,
+} from "@/features/certificates/types/certificate.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function issueCertificatesAction(
@@ -40,4 +45,23 @@ export async function revokeCertificateAction(
   if (error) throw new Error("No fue posible revocar el certificado.", { cause: error });
   revalidatePath(returnPath.startsWith("/admin/") ? returnPath : ROUTES.adminCertificates);
   revalidatePath(ROUTES.adminCertificates);
+}
+
+export async function regenerateParticipantCertificatesAction(
+  participantId: string,
+  _previousState: CertificateRegenerationState,
+  formData: FormData,
+): Promise<CertificateRegenerationState> {
+  await requireAdmin();
+  const parsedId = z.uuid().safeParse(participantId);
+  if (!parsedId.success || formData.get("confirmed") !== "yes") {
+    return { message: "Confirma la regeneración de los certificados." };
+  }
+
+  const result = await regenerateParticipantCertificates(parsedId.data);
+  revalidatePath(`${ROUTES.adminParticipants}/${parsedId.data}`);
+  revalidatePath(ROUTES.adminCertificatesActivities, "layout");
+  revalidatePath(ROUTES.campusCertificates);
+  revalidatePath("/certificados/[token]", "page");
+  return result;
 }

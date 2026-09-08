@@ -35,6 +35,19 @@ export interface CertificateActivityOption {
   issuedCount: number;
 }
 
+export interface CertificateActivityFilters {
+  page: number;
+  query?: string;
+  type?: ActivityType;
+}
+
+export interface CertificateActivityPage {
+  activities: CertificateActivityOption[];
+  page: number;
+  pageCount: number;
+  total: number;
+}
+
 export interface CertificateCandidate {
   attendance: { status: AttendanceStatus };
   certificate: Pick<CertificateRow, "certificate_code" | "file_path" | "id" | "status"> | null;
@@ -44,23 +57,29 @@ export interface CertificateCandidate {
     document_number: string;
     email: string;
     first_names: string;
+    id: string;
     last_names: string;
   };
   registration_code: string;
   status: RegistrationStatus;
 }
 
-export interface ActivityCertificateData {
-  activity: { id: string; title: string; type: ActivityType };
-  candidates: CertificateCandidate[];
-  templates: CertificateTemplate[];
+export interface CertificateCandidateFilters {
+  page: number;
+  query?: string;
 }
 
-export interface CertificateAdminItem extends Pick<CertificateRow,
-  "certificate_code" | "certificate_type" | "condition_snapshot" | "file_path" | "id" | "issued_at" |
-  "participant_name_snapshot" | "revocation_reason" | "status" | "title_snapshot"
-> {
-  registration: { activity_id: string } | null;
+export interface CertificateCandidatePage {
+  candidates: CertificateCandidate[];
+  page: number;
+  pageCount: number;
+  total: number;
+}
+
+export interface ActivityCertificateData {
+  activity: { id: string; title: string; type: ActivityType };
+  candidatePage: CertificateCandidatePage;
+  templates: CertificateTemplate[];
 }
 
 export interface MyCertificate {
@@ -91,13 +110,6 @@ export type CertificateGenerationState = "error" | "pending" | "ready";
 
 export interface CourseCertificateGenerationRouteContext {
   params: Promise<{ certificateId: string }>;
-}
-
-export interface CertificateAdminPage {
-  certificates: CertificateAdminItem[];
-  page: number;
-  pageCount: number;
-  total: number;
 }
 
 export interface CertificatePublicData {
@@ -207,6 +219,20 @@ export interface CertificateIssueState {
   success?: boolean;
 }
 
+export interface CertificateRegenerationState {
+  cleanupWarningCount?: number;
+  errorCount?: number;
+  failedCertificateCodes?: string[];
+  message?: string;
+  regeneratedCount?: number;
+  success?: boolean;
+  warning?: boolean;
+}
+
+export interface CertificateRegenerationOutcome {
+  cleanupWarning: boolean;
+}
+
 export interface CertificateTemplateFormState {
   errors?: Record<string, string[]>;
   message?: string;
@@ -219,10 +245,11 @@ export interface CertificateRouteProps {
 
 export interface ActivityCertificatesPageProps {
   params: Promise<{ activityId: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export interface CertificatesAdminPageProps {
-  searchParams: Promise<{ pagina?: string | string[]; resultado?: string | string[] }>;
+export interface CertificateActivitiesPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export interface CertificateQueryLogsPageProps {

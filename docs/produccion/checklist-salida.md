@@ -36,6 +36,8 @@
 - [ ] PDF fue revisado con nombre largo, tildes y título largo.
 - [ ] Certificado de curso virtual omite fechas.
 - [ ] Token público descarga únicamente el certificado correspondiente.
+- [ ] Corrección de nombre regenera actividades y cursos conservando código y enlace.
+- [ ] El PDF anterior se retira y la regeneración no envía un nuevo correo.
 
 ## Aceptación
 

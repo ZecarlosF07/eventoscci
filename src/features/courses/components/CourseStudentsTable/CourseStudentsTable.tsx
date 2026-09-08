@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
@@ -5,6 +7,7 @@ import { Select } from "@/components/atoms/Select";
 import { SubmitButton } from "@/components/atoms/SubmitButton";
 import { Text } from "@/components/atoms/Text";
 import { FormField } from "@/components/molecules/FormField";
+import { ROUTES } from "@/constants/routes";
 import type { CourseStudentsTableProps } from "@/features/courses/components/CourseStudentsTable/types/course-students-table.types";
 import { COURSE_ENROLLMENT_STATUS_LABELS } from "@/features/courses/constants/course.constants";
 import {
@@ -41,7 +44,7 @@ export function CourseStudentsTable({
               <input name="course_id" type="hidden" value={course.id} />
               <input name="person_id" type="hidden" value={person.id} />
               <div>
-                <p className="font-semibold">{person.first_names} {person.last_names}</p>
+                <Link className="font-semibold text-cci-950 hover:underline" href={`${ROUTES.adminParticipants}/${person.id}`}>{person.first_names} {person.last_names}</Link>
                 <Text size="sm">{person.document_number} · {person.email}</Text>
                 {!person.has_account ? <Badge variant="warning">Sin cuenta Campus</Badge> : null}
               </div>
@@ -69,9 +72,9 @@ export function CourseStudentsTable({
           <div className="rounded-2xl border border-cci-100 bg-white p-4" key={student.enrollmentId}>
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div className="min-w-0 flex-1">
-                <p className="font-semibold">
+                <Link className="font-semibold text-cci-950 hover:underline" href={`${ROUTES.adminParticipants}/${student.person.id}`}>
                   {student.person.first_names} {student.person.last_names}
-                </p>
+                </Link>
                 <Text size="sm">{student.person.document_number} · {student.person.email}</Text>
                 <div className="mt-2 flex flex-wrap gap-2">
                   <Badge variant={student.status === "active" ? "success" : "warning"}>

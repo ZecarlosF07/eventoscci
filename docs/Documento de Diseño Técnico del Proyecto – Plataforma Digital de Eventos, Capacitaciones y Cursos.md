@@ -1572,6 +1572,11 @@ activity
 course
 ```
 
+La corrección posterior del nombre se implementará como una operación administrativa excepcional,
+no como una edición directa general de snapshots. El servidor generará un PDF versionado con la
+plantilla original y una RPC protegida cambiará el nombre impreso y `file_path` bajo bloqueo,
+conservando `id`, código y token. La operación se auditará y no generará notificaciones.
+
 ---
 
 # 56. Certificados de actividades

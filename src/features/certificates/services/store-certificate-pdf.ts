@@ -13,6 +13,7 @@ export async function storeCertificatePdf(
   client: SupabaseClient<Database>,
   certificate: CertificateGenerationData,
   siteUrl: string,
+  targetPath?: string,
 ): Promise<string> {
   const assets = await loadCertificateDocumentAssets(client, certificate);
   const pdf = await generateCertificatePdf({
@@ -29,7 +30,7 @@ export async function storeCertificatePdf(
     signers: assets.signers,
     title: certificate.title_snapshot,
   });
-  const filePath = `issued/${certificate.id}/${certificate.certificate_code}.pdf`;
+  const filePath = targetPath ?? `issued/${certificate.id}/${certificate.certificate_code}.pdf`;
   const upload = await client.storage.from(CERTIFICATE_BUCKET).upload(filePath, pdf, {
     contentType: "application/pdf",
     upsert: true,
