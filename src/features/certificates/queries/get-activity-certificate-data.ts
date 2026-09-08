@@ -2,6 +2,7 @@ import "server-only";
 
 import { CERTIFICATE_CANDIDATE_PAGE_SIZE } from "@/features/certificates/constants/certificate.constants";
 import { getCertificateTemplates } from "@/features/certificates/queries/get-certificate-templates";
+import { getLegacyActivityCertificateCandidates } from "@/features/certificates/queries/get-legacy-activity-certificate-candidates";
 import type {
   ActivityCertificateData,
   CertificateCandidate,
@@ -24,9 +25,17 @@ export async function getActivityCertificateData(
     }),
     getCertificateTemplates(true),
   ]);
-  const error = activityResult.error ?? candidateResult.error;
+  const error = activityResult.error ?? (candidateResult.error?.code === "PGRST202" ? null : candidateResult.error);
   if (error) throw new Error("No fue posible consultar los candidatos a certificado.", { cause: error });
   if (!activityResult.data) return null;
+
+  if (candidateResult.error?.code === "PGRST202") {
+    return {
+      activity: activityResult.data,
+      candidatePage: await getLegacyActivityCertificateCandidates(activityId, filters),
+      templates: templates.filter((template) => template.scope === "activity"),
+    };
+  }
 
   const candidates: CertificateCandidate[] = (candidateResult.data ?? []).map((item) => {
     return {

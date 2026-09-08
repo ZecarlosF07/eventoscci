@@ -1,5 +1,22 @@
 import { z } from "zod";
 
+export const certificateCandidateRegistrationSchema = z.object({
+  attendance: z.array(z.object({
+    status: z.enum(["pending", "attended", "absent"]),
+  })),
+  company_snapshot: z.string().nullable(),
+  id: z.uuid(),
+  person: z.object({
+    document_number: z.string(),
+    email: z.string(),
+    first_names: z.string(),
+    id: z.uuid(),
+    last_names: z.string(),
+  }),
+  registration_code: z.string(),
+  status: z.enum(["pending", "confirmed", "cancelled"]),
+});
+
 export const certificateSignerSchema = z.object({
   id: z.uuid(),
   signature_path: z.string().nullable(),

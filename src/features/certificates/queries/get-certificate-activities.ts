@@ -1,6 +1,7 @@
 import "server-only";
 
 import { CERTIFICATE_ACTIVITY_PAGE_SIZE } from "@/features/certificates/constants/certificate.constants";
+import { getLegacyCertificateActivities } from "@/features/certificates/queries/get-legacy-certificate-activities";
 import type {
   CertificateActivityFilters,
   CertificateActivityPage,
@@ -17,6 +18,7 @@ export async function getCertificateActivities(
     p_query: filters.query,
     p_type: filters.type,
   });
+  if (error?.code === "PGRST202") return getLegacyCertificateActivities(filters);
   if (error) throw new Error("No fue posible consultar las actividades certificables.", { cause: error });
   const activities = (data ?? []).map((activity) => ({
     eligibleCount: Number(activity.eligible_count),
