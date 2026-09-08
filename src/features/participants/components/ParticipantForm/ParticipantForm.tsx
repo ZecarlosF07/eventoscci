@@ -4,6 +4,7 @@ import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
 import { FormActionNotice } from "@/components/molecules/FormActionNotice";
+import { FIELD_LIMITS } from "@/constants/field-limits";
 import type { ParticipantFormProps } from "@/features/participants/components/ParticipantForm/types/participant-form.types";
 import { usePersistentAction } from "@/hooks/use-persistent-action";
 import { updateParticipantAction } from "@/features/participants/mutations/participant.actions";
@@ -19,10 +20,10 @@ export function ParticipantForm({ participant }: ParticipantFormProps) {
       <div className="md:col-span-2 rounded-xl bg-cci-50 px-4 py-3 text-sm text-slate-700">
         Identidad: <strong>{participant.document_type.toUpperCase()} {participant.document_number}</strong>. El documento no se modifica desde esta ficha.
       </div>
-      <FormField error={state.errors?.first_names?.[0]} label="Nombres" name="first_names" required><Input defaultValue={participant.first_names} id="first_names" name="first_names" required /></FormField>
-      <FormField error={state.errors?.last_names?.[0]} label="Apellidos" name="last_names" required><Input defaultValue={participant.last_names} id="last_names" name="last_names" required /></FormField>
+      <FormField error={state.errors?.first_names?.[0]} label="Nombres" name="first_names" required><Input defaultValue={participant.first_names} id="first_names" maxLength={FIELD_LIMITS.personName} name="first_names" required /></FormField>
+      <FormField error={state.errors?.last_names?.[0]} label="Apellidos" name="last_names" required><Input defaultValue={participant.last_names} id="last_names" maxLength={FIELD_LIMITS.personName} name="last_names" required /></FormField>
       <FormField error={state.errors?.email?.[0]} label="Correo" name="email" required><Input defaultValue={participant.email} id="email" name="email" required type="email" /></FormField>
-      <FormField error={state.errors?.phone?.[0]} label="Celular" name="phone" required><Input defaultValue={participant.phone} id="phone" name="phone" required /></FormField>
+      <FormField error={state.errors?.phone?.[0]} label="Celular" name="phone" required><Input defaultValue={participant.phone} id="phone" maxLength={15} name="phone" required /></FormField>
       <FormField error={state.errors?.job_title?.[0]} label="Cargo" name="job_title" required><Input defaultValue={participant.job_title} id="job_title" name="job_title" required /></FormField>
       <FormField error={state.errors?.company?.[0]} label="Empresa" name="company"><Input defaultValue={participant.company ?? ""} id="company" name="company" /></FormField>
       <FormField error={state.errors?.ruc?.[0]} label="RUC" name="ruc"><Input defaultValue={participant.ruc ?? ""} id="ruc" inputMode="numeric" name="ruc" /></FormField>

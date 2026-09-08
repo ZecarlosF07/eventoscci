@@ -1,12 +1,14 @@
 import { z } from "zod";
 
+import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
+
 export const moduleFormSchema = z.object({
   courseId: z.uuid(),
   description: z.string().trim(),
   id: z.union([z.uuid(), z.literal("")]),
   isPublished: z.boolean(),
   sortOrder: z.number().int().nonnegative(),
-  title: z.string().trim().min(3, "El título debe tener al menos 3 caracteres."),
+  title: z.string().trim().min(3, "El título debe tener al menos 3 caracteres.").max(FIELD_LIMITS.contentTitle, maximumCharactersMessage(FIELD_LIMITS.contentTitle)),
 });
 
 export const lessonFormSchema = z.object({
@@ -18,7 +20,7 @@ export const lessonFormSchema = z.object({
   isRequired: z.boolean(),
   moduleId: z.uuid(),
   sortOrder: z.number().int().nonnegative(),
-  title: z.string().trim().min(3, "El título debe tener al menos 3 caracteres."),
+  title: z.string().trim().min(3, "El título debe tener al menos 3 caracteres.").max(FIELD_LIMITS.contentTitle, maximumCharactersMessage(FIELD_LIMITS.contentTitle)),
   videoAssetId: z.string().trim(),
   videoProvider: z.enum(["youtube", "vimeo", "external", "supabase"]),
   videoStoragePath: z.string().trim(),
@@ -44,7 +46,7 @@ export const materialMetadataSchema = z.object({
   mimeType: z.string().trim(),
   sortOrder: z.number().int().nonnegative(),
   storagePath: z.string().trim(),
-  title: z.string().trim().min(3, "El título debe tener al menos 3 caracteres."),
+  title: z.string().trim().min(3, "El título debe tener al menos 3 caracteres.").max(FIELD_LIMITS.contentTitle, maximumCharactersMessage(FIELD_LIMITS.contentTitle)),
 }).superRefine((data, context) => {
   if (data.materialType === "file" && !data.storagePath) {
     context.addIssue({ code: "custom", message: "Sube un archivo para continuar.", path: ["storagePath"] });

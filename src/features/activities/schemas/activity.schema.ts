@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
+
 const optionalText = z.string().trim();
 const nonnegativeNumber = z
   .string()
@@ -31,7 +33,7 @@ export const activityFormSchema = z
     contact_id: z.union([z.uuid(), z.literal("")]),
     dates: z.array(activityDateSchema).min(1, "Agrega al menos una fecha."),
     description: z.string().trim().min(10, "La descripción debe tener al menos 10 caracteres."),
-    duration_text: optionalText,
+    duration_text: optionalText.max(FIELD_LIMITS.activityDuration, maximumCharactersMessage(FIELD_LIMITS.activityDuration)),
     general_price: nonnegativeNumber,
     id: z.union([z.uuid(), z.literal("")]),
     is_free: z.boolean(),
@@ -45,7 +47,7 @@ export const activityFormSchema = z
     registration_open_at: optionalText,
     registrations_closed_manually: z.boolean(),
     short_description: z.string().trim().max(280, "Usa como máximo 280 caracteres."),
-    slug: optionalText,
+    slug: optionalText.max(FIELD_LIMITS.activitySlug, maximumCharactersMessage(FIELD_LIMITS.activitySlug)),
     speakers: z.array(
       z.object({
         role_label: optionalText,
@@ -56,7 +58,9 @@ export const activityFormSchema = z
     status: z.enum(["draft", "published", "finished", "archived", "cancelled"]),
     syllabus: optionalText,
     target_audience: optionalText,
-    title: z.string().trim().min(3, "El título debe tener al menos 3 caracteres."),
+    title: z.string().trim()
+      .min(3, "El título debe tener al menos 3 caracteres.")
+      .max(FIELD_LIMITS.activityTitle, maximumCharactersMessage(FIELD_LIMITS.activityTitle)),
     type: z.enum(["event", "training"]),
     venue_id: z.union([z.uuid(), z.literal("")]),
     virtual_url: z.union([z.url("Ingresa una URL válida."), z.literal("")]),

@@ -34,7 +34,7 @@ export function ActivityProgramImageFields({
           })}
         </div>
       ) : null}
-      <FormField error={error} hint="Puedes elegir todas las páginas a la vez. Las nuevas imágenes se añadirán después de las actuales." label="Imágenes del programa" name="program_images">
+      <FormField error={error} hint="Opcional. Puedes agregarlo después y elegir todas las páginas a la vez. Las nuevas imágenes se añadirán después de las actuales." label="Imágenes del programa" name="program_images">
         <Input accept="image/jpeg,image/png,image/webp" id="program_images" multiple name="program_images" type="file" />
       </FormField>
     </div>

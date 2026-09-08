@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
 import { REGISTRATION_NOTIFICATION_EVENT_TYPES } from "@/features/notifications/constants/notification.constants";
 
 const optionalText = z.string().trim().max(250, "Usa como máximo 250 caracteres.");
@@ -8,12 +9,12 @@ export const registrationFormSchema = z
   .object({
     address: optionalText,
     company: optionalText,
-    document_number: z.string().trim().toUpperCase(),
+    document_number: z.string().trim().max(FIELD_LIMITS.documentNumber, maximumCharactersMessage(FIELD_LIMITS.documentNumber)).toUpperCase(),
     document_type: z.enum(["dni", "ce"]),
     email: z.email("Ingresa un correo electrónico válido.").trim().toLowerCase(),
-    first_names: z.string().trim().min(2, "Ingresa tus nombres.").max(120),
+    first_names: z.string().trim().min(2, "Ingresa tus nombres.").max(FIELD_LIMITS.personName, maximumCharactersMessage(FIELD_LIMITS.personName)),
     job_title: z.string().trim().min(2, "Ingresa tu cargo.").max(150),
-    last_names: z.string().trim().min(2, "Ingresa tus apellidos.").max(120),
+    last_names: z.string().trim().min(2, "Ingresa tus apellidos.").max(FIELD_LIMITS.personName, maximumCharactersMessage(FIELD_LIMITS.personName)),
     phone: z
       .string()
       .trim()

@@ -72,10 +72,18 @@ export async function saveActivityAction(
     if (error.code === "23505" && matchesSupabaseError(error, "slug")) {
       return { errors: { slug: ["Este slug ya pertenece a otra actividad. Modifícalo o déjalo vacío para generarlo nuevamente."] }, savedId };
     }
+    if (error.code === "23505" && matchesSupabaseError(error, "speaker")) {
+      return { errors: { speakers: ["Un expositor está seleccionado más de una vez."] }, savedId };
+    }
     return {
       message: getSupabaseErrorMessage(error, {
         fallback: "No se pudo guardar la actividad. Actualiza la página e inténtalo nuevamente.",
         messages: {
+          "22001": "Uno de los textos supera el límite permitido. Revisa el título, slug y duración.",
+          "activity_speakers_speaker_id_fkey": "Uno de los expositores ya no está disponible. Actualiza la página y vuelve a seleccionarlo.",
+          "activities_category_id_fkey": "La categoría seleccionada ya no está disponible. Actualiza la página y vuelve a seleccionarla.",
+          "activities_contact_id_fkey": "El contacto seleccionado ya no está disponible. Actualiza la página y vuelve a seleccionarlo.",
+          "activities_venue_id_fkey": "El lugar seleccionado ya no está disponible. Actualiza la página y vuelve a seleccionarlo.",
           "activities_maps_embed_url_valid": "La URL del mapa no corresponde a una inserción válida de Google Maps.",
           "activities_published_venue_required": "Selecciona un lugar activo antes de publicar una actividad presencial o híbrida.",
           "activities_published_contact_required": "Selecciona un contacto activo antes de publicar.",
@@ -89,8 +97,14 @@ export async function saveActivityAction(
     return { message: "La actividad no pudo confirmarse después de guardarla. Actualiza la lista antes de volver a intentarlo.", savedId };
   }
 
+  const hasMediaToSync = Boolean(
+    savedId ||
+    mediaInput.bannerStagedPath ||
+    mediaInput.programStagedPaths.length ||
+    mediaInput.retainedProgramPaths.length,
+  );
   try {
-    await syncActivityMedia(mediaInput, activityId);
+    if (hasMediaToSync) await syncActivityMedia(mediaInput, activityId);
   } catch (uploadError) {
     revalidateActivityPages(parsed.data.type);
     return {

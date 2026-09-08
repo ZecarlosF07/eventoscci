@@ -6,7 +6,7 @@ import { ActivityProgramImageFields } from "@/features/activities/components/Act
 export function ActivityContentFields({ activity, bannerError, programError }: ActivityContentFieldsProps) {
   return (
     <>
-      <FormField error={bannerError} hint="Usa proporción horizontal 5:2 (por ejemplo, 2500 × 1000 px). JPG, PNG o WebP; máximo 5 MB." label="Banner" name="banner">
+      <FormField error={bannerError} hint="Opcional. Puedes agregarlo después. Usa proporción horizontal 5:2 (por ejemplo, 2500 × 1000 px); JPG, PNG o WebP, máximo 5 MB." label="Banner" name="banner">
         <Input accept="image/jpeg,image/png,image/webp" id="banner" name="banner" type="file" />
       </FormField>
       <input name="banner_path" type="hidden" value={activity?.banner_path ?? ""} />

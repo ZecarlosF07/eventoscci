@@ -9,6 +9,7 @@ import type {
 } from "@/lib/supabase/types/supabase-error.types";
 
 const DEFAULT_MESSAGES: Record<string, string> = {
+  "22001": "Uno de los campos supera el máximo de caracteres permitido. Revisa los campos marcados e inténtalo nuevamente.",
   "22023": "Uno o más datos no cumplen las reglas de la plataforma. Revisa la información e inténtalo nuevamente.",
   "23503": "Uno de los registros relacionados ya no está disponible. Actualiza la página e inténtalo nuevamente.",
   "23505": "Ya existe un registro con los mismos datos. Revisa los campos únicos.",

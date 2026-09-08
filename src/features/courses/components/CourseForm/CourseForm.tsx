@@ -8,6 +8,7 @@ import { Select } from "@/components/atoms/Select";
 import { Textarea } from "@/components/atoms/Textarea";
 import { FormField } from "@/components/molecules/FormField";
 import { FormActionNotice } from "@/components/molecules/FormActionNotice";
+import { FIELD_LIMITS } from "@/constants/field-limits";
 import { ActivityFormSection } from "@/features/activities/components/ActivityFormSection";
 import { CourseInstructorFields } from "@/features/courses/components/CourseInstructorFields";
 import { COURSE_STATUS_LABELS } from "@/features/courses/constants/course.constants";
@@ -32,8 +33,8 @@ export function CourseForm({ course, speakers }: CourseFormProps) {
     <input name="banner_path" type="hidden" value={course?.banner_path ?? ""} />
     <ActivityFormSection title="Información general">
       <div className="grid gap-5 md:grid-cols-2">
-        <FormField error={error("title")} label="Título" name="title" required><Input defaultValue={course?.title} id="title" name="title" required /></FormField>
-        <FormField error={error("slug")} hint="Déjalo vacío para generarlo desde el título." label="Slug" name="slug"><Input defaultValue={course?.slug} id="slug" name="slug" /></FormField>
+        <FormField error={error("title")} hint={`Máximo ${FIELD_LIMITS.courseTitle} caracteres.`} label="Título" name="title" required><Input defaultValue={course?.title} id="title" maxLength={FIELD_LIMITS.courseTitle} name="title" required /></FormField>
+        <FormField error={error("slug")} hint="Déjalo vacío para generarlo desde el título." label="Slug" name="slug"><Input defaultValue={course?.slug} id="slug" maxLength={FIELD_LIMITS.courseSlug} name="slug" /></FormField>
       </div>
       <FormField error={error("short_description")} label="Descripción corta" name="short_description"><Textarea defaultValue={course?.short_description ?? ""} id="short_description" maxLength={280} name="short_description" /></FormField>
       <FormField error={error("description")} label="Descripción" name="description" required><Textarea defaultValue={course?.description} id="description" name="description" required /></FormField>
@@ -44,7 +45,7 @@ export function CourseForm({ course, speakers }: CourseFormProps) {
     </ActivityFormSection>
     <ActivityFormSection title="Duración y portada">
       <div className="grid gap-5 md:grid-cols-2">
-        <FormField label="Duración" name="duration_text"><Input defaultValue={course?.duration_text ?? ""} id="duration_text" name="duration_text" placeholder="Ej. 8 semanas" /></FormField>
+        <FormField error={error("duration_text")} label="Duración" name="duration_text"><Input defaultValue={course?.duration_text ?? ""} id="duration_text" maxLength={FIELD_LIMITS.courseDuration} name="duration_text" placeholder="Ej. 8 semanas" /></FormField>
         <FormField error={error("academic_hours")} label="Horas académicas" name="academic_hours"><Input defaultValue={course?.academic_hours ?? ""} id="academic_hours" min="0" name="academic_hours" step="0.5" type="number" /></FormField>
       </div>
       <FormField error={error("banner")} hint="JPG, PNG o WebP. Máximo 5 MB." label="Portada" name="banner"><Input accept="image/jpeg,image/png,image/webp" id="banner" name="banner" type="file" /></FormField>

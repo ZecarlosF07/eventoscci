@@ -10,6 +10,7 @@ import { Select } from "@/components/atoms/Select";
 import { Textarea } from "@/components/atoms/Textarea";
 import { FormField } from "@/components/molecules/FormField";
 import { FormActionNotice } from "@/components/molecules/FormActionNotice";
+import { FIELD_LIMITS } from "@/constants/field-limits";
 import { ActivityContentFields } from "@/features/activities/components/ActivityContentFields";
 import { ActivityDateFields } from "@/features/activities/components/ActivityDateFields";
 import { ActivityFormSection } from "@/features/activities/components/ActivityFormSection";
@@ -59,11 +60,11 @@ export function ActivityForm({
       <input name="type" type="hidden" value={type} />
       <ActivityFormSection title="Información general">
         <div className="grid gap-5 md:grid-cols-2">
-          <FormField error={error("title")} label="Título" name="title" required>
-            <Input defaultValue={activity?.title} id="title" name="title" required />
+          <FormField error={error("title")} hint={`Máximo ${FIELD_LIMITS.activityTitle} caracteres.`} label="Título" name="title" required>
+            <Input defaultValue={activity?.title} id="title" maxLength={FIELD_LIMITS.activityTitle} name="title" required />
           </FormField>
           <FormField error={error("slug")} hint="Déjalo vacío para generarlo desde el título." label="Slug" name="slug">
-            <Input defaultValue={activity?.slug} id="slug" name="slug" />
+            <Input defaultValue={activity?.slug} id="slug" maxLength={FIELD_LIMITS.activitySlug} name="slug" />
           </FormField>
           <CatalogSelect defaultValue={activity?.category_id ?? ""} error={error("category_id")} kind="categories" label="Categoría" name="category_id" options={categories.map((category) => ({ id: category.id, label: category.name }))} />
           <FormField error={error("modality")} label="Modalidad" name="modality" required>
@@ -90,7 +91,7 @@ export function ActivityForm({
         <div className="grid gap-5 md:grid-cols-2">
           {modality !== "virtual" ? <CatalogSelect defaultValue={activity?.venue_id ?? ""} error={error("venue_id")} kind="venues" label="Lugar" name="venue_id" options={venues.map((venue) => ({ description: venue.address, id: venue.id, label: venue.name }))} required={status === "published"} /> : <input name="venue_id" type="hidden" value="" />}
           <FormField error={error("virtual_url")} label="Enlace virtual" name="virtual_url"><Input defaultValue={activity?.virtual_url ?? ""} id="virtual_url" name="virtual_url" type="url" /></FormField>
-          <FormField hint="Texto resumido que verá el público, por ejemplo: 5 horas, 2 días o 4 sesiones." label="Duración mostrada al público" name="duration_text"><Input defaultValue={activity?.duration_text ?? ""} id="duration_text" name="duration_text" placeholder="Ej. 2 días" /></FormField>
+          <FormField error={error("duration_text")} hint="Texto resumido que verá el público, por ejemplo: 5 horas, 2 días o 4 sesiones; máximo 100 caracteres." label="Duración mostrada al público" name="duration_text"><Input defaultValue={activity?.duration_text ?? ""} id="duration_text" maxLength={FIELD_LIMITS.activityDuration} name="duration_text" placeholder="Ej. 2 días" /></FormField>
           <FormField error={error("academic_hours")} hint="Cantidad oficial que aparecerá en el certificado. Déjala vacía si no corresponde." label="Horas académicas certificables" name="academic_hours"><Input defaultValue={activity?.academic_hours ?? ""} id="academic_hours" min="0" name="academic_hours" step="0.5" type="number" /></FormField>
         </div>
       </ActivityFormSection>
@@ -105,6 +106,7 @@ export function ActivityForm({
       </ActivityFormSection>
 
       <ActivityFormSection title="Expositores">
+        {error("speakers") ? <p className="text-sm font-medium text-rose-700">{error("speakers")}</p> : null}
         <ActivitySpeakerFields initialSpeakers={selectedSpeakers} speakers={speakers} />
       </ActivityFormSection>
 

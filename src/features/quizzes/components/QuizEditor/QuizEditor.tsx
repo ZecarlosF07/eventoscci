@@ -11,6 +11,7 @@ import { Label } from "@/components/atoms/Label";
 import { Text } from "@/components/atoms/Text";
 import { Textarea } from "@/components/atoms/Textarea";
 import { FormField } from "@/components/molecules/FormField";
+import { FIELD_LIMITS } from "@/constants/field-limits";
 import { FormActionNotice } from "@/components/molecules/FormActionNotice";
 import { QuizQuestionEditor } from "@/features/quizzes/components/QuizQuestionEditor";
 import { saveQuizAction } from "@/features/quizzes/mutations/quiz.actions";
@@ -45,7 +46,7 @@ export function QuizEditor({ courseId, initialQuiz, moduleId, moduleTitle }: Qui
         <input name="questions" type="hidden" value={JSON.stringify(questions)} />
         <section className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-5 md:grid-cols-2">
           <FormField error={state.errors?.title?.[0]} label="Título" name="quiz_title">
-            <Input defaultValue={initialQuiz?.title ?? `Evaluación de ${moduleTitle}`} id="quiz_title" name="title" required />
+            <Input defaultValue={initialQuiz?.title ?? `Evaluación de ${moduleTitle}`} id="quiz_title" maxLength={FIELD_LIMITS.contentTitle} name="title" required />
           </FormField>
           <FormField label="Nota mínima" name="passing_score">
             <Input disabled id="passing_score" value="80 %" />

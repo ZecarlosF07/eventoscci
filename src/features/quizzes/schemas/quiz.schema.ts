@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
+
 const nullableText = z.string().nullable();
 
 const adminOptionSchema = z.object({
@@ -55,7 +57,7 @@ export const quizSaveFormSchema = z.object({
   isPublished: z.boolean(),
   moduleId: z.string().uuid(),
   questions: z.array(draftQuestionSchema),
-  title: z.string().trim().min(3, "El título debe tener al menos 3 caracteres."),
+  title: z.string().trim().min(3, "El título debe tener al menos 3 caracteres.").max(FIELD_LIMITS.contentTitle, maximumCharactersMessage(FIELD_LIMITS.contentTitle)),
 }).superRefine((quiz, context) => {
   if (quiz.isPublished && quiz.questions.length === 0) {
     context.addIssue({ code: "custom", message: "Agrega una pregunta antes de publicar.", path: ["questions"] });

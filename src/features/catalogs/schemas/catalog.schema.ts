@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
 import { normalizeWhatsAppPhone } from "@/features/activities/utils/activity-contact";
 import { isGoogleMapsEmbedUrl } from "@/features/activities/utils/activity-maps";
 
@@ -13,7 +14,7 @@ export const venueSchema = z.object({
   id: z.union([z.uuid(), z.literal("")]),
   is_active: z.boolean(),
   maps_embed_url: z.string().trim().refine(isGoogleMapsEmbedUrl, "Ingresa una URL de inserción válida de Google Maps."),
-  name: z.string().trim().min(3, "El nombre debe tener al menos 3 caracteres."),
+  name: z.string().trim().min(3, "El nombre debe tener al menos 3 caracteres.").max(FIELD_LIMITS.venueName, maximumCharactersMessage(FIELD_LIMITS.venueName)),
   reference: z.string().trim().max(240, "La referencia no puede superar 240 caracteres."),
 });
 
@@ -23,26 +24,26 @@ export const contactSchema = z.object({
   id: z.union([z.uuid(), z.literal("")]),
   is_active: z.boolean(),
   is_default: z.boolean(),
-  label: z.string().trim().min(3, "Ingresa un nombre para identificar el contacto."),
-  whatsapp_phone: z.string().trim().refine((value) => Boolean(normalizeWhatsAppPhone(value)), "Ingresa un WhatsApp válido."),
+  label: z.string().trim().min(3, "Ingresa un nombre para identificar el contacto.").max(FIELD_LIMITS.activityContactLabel, maximumCharactersMessage(FIELD_LIMITS.activityContactLabel)),
+  whatsapp_phone: z.string().trim().max(FIELD_LIMITS.phone, maximumCharactersMessage(FIELD_LIMITS.phone)).refine((value) => Boolean(normalizeWhatsAppPhone(value)), "Ingresa un WhatsApp válido."),
 });
 
 export const categorySchema = z.object({
   description: z.string().trim().max(500, "La descripción no puede superar 500 caracteres."),
   id: z.union([z.uuid(), z.literal("")]),
   is_active: z.boolean(),
-  name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres."),
-  slug: z.string().trim(),
+  name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres.").max(FIELD_LIMITS.categoryName, maximumCharactersMessage(FIELD_LIMITS.categoryName)),
+  slug: z.string().trim().max(FIELD_LIMITS.categorySlug, maximumCharactersMessage(FIELD_LIMITS.categorySlug)),
   sort_order: z.coerce.number().int().nonnegative("El orden debe ser cero o mayor."),
 });
 
 export const speakerSchema = z.object({
   bio: z.string().trim().max(2000, "La biografía no puede superar 2000 caracteres."),
   email: z.union([z.email("Ingresa un correo válido."), z.literal("")]),
-  first_names: z.string().trim().min(2, "Ingresa los nombres."),
+  first_names: z.string().trim().min(2, "Ingresa los nombres.").max(FIELD_LIMITS.personName, maximumCharactersMessage(FIELD_LIMITS.personName)),
   id: z.union([z.uuid(), z.literal("")]),
   is_active: z.boolean(),
-  last_names: z.string().trim().min(2, "Ingresa los apellidos."),
+  last_names: z.string().trim().min(2, "Ingresa los apellidos.").max(FIELD_LIMITS.personName, maximumCharactersMessage(FIELD_LIMITS.personName)),
   linkedin_url: optionalHttpsUrl,
   notes: z.string().trim().max(2000, "Las notas no pueden superar 2000 caracteres."),
   organization: z.string().trim().max(200, "La organización no puede superar 200 caracteres."),
