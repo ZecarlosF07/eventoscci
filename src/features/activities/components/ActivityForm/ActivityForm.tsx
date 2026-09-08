@@ -10,19 +10,18 @@ import { Select } from "@/components/atoms/Select";
 import { Textarea } from "@/components/atoms/Textarea";
 import { FormField } from "@/components/molecules/FormField";
 import { FormActionNotice } from "@/components/molecules/FormActionNotice";
+import { ActivityContentFields } from "@/features/activities/components/ActivityContentFields";
 import { ActivityDateFields } from "@/features/activities/components/ActivityDateFields";
 import { ActivityFormSection } from "@/features/activities/components/ActivityFormSection";
-import { ActivityProgramImageFields } from "@/features/activities/components/ActivityProgramImageFields";
 import { ActivitySpeakerFields } from "@/features/activities/components/ActivitySpeakerFields";
 import { CatalogSelect } from "@/features/catalogs/components/CatalogSelect";
 import { ACTIVITY_STATUS_LABELS } from "@/features/activities/constants/activity.constants";
-import { saveActivityAction } from "@/features/activities/mutations/activity.actions";
+import { useActivityFormSubmission } from "@/features/activities/hooks/use-activity-form-submission";
 import type {
   ActivityFormProps,
   ActivityFormState,
 } from "@/features/activities/types/activity-form.types";
 import { formatDateTimeLocal } from "@/features/activities/utils/activity-formatters";
-import { usePersistentAction } from "@/hooks/use-persistent-action";
 
 const INITIAL_STATE: ActivityFormState = {};
 
@@ -34,7 +33,7 @@ export function ActivityForm({
   type,
   venues,
 }: ActivityFormProps) {
-  const { onSubmit, pending, state } = usePersistentAction(saveActivityAction, INITIAL_STATE);
+  const { onSubmit, pending, state, uploadLabel } = useActivityFormSubmission(INITIAL_STATE);
   const [modality, setModality] = useState(activity?.modality ?? "in_person");
   const [status, setStatus] = useState(activity?.status ?? "draft");
   const initialIsFree = activity?.is_free ?? false;
@@ -97,13 +96,7 @@ export function ActivityForm({
       </ActivityFormSection>
 
       <ActivityFormSection title="Contenido">
-        <FormField error={error("banner")} hint="Usa proporción horizontal 5:2 (por ejemplo, 2500 × 1000 px). JPG, PNG o WebP; máximo 5 MB." label="Banner" name="banner">
-          <Input accept="image/jpeg,image/png,image/webp" id="banner" name="banner" type="file" />
-        </FormField>
-        <input name="banner_path" type="hidden" value={activity?.banner_path ?? ""} />
-        <input name="program" type="hidden" value={activity?.program ?? ""} />
-        <input name="syllabus" type="hidden" value={activity?.syllabus ?? ""} />
-        <ActivityProgramImageFields error={error("program_images")} initialPaths={activity?.program_image_paths ?? []} />
+        <ActivityContentFields activity={activity} bannerError={error("banner")} programError={error("program_images")} />
       </ActivityFormSection>
 
       <ActivityFormSection title="Fechas y horarios">
@@ -146,7 +139,7 @@ export function ActivityForm({
         </FormField>
         <div className="space-y-2 sm:text-right">
           <FormActionNotice compact message={state.message} success={state.success} warning={state.warning} />
-          <Button disabled={pending} type="submit">{pending ? "Guardando…" : activity ? "Guardar cambios" : "Crear actividad"}</Button>
+          <Button disabled={pending} type="submit">{uploadLabel ?? (pending ? "Guardando…" : activity ? "Guardar cambios" : "Crear actividad")}</Button>
         </div>
       </div>
     </form>
