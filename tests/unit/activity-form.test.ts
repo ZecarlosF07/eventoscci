@@ -44,8 +44,13 @@ test("permite crear un borrador sin banner ni programa", () => {
   assert.equal(activityFormSchema.safeParse(validActivity()).success, true);
 });
 
-test("identifica textos que superarían los límites de la base", () => {
-  const result = activityFormSchema.safeParse({ ...validActivity(), title: "x".repeat(201) });
+test("permite títulos de actividades de hasta 300 caracteres", () => {
+  const result = activityFormSchema.safeParse({ ...validActivity(), title: "x".repeat(300) });
+  assert.equal(result.success, true);
+});
+
+test("identifica títulos de actividades que superan los 300 caracteres", () => {
+  const result = activityFormSchema.safeParse({ ...validActivity(), title: "x".repeat(301) });
   assert.equal(result.success, false);
   if (!result.success) assert.ok(result.error.flatten().fieldErrors.title?.length);
 });

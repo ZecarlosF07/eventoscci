@@ -35,7 +35,7 @@ export function ActivitySpeakerFields({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4"><Text>Selecciona uno o varios perfiles.</Text><CatalogQuickCreateDialog kind="speakers" onCreated={(option) => setOptions((current) => [...current, option])} /></div>
+      <div className="flex items-center justify-between gap-4"><Text>Selecciona uno o varios perfiles.</Text><CatalogQuickCreateDialog kind="speakers" onCreated={(option) => { setOptions((current) => [...current, option]); setSelected((current) => current.includes(option.id) ? current : [...current, option.id]); }} /></div>
       {!options.length ? <Text>No hay expositores activos disponibles.</Text> : null}
       <div className="grid gap-3 md:grid-cols-2">
       {options.map((speaker) => {

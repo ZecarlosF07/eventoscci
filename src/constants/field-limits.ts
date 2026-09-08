@@ -2,7 +2,7 @@ export const FIELD_LIMITS = {
   activityContactLabel: 120,
   activityDuration: 100,
   activitySlug: 220,
-  activityTitle: 200,
+  activityTitle: 300,
   categoryName: 100,
   categorySlug: 120,
   certificateSignerName: 200,

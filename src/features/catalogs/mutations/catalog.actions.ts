@@ -211,7 +211,6 @@ export async function quickCreateCatalogAction(formData: FormData): Promise<Quic
   const kind = text(formData, "kind") as CatalogKind;
   try {
     const option = await persistCatalog(kind, formData);
-    revalidatePath(catalogPath(kind));
     return { option, success: true };
   } catch (error) {
     if (error && typeof error === "object" && "flatten" in error) {

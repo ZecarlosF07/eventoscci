@@ -21,7 +21,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
     <section
       aria-label="Actividades destacadas"
       aria-roledescription="carrusel"
-      className="relative isolate w-full overflow-hidden bg-cci-950 pb-7"
+      className="relative isolate w-full overflow-hidden bg-cci-950"
       onBlur={handleBlur}
       onFocus={() => setFocused(true)}
       onMouseEnter={() => setHovered(true)}

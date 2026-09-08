@@ -20,7 +20,7 @@ export function HomeHeroSlide({ active, featured, index }: HomeHeroSlideProps) {
       >
         <Link
           aria-label={`Ver detalles e inscripción de ${featured.title}`}
-          className="block w-full border-y border-white/20 transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-cci-lime"
+          className="block w-full transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-cci-lime"
           href={featured.href}
         >
           <HomeHeroArtwork bannerUrl={featured.bannerUrl} eager={index === 0} title={featured.title} wide />
