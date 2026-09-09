@@ -1,8 +1,12 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { RegistrationPageTemplate } from "@/components/templates/RegistrationPageTemplate";
 import { getRegistrationPageData } from "@/features/registrations/services/get-registration-page-data";
 import type { RegistrationRoutePageProps } from "@/features/registrations/types/registration.types";
+import { buildNoIndexMetadata } from "@/features/seo/services/build-page-metadata";
+
+export const metadata: Metadata = buildNoIndexMetadata("Inscripción a capacitación");
 
 export default async function TrainingRegistrationPage({ params }: RegistrationRoutePageProps) {
   const data = await getRegistrationPageData("training", (await params).slug);

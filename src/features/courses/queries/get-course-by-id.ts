@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { mapCourseInstructors } from "@/features/courses/services/map-course-data";
 import type { CourseContent, CourseDetail } from "@/features/courses/types/course.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -37,12 +39,12 @@ export async function getAdminCourseById(id: string): Promise<CourseDetail | nul
   return data ? mapCourseDetail(data) : null;
 }
 
-export async function getPublicCourseBySlug(slug: string): Promise<CourseDetail | null> {
+export const getPublicCourseBySlug = cache(async function getPublicCourseBySlug(slug: string): Promise<CourseDetail | null> {
   const data = await fetchCourseDetail("slug", slug);
   if (!data || data.status !== "published" || !data.published_at) return null;
   const course = mapCourseDetail(data);
   return { ...course, modules: course.modules.filter((module) => module.is_published) };
-}
+});
 
 export async function getAdminCourseContent(id: string): Promise<CourseContent | null> {
   const course = await getAdminCourseById(id);

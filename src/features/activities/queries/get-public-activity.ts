@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { PUBLIC_ACTIVITY_STATUSES } from "@/features/activities/constants/activity.constants";
 import type {
   ActivityDetail,
@@ -22,7 +24,7 @@ const ACTIVITY_DETAIL_SELECT = `
   )
 `;
 
-export async function getPublicActivityBySlug(
+export const getPublicActivityBySlug = cache(async function getPublicActivityBySlug(
   type: ActivityType,
   slug: string,
 ): Promise<ActivityDetail | null> {
@@ -62,4 +64,4 @@ export async function getPublicActivityBySlug(
     dates: activity.dates.sort((first, second) => first.sort_order - second.sort_order),
     speakers,
   };
-}
+});

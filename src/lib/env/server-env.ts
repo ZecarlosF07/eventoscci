@@ -17,6 +17,13 @@ function validUrl(value: string, name: string): string {
   }
 }
 
+function canonicalSiteUrl(value: string): string {
+  const url = new URL(validUrl(value, "NEXT_PUBLIC_SITE_URL"));
+  const isLocal = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  if (!isLocal && url.protocol === "http:") url.protocol = "https:";
+  return url.toString().replace(/\/$/, "");
+}
+
 export function getCertificateServerEnv(): CertificateServerEnv {
   const { supabaseUrl } = getPublicEnv();
   return {
@@ -28,7 +35,7 @@ export function getCertificateServerEnv(): CertificateServerEnv {
 
 export function getSiteUrl(): string {
   const fallbackUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
-  return validUrl(process.env.NEXT_PUBLIC_SITE_URL?.trim() || fallbackUrl, "NEXT_PUBLIC_SITE_URL");
+  return canonicalSiteUrl(process.env.NEXT_PUBLIC_SITE_URL?.trim() || fallbackUrl);
 }
 
 export function getNotificationServerEnv(): NotificationServerEnv {

@@ -9,8 +9,9 @@ import { getCurrentAccount } from "@/features/auth/queries/get-current-account";
 import type { AuthPageProps } from "@/features/auth/types/auth.types";
 import { loginErrorMessage } from "@/features/auth/utils/auth-errors";
 import { safeAuthRedirect } from "@/features/auth/utils/safe-auth-redirect";
+import { buildNoIndexMetadata } from "@/features/seo/services/build-page-metadata";
 
-export const metadata: Metadata = { description: "Ingresa al Campus Virtual de la Cámara de Comercio de Ica para continuar tu formación.", title: "Ingresa a tu Campus CCI" };
+export const metadata: Metadata = buildNoIndexMetadata("Ingresa a tu Campus CCI");
 
 export default async function LoginPage({ searchParams }: AuthPageProps) {
   const params = await searchParams;

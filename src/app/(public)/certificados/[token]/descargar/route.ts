@@ -31,5 +31,11 @@ export async function GET(request: Request, context: CertificateDownloadRouteCon
       error: error instanceof Error ? error.message : "unknown",
     });
   }
-  return Response.redirect(signed.data.signedUrl, 302);
+  return new Response(null, {
+    headers: {
+      Location: signed.data.signedUrl,
+      "X-Robots-Tag": "noindex, nofollow, noarchive",
+    },
+    status: 302,
+  });
 }

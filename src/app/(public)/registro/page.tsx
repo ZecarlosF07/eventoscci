@@ -8,8 +8,9 @@ import { RegisterForm } from "@/features/auth/components/RegisterForm";
 import { getCurrentAccount } from "@/features/auth/queries/get-current-account";
 import type { AuthPageProps } from "@/features/auth/types/auth.types";
 import { safeAuthRedirect } from "@/features/auth/utils/safe-auth-redirect";
+import { buildNoIndexMetadata } from "@/features/seo/services/build-page-metadata";
 
-export const metadata: Metadata = { description: "Crea tu cuenta vinculada a la identidad institucional de la Cámara de Comercio de Ica.", title: "Crear cuenta" };
+export const metadata: Metadata = buildNoIndexMetadata("Crear cuenta");
 
 export default async function RegisterPage({ searchParams }: AuthPageProps) {
   const params = await searchParams;

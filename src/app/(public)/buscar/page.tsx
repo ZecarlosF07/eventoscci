@@ -3,11 +3,9 @@ import type { Metadata } from "next";
 import { SearchResultsTemplate } from "@/components/templates/SearchResultsTemplate";
 import { getGlobalSearchResults } from "@/features/search/queries/get-global-search-results";
 import type { GlobalSearchPageProps } from "@/features/search/types/search.types";
+import { buildNoIndexMetadata } from "@/features/seo/services/build-page-metadata";
 
-export const metadata: Metadata = {
-  description: "Busca eventos, capacitaciones y cursos de la Cámara de Comercio de Ica.",
-  title: "Buscar",
-};
+export const metadata: Metadata = buildNoIndexMetadata("Buscar", true);
 
 export default async function SearchPage({ searchParams }: GlobalSearchPageProps) {
   const params = await searchParams;

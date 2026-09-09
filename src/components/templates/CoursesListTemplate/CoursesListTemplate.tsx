@@ -20,7 +20,7 @@ export function CoursesListTemplate({ courses, featuredCourses, query }: Courses
         </form>
         {courses.length ? (
           <section className="mt-12">
-            <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-600">Aprende a tu ritmo</p><h2 className="mt-2 text-2xl font-bold tracking-tight text-cci-950 sm:text-3xl">Explora nuestros cursos</h2></div><Text size="sm">{courses.length} {courses.length === 1 ? "curso disponible" : "cursos disponibles"}</Text></div>
+            <div className="flex flex-wrap items-end justify-between gap-3"><div className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-600">Aprende a tu ritmo</p><h2 className="mt-2 text-2xl font-bold tracking-tight text-cci-950 sm:text-3xl">Explora nuestros cursos</h2><Text className="mt-3">Formación virtual desde Ica para profesionales y empresas de todo el Perú.</Text></div><Text size="sm">{courses.length} {courses.length === 1 ? "curso disponible" : "cursos disponibles"}</Text></div>
             <div className="mt-7 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{courses.map((course) => <CourseCard course={course} key={course.id} />)}</div>
           </section>
         ) : (

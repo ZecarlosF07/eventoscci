@@ -6,8 +6,9 @@ import { AuthTemplate } from "@/components/templates/AuthTemplate";
 import { ROUTES } from "@/constants/routes";
 import { ResetPasswordForm } from "@/features/auth/components/ResetPasswordForm";
 import { getCurrentAccount } from "@/features/auth/queries/get-current-account";
+import { buildNoIndexMetadata } from "@/features/seo/services/build-page-metadata";
 
-export const metadata: Metadata = { title: "Restablecer contraseña" };
+export const metadata: Metadata = buildNoIndexMetadata("Restablecer contraseña");
 
 export default async function ResetPasswordPage() {
   const account = await getCurrentAccount();

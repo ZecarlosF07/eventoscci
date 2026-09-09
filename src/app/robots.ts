@@ -1,19 +1,20 @@
 import type { MetadataRoute } from "next";
 
+import { getSiteUrl } from "@/lib/env/server-env";
+
 export default function robots(): MetadataRoute.Robots {
+  const siteUrl = getSiteUrl();
   return {
+    host: siteUrl,
     rules: {
       allow: "/",
       disallow: [
         "/admin",
         "/auth",
         "/campus",
-        "/login",
-        "/recuperar-contrasena",
-        "/registro",
-        "/restablecer-contrasena",
       ],
       userAgent: "*",
     },
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

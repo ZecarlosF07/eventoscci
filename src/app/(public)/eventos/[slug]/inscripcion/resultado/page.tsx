@@ -1,8 +1,12 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { RegistrationResult } from "@/features/registrations/components/RegistrationResult";
 import { getRegistrationResult } from "@/features/registrations/queries/get-registration-result";
 import type { RegistrationResultPageProps } from "@/features/registrations/types/registration.types";
+import { buildNoIndexMetadata } from "@/features/seo/services/build-page-metadata";
+
+export const metadata: Metadata = buildNoIndexMetadata("Resultado de inscripción");
 
 export default async function EventRegistrationResultPage({ params, searchParams }: RegistrationResultPageProps) {
   const codeValue = (await searchParams).codigo;

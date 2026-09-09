@@ -11,8 +11,8 @@ export function HomePageTemplate({ content }: HomePageTemplateProps) {
       <HomeHero activities={[...content.events, ...content.trainings]} />
       <HomeSearch />
       <div className="mx-auto max-w-[90rem] px-4 pb-16 pt-2 sm:px-6 sm:pb-20 sm:pt-4 lg:px-8">
-        <HomeActivitySection activities={content.events} description="Encuentros para conectar con oportunidades, conocimiento y comunidad empresarial." href="/eventos" title="Próximos eventos" />
-        <HomeActivitySection activities={content.trainings} description="Experiencias prácticas para fortalecer tus capacidades y las de tu empresa." href="/capacitaciones" title="Capacitaciones destacadas" />
+        <HomeActivitySection activities={content.events} description="Descubre los próximos eventos en Ica, Perú, y conecta con oportunidades, conocimiento y comunidad empresarial." href="/eventos" title="Próximos eventos" />
+        <HomeActivitySection activities={content.trainings} description="Capacitaciones presenciales en Ica y experiencias virtuales para fortalecer tus capacidades y las de tu empresa." href="/capacitaciones" title="Capacitaciones destacadas" />
         <HomeCourseSection />
         <section className="mt-12 overflow-hidden rounded-2xl border border-cci-100 bg-cci-100 px-5 py-8 sm:mt-16 sm:rounded-[2rem] sm:px-10 sm:py-10 lg:flex lg:items-center lg:justify-between lg:gap-12">
           <div className="max-w-2xl">

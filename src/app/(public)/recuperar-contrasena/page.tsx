@@ -4,8 +4,9 @@ import Link from "next/link";
 import { AuthTemplate } from "@/components/templates/AuthTemplate";
 import { ROUTES } from "@/constants/routes";
 import { ForgotPasswordForm } from "@/features/auth/components/ForgotPasswordForm";
+import { buildNoIndexMetadata } from "@/features/seo/services/build-page-metadata";
 
-export const metadata: Metadata = { title: "Recuperar contraseña" };
+export const metadata: Metadata = buildNoIndexMetadata("Recuperar contraseña");
 
 export default function ForgotPasswordPage() {
   return <AuthTemplate description="Te enviaremos las instrucciones si el correo está asociado a una cuenta." footer={<Link className="font-semibold" href={ROUTES.login}>Volver al inicio de sesión</Link>} title="Recuperar contraseña"><ForgotPasswordForm /></AuthTemplate>;

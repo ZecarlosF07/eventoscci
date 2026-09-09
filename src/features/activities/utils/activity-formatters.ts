@@ -84,3 +84,8 @@ export function getModalityLabel(modality: ActivityModality): string {
 export function getStatusLabel(status: ActivityStatus): string {
   return ACTIVITY_STATUS_LABELS[status];
 }
+
+export function formatIcaAddress(address: string): string {
+  if (/\bica\b/i.test(address)) return address;
+  return `${address}, Ica, Perú`;
+}

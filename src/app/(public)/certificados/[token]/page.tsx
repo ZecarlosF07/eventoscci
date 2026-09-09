@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { CertificatePublicTemplate } from "@/components/templates/CertificatePublicTemplate";
@@ -6,6 +7,9 @@ import { getCurrentAccount } from "@/features/auth/queries/get-current-account";
 import { getCertificateRecommendationsSafely } from "@/features/certificates/queries/get-certificate-recommendations";
 import { getPublicCertificate } from "@/features/certificates/queries/get-public-certificate";
 import type { CertificateRouteProps } from "@/features/certificates/types/certificate.types";
+import { buildNoIndexMetadata } from "@/features/seo/services/build-page-metadata";
+
+export const metadata: Metadata = buildNoIndexMetadata("Certificado CCI");
 
 export default async function PublicCertificatePage({ params }: CertificateRouteProps) {
   const { token } = await params;
