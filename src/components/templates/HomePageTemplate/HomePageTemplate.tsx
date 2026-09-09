@@ -11,12 +11,7 @@ export function HomePageTemplate({ content }: HomePageTemplateProps) {
       <HomeHero activities={[...content.events, ...content.trainings]} />
       <HomeSearch />
       <div className="mx-auto max-w-[90rem] px-4 pb-16 pt-2 sm:px-6 sm:pb-20 sm:pt-4 lg:px-8">
-        <header className="mx-auto mb-10 mt-5 max-w-4xl text-center sm:mb-14 sm:mt-8">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-cci-600">Agenda CCI</p>
-          <Heading className="mt-3 text-balance" level={1}>Eventos, capacitaciones y cursos en Ica, Perú</Heading>
-          <p className="mx-auto mt-4 max-w-3xl leading-7 text-slate-700">Descubre oportunidades de formación, encuentros empresariales y actividades para profesionales de Ica, visitantes del Perú y público hispanohablante.</p>
-        </header>
-        <HomeActivitySection activities={content.events} description="Descubre los próximos eventos en Ica, Perú, y conecta con oportunidades, conocimiento y comunidad empresarial." href="/eventos" title="Próximos eventos" />
+        <HomeActivitySection activities={content.events} description="Encuentros para conectar con oportunidades, conocimiento y la comunidad empresarial de Ica." headingLevel={1} href="/eventos" title="Próximos eventos en Ica, Perú" />
         <HomeActivitySection activities={content.trainings} description="Capacitaciones presenciales en Ica y experiencias virtuales para fortalecer tus capacidades y las de tu empresa." href="/capacitaciones" title="Capacitaciones destacadas" />
         <HomeCourseSection />
         <section className="mt-12 overflow-hidden rounded-2xl border border-cci-100 bg-cci-100 px-5 py-8 sm:mt-16 sm:rounded-[2rem] sm:px-10 sm:py-10 lg:flex lg:items-center lg:justify-between lg:gap-12">

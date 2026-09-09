@@ -13,9 +13,12 @@ import { HomeContentCarousel } from "@/features/home/components/HomeContentCarou
 export function HomeActivitySection({
   activities,
   description,
+  headingLevel = 2,
   href,
   title,
 }: HomeActivitySectionProps) {
+  const SectionHeading = headingLevel === 1 ? "h1" : "h2";
+
   return (
     <section className="py-8 sm:py-10">
       <HomeContentCarousel
@@ -30,7 +33,7 @@ export function HomeActivitySection({
           <div className="flex gap-4">
             <span aria-hidden="true" className="mt-1 h-12 w-1 shrink-0 rounded-full bg-cci-lime" />
             <div>
-              <Heading level={2}>{title}</Heading>
+              <SectionHeading className="text-2xl font-semibold tracking-tight text-cci-950 sm:text-3xl">{title}</SectionHeading>
               <Text className="mt-2">{description}</Text>
             </div>
           </div>

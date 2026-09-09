@@ -29,32 +29,23 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
     >
       <HeroBackdrop />
       {slides.length > 1 ? (
-        <div className="absolute right-5 top-5 z-20 flex items-center gap-1 rounded-full border border-white/20 bg-cci-950/85 p-1 text-white shadow-lg backdrop-blur-sm sm:right-8 sm:top-8">
-        <span className="px-2 text-[0.65rem] font-bold tabular-nums text-white/65"><span className="text-white">{String(currentIndex + 1).padStart(2, "0")}</span> / {String(slides.length).padStart(2, "0")}</span>
-        <button
-          aria-label="Mostrar actividad anterior"
-          className="flex size-9 items-center justify-center rounded-full text-lg transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-lime"
-          onClick={() => { carousel.pause(); carousel.previous(); }}
-          type="button"
-        >
-          <span aria-hidden="true">‹</span>
-        </button>
-        <button
-          aria-label={carousel.isAutoPlaying ? "Pausar actividades destacadas" : "Reanudar actividades destacadas"}
-          className="flex size-9 items-center justify-center rounded-full text-xs transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-lime"
-          onClick={carousel.isAutoPlaying ? carousel.pause : carousel.play}
-          type="button"
-        >
-          <span aria-hidden="true">{carousel.isAutoPlaying ? "Ⅱ" : "▶"}</span>
-        </button>
-        <button
-          aria-label="Mostrar siguiente actividad"
-          className="flex size-9 items-center justify-center rounded-full text-lg transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-lime"
-          onClick={() => { carousel.pause(); carousel.next(); }}
-          type="button"
-        >
-          <span aria-hidden="true">›</span>
-        </button>
+        <div className="absolute bottom-3 right-3 z-20 flex items-center gap-0.5 rounded-full border border-white/20 bg-cci-950/85 p-1 text-white shadow-lg backdrop-blur-sm sm:bottom-6 sm:right-8 sm:gap-1">
+          <button
+            aria-label="Mostrar actividad anterior"
+            className="flex size-8 items-center justify-center rounded-full text-lg transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-lime sm:size-9"
+            onClick={carousel.previous}
+            type="button"
+          >
+            <span aria-hidden="true">‹</span>
+          </button>
+          <button
+            aria-label="Mostrar siguiente actividad"
+            className="flex size-8 items-center justify-center rounded-full text-lg transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-lime sm:size-9"
+            onClick={carousel.next}
+            type="button"
+          >
+            <span aria-hidden="true">›</span>
+          </button>
         </div>
       ) : null}
       <div aria-live={carousel.isAutoPlaying ? "off" : "polite"} className="grid">

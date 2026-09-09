@@ -30,21 +30,18 @@ export function ActivityDetailHero({ activity }: ActivityDetailHeroProps) {
   if (bannerUrl) {
     return (
       <header className="mt-5 sm:mt-6">
+        <div className="mb-4 border-l-4 border-cci-lime pl-4 sm:mb-5 sm:flex sm:items-end sm:justify-between sm:gap-8 sm:pl-5">
+          <div className="min-w-0">
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-cci-700">{ACTIVITY_TYPE_LABELS[activity.type]} · {getModalityLabel(activity.modality)}</p>
+            <h1 className="mt-1 text-xl font-semibold leading-tight tracking-tight text-cci-950 sm:text-2xl lg:text-3xl">{activity.title}</h1>
+          </div>
+          <p className="mt-2 shrink-0 text-sm font-semibold leading-5 text-cci-700 sm:mt-0 sm:max-w-72 sm:text-right">
+            {nextDate ? <span className="block">{formatActivityDate(nextDate.starts_at)}</span> : null}
+            {activity.venue ? <span className="block font-medium text-slate-600">{activity.venue.name}, Ica, Perú</span> : null}
+          </p>
+        </div>
         <div className="relative aspect-[5/2] overflow-hidden rounded-2xl border border-cci-100 bg-cci-950 shadow-xl shadow-cci-950/15 sm:rounded-3xl">
           <Image alt={`Banner de ${activity.title}`} className="object-contain" fill preload sizes="(min-width: 1280px) 1216px, 100vw" src={bannerUrl} />
-        </div>
-        <div className="mx-auto max-w-5xl px-1 pt-6 sm:pt-8">
-          <div className="flex flex-wrap gap-2">
-            <Badge>{ACTIVITY_TYPE_LABELS[activity.type]}</Badge>
-            <Badge>{getModalityLabel(activity.modality)}</Badge>
-            {activity.category ? <Badge>{activity.category.name}</Badge> : null}
-          </div>
-          <Heading className="mt-4" level={1}>{activity.title}</Heading>
-          {activity.short_description ? <Text className="mt-3 max-w-3xl" size="lg">{activity.short_description}</Text> : null}
-          <p className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-cci-800">
-            {nextDate ? <span>{formatActivityDate(nextDate.starts_at)}</span> : null}
-            {activity.venue ? <span>{activity.venue.name}, Ica, Perú</span> : null}
-          </p>
         </div>
       </header>
     );

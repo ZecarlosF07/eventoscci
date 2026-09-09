@@ -56,7 +56,7 @@
 - [ ] Inicio, catálogos y detalles exponen un H1 visible y una canonical correcta.
 - [ ] `/robots.txt` y `/sitemap.xml` responden correctamente y no exponen rutas privadas.
 - [ ] Filtros y búsquedas públicas usan `noindex, follow`; la paginación sin filtros es rastreable.
-- [ ] El hero inicia detenido y el video del Campus no descarga el MP4 en la carga inicial.
+- [ ] El hero rota, conserva navegación anterior/siguiente y respeta movimiento reducido; el video del Campus no descarga el MP4 fuera del viewport.
 - [ ] Rich Results Test aprobado para actividad presencial, híbrida y curso.
 - [ ] Lighthouse antes/después registrado en móvil y escritorio.
 - [ ] Google Analytics, si fue aprobado, recibe conversiones sin PII.

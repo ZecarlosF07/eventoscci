@@ -164,12 +164,12 @@ El posicionamiento dependerá también de competencia, demanda, antigüedad, enl
 
 ## 7.1 Evitar que el carrusel perjudique el LCP
 
-El banner principal no deberá cambiar automáticamente mientras pueda convertirse en el elemento LCP de la página.
+El banner principal podrá rotar después del primer intervalo, una vez estabilizado el elemento LCP de la página.
 
 Se deberá:
 
-- desactivar la reproducción automática inicial del hero;
-- conservar controles anterior, siguiente y selector de diapositiva;
+- iniciar la rotación después del primer intervalo, sin sustituir el banner durante la carga inicial;
+- conservar controles anterior y siguiente;
 - permitir navegación mediante teclado;
 - mantener foco visible;
 - informar la diapositiva activa mediante atributos accesibles;
@@ -607,7 +607,7 @@ Los cambios administrativos deberán invalidar las rutas públicas afectadas.
 
 ## RT-04 — LCP
 
-El hero no deberá rotar automáticamente ni reemplazar el elemento LCP después de la carga inicial.
+El hero deberá esperar el primer intervalo antes de rotar y no deberá reemplazar el elemento LCP durante la carga inicial.
 
 ## RT-05 — Recursos prioritarios
 
@@ -900,7 +900,7 @@ El Hito 13 se considerará **TERMINADO** cuando:
 
 ## Rendimiento
 
-- [ ] El hero no cambia automáticamente durante la carga inicial.
+- [ ] El hero rota automáticamente, conserva controles accesibles anterior/siguiente y respeta movimiento reducido.
 - [ ] El primer banner tiene prioridad y dimensiones estables.
 - [ ] Los banners secundarios no compiten por prioridad.
 - [ ] El video promocional se carga de forma diferida.
@@ -1003,7 +1003,7 @@ El hito quedará aprobado cuando las mejoras estén demostradas mediante pruebas
 - invalidación desde acciones administrativas e inscripciones;
 - inicio y sitemap regenerables cada 15 minutos y detalles actuales prerenderizados;
 - paginación de 12 elementos con canonical propio para páginas y `noindex, follow` para filtros;
-- hero sin reproducción automática, prioridad limitada al primer banner y dimensiones estables;
+- hero con rotación automática controlable, prioridad limitada al primer banner, movimiento reducido y dimensiones estables;
 - video del Campus bajo demanda con poster WebP reducido de 865 KB a aproximadamente 22 KB;
 - H1 visibles, jerarquía de encabezados corregida y textos alternativos descriptivos;
 - tarjetas utilizables con mouse, teclado y dispositivos sin hover;

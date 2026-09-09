@@ -1,7 +1,7 @@
 export function HomeSearch() {
   return (
-    <section aria-labelledby="home-search-title" className="relative z-20 mx-auto -mt-6 w-full max-w-7xl px-4 pb-2 sm:px-8">
-      <form action="/buscar" className="flex flex-col gap-3 rounded-3xl border border-cci-100 bg-white p-4 shadow-lg shadow-cci-950/5 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
+    <section aria-labelledby="home-search-title" className="relative z-20 mx-auto w-full max-w-7xl px-4 pb-2 pt-3 sm:-mt-6 sm:px-8 sm:pt-0">
+      <form action="/buscar" className="flex items-center gap-2 rounded-3xl border border-cci-100 bg-white p-3 shadow-lg shadow-cci-950/5 sm:gap-4 sm:p-4 sm:px-5">
         <label className="sr-only" htmlFor="home-search" id="home-search-title">Busca eventos, capacitaciones o cursos</label>
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <svg aria-hidden="true" className="ml-2 size-5 shrink-0 text-cci-600" fill="none" viewBox="0 0 24 24">
@@ -17,7 +17,7 @@ export function HomeSearch() {
             type="search"
           />
         </div>
-        <button className="min-h-11 shrink-0 rounded-xl bg-cci-100 px-6 text-sm font-semibold text-cci-950 transition hover:bg-cci-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-950" type="submit">Buscar</button>
+        <button className="min-h-11 shrink-0 rounded-xl bg-cci-100 px-4 text-sm font-semibold text-cci-950 transition hover:bg-cci-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-950 sm:px-6" type="submit">Buscar</button>
       </form>
     </section>
   );

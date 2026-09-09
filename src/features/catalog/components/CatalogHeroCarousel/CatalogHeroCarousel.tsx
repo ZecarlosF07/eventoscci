@@ -17,11 +17,13 @@ export function CatalogHeroCarousel({
   return (
     <section aria-label={`${title}: contenido destacado`} className="relative isolate overflow-hidden text-white">
       <HeroBackdrop />
-      <div className="mx-auto max-w-7xl px-5 pb-10 pt-7 sm:px-8 sm:pb-12 sm:pt-9">
-        <header className="mb-7 max-w-3xl sm:mb-9">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-lime">{eyebrow}</p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-5xl">{title}</h1>
-          <p className="mt-3 text-base leading-7 text-cci-200">{description}</p>
+      <div className="mx-auto max-w-7xl px-5 pb-8 pt-5 sm:px-8 sm:pb-10 sm:pt-7">
+        <header className="mb-5 flex items-end justify-between gap-8 border-l-4 border-cci-lime pl-4 sm:mb-6 sm:pl-5">
+          <div className="shrink-0">
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-cci-lime">{eyebrow}</p>
+            <h1 className="mt-1 text-2xl font-semibold leading-tight tracking-tight text-white sm:text-3xl">{title}</h1>
+          </div>
+          <p className="hidden max-w-2xl text-right text-sm leading-6 text-cci-200 md:block">{description}</p>
         </header>
         {featured ? (
           <CatalogHeroSlide browseLabel={browseLabel} slide={featured} />

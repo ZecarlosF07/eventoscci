@@ -51,9 +51,9 @@ Los cambios de indexación pueden tardar varios días. Search Console debe revis
 
 ## Rendimiento y accesibilidad
 
-- El hero inicia detenido y solo avanza cuando el usuario activa la reproducción.
+- El hero rota automáticamente después del primer intervalo, conserva navegación manual anterior/siguiente, se detiene durante la interacción por puntero o teclado y desactiva la rotación cuando el dispositivo solicita movimiento reducido.
 - Únicamente el primer banner se precarga; las imágenes conservan una relación de aspecto estable y texto alternativo descriptivo.
-- El video del Campus usa `preload="none"`, controles nativos y un poster WebP. El MP4 no debe descargarse durante la carga inicial.
+- El video del Campus usa `preload="none"`, reproducción automática silenciada al entrar en el viewport y un poster WebP. El MP4 no debe descargarse durante la carga inicial.
 - Cada página indexable presenta un `h1` visible. Los títulos de tarjetas también están disponibles con teclado y en dispositivos sin hover.
 
 ## Analítica opcional y privacidad
