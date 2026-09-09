@@ -28,3 +28,21 @@
     transform: translateY(0) scale(1);
   }
 }
+
+.whatsapp-community-floating {
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@media (min-width: 40rem) {
+  .whatsapp-community-floating {
+    right: max(1.5rem, env(safe-area-inset-right));
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 63.999rem) {
+  body:has([data-course-mobile-enrollment-bar]) .whatsapp-community-floating {
+    bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+}

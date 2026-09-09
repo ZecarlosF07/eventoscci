@@ -18,4 +18,5 @@ export const SITE_CONFIG = {
     "https://www.facebook.com/CamaradeComercioIca",
     "https://www.instagram.com/camaradecomercio_ica",
   ],
+  whatsAppCommunityUrl: "https://chat.whatsapp.com/CJFsrsXZP8bC0EcLBF3uKP",
 } as const;

@@ -5,7 +5,7 @@ export function CourseMobileEnrollmentBar({ course, enrollmentStatus, isAuthenti
   if (enrollmentStatus === "revoked") return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-cci-100 bg-white/95 p-3 shadow-[0_-10px_30px_rgba(12,33,28,0.12)] backdrop-blur-lg lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-cci-100 bg-white/95 p-3 shadow-[0_-10px_30px_rgba(12,33,28,0.12)] backdrop-blur-lg lg:hidden" data-course-mobile-enrollment-bar>
       <div className="mx-auto flex max-w-2xl items-center gap-3">
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold text-cci-950">{course.title}</p>
