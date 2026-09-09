@@ -8,6 +8,22 @@ export interface PublicCoursePageProps {
   params: Promise<{ slug: string }>;
 }
 
+export interface CoursePublicFilters {
+  page: number;
+  query?: string;
+}
+
+export function parseCoursePublicFilters(
+  params: Record<string, string | string[] | undefined>,
+): CoursePublicFilters {
+  const pageValue = Number(Array.isArray(params.pagina) ? params.pagina[0] : params.pagina);
+  const queryValue = Array.isArray(params.q) ? params.q[0] : params.q;
+  return {
+    page: Number.isInteger(pageValue) && pageValue > 0 ? pageValue : 1,
+    query: queryValue?.trim() || undefined,
+  };
+}
+
 export interface StudentCoursePageProps {
   params: Promise<{ courseId: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;

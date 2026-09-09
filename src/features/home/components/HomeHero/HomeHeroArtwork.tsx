@@ -10,10 +10,10 @@ export function HomeHeroArtwork({ bannerUrl, eager = false, title, wide = false 
     >
       {bannerUrl ? (
         <Image
-          alt={wide ? "" : `Portada de ${title}`}
+          alt={`Banner de ${title}`}
           className="object-contain"
           fill
-          loading={eager ? "eager" : "lazy"}
+          preload={eager}
           sizes={wide ? "100vw" : "(min-width: 1024px) 53vw, 100vw"}
           src={bannerUrl}
         />

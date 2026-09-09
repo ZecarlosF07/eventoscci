@@ -14,8 +14,9 @@ import type { ActivityFormState } from "@/features/activities/types/activity-for
 import type { ActivityStatus, ActivityType } from "@/features/activities/types/activity.types";
 import { toDatabaseTimestamp } from "@/features/activities/utils/activity-formatters";
 import { parseActivityFormData } from "@/features/activities/utils/form-data";
-import { slugify } from "@/features/activities/utils/slugify";
+import { createContentSlug, slugify } from "@/features/activities/utils/slugify";
 import { requireAdmin } from "@/features/auth/services/admin-session";
+import { invalidatePublicActivityContent } from "@/features/seo/services/invalidate-public-content";
 import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getSupabaseErrorMessage, logSupabaseError, matchesSupabaseError } from "@/lib/supabase/supabase-error";
@@ -25,8 +26,7 @@ function adminListRoute(type: ActivityType): string {
 }
 
 function revalidateActivityPages(type: ActivityType): void {
-  revalidatePath(ROUTES.events);
-  revalidatePath(ROUTES.trainings);
+  invalidatePublicActivityContent(type);
   revalidatePath(adminListRoute(type));
 }
 
@@ -53,7 +53,7 @@ export async function saveActivityAction(
     member_price: activityInput.is_free ? "0" : activityInput.member_price || "0",
     registration_close_at: toDatabaseTimestamp(activityInput.registration_close_at),
     registration_open_at: toDatabaseTimestamp(activityInput.registration_open_at),
-    slug: slugify(activityInput.slug || activityInput.title),
+    slug: activityInput.slug ? slugify(activityInput.slug) : createContentSlug(activityInput.title),
   };
   const normalizedDates = dates.map((date) => ({
     ...date,
@@ -141,8 +141,7 @@ export async function changeActivityStatusAction(
   }
 
   revalidatePath(adminListRoute(type));
-  revalidatePath(ROUTES.events);
-  revalidatePath(ROUTES.trainings);
+  invalidatePublicActivityContent(type);
 }
 
 export async function deleteActivityAction(
@@ -156,7 +155,6 @@ export async function deleteActivityAction(
   });
   if (error) throw new Error("No fue posible eliminar la actividad.", { cause: error });
 
-  revalidatePath(ROUTES.events);
-  revalidatePath(ROUTES.trainings);
+  invalidatePublicActivityContent(type);
   redirect(adminListRoute(type));
 }

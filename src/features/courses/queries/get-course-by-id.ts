@@ -1,9 +1,15 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 import { mapCourseInstructors } from "@/features/courses/services/map-course-data";
 import type { CourseContent, CourseDetail } from "@/features/courses/types/course.types";
+import {
+  PUBLIC_CACHE_REVALIDATE_SECONDS,
+  PUBLIC_CACHE_TAGS,
+} from "@/features/seo/constants/public-cache.constants";
+import { createPublicSupabaseClient } from "@/lib/supabase/public";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const COURSE_DETAIL_SELECT = `
@@ -39,12 +45,23 @@ export async function getAdminCourseById(id: string): Promise<CourseDetail | nul
   return data ? mapCourseDetail(data) : null;
 }
 
-export const getPublicCourseBySlug = cache(async function getPublicCourseBySlug(slug: string): Promise<CourseDetail | null> {
-  const data = await fetchCourseDetail("slug", slug);
+const getCachedPublicCourseBySlug = unstable_cache(async function getCachedPublicCourseBySlug(slug: string): Promise<CourseDetail | null> {
+  const client = createPublicSupabaseClient();
+  const { data, error } = await client.from("courses").select(COURSE_DETAIL_SELECT)
+    .eq("slug", slug).eq("status", "published").not("published_at", "is", null)
+    .is("deleted_at", null).maybeSingle();
+  if (error) throw new Error("No fue posible cargar el curso público.", { cause: error });
   if (!data || data.status !== "published" || !data.published_at) return null;
   const course = mapCourseDetail(data);
   return { ...course, modules: course.modules.filter((module) => module.is_published) };
+}, ["public-course-detail"], {
+  revalidate: PUBLIC_CACHE_REVALIDATE_SECONDS,
+  tags: [PUBLIC_CACHE_TAGS.courses],
 });
+
+export const getPublicCourseBySlug = cache(
+  (slug: string) => getCachedPublicCourseBySlug(slug),
+);
 
 export async function getAdminCourseContent(id: string): Promise<CourseContent | null> {
   const course = await getAdminCourseById(id);

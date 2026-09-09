@@ -50,3 +50,15 @@
 - [ ] Smoke `yarn smoke:production https://<dominio>` aprobado.
 - [ ] No hay incidencias críticas o altas abiertas.
 - [ ] Responsable de monitoreo y decisión de rollback identificado.
+
+## SEO, rendimiento y medición
+
+- [ ] Inicio, catálogos y detalles exponen un H1 visible y una canonical correcta.
+- [ ] `/robots.txt` y `/sitemap.xml` responden correctamente y no exponen rutas privadas.
+- [ ] Filtros y búsquedas públicas usan `noindex, follow`; la paginación sin filtros es rastreable.
+- [ ] El hero inicia detenido y el video del Campus no descarga el MP4 en la carga inicial.
+- [ ] Rich Results Test aprobado para actividad presencial, híbrida y curso.
+- [ ] Lighthouse antes/después registrado en móvil y escritorio.
+- [ ] Google Analytics, si fue aprobado, recibe conversiones sin PII.
+- [ ] Search Console procesó el sitemap y no reporta errores críticos.
+- [ ] Enlaces desde el dominio institucional y aliados registrados o asignados a un responsable.

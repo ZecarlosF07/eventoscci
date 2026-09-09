@@ -1,10 +1,16 @@
 import "server-only";
 
-import type { SitemapEntries } from "@/features/seo/types/seo.types";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { unstable_cache } from "next/cache";
 
-export async function getSitemapEntries(): Promise<SitemapEntries> {
-  const client = await createServerSupabaseClient();
+import {
+  PUBLIC_CACHE_REVALIDATE_SECONDS,
+  PUBLIC_CACHE_TAGS,
+} from "@/features/seo/constants/public-cache.constants";
+import type { SitemapEntries } from "@/features/seo/types/seo.types";
+import { createPublicSupabaseClient } from "@/lib/supabase/public";
+
+export const getSitemapEntries = unstable_cache(async (): Promise<SitemapEntries> => {
+  const client = createPublicSupabaseClient();
   const [activitiesResult, coursesResult] = await Promise.all([
     client.from("activities")
       .select("banner_path, slug, type, updated_at")
@@ -30,4 +36,7 @@ export async function getSitemapEntries(): Promise<SitemapEntries> {
     activities: activitiesResult.data ?? [],
     courses: coursesResult.data ?? [],
   };
-}
+}, ["public-sitemap-entries"], {
+  revalidate: PUBLIC_CACHE_REVALIDATE_SECONDS,
+  tags: [PUBLIC_CACHE_TAGS.sitemap],
+});

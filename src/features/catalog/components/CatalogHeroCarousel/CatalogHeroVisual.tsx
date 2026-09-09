@@ -11,10 +11,10 @@ export function CatalogHeroVisual({ bannerUrl, eager = false, title, wide = fals
     >
       {bannerUrl ? (
         <Image
-          alt={wide ? "" : `Portada de ${title}`}
+          alt={`Banner de ${title}`}
           className="object-contain"
           fill
-          loading={eager ? "eager" : "lazy"}
+          preload={eager}
           sizes={wide ? "(min-width: 1280px) 1216px, 100vw" : "(min-width: 1280px) 580px, (min-width: 1024px) 46vw, (min-width: 640px) 80vw, 100vw"}
           src={bannerUrl}
         />

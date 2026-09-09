@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Charis_SIL, Inter } from "next/font/google";
 
 import { SITE_CONFIG } from "@/config/site";
+import { GoogleAnalytics } from "@/features/analytics/components/GoogleAnalytics";
 import { getSiteUrl } from "@/lib/env/server-env";
 
 import "./globals.css";
@@ -61,6 +62,7 @@ export default function RootLayout({
     <html className={`${inter.variable} ${charis.variable}`} lang={SITE_CONFIG.language}>
       <body className="bg-cci-50 font-sans text-cci-950 antialiased">
         {children}
+        <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID?.trim()} />
       </body>
     </html>
   );

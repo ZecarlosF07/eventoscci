@@ -1,7 +1,7 @@
 import "server-only";
 
-import { getPublicActivities } from "@/features/activities/queries/get-public-activities";
-import { getPublishedCourses } from "@/features/courses/queries/get-admin-courses";
+import { getPublicActivityPage } from "@/features/activities/queries/get-public-activities";
+import { getPublishedCoursePage } from "@/features/courses/queries/get-public-courses";
 import type { GlobalSearchResults } from "@/features/search/types/search.types";
 
 const EMPTY_RESULTS: GlobalSearchResults = {
@@ -15,16 +15,16 @@ export async function getGlobalSearchResults(query: string): Promise<GlobalSearc
   const normalizedQuery = query.trim();
   if (!normalizedQuery) return EMPTY_RESULTS;
 
-  const [events, trainings, courses] = await Promise.all([
-    getPublicActivities("event", { query: normalizedQuery }),
-    getPublicActivities("training", { query: normalizedQuery }),
-    getPublishedCourses(normalizedQuery),
+  const [eventPage, trainingPage, coursePage] = await Promise.all([
+    getPublicActivityPage("event", { page: 1, query: normalizedQuery }),
+    getPublicActivityPage("training", { page: 1, query: normalizedQuery }),
+    getPublishedCoursePage({ page: 1, query: normalizedQuery }),
   ]);
 
   return {
-    courses,
-    events,
-    total: events.length + trainings.length + courses.length,
-    trainings,
+    courses: coursePage.courses,
+    events: eventPage.activities,
+    total: eventPage.total + trainingPage.total + coursePage.total,
+    trainings: trainingPage.activities,
   };
 }

@@ -5,19 +5,16 @@ import { Badge } from "@/components/atoms/Badge";
 import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
 import type { CourseDetailTemplateProps } from "@/components/templates/CourseDetailTemplate/types/course-detail-template.types";
-import { CourseConversionPanel } from "@/features/courses/components/CourseConversionPanel";
+import { CourseAccessPanels } from "@/features/courses/components/CourseAccessPanels";
 import { CourseCurriculumPreview } from "@/features/courses/components/CourseCurriculumPreview";
-import { CourseEnrollmentCta } from "@/features/courses/components/CourseEnrollmentCta";
-import { CourseMobileEnrollmentBar } from "@/features/courses/components/CourseMobileEnrollmentBar";
 import { getCourseBannerUrl, getInstructorName } from "@/features/courses/utils/course-formatters";
 import { getPublicCourseRoute } from "@/features/courses/utils/course-routes";
 import { getSpeakerImageUrl } from "@/features/speakers/utils/speaker-image";
 
-export function CourseDetailTemplate({ account, course, curriculum, enrollmentStatus }: CourseDetailTemplateProps) {
+export function CourseDetailTemplate({ course, curriculum }: CourseDetailTemplateProps) {
   const bannerUrl = getCourseBannerUrl(course.banner_path);
   const primary = course.instructors.find((item) => item.isPrimary) ?? course.instructors[0];
   const nextPath = getPublicCourseRoute(course.slug);
-  const conversionProps = { course, enrollmentStatus, isAuthenticated: Boolean(account), nextPath };
 
   return (
     <article className="mx-auto w-full max-w-7xl px-4 pb-28 pt-7 sm:px-6 sm:pt-12 lg:px-8 lg:pb-16">
@@ -54,7 +51,7 @@ export function CourseDetailTemplate({ account, course, curriculum, enrollmentSt
         </div>
 
         <div className="space-y-6 lg:sticky lg:top-24">
-          <CourseConversionPanel {...conversionProps} />
+          <CourseAccessPanels course={course} nextPath={nextPath} />
           {primary ? (
             <section className="rounded-3xl border border-cci-100 bg-white p-6">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-600">Instructor</p>
@@ -67,12 +64,6 @@ export function CourseDetailTemplate({ account, course, curriculum, enrollmentSt
         </div>
       </div>
 
-      <section className="mt-10 hidden items-center justify-between gap-10 rounded-3xl bg-cci-lime px-8 py-7 lg:flex">
-        <div><p className="text-sm font-bold uppercase tracking-[0.16em] text-cci-700">Tu siguiente paso</p><Heading className="mt-2" level={2}>{enrollmentStatus ? "Retoma tu aprendizaje cuando quieras" : "Empieza a aprender hoy"}</Heading></div>
-        <div className="w-72 shrink-0"><CourseEnrollmentCta courseId={course.id} courseTitle={course.title} enrollmentStatus={enrollmentStatus} isAuthenticated={Boolean(account)} isFree={course.is_free} nextPath={nextPath} /></div>
-      </section>
-
-      <CourseMobileEnrollmentBar {...conversionProps} />
     </article>
   );
 }

@@ -10,6 +10,7 @@ import { Text } from "@/components/atoms/Text";
 import { RegistrationContactFields } from "@/features/registrations/components/RegistrationContactFields";
 import { RegistrationIdentityFields } from "@/features/registrations/components/RegistrationIdentityFields";
 import { RegistrationTypeSelector } from "@/features/registrations/components/RegistrationTypeSelector";
+import { trackAnalyticsEvent } from "@/features/analytics/services/track-analytics-event.client";
 import { registerActivity } from "@/features/registrations/mutations/register-activity";
 import type {
   RegistrationFormProps,
@@ -34,6 +35,12 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
     setErrors({});
     setMessage(undefined);
     setIsPending(true);
+    trackAnalyticsEvent("registration_started", {
+      activity_id: activity.id,
+      activity_type: activity.type,
+      is_free: activity.isFree,
+      registration_type: registrationType,
+    });
 
     try {
       const input = parseRegistrationFormData(new FormData(event.currentTarget));
@@ -43,6 +50,13 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
         setMessage(result.message);
         return;
       }
+
+      trackAnalyticsEvent("registration_completed", {
+        activity_id: activity.id,
+        activity_type: activity.type,
+        is_free: activity.isFree,
+        registration_type: registrationType,
+      });
 
       router.push(
         getRegistrationResultRoute(

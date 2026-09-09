@@ -6,7 +6,9 @@ import type { CatalogHeroCarouselProps } from "@/features/catalog/components/Cat
 
 export function CatalogHeroCarousel({
   browseLabel,
+  description,
   emptyMessage,
+  eyebrow,
   slides,
   title,
 }: CatalogHeroCarouselProps) {
@@ -15,8 +17,12 @@ export function CatalogHeroCarousel({
   return (
     <section aria-label={`${title}: contenido destacado`} className="relative isolate overflow-hidden text-white">
       <HeroBackdrop />
-      <h1 className="sr-only">{title}</h1>
       <div className="mx-auto max-w-7xl px-5 pb-10 pt-7 sm:px-8 sm:pb-12 sm:pt-9">
+        <header className="mb-7 max-w-3xl sm:mb-9">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-lime">{eyebrow}</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-5xl">{title}</h1>
+          <p className="mt-3 text-base leading-7 text-cci-200">{description}</p>
+        </header>
         {featured ? (
           <CatalogHeroSlide browseLabel={browseLabel} slide={featured} />
         ) : (

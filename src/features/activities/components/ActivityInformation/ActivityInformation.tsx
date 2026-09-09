@@ -21,13 +21,13 @@ export function ActivityInformation({ activity }: ActivityInformationProps) {
         const value = activity[field];
         return value ? (
           <section key={field}>
-            <Heading level={3}>{label}</Heading>
+            <Heading level={2}>{label}</Heading>
             <Text className="mt-2 whitespace-pre-line">{value}</Text>
           </section>
         ) : null;
       })}
-      {showLegacyProgram ? <section><Heading level={3}>Programa</Heading><Text className="mt-2 whitespace-pre-line">{legacyProgram}</Text></section> : null}
-      {activity.additional_info ? <section><Heading level={3}>Información adicional</Heading><Text className="mt-2 whitespace-pre-line">{activity.additional_info}</Text></section> : null}
+      {showLegacyProgram ? <section><Heading level={2}>Programa</Heading><Text className="mt-2 whitespace-pre-line">{legacyProgram}</Text></section> : null}
+      {activity.additional_info ? <section><Heading level={2}>Información adicional</Heading><Text className="mt-2 whitespace-pre-line">{activity.additional_info}</Text></section> : null}
     </div>
   );
 }

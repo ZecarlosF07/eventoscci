@@ -66,6 +66,13 @@ export interface CourseAdminPage {
   total: number;
 }
 
+export interface CoursePublicPage {
+  courses: CourseListItem[];
+  page: number;
+  pageCount: number;
+  total: number;
+}
+
 export interface CourseStudent {
   accessGrantedAt: string;
   enrollmentId: string;

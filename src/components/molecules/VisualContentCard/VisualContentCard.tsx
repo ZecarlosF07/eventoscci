@@ -18,13 +18,12 @@ export function VisualContentCard({
   return (
     <article className={`group motion-safe:animate-[home-card-reveal_600ms_cubic-bezier(0.22,1,0.36,1)_both] ${animationDelay}`}>
       <Link
-        aria-label={`Ver ${title}`}
         className={`relative block overflow-hidden rounded-2xl bg-cci-950 shadow-lg shadow-cci-950/15 outline-none ring-1 ring-cci-950/5 transition duration-500 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-cci-950/25 hover:ring-cci-lime/60 focus-visible:ring-4 focus-visible:ring-cci-lime focus-visible:ring-offset-4 sm:rounded-3xl motion-reduce:transform-none motion-reduce:transition-none ${bannerUrl ? "aspect-[5/2]" : "aspect-[4/3] sm:aspect-video"}`}
         href={href}
       >
         {bannerUrl ? (
           <Image
-            alt=""
+            alt={`Banner de ${title}`}
             className="object-contain transition duration-500 ease-out group-hover:brightness-90"
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
@@ -56,7 +55,7 @@ export function VisualContentCard({
           </span>
         </div>
 
-        <div className={`absolute inset-x-0 bottom-0 translate-y-full bg-cci-950/96 text-white backdrop-blur-md transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-focus-within:translate-y-0 motion-reduce:transition-none ${bannerUrl ? "p-3 sm:p-5" : "p-5 sm:p-6"}`}>
+        <div className={`absolute inset-x-0 bottom-0 translate-y-full bg-cci-950/96 text-white backdrop-blur-md transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-focus-visible:translate-y-0 motion-reduce:transition-none [@media(hover:none)]:translate-y-0 ${bannerUrl ? "p-3 sm:p-5" : "p-5 sm:p-6"}`}>
           <div className="flex items-start justify-between gap-4">
             <h3 className={`line-clamp-2 font-semibold leading-tight ${bannerUrl ? "text-base sm:text-xl" : "text-xl"}`}>{title}</h3>
             <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-cci-lime text-cci-950">→</span>

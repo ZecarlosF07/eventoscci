@@ -824,6 +824,39 @@ El MVP quedará disponible para utilización real por la Cámara de Comercio de 
 
 ---
 
+# Hito 13 — Optimización SEO, rendimiento y alcance orgánico
+
+## Objetivo
+
+Optimizar, después de la salida a producción, el descubrimiento orgánico, el rendimiento móvil y la capacidad de medición de las rutas públicas.
+
+## Actividades
+
+- Optimizar el hero y la prioridad del primer banner.
+- Evitar que la rotación automática perjudique el LCP.
+- Diferir la carga del video promocional.
+- Separar contenido público cacheable del estado de sesión.
+- Definir invalidación al publicar o editar contenido.
+- Mostrar títulos principales visibles sin superponerlos sobre los banners.
+- Corregir semántica, textos alternativos y accesibilidad de tarjetas.
+- Validar datos estructurados según modalidad, audiencia, fechas y ubicación.
+- Preparar paginación pública rastreable.
+- Definir slugs breves y redirecciones para cambios futuros.
+- Reforzar contenido visible con ubicación `Ica, Perú`.
+- Medir tráfico orgánico e inscripciones sin datos personales.
+- Coordinar enlaces desde el dominio institucional y aliados.
+- Comparar Lighthouse y Search Console antes y después.
+
+## Resultado esperado
+
+El portal público será rápido, rastreable, comprensible y medible, y estará preparado para ampliar su alcance en español dentro y fuera del Perú.
+
+El alcance detallado, las pruebas y la Definition of Done se encuentran en:
+
+`docs/hitos/HITO 13 — OPTIMIZACIÓN SEO, RENDIMIENTO Y ALCANCE ORGÁNICO.md`
+
+---
+
 # Orden resumido del desarrollo
 
 ## Etapa A — Eventos y capacitaciones
@@ -853,6 +886,16 @@ Resultado:
 Resultado:
 
 **Seguridad → Pruebas → Producción**
+
+---
+
+## Etapa D — Evolución y alcance orgánico
+
+**Hito 13**
+
+Resultado:
+
+**Rendimiento → SEO técnico → Contenido → Autoridad → Medición**
 
 ---
 

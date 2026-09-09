@@ -4,6 +4,7 @@ export const COURSE_BANNER_BUCKET = "course-banners";
 export const COURSE_MATERIAL_BUCKET = "course-materials";
 export const COURSE_VIDEO_BUCKET = "course-videos";
 export const COURSE_PAGE_SIZE = 10;
+export const PUBLIC_COURSE_PAGE_SIZE = 12;
 export const MAX_COURSE_BANNER_SIZE = 5 * 1024 * 1024;
 export const MAX_COURSE_MATERIAL_SIZE = 50 * 1024 * 1024;
 

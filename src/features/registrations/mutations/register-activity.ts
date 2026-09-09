@@ -1,6 +1,9 @@
 "use server";
 
+import { updateTag } from "next/cache";
+
 import { deliverNotificationImmediately } from "@/features/notifications/services/process-notifications";
+import { PUBLIC_CACHE_TAGS } from "@/features/seo/constants/public-cache.constants";
 import { REGISTRATION_ERROR_MESSAGES } from "@/features/registrations/constants/registration.constants";
 import {
   registrationFormSchema,
@@ -59,6 +62,7 @@ export async function registerActivity(
     relatedEntityId: result.data.registration_id,
     relatedEntityType: "registration",
   });
+  updateTag(PUBLIC_CACHE_TAGS.availability);
 
   return { data: result.data, success: true };
 }

@@ -23,9 +23,9 @@ function getServerReducedMotion() {
 
 export function useCatalogCarousel(itemCount: number, interactionPaused: boolean): UseCatalogCarouselResult {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [playbackChoice, setPlaybackChoice] = useState<boolean | null>(null);
+  const [playbackChoice, setPlaybackChoice] = useState(false);
   const reducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotion, getServerReducedMotion);
-  const isAutoPlaying = playbackChoice ?? !reducedMotion;
+  const isAutoPlaying = playbackChoice && !reducedMotion;
 
   const select = useCallback((index: number) => {
     if (!itemCount) return;

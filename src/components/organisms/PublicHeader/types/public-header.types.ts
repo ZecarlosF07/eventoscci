@@ -8,8 +8,4 @@ export interface PublicHeaderAccount {
   role: UserRole;
 }
 
-export interface PublicHeaderClientProps {
-  account: PublicHeaderAccount | null;
-}
-
 export type PublicHeaderTone = "default" | "inverse";

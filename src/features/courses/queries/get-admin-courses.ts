@@ -2,8 +2,7 @@ import "server-only";
 
 import { COURSE_PAGE_SIZE } from "@/features/courses/constants/course.constants";
 import { mapCourseListItem } from "@/features/courses/services/map-course-data";
-import type { CourseAdminFilters, CourseAdminPage, CourseListItem } from "@/features/courses/types/course.types";
-import { filterCoursesByQuery } from "@/features/courses/utils/filter-courses";
+import type { CourseAdminFilters, CourseAdminPage } from "@/features/courses/types/course.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const COURSE_LIST_SELECT = `
@@ -38,14 +37,4 @@ export async function getAdminCourses(filters: CourseAdminFilters): Promise<Cour
     pageCount: Math.max(1, Math.ceil(total / COURSE_PAGE_SIZE)),
     total,
   };
-}
-
-export async function getPublishedCourses(query?: string): Promise<CourseListItem[]> {
-  const client = await createServerSupabaseClient();
-  const request = client.from("courses").select(COURSE_LIST_SELECT)
-    .eq("status", "published").not("published_at", "is", null).is("deleted_at", null)
-    .order("published_at", { ascending: false });
-  const { data, error } = await request;
-  if (error) throw new Error("No fue posible consultar el catálogo de cursos.", { cause: error });
-  return filterCoursesByQuery((data ?? []).map(mapCourseListItem), query);
 }

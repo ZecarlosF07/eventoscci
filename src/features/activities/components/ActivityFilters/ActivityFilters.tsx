@@ -8,7 +8,7 @@ export function ActivityFilters({ categories, filters }: ActivityFiltersProps) {
   return (
     <form className="grid gap-4 rounded-3xl border border-cci-100 bg-white p-5 shadow-lg shadow-cci-950/5 lg:grid-cols-6">
       <div className="lg:col-span-2">
-        <FormField label="Buscar" name="q"><Input defaultValue={filters.query} id="q" name="q" placeholder="Título, descripción o categoría" /></FormField>
+        <FormField label="Buscar" name="q"><Input defaultValue={filters.query} id="q" name="q" placeholder="Título o tema de la actividad" /></FormField>
       </div>
       <FormField label="Modalidad" name="modalidad">
         <Select defaultValue={filters.modality ?? ""} id="modalidad" name="modalidad"><option value="">Todas</option><option value="in_person">Presencial</option><option value="virtual">Virtual</option><option value="hybrid">Híbrida</option></Select>

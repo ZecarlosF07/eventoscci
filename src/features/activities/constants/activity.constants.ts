@@ -6,6 +6,7 @@ import type {
 
 export const ACTIVITY_IMAGE_BUCKET = "activity-images";
 export const ACTIVITY_PAGE_SIZE = 10;
+export const PUBLIC_ACTIVITY_PAGE_SIZE = 12;
 
 export const ACTIVITY_TYPE_LABELS: Record<ActivityType, string> = {
   event: "Evento",

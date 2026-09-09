@@ -15,7 +15,7 @@ export function CourseCard({ course, enrollmentStatus, href, progressPercent }: 
   const primary = course.instructors.find((item) => item.isPrimary) ?? course.instructors[0];
   return <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-cci-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-cci-200 hover:shadow-xl">
     <div className="relative aspect-[16/9] overflow-hidden bg-cci-950">
-      {bannerUrl ? <Image alt="" className="object-cover transition duration-500 group-hover:scale-[1.03]" fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" src={bannerUrl} /> : <div className="relative flex h-full items-center justify-center overflow-hidden font-semibold text-white"><span className="absolute -bottom-20 -left-10 size-60 rounded-full border border-cci-lime/40" /><span>Campus CCI</span></div>}
+      {bannerUrl ? <Image alt={`Portada del curso ${course.title}`} className="object-cover transition duration-500 group-hover:scale-[1.03]" fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" src={bannerUrl} /> : <div className="relative flex h-full items-center justify-center overflow-hidden font-semibold text-white"><span className="absolute -bottom-20 -left-10 size-60 rounded-full border border-cci-lime/40" /><span>Campus CCI</span></div>}
     </div>
     <div className="flex flex-1 flex-col space-y-4 p-5">
       <div className="flex flex-wrap gap-2"><Badge>Curso grabado</Badge>{enrollmentStatus === "completed" ? <Badge variant="success">Completado</Badge> : null}{course.is_free ? <Badge variant="success">Gratuito</Badge> : null}</div>

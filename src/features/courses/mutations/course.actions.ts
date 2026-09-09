@@ -13,8 +13,9 @@ import type { CourseFormState } from "@/features/courses/types/course-form.types
 import type { CourseStatus } from "@/features/courses/types/course.types";
 import { parseCourseFormData } from "@/features/courses/utils/course-form-data";
 import { getAdminCourseRoute } from "@/features/courses/utils/course-routes";
-import { slugify } from "@/features/activities/utils/slugify";
+import { createContentSlug } from "@/features/activities/utils/slugify";
 import { requireAdmin } from "@/features/auth/services/admin-session";
+import { invalidatePublicCourseContent } from "@/features/seo/services/invalidate-public-content";
 import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getSupabaseErrorMessage, logSupabaseError, matchesSupabaseError } from "@/lib/supabase/supabase-error";
@@ -67,7 +68,7 @@ export async function saveCourseAction(
   const course = {
     ...parsed.data,
     id: courseId,
-    slug: parsed.data.slug || slugify(parsed.data.title),
+    slug: parsed.data.slug || createContentSlug(parsed.data.title),
   };
   const client = await createServerSupabaseClient();
   const { data, error } = await client.rpc("save_course", {
@@ -111,7 +112,7 @@ export async function saveCourseAction(
     }
   }
 
-  revalidatePath(ROUTES.courses);
+  invalidatePublicCourseContent();
   revalidatePath(ROUTES.adminCourses);
   redirect(`${getAdminCourseRoute(courseId)}?guardado=1`);
 }
@@ -125,7 +126,7 @@ export async function changeCourseStatusAction(courseId: string, status: CourseS
     p_status: parsed.status,
   });
   if (error) throw new Error("No fue posible cambiar el estado del curso.", { cause: error });
-  revalidatePath(ROUTES.courses);
+  invalidatePublicCourseContent();
   revalidatePath(ROUTES.adminCourses);
   revalidatePath(getAdminCourseRoute(courseId));
 }
@@ -139,7 +140,7 @@ export async function deleteCourseAction(courseId: string): Promise<void> {
     updated_by: account.userId,
   }).eq("id", courseId).is("deleted_at", null);
   if (error) throw new Error("No fue posible eliminar el curso.", { cause: error });
-  revalidatePath(ROUTES.courses);
+  invalidatePublicCourseContent();
   revalidatePath(ROUTES.adminCourses);
   redirect(ROUTES.adminCourses);
 }

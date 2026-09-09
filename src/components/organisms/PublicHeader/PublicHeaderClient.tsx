@@ -5,14 +5,15 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { NavigationLinks } from "@/components/molecules/NavigationLinks";
 import { usePublicHeader } from "@/components/organisms/PublicHeader/hooks/use-public-header";
-import type { PublicHeaderClientProps } from "@/components/organisms/PublicHeader/types/public-header.types";
 import { PublicMobileMenu } from "@/components/organisms/PublicMobileMenu";
 import { UserMenu } from "@/components/organisms/UserMenu";
 import { PUBLIC_NAVIGATION } from "@/config/navigation";
 import { ROUTES } from "@/constants/routes";
+import { usePublicAccount } from "@/features/auth/components/PublicAccountProvider";
 import { classNames } from "@/utils/class-names";
 
-export function PublicHeaderClient({ account }: PublicHeaderClientProps) {
+export function PublicHeaderClient() {
+  const { account } = usePublicAccount();
   const {
     closeButtonRef,
     closeMenu,

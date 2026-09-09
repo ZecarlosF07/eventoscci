@@ -18,6 +18,7 @@ import type {
 import { slugify } from "@/features/activities/utils/slugify";
 import { requireAdmin } from "@/features/auth/services/admin-session";
 import { getSpeakerImageUrl } from "@/features/speakers/utils/speaker-image";
+import { invalidatePublicCatalogContent } from "@/features/seo/services/invalidate-public-content";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getSupabaseErrorMessage, logSupabaseError } from "@/lib/supabase/supabase-error";
 import type { SupabaseErrorLike } from "@/lib/supabase/types/supabase-error.types";
@@ -237,6 +238,7 @@ export async function saveCatalogAction(_: QuickCatalogResult, formData: FormDat
     return { message: catalogErrorMessage(safeError) };
   }
   revalidatePath(catalogPath(kind));
+  invalidatePublicCatalogContent();
   redirect(catalogPath(kind));
 }
 
@@ -247,9 +249,7 @@ export async function setCatalogActiveAction(kind: CatalogKind, id: string, isAc
   const { error } = await client.from(table).update({ is_active: isActive }).eq("id", id).is("deleted_at", null);
   if (error) throw new Error("No fue posible cambiar el estado.", { cause: error });
   revalidatePath(catalogPath(kind));
-  revalidatePath("/eventos");
-  revalidatePath("/capacitaciones");
-  revalidatePath("/cursos");
+  invalidatePublicCatalogContent();
 }
 
 export async function deleteUnusedCatalogAction(kind: CatalogKind, id: string): Promise<void> {
@@ -262,4 +262,5 @@ export async function deleteUnusedCatalogAction(kind: CatalogKind, id: string): 
   const { error } = await client.from(table).update({ deleted_at: new Date().toISOString() }).eq("id", id);
   if (error) throw new Error("No fue posible eliminar el registro.", { cause: error });
   revalidatePath(catalogPath(kind));
+  invalidatePublicCatalogContent();
 }

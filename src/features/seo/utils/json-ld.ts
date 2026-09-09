@@ -124,6 +124,10 @@ export function buildActivityJsonLd(input: ActivityStructuredDataInput): JsonLdO
     isAccessibleForFree: activity.is_free,
     location: getActivityLocation(input),
     name: activity.title,
+    audience: activity.members_only ? {
+      "@type": "Audience",
+      audienceType: "Asociados de la Cámara de Comercio de Ica",
+    } : undefined,
     offers: {
       "@type": "Offer",
       availability: activity.status === "published" && !activity.registrations_closed_manually
@@ -147,6 +151,20 @@ export function buildActivityJsonLd(input: ActivityStructuredDataInput): JsonLdO
       }))
       : undefined,
     startDate: toLimaDateTime(firstDate?.starts_at),
+    subEvent: dates.length > 1 ? dates.map((date, index) => ({
+      "@type": "Event",
+      endDate: toLimaDateTime(date.ends_at || date.starts_at),
+      eventAttendanceMode: activity.modality === "virtual"
+        ? "https://schema.org/OnlineEventAttendanceMode"
+        : activity.modality === "hybrid"
+          ? "https://schema.org/MixedEventAttendanceMode"
+          : "https://schema.org/OfflineEventAttendanceMode",
+      eventStatus: getActivityStatus(activity.status),
+      location: getActivityLocation(input),
+      name: `${activity.title} — ${date.label || `Sesión ${index + 1}`}`,
+      startDate: toLimaDateTime(date.starts_at),
+      url: pageUrl,
+    })) : undefined,
     url: pageUrl,
   };
 }

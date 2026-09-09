@@ -200,6 +200,7 @@ export interface RegistrationResultProps {
 }
 
 export interface RegistrationCtaProps {
+  activityId: string;
   activitySlug: string;
   activityType: ActivityType;
   availability: RegistrationAvailability;

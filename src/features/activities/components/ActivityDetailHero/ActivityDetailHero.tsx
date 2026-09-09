@@ -6,8 +6,10 @@ import { Text } from "@/components/atoms/Text";
 import type { ActivityDetailHeroProps } from "@/features/activities/components/ActivityDetailHero/types/activity-detail-hero.types";
 import { ACTIVITY_TYPE_LABELS } from "@/features/activities/constants/activity.constants";
 import {
+  formatActivityDate,
   getActivityBannerUrl,
   getModalityLabel,
+  getNextActivityDate,
 } from "@/features/activities/utils/activity-formatters";
 
 function InstitutionalArtwork() {
@@ -23,13 +25,26 @@ function InstitutionalArtwork() {
 
 export function ActivityDetailHero({ activity }: ActivityDetailHeroProps) {
   const bannerUrl = getActivityBannerUrl(activity.banner_path);
+  const nextDate = getNextActivityDate(activity.dates);
 
   if (bannerUrl) {
     return (
       <header className="mt-5 sm:mt-6">
-        <h1 className="sr-only">{activity.title}</h1>
         <div className="relative aspect-[5/2] overflow-hidden rounded-2xl border border-cci-100 bg-cci-950 shadow-xl shadow-cci-950/15 sm:rounded-3xl">
-          <Image alt="" className="object-contain" fill preload sizes="(min-width: 1280px) 1216px, 100vw" src={bannerUrl} />
+          <Image alt={`Banner de ${activity.title}`} className="object-contain" fill preload sizes="(min-width: 1280px) 1216px, 100vw" src={bannerUrl} />
+        </div>
+        <div className="mx-auto max-w-5xl px-1 pt-6 sm:pt-8">
+          <div className="flex flex-wrap gap-2">
+            <Badge>{ACTIVITY_TYPE_LABELS[activity.type]}</Badge>
+            <Badge>{getModalityLabel(activity.modality)}</Badge>
+            {activity.category ? <Badge>{activity.category.name}</Badge> : null}
+          </div>
+          <Heading className="mt-4" level={1}>{activity.title}</Heading>
+          {activity.short_description ? <Text className="mt-3 max-w-3xl" size="lg">{activity.short_description}</Text> : null}
+          <p className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-cci-800">
+            {nextDate ? <span>{formatActivityDate(nextDate.starts_at)}</span> : null}
+            {activity.venue ? <span>{activity.venue.name}, Ica, Perú</span> : null}
+          </p>
         </div>
       </header>
     );

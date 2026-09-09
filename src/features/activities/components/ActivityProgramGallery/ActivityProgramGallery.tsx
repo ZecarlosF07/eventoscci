@@ -34,7 +34,7 @@ export function ActivityProgramGallery({
       </div>
 
       <div className="relative mx-auto mt-5 aspect-[3/4] w-full max-w-xl overflow-hidden rounded-2xl bg-white">
-        <Image alt={`Programa de ${activityTitle}, página ${activeIndex + 1}`} className="object-contain" fill preload={activeIndex === 0} sizes="(min-width: 1024px) 576px, 100vw" src={activeUrl} />
+        <Image alt={`Programa de ${activityTitle}, página ${activeIndex + 1}`} className="object-contain" fill sizes="(min-width: 1024px) 576px, 100vw" src={activeUrl} />
         <a className="absolute bottom-3 right-3 inline-flex min-h-10 items-center rounded-xl bg-cci-950/90 px-3 text-xs font-semibold text-white backdrop-blur transition hover:bg-cci-lime hover:text-cci-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-lime" href={activeUrl} rel="noreferrer" target="_blank">Ver en tamaño completo ↗</a>
       </div>
 

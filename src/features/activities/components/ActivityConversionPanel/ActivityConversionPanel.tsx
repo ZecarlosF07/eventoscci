@@ -26,11 +26,16 @@ export function ActivityConversionPanel({
     activity.registration_close_at &&
     new Date(activity.registration_close_at).getTime() > initialNow,
   );
+  const panelTitle = activity.status === "cancelled"
+    ? "Actividad cancelada"
+    : activity.status === "finished"
+      ? "Actividad finalizada"
+      : activity.is_free ? "Participación gratuita" : "Inscríbete en esta actividad";
 
   return (
     <aside className="rounded-3xl border border-cci-200 bg-white p-5 shadow-xl shadow-cci-950/10 sm:p-6 lg:sticky lg:top-24">
       <p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-700">Reserva tu lugar</p>
-      <Heading className="mt-2" level={3}>{activity.is_free ? "Participación gratuita" : "Inscríbete en esta actividad"}</Heading>
+      <Heading className="mt-2" level={2}>{panelTitle}</Heading>
       <div className="mt-5 rounded-2xl bg-cci-50 p-4">
         {activity.is_free ? <strong className="text-2xl text-cci-950">Gratis</strong> : (
           <div className="grid grid-cols-2 gap-4">
@@ -42,7 +47,7 @@ export function ActivityConversionPanel({
       {canCountDown && activity.registration_close_at ? (
         <div className="mt-4 rounded-2xl bg-cci-950 p-4"><RegistrationCountdown deadline={activity.registration_close_at} initialNow={initialNow} /></div>
       ) : null}
-      <div className="mt-5">{availability ? <RegistrationCta activitySlug={activity.slug} activityType={activity.type} availability={availability} /> : <p className="rounded-xl bg-slate-100 p-3 text-center text-sm font-semibold text-slate-600">Disponibilidad no confirmada</p>}</div>
+      <div className="mt-5">{availability ? <RegistrationCta activityId={activity.id} activitySlug={activity.slug} activityType={activity.type} availability={availability} /> : <p className="rounded-xl bg-slate-100 p-3 text-center text-sm font-semibold text-slate-600">Disponibilidad no confirmada</p>}</div>
       {whatsAppUrl ? <a className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-cci-300 bg-white px-4 py-2 text-sm font-semibold text-cci-950 transition hover:border-cci-600 hover:bg-cci-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-800" href={whatsAppUrl} rel="noreferrer" target="_blank"><WhatsAppIcon /> Quiero más información</a> : null}
       <dl className="mt-6 space-y-3 border-t border-cci-100 pt-5 text-sm">
         {activity.capacity ? <div className="flex justify-between gap-4"><dt className="text-slate-500">Capacidad</dt><dd className="font-semibold text-cci-950">{activity.capacity} personas</dd></div> : null}

@@ -1,13 +1,19 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
+
 import { publicCourseCurriculumSchema } from "@/features/courses/schemas/public-course-curriculum.schema";
 import type { PublicCourseCurriculumModule } from "@/features/courses/types/public-course-curriculum.types";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  PUBLIC_CACHE_REVALIDATE_SECONDS,
+  PUBLIC_CACHE_TAGS,
+} from "@/features/seo/constants/public-cache.constants";
+import { createPublicSupabaseClient } from "@/lib/supabase/public";
 
-export async function getPublicCourseCurriculum(
+const getCachedPublicCourseCurriculum = unstable_cache(async function getCachedPublicCourseCurriculum(
   courseId: string,
 ): Promise<PublicCourseCurriculumModule[]> {
-  const client = await createServerSupabaseClient();
+  const client = createPublicSupabaseClient();
   const { data, error } = await client.rpc("get_public_course_curriculum", {
     p_course_id: courseId,
   });
@@ -26,4 +32,11 @@ export async function getPublicCourseCurriculum(
     sortOrder: module.sort_order,
     title: module.title,
   }));
+}, ["public-course-curriculum"], {
+  revalidate: PUBLIC_CACHE_REVALIDATE_SECONDS,
+  tags: [PUBLIC_CACHE_TAGS.courses],
+});
+
+export function getPublicCourseCurriculum(courseId: string) {
+  return getCachedPublicCourseCurriculum(courseId);
 }

@@ -39,11 +39,12 @@ export function parsePublicFilters(
         : undefined,
     price: price === "free" || price === "paid" ? price : undefined,
     query: firstValue(params.q),
+    page: Math.max(1, Number(firstValue(params.pagina) ?? 1) || 1),
   };
 }
 
 export function hasPublicActivityFilters(filters: ActivityFilters): boolean {
-  return Object.values(filters).some(Boolean);
+  return Boolean(filters.category || filters.date || filters.modality || filters.price || filters.query);
 }
 
 export function parseAdminFilters(

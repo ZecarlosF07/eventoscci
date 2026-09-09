@@ -1,5 +1,7 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
+
 import { ACTIVITY_LIST_SELECT } from "@/features/activities/queries/get-public-activities";
 import type {
   ActivityDetail,
@@ -7,12 +9,16 @@ import type {
 } from "@/features/activities/types/activity.types";
 import { selectRelatedActivities } from "@/features/activities/utils/related-activities";
 import { registrationAvailabilitySchema } from "@/features/registrations/schemas/registration.schema";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  PUBLIC_AVAILABILITY_REVALIDATE_SECONDS,
+  PUBLIC_CACHE_TAGS,
+} from "@/features/seo/constants/public-cache.constants";
+import { createPublicSupabaseClient } from "@/lib/supabase/public";
 
-export async function getRelatedActivities(
+const getCachedRelatedActivities = unstable_cache(async function getCachedRelatedActivities(
   activity: ActivityDetail,
 ): Promise<ActivityListItem[]> {
-  const client = await createServerSupabaseClient();
+  const client = createPublicSupabaseClient();
   const { data, error } = await client
     .from("activities")
     .select(ACTIVITY_LIST_SELECT)
@@ -43,4 +49,11 @@ export async function getRelatedActivities(
       return availability.success && availability.data.is_open;
     })
     .slice(0, 3);
+}, ["public-related-activities"], {
+  revalidate: PUBLIC_AVAILABILITY_REVALIDATE_SECONDS,
+  tags: [PUBLIC_CACHE_TAGS.activities, PUBLIC_CACHE_TAGS.availability],
+});
+
+export function getRelatedActivities(activity: ActivityDetail) {
+  return getCachedRelatedActivities(activity);
 }

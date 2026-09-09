@@ -79,6 +79,14 @@ export interface ActivityFilters {
   modality?: ActivityModality;
   price?: "free" | "paid";
   query?: string;
+  page: number;
+}
+
+export interface ActivityPublicPage {
+  activities: ActivityListItem[];
+  page: number;
+  pageCount: number;
+  total: number;
 }
 
 export interface ActivityAdminFilters {

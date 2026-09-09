@@ -8,11 +8,19 @@ import type { ActivityDetailPageProps } from "@/features/activities/types/activi
 import { getActivityBannerUrl } from "@/features/activities/utils/activity-formatters";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
 import { JsonLd } from "@/features/seo/components/JsonLd";
+import { getSitemapEntries } from "@/features/seo/queries/get-sitemap-entries";
 import { buildNoIndexMetadata, buildPageMetadata } from "@/features/seo/services/build-page-metadata";
 import { buildActivityJsonLd, buildBreadcrumbJsonLd } from "@/features/seo/utils/json-ld";
 import { absoluteUrl } from "@/features/seo/utils/seo-url";
 import { buildSeoDescription } from "@/features/seo/utils/seo-text";
 import { getSiteUrl } from "@/lib/env/server-env";
+
+export async function generateStaticParams() {
+  const entries = await getSitemapEntries();
+  return entries.activities
+    .filter((activity) => activity.type === "event")
+    .map((activity) => ({ slug: activity.slug }));
+}
 
 export async function generateMetadata({ params }: ActivityDetailPageProps): Promise<Metadata> {
   const activity = await getPublicActivityBySlug("event", (await params).slug);

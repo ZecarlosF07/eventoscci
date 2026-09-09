@@ -31,3 +31,44 @@ Los datos JSON-LD se generan desde la información pública existente. No deben 
 5. Enviar `/sitemap.xml` desde Search Console y solicitar indexación de inicio y los tres catálogos.
 
 Los cambios de indexación pueden tardar varios días. Search Console debe revisarse periódicamente para detectar URLs excluidas, errores de datos estructurados y métricas web esenciales.
+
+## Caché, sesión e invalidación
+
+- Inicio, detalles públicos, categorías, temarios y sitemap consultan Supabase con un cliente anónimo sin cookies.
+- El contenido público usa caché de datos por 15 minutos. Disponibilidad y recomendaciones usan 30 segundos porque dependen de cupos y fechas.
+- La cabecera obtiene la cuenta después de la hidratación mediante `/api/account`; esa respuesta es privada y `no-store`, por lo que no vuelve personal el HTML público.
+- El detalle público del curso consulta la matrícula mediante `/api/courses/[courseId]/access`, también privado y `no-store`.
+- Guardar, publicar, archivar o eliminar actividades, cursos y catálogos invalida las etiquetas públicas relacionadas y las rutas principales. Una inscripción invalida disponibilidad.
+- Las actividades y cursos presentes en el sitemap se prerenderizan; nuevos slugs pueden resolverse bajo demanda.
+
+## Catálogos y URLs
+
+- Eventos, capacitaciones y cursos muestran 12 resultados por página.
+- `?pagina=N` genera una URL canónica propia y rastreable cuando no existen otros filtros.
+- Búsquedas y combinaciones de filtros mantienen el canonical del catálogo y usan `noindex, follow`.
+- Los slugs generados automáticamente para contenido nuevo se limitan a 96 caracteres y no modifican URLs históricas.
+- Si se cambia manualmente un slug publicado en el futuro, debe añadirse una redirección permanente desde la URL anterior.
+
+## Rendimiento y accesibilidad
+
+- El hero inicia detenido y solo avanza cuando el usuario activa la reproducción.
+- Únicamente el primer banner se precarga; las imágenes conservan una relación de aspecto estable y texto alternativo descriptivo.
+- El video del Campus usa `preload="none"`, controles nativos y un poster WebP. El MP4 no debe descargarse durante la carga inicial.
+- Cada página indexable presenta un `h1` visible. Los títulos de tarjetas también están disponibles con teclado y en dispositivos sin hover.
+
+## Analítica opcional y privacidad
+
+Configurar `NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=G-XXXXXXXXXX` únicamente después de aprobar Google Analytics. Sin esa variable no se carga ningún script.
+
+Se miden vistas de página, vistas de contenido y el embudo `registration_cta_clicked` → `registration_started` → `registration_completed`. La capa de seguridad solo permite identificador/tipo de actividad, tipo de contenido, gratuidad y tipo de inscripción. No admite nombres, DNI/CE, RUC, correo, teléfono, tokens ni términos de búsqueda.
+
+## Pendientes operativos del Hito 13
+
+- repetir Lighthouse móvil y escritorio después del despliegue y conservar el informe antes/después;
+- validar una actividad presencial, una híbrida y un curso en Rich Results Test;
+- revisar Core Web Vitals y consultas reales cuando Search Console acumule datos;
+- configurar la analítica aprobada y comprobar eventos en producción;
+- añadir enlaces desde `camaraica.org.pe`, perfiles oficiales y aliados hacia las URLs canónicas;
+- ejecutar revisión manual en móvil, tableta, Chromium y Safari/WebKit.
+
+La especificación y Definition of Done se mantienen en `docs/hitos/HITO 13 — OPTIMIZACIÓN SEO, RENDIMIENTO Y ALCANCE ORGÁNICO.md`. Las dependencias externas no se consideran completadas por la implementación local.

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 import { PUBLIC_ACTIVITY_STATUSES } from "@/features/activities/constants/activity.constants";
@@ -7,7 +8,11 @@ import type {
   ActivityDetail,
   ActivityType,
 } from "@/features/activities/types/activity.types";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  PUBLIC_CACHE_REVALIDATE_SECONDS,
+  PUBLIC_CACHE_TAGS,
+} from "@/features/seo/constants/public-cache.constants";
+import { createPublicSupabaseClient } from "@/lib/supabase/public";
 
 const ACTIVITY_DETAIL_SELECT = `
   *,
@@ -24,11 +29,11 @@ const ACTIVITY_DETAIL_SELECT = `
   )
 `;
 
-export const getPublicActivityBySlug = cache(async function getPublicActivityBySlug(
+const getCachedPublicActivityBySlug = unstable_cache(async function getCachedPublicActivityBySlug(
   type: ActivityType,
   slug: string,
 ): Promise<ActivityDetail | null> {
-  const client = await createServerSupabaseClient();
+  const client = createPublicSupabaseClient();
   const { data, error } = await client
     .from("activities")
     .select(ACTIVITY_DETAIL_SELECT)
@@ -64,4 +69,11 @@ export const getPublicActivityBySlug = cache(async function getPublicActivityByS
     dates: activity.dates.sort((first, second) => first.sort_order - second.sort_order),
     speakers,
   };
+}, ["public-activity-detail"], {
+  revalidate: PUBLIC_CACHE_REVALIDATE_SECONDS,
+  tags: [PUBLIC_CACHE_TAGS.activities],
 });
+
+export const getPublicActivityBySlug = cache(
+  (type: ActivityType, slug: string) => getCachedPublicActivityBySlug(type, slug),
+);

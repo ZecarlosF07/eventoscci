@@ -28,7 +28,6 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
       onMouseLeave={() => setHovered(false)}
     >
       <HeroBackdrop />
-      <h1 className="sr-only">Eventos, capacitaciones y formación CCI</h1>
       {slides.length > 1 ? (
         <div className="absolute right-5 top-5 z-20 flex items-center gap-1 rounded-full border border-white/20 bg-cci-950/85 p-1 text-white shadow-lg backdrop-blur-sm sm:right-8 sm:top-8">
         <span className="px-2 text-[0.65rem] font-bold tabular-nums text-white/65"><span className="text-white">{String(currentIndex + 1).padStart(2, "0")}</span> / {String(slides.length).padStart(2, "0")}</span>
