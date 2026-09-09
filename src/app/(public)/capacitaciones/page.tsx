@@ -41,7 +41,7 @@ export default async function TrainingsPage({ searchParams }: PublicCatalogPageP
   return (
     <>
       <JsonLd data={breadcrumbs} />
-      <ActivitiesListTemplate activities={result.activities} categories={categories} description="Talleres presenciales en Ica, Perú, y programas virtuales para el desarrollo de empresas y profesionales." emptyMessage="No se encontraron capacitaciones con los filtros seleccionados." eyebrow="Aprendizaje empresarial" featuredActivities={featuredActivities} filters={filters} page={result.page} pageCount={result.pageCount} pathname={ROUTES.trainings} title="Capacitaciones" total={result.total} />
+      <ActivitiesListTemplate activities={result.activities} categories={categories} description="Talleres presenciales en Ica, Perú, y programas virtuales para el desarrollo de empresas y profesionales." emptyMessage="No se encontraron capacitaciones con los filtros seleccionados." eyebrow="Aprendizaje empresarial" featuredActivities={featuredActivities} filters={filters} heroTitle="Capacitaciones en Ica" page={result.page} pageCount={result.pageCount} pathname={ROUTES.trainings} title="Capacitaciones" total={result.total} />
     </>
   );
 }

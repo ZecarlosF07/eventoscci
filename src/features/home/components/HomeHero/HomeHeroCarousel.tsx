@@ -7,7 +7,7 @@ import { useCatalogCarousel } from "@/features/catalog/components/CatalogHeroCar
 import { HomeHeroSlide } from "@/features/home/components/HomeHero/HomeHeroSlide";
 import type { HomeHeroCarouselProps } from "@/features/home/components/HomeHero/types/home-hero.types";
 
-export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
+export function HomeHeroCarousel({ label = "Actividades destacadas", slides }: HomeHeroCarouselProps) {
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const carousel = useCatalogCarousel(slides.length, hovered || focused);
@@ -19,7 +19,7 @@ export function HomeHeroCarousel({ slides }: HomeHeroCarouselProps) {
 
   return (
     <section
-      aria-label="Actividades destacadas"
+      aria-label={label}
       aria-roledescription="carrusel"
       className="relative isolate w-full overflow-hidden bg-cci-950"
       onBlur={handleBlur}

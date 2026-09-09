@@ -9,7 +9,7 @@ export function HomeHeroSlide({ active, featured, index }: HomeHeroSlideProps) {
     ? "z-10 translate-x-0 opacity-100"
     : "invisible pointer-events-none translate-x-6 opacity-0";
 
-  if (featured?.bannerUrl) {
+  if (featured?.visualMode === "banner") {
     return (
       <article
         aria-hidden={!active}
@@ -23,7 +23,14 @@ export function HomeHeroSlide({ active, featured, index }: HomeHeroSlideProps) {
           className="block w-full transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-cci-lime"
           href={featured.href}
         >
-          <HomeHeroArtwork bannerUrl={featured.bannerUrl} eager={index === 0} title={featured.title} wide />
+          <HomeHeroArtwork
+            bannerUrl={featured.bannerUrl}
+            description={featured.description}
+            eager={index === 0}
+            title={featured.title}
+            variant={featured.artworkVariant}
+            wide
+          />
         </Link>
       </article>
     );
@@ -42,7 +49,12 @@ export function HomeHeroSlide({ active, featured, index }: HomeHeroSlideProps) {
           <span aria-hidden="true" className="absolute -right-12 -top-44 -z-10 size-[27rem] rounded-full border border-cci-lime/15" />
           <span aria-hidden="true" className="absolute -bottom-36 right-32 -z-10 size-80 rounded-full bg-cci-lime/10 blur-3xl" />
           <span aria-hidden="true" className="absolute inset-y-0 right-0 -z-10 w-1/3 bg-linear-to-l from-cci-lime/5 to-transparent" />
-        <div className="relative mx-auto flex min-h-[21rem] w-full max-w-[90rem] min-w-0 flex-col justify-center px-5 pb-11 pt-9 text-white sm:px-8 sm:pb-12 sm:pt-10 lg:px-12 lg:pr-72">
+        {featured?.bannerUrl ? (
+          <div className="absolute inset-y-8 right-12 hidden w-[42%] lg:block">
+            <HomeHeroArtwork bannerUrl={featured.bannerUrl} eager={index === 0} title={featured.title} />
+          </div>
+        ) : null}
+        <div className={`relative mx-auto flex min-h-[21rem] w-full max-w-[90rem] min-w-0 flex-col justify-center px-5 pb-11 pt-9 text-white sm:px-8 sm:pb-12 sm:pt-10 lg:px-12 ${featured?.bannerUrl ? "lg:pr-[52%]" : "lg:pr-72"}`}>
           <div className="flex flex-wrap items-center gap-3 text-[0.65rem] font-semibold uppercase tracking-[0.15em] lg:pr-20">
             <p className="flex items-center gap-2 text-cci-lime"><span aria-hidden="true" className="size-1.5 rounded-full bg-cci-lime" />{featured?.kindLabel ?? "Tu espacio para crecer"}</p>
             {featured ? <span className="border-l border-white/20 pl-3 text-cci-sage">{featured.badge}</span> : null}

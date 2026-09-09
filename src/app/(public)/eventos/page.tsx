@@ -41,7 +41,7 @@ export default async function EventsPage({ searchParams }: PublicCatalogPageProp
   return (
     <>
       <JsonLd data={breadcrumbs} />
-      <ActivitiesListTemplate activities={result.activities} categories={categories} description="Encuentros, conferencias y espacios para conectar con el ecosistema empresarial de Ica, Perú." emptyMessage="No se encontraron eventos con los filtros seleccionados." eyebrow="Agenda institucional" featuredActivities={featuredActivities} filters={filters} page={result.page} pageCount={result.pageCount} pathname={ROUTES.events} title="Eventos" total={result.total} />
+      <ActivitiesListTemplate activities={result.activities} categories={categories} description="Encuentros, conferencias y espacios para conectar con el ecosistema empresarial de Ica, Perú." emptyMessage="No se encontraron eventos con los filtros seleccionados." eyebrow="Agenda institucional" featuredActivities={featuredActivities} filters={filters} heroTitle="Eventos en Ica, Perú" page={result.page} pageCount={result.pageCount} pathname={ROUTES.events} title="Eventos" total={result.total} />
     </>
   );
 }

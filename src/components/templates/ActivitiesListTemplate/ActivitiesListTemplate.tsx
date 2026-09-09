@@ -14,6 +14,7 @@ export function ActivitiesListTemplate({
   eyebrow,
   featuredActivities,
   filters,
+  heroTitle,
   page,
   pageCount,
   pathname,
@@ -24,9 +25,9 @@ export function ActivitiesListTemplate({
 
   return (
     <div>
-      <CatalogHeroCarousel browseLabel={`Explorar ${title.toLocaleLowerCase("es-PE")}`} description={description} emptyMessage={`La nueva agenda de ${title.toLocaleLowerCase("es-PE")} se está preparando.`} eyebrow={eyebrow} slides={slides} title={title} />
+      <CatalogHeroCarousel browseLabel={`Explorar ${title.toLocaleLowerCase("es-PE")}`} description={description} emptyMessage={`Descubre experiencias de ${title.toLocaleLowerCase("es-PE")} para conectar, aprender y crear nuevas oportunidades.`} eyebrow={eyebrow} slides={slides} title={heroTitle} />
       <div className="mx-auto w-full max-w-7xl scroll-mt-28 px-5 pb-14 sm:px-8 sm:pb-20" id="catalogo">
-        <div className="relative z-30 -mt-4 px-2 sm:px-5">
+        <div className="relative z-30 px-2 pb-2 pt-3 sm:-mt-6 sm:px-5 sm:pt-0">
           <ActivityFilters categories={categories} filters={filters} />
         </div>
         {activities.length ? (

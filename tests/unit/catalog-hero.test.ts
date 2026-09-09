@@ -3,6 +3,7 @@ import test from "node:test";
 
 import type { ActivityListItem } from "@/features/activities/types/activity.types";
 import { createActivityCarouselSlides, createCourseCarouselSlides } from "@/features/catalog/utils/catalog-carousel";
+import { createCatalogFallbackSlide } from "@/features/catalog/utils/catalog-hero";
 import type { CourseListItem } from "@/features/courses/types/course.types";
 import { createHomeHeroSlides } from "@/features/home/utils/home-hero-slides";
 
@@ -59,9 +60,9 @@ test("los cursos muestran el acceso, duración y precio sin prometer matrícula 
   const [paid] = createCourseCarouselSlides([course]);
   const [free] = createCourseCarouselSlides([{ ...course, is_free: true }]);
   assert.equal(paid.href, "/cursos/curso");
-  assert.equal(paid.ctaLabel, "Ver curso y acceso");
+  assert.equal(paid.ctaLabel, "Ver curso");
   assert.equal(paid.meta, "20 horas académicas");
-  assert.equal(paid.visualMode, "feature");
+  assert.equal(paid.visualMode, "banner");
   assert.match(paid.priceLabel, /120[.,]00/);
   assert.equal(free.priceLabel, "Acceso gratuito");
 });
@@ -82,6 +83,21 @@ test("el inicio combina eventos y capacitaciones por fecha, con un máximo de ci
   assert.equal(slides[1].kindLabel, "Capacitación destacada");
   assert.deepEqual(createActivityCarouselSlides([]), []);
   assert.equal(createActivityCarouselSlides([activity]).length, 1);
+});
+
+test("el catálogo vacío usa un banner institucional sin anunciar contenido próximo", () => {
+  const slide = createCatalogFallbackSlide({
+    browseLabel: "Explorar eventos",
+    description: "Consulta la agenda institucional.",
+    eyebrow: "Agenda institucional",
+    title: "Eventos en Ica, Perú",
+  });
+
+  assert.equal(slide.title, "Eventos en Ica, Perú");
+  assert.equal(slide.bannerUrl, null);
+  assert.equal(slide.artworkVariant, "commercial");
+  assert.equal(slide.visualMode, "banner");
+  assert.doesNotMatch(slide.title, /próximamente/i);
 });
 
 test("el inicio mantiene un carrusel editorial cuando no hay actividades próximas", () => {

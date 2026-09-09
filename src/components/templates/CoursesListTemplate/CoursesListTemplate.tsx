@@ -13,9 +13,9 @@ export function CoursesListTemplate({ courses, featuredCourses, page, pageCount,
 
   return (
     <div>
-      <CatalogHeroCarousel browseLabel="Explorar cursos" description="Aprende a tu ritmo. Desarrolla habilidades que puedas aplicar en tu trabajo y en tu empresa." emptyMessage="Estamos preparando nuevas experiencias de formación para ti." eyebrow="Formación continua" slides={slides} title="Cursos" />
+      <CatalogHeroCarousel browseLabel="Explorar cursos" description="Aprende a tu ritmo y desarrolla habilidades que puedas aplicar en tu trabajo y en tu empresa." emptyMessage="Formación práctica para convertir el conocimiento en nuevas posibilidades para ti y tu empresa." eyebrow="Formación continua" slides={slides} title="Cursos virtuales" />
       <div className="mx-auto w-full max-w-7xl scroll-mt-28 px-5 pb-14 sm:px-8 sm:pb-20" id="catalogo">
-        <form className="relative z-30 -mt-4 flex max-w-2xl flex-col gap-3 rounded-2xl border border-cci-100 bg-white p-4 shadow-lg shadow-cci-950/5 sm:ml-5 sm:flex-row">
+        <form className="relative z-30 mt-3 flex max-w-2xl flex-col gap-3 rounded-2xl border border-cci-100 bg-white p-4 shadow-lg shadow-cci-950/5 sm:-mt-6 sm:ml-5 sm:flex-row">
           <div className="flex-1"><FormField label="Buscar cursos" name="q"><Input defaultValue={query} id="q" name="q" placeholder="Título o tema del curso" /></FormField></div>
           <div className="flex items-end"><Button className="w-full sm:w-auto" type="submit">Buscar</Button></div>
         </form>

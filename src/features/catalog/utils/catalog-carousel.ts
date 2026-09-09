@@ -41,7 +41,7 @@ export function createCourseCarouselSlides(courses: CourseListItem[]): CatalogCa
     .slice(0, MAX_CAROUSEL_ITEMS)
     .map((course) => ({
       badge: "Campus virtual",
-      ctaLabel: "Ver curso y acceso",
+      ctaLabel: "Ver curso",
       kindLabel: "Curso destacado",
       priceLabel: course.is_free ? "Acceso gratuito" : `Tarifa general ${formatCoursePrice(course.general_price)}`,
       bannerUrl: getCourseBannerUrl(course.banner_path),
@@ -50,6 +50,6 @@ export function createCourseCarouselSlides(courses: CourseListItem[]): CatalogCa
       id: course.id,
       meta: course.duration_text ?? (course.academic_hours ? `${course.academic_hours} horas académicas` : "Aprende a tu ritmo"),
       title: course.title,
-      visualMode: "feature",
+      visualMode: "banner",
     }));
 }

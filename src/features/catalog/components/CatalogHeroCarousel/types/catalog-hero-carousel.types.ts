@@ -1,4 +1,5 @@
 export interface CatalogCarouselSlide {
+  artworkVariant?: "commercial";
   badge: string;
   ctaLabel: string;
   kindLabel: string;

@@ -7,12 +7,15 @@ export interface HomeHeroProps {
 
 export interface HomeHeroArtworkProps {
   bannerUrl: string | null;
+  description?: string | null;
   eager?: boolean;
   title: string;
+  variant?: "commercial";
   wide?: boolean;
 }
 
 export interface HomeHeroCarouselProps {
+  label?: string;
   slides: CatalogCarouselSlide[];
 }
 

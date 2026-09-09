@@ -9,6 +9,7 @@ export interface ActivitiesListTemplateProps {
   eyebrow: string;
   featuredActivities: ActivityListItem[];
   filters: ActivityFilters;
+  heroTitle: string;
   page: number;
   pageCount: number;
   pathname: string;
