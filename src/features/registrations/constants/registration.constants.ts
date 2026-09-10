@@ -23,6 +23,7 @@ export const REGISTRATION_AVAILABILITY_LABELS: Record<
   available: "Inscribirme",
   cancelled: "Actividad cancelada",
   closed: "Inscripciones cerradas",
+  finished: "Actividad finalizada",
   full: "Cupos agotados",
   not_open: "Inscripciones próximamente",
 };

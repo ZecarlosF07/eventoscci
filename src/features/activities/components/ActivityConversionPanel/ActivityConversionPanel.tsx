@@ -3,6 +3,7 @@ import { Text } from "@/components/atoms/Text";
 import type { ActivityConversionPanelProps } from "@/features/activities/components/ActivityConversionPanel/types/activity-conversion-panel.types";
 import { getWhatsAppUrl } from "@/features/activities/utils/activity-contact";
 import { formatActivityPrice } from "@/features/activities/utils/activity-formatters";
+import { hasActivityEnded } from "@/features/activities/utils/activity-lifecycle";
 import { RegistrationCountdown } from "@/features/registrations/components/RegistrationCountdown";
 import { RegistrationCta } from "@/features/registrations/components/RegistrationCta";
 
@@ -21,6 +22,7 @@ export function ActivityConversionPanel({
   initialNow,
 }: ActivityConversionPanelProps) {
   const whatsAppUrl = getWhatsAppUrl(activity.contact?.whatsapp_phone ?? null, activity.title);
+  const isFinished = activity.status === "finished" || hasActivityEnded(activity.dates, new Date(initialNow));
   const canCountDown = Boolean(
     availability?.is_open &&
     activity.registration_close_at &&
@@ -28,13 +30,13 @@ export function ActivityConversionPanel({
   );
   const panelTitle = activity.status === "cancelled"
     ? "Actividad cancelada"
-    : activity.status === "finished"
+    : isFinished
       ? "Actividad finalizada"
       : activity.is_free ? "Participación gratuita" : "Inscríbete en esta actividad";
 
   return (
     <aside className="rounded-3xl border border-cci-200 bg-white p-5 shadow-xl shadow-cci-950/10 sm:p-6 lg:sticky lg:top-24">
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-700">Reserva tu lugar</p>
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-700">{isFinished ? "Actividad realizada" : "Reserva tu lugar"}</p>
       <Heading className="mt-2" level={2}>{panelTitle}</Heading>
       <div className="mt-5 rounded-2xl bg-cci-50 p-4">
         {activity.is_free ? <strong className="text-2xl text-cci-950">Gratis</strong> : (

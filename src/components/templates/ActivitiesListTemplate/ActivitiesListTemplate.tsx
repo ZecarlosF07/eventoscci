@@ -34,7 +34,7 @@ export function ActivitiesListTemplate({
           <section className="mt-12">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-600">Agenda CCI</p><h2 className="mt-2 text-2xl font-bold tracking-tight text-cci-950 sm:text-3xl">Explora {title.toLocaleLowerCase("es-PE")}</h2><Text className="mt-3">{description}</Text></div>
-              <Text size="sm">{total} {total === 1 ? "actividad disponible" : "actividades disponibles"}</Text>
+              <Text size="sm">{total} {total === 1 ? "actividad en la agenda" : "actividades en la agenda"}</Text>
             </div>
             <div className="mt-7 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {activities.map((activity) => <ActivityCard activity={activity} key={activity.id} />)}

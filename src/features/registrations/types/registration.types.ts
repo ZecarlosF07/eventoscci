@@ -50,6 +50,7 @@ export type RegistrationAvailabilityReason =
   | "available"
   | "cancelled"
   | "closed"
+  | "finished"
   | "full"
   | "not_open";
 

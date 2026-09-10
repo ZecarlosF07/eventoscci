@@ -11,6 +11,11 @@ import {
 } from "@/features/activities/utils/activity-contact";
 import { isGoogleMapsEmbedUrl } from "@/features/activities/utils/activity-maps";
 import { getLegacyActivityProgram } from "@/features/activities/utils/activity-program";
+import {
+  canActivityInviteRegistration,
+  hasActivityEnded,
+  isActivityWithinPublicWindow,
+} from "@/features/activities/utils/activity-lifecycle";
 import { selectRelatedActivities } from "@/features/activities/utils/related-activities";
 import { getCountdownParts } from "@/features/registrations/utils/registration-countdown";
 
@@ -53,6 +58,17 @@ test("calcula el conteo futuro, el último segundo y el vencimiento", () => {
     seconds: 1,
   });
   assert.equal(getCountdownParts(now, now), null);
+});
+
+test("mantiene actividades finalizadas solo durante diez días y retira su inscripción", () => {
+  const now = new Date("2026-09-10T17:00:00Z");
+  const recent = [{ deleted_at: null, ends_at: "2026-09-02T17:00:00Z", starts_at: "2026-09-02T14:00:00Z" }] as ActivityListItem["dates"];
+  const old = [{ deleted_at: null, ends_at: "2026-08-30T17:00:00Z", starts_at: "2026-08-30T14:00:00Z" }] as ActivityListItem["dates"];
+
+  assert.equal(hasActivityEnded(recent, now), true);
+  assert.equal(isActivityWithinPublicWindow(recent, now), true);
+  assert.equal(isActivityWithinPublicWindow(old, now), false);
+  assert.equal(canActivityInviteRegistration(activity("recent", { dates: recent }), now), false);
 });
 
 function activity(

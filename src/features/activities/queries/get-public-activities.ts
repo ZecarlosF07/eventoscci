@@ -13,6 +13,7 @@ import type {
   ActivityType,
 } from "@/features/activities/types/activity.types";
 import { filterAndSortActivities } from "@/features/activities/utils/filter-activities";
+import { getPublicActivityHistoryCutoff } from "@/features/activities/utils/activity-lifecycle";
 import {
   PUBLIC_CACHE_REVALIDATE_SECONDS,
   PUBLIC_CACHE_TAGS,
@@ -33,6 +34,8 @@ export const ACTIVITY_LIST_SELECT = `
 const getCachedPublicActivityPage = unstable_cache(
 async (type: ActivityType, filters: ActivityFilters): Promise<ActivityPublicPage> => {
   const client = createPublicSupabaseClient();
+  const now = new Date();
+  const historyCutoff = getPublicActivityHistoryCutoff(now).toISOString();
   const from = (filters.page - 1) * PUBLIC_ACTIVITY_PAGE_SIZE;
   let query = client
     .from("activities")
@@ -42,6 +45,9 @@ async (type: ActivityType, filters: ActivityFilters): Promise<ActivityPublicPage
     .is("deleted_at", null)
     .not("published_at", "is", null)
     .is("activity_dates.deleted_at", null)
+    .or(`ends_at.gt.${historyCutoff},and(ends_at.is.null,starts_at.gt.${historyCutoff})`, {
+      referencedTable: "activity_dates",
+    })
     .order("published_at", { ascending: false })
     .order("id", { ascending: true })
     .range(from, from + PUBLIC_ACTIVITY_PAGE_SIZE - 1);
@@ -65,7 +71,7 @@ async (type: ActivityType, filters: ActivityFilters): Promise<ActivityPublicPage
 
   const total = count ?? 0;
   return {
-    activities: filterAndSortActivities(data ?? [], filters),
+    activities: filterAndSortActivities(data ?? [], filters, now),
     page: filters.page,
     pageCount: Math.max(1, Math.ceil(total / PUBLIC_ACTIVITY_PAGE_SIZE)),
     total,

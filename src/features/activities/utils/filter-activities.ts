@@ -3,6 +3,7 @@ import type {
   ActivityListItem,
 } from "@/features/activities/types/activity.types";
 import { getNextActivityDate } from "@/features/activities/utils/activity-formatters";
+import { isActivityWithinPublicWindow } from "@/features/activities/utils/activity-lifecycle";
 
 function matchesQuery(activity: ActivityListItem, query: string): boolean {
   const searchable = [
@@ -23,8 +24,10 @@ function matchesDate(activity: ActivityListItem, date: string): boolean {
 export function filterAndSortActivities(
   activities: ActivityListItem[],
   filters: ActivityFilters,
+  now = new Date(),
 ): ActivityListItem[] {
   return activities
+    .filter((activity) => isActivityWithinPublicWindow(activity.dates, now))
     .filter((activity) => !filters.query || matchesQuery(activity, filters.query))
     .filter((activity) => !filters.date || matchesDate(activity, filters.date))
     .sort((first, second) => {

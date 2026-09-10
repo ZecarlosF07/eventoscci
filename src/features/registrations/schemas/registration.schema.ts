@@ -93,7 +93,7 @@ export const publicRegistrationResultSchema = z.object({
 
 export const registrationAvailabilitySchema = z.object({
   is_open: z.boolean(),
-  reason: z.enum(["available", "cancelled", "closed", "full", "not_open"]),
+  reason: z.enum(["available", "cancelled", "closed", "finished", "full", "not_open"]),
   remaining_capacity: z.number().nullable(),
 });
 

@@ -56,7 +56,7 @@ export function getNextActivityDate(dates: ActivityDateRow[]): ActivityDateRow |
     .sort((first, second) => first.starts_at.localeCompare(second.starts_at));
   const upcoming = activeDates.find((date) => new Date(date.starts_at) >= new Date());
 
-  return upcoming ?? activeDates[0] ?? null;
+  return upcoming ?? activeDates[activeDates.length - 1] ?? null;
 }
 
 export function getUpcomingActivityDate(dates: ActivityDateRow[]): ActivityDateRow | null {

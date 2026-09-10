@@ -14,10 +14,18 @@ import {
   getModalityLabel,
   getNextActivityDate,
 } from "@/features/activities/utils/activity-formatters";
+import {
+  canActivityInviteRegistration,
+  hasActivityEnded,
+} from "@/features/activities/utils/activity-lifecycle";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
 
 export function ActivityCard({ activity }: ActivityCardProps) {
+  const now = new Date();
   const nextDate = getNextActivityDate(activity.dates);
+  const endedByDate = hasActivityEnded(activity.dates, now);
+  const isFinished = activity.status === "finished" || endedByDate;
+  const canRegister = canActivityInviteRegistration(activity, now);
   const bannerUrl = getActivityBannerUrl(activity.banner_path);
   const href = getPublicActivityRoute(activity.type, activity.slug);
   const actionId = `activity-${activity.id}-action`;
@@ -43,17 +51,22 @@ export function ActivityCard({ activity }: ActivityCardProps) {
             <Badge>{getModalityLabel(activity.modality)}</Badge>
             {activity.members_only ? <Badge variant="warning">Solo asociados</Badge> : null}
             {activity.status === "cancelled" ? <StatusBadge status={activity.status} /> : null}
+            {activity.status !== "cancelled" && isFinished ? <StatusBadge status="finished" /> : null}
           </div>
           <div>
             <Heading id={titleId} level={3}>{activity.title}</Heading>
             {activity.category ? <Text className="mt-1" size="sm">{activity.category.name}</Text> : null}
           </div>
           {activity.short_description ? <Text size="sm">{activity.short_description}</Text> : null}
-          {nextDate ? <Text className="font-semibold text-cci-800" size="sm">{formatActivityDate(nextDate.starts_at)}</Text> : null}
+          {nextDate ? (
+            <Text className="font-semibold text-cci-800" size="sm">
+              {endedByDate ? "Finalizó el " : ""}{formatActivityDate(endedByDate ? nextDate.ends_at ?? nextDate.starts_at : nextDate.starts_at)}
+            </Text>
+          ) : null}
           <div className="mt-auto flex items-end justify-between gap-4 border-t border-cci-100 pt-4">
             <PriceDisplay generalPrice={activity.general_price} isFree={activity.is_free} memberPrice={activity.member_price} />
             <span className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl bg-cci-950 px-4 py-2 text-sm font-bold text-white transition group-hover:bg-cci-800" id={actionId}>
-              Inscríbete <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
+              {canRegister ? "Inscríbete" : "Ver detalles"} <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
             </span>
           </div>
         </div>
