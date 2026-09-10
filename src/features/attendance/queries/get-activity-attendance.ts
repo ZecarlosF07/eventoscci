@@ -21,6 +21,7 @@ export async function getActivityAttendance(
     .from("activities")
     .select("id, title, type")
     .eq("id", activityId)
+    .neq("status", "archived")
     .is("deleted_at", null)
     .maybeSingle();
 

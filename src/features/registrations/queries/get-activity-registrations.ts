@@ -24,7 +24,7 @@ const REGISTRATION_ADMIN_SELECT = `
   ruc_snapshot,
   price_snapshot,
   created_at,
-  activity:activities!inner(id, title, slug, type),
+  activity:activities!inner(id, title, slug, type, status),
   attendance:attendance!inner(id, status),
   person:people!inner(
     id,
@@ -60,6 +60,7 @@ export async function getActivityRegistrations(
     .is("deleted_at", null)
     .is("attendance.deleted_at", null)
     .is("person.deleted_at", null)
+    .neq("activity.status", "archived")
     .order("created_at", { ascending: false });
 
   if (filters.status) query = query.eq("status", filters.status);
@@ -101,6 +102,7 @@ export async function getRegistrationActivityOptions(): Promise<RegistrationActi
     .from("activities")
     .select("id, title, type")
     .is("deleted_at", null)
+    .neq("status", "archived")
     .order("title")
     .limit(500);
   if (error) throw new Error("No fue posible consultar las actividades.", { cause: error });
@@ -117,6 +119,7 @@ export async function getRegistrationsForExport(
     .is("deleted_at", null)
     .is("attendance.deleted_at", null)
     .is("person.deleted_at", null)
+    .neq("activity.status", "archived")
     .order("created_at", { ascending: false })
     .limit(5000);
 
@@ -160,6 +163,7 @@ export async function getRegistrationByCode(
     .is("deleted_at", null)
     .is("attendance.deleted_at", null)
     .is("person.deleted_at", null)
+    .neq("activity.status", "archived")
     .maybeSingle();
 
   if (error) {

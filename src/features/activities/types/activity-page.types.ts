@@ -1,4 +1,5 @@
 import type {
+  ActivityAdminFilters,
   ActivityFilters,
   ActivityStatus,
   ActivityType,
@@ -50,8 +51,11 @@ export function hasPublicActivityFilters(filters: ActivityFilters): boolean {
 export function parseAdminFilters(
   params: Record<string, string | string[] | undefined>,
   type: ActivityType,
-) {
+): ActivityAdminFilters {
   const status = firstValue(params.estado);
+  const view: ActivityAdminFilters["view"] = firstValue(params.vista) === "archivados" || status === "archived"
+    ? "archived"
+    : "active";
   const allowedStatuses: ActivityStatus[] = [
     "archived",
     "cancelled",
@@ -62,9 +66,10 @@ export function parseAdminFilters(
   return {
     page: Math.max(1, Number(firstValue(params.pagina) ?? 1) || 1),
     query: firstValue(params.q),
-    status: allowedStatuses.includes(status as ActivityStatus)
+    status: view === "active" && allowedStatuses.includes(status as ActivityStatus) && status !== "archived"
       ? (status as ActivityStatus)
       : undefined,
     type,
+    view,
   };
 }

@@ -283,6 +283,13 @@ export type Database = {
             referencedRelation: "activities"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "activity_dates_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
         ]
       }
       activity_speakers: {
@@ -326,6 +333,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "activities"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_speakers_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
           },
           {
             foreignKeyName: "activity_speakers_speaker_id_fkey"
@@ -1622,6 +1636,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
             foreignKeyName: "registrations_person_id_fkey"
             columns: ["person_id"]
             isOneToOne: false
@@ -1907,10 +1928,6 @@ export type Database = {
         }
         Returns: Json
       }
-      get_activity_registration_availability: {
-        Args: { p_activity_id: string }
-        Returns: Json
-      }
       get_activity_certificate_candidates: {
         Args: {
           p_activity_id: string
@@ -1920,13 +1937,13 @@ export type Database = {
         }
         Returns: {
           attendance_status: Database["public"]["Enums"]["attendance_status"]
-          certificate_code: string | null
-          certificate_id: string | null
-          certificate_status: Database["public"]["Enums"]["certificate_status"] | null
-          company_snapshot: string | null
+          certificate_code: string
+          certificate_id: string
+          certificate_status: Database["public"]["Enums"]["certificate_status"]
+          company_snapshot: string
           document_number: string
           email: string
-          file_path: string | null
+          file_path: string
           first_names: string
           last_names: string
           person_id: string
@@ -1935,6 +1952,10 @@ export type Database = {
           registration_status: Database["public"]["Enums"]["registration_status"]
           total_count: number
         }[]
+      }
+      get_activity_registration_availability: {
+        Args: { p_activity_id: string }
+        Returns: Json
       }
       get_admin_quiz: { Args: { p_module_id: string }; Returns: Json }
       get_certificate_activity_summaries: {
@@ -2002,6 +2023,10 @@ export type Database = {
         Returns: boolean
       }
       is_active_admin: { Args: never; Returns: boolean }
+      is_activity_certificate_visible: {
+        Args: { p_certificate_id: string }
+        Returns: boolean
+      }
       is_administrator: { Args: never; Returns: boolean }
       is_category_used_by_public_activity: {
         Args: { p_category_id: string }
@@ -2036,19 +2061,19 @@ export type Database = {
         Args: { p_activity_id: string; p_registration: Json }
         Returns: Json
       }
-      retry_notification: {
-        Args: { p_notification_id: string }
-        Returns: string
-      }
       replace_certificate_document: {
         Args: {
           p_certificate_id: string
-          p_expected_file_path: string | null
+          p_expected_file_path: string
           p_expected_participant_name: string
           p_expected_person_id: string
           p_new_file_path: string
         }
         Returns: Json
+      }
+      retry_notification: {
+        Args: { p_notification_id: string }
+        Returns: string
       }
       revoke_certificate: {
         Args: { p_certificate_id: string; p_reason: string }

@@ -12,6 +12,7 @@ jobs:
       NEXT_PUBLIC_SITE_URL: https://eventos.example.test
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_validation_only_000000000000
       NEXT_PUBLIC_SUPABASE_URL: https://ci-validation.supabase.co
+      SKIP_REMOTE_BUILD_DATA: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

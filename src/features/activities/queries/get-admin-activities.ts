@@ -32,20 +32,35 @@ export async function getAdminActivities(
     .order("updated_at", { ascending: false })
     .range(from, to);
 
+  const archivedCountQuery = client
+    .from("activities")
+    .select("id", { count: "exact", head: true })
+    .eq("type", filters.type)
+    .eq("status", "archived")
+    .is("deleted_at", null);
+
+  query = filters.view === "archived"
+    ? query.eq("status", "archived")
+    : query.neq("status", "archived");
+
   if (filters.query) query = query.ilike("title", `%${filters.query}%`);
   if (filters.status) query = query.eq("status", filters.status);
 
-  const { count, data, error } = await query;
+  const [{ count, data, error }, archivedResult] = await Promise.all([
+    query,
+    archivedCountQuery,
+  ]);
 
-  if (error) {
+  if (error || archivedResult.error) {
     throw new Error("No fue posible cargar el listado administrativo.", {
-      cause: error,
+      cause: error ?? archivedResult.error,
     });
   }
 
   const total = count ?? 0;
   return {
     activities: data,
+    archivedTotal: archivedResult.count ?? 0,
     page: filters.page,
     pageCount: Math.max(1, Math.ceil(total / ACTIVITY_PAGE_SIZE)),
     total,

@@ -10,7 +10,7 @@ const PARTICIPANT_DETAIL_SELECT = `
   registrations(
     id, registration_code, registration_type, status, company_snapshot,
     ruc_snapshot, price_snapshot, created_at,
-    activity:activities!inner(id, title, slug, type),
+    activity:activities!inner(id, title, slug, type, status),
     attendance(status)
   )
 `;
@@ -29,7 +29,13 @@ export async function getParticipantById(id: string): Promise<ParticipantDetail 
       .maybeSingle(),
     client
       .from("certificates")
-      .select("id, certificate_code, certificate_type, status, participant_name_snapshot, title_snapshot, issued_at, revocation_reason")
+      .select(`
+        id, certificate_code, certificate_type, status, participant_name_snapshot,
+        title_snapshot, issued_at, revocation_reason,
+        registration:registrations!certificates_registration_id_fkey(
+          activity:activities!inner(status)
+        )
+      `)
       .eq("person_id", id)
       .is("deleted_at", null)
       .order("issued_at", { ascending: false }),
@@ -38,9 +44,16 @@ export async function getParticipantById(id: string): Promise<ParticipantDetail 
   const error = participantResult.error ?? certificateResult.error;
   if (error) throw new Error("No fue posible consultar la ficha del participante.", { cause: error });
   if (!participantResult.data) return null;
+  const visibleRegistrations = participantResult.data.registrations.filter(
+    (registration) => registration.activity.status !== "archived",
+  );
+  const visibleCertificates = (certificateResult.data ?? []).filter(
+    (certificate) => certificate.certificate_type === "course" || certificate.registration?.activity.status !== "archived",
+  );
   const parsed = participantDetailSchema.safeParse({
     ...participantResult.data,
-    certificates: certificateResult.data ?? [],
+    certificates: visibleCertificates,
+    registrations: visibleRegistrations,
   });
   if (!parsed.success) throw new Error("La ficha del participante no tiene el formato esperado.");
   return parsed.data;

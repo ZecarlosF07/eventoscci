@@ -8,7 +8,8 @@ import { escapePostgrestSearch } from "@/utils/postgrest-search";
 
 const PARTICIPANT_SELECT = `
   id, document_type, document_number, first_names, last_names, email, phone,
-  job_title, company, ruc, registrations(id)
+  job_title, company, ruc,
+  registrations(id, activity:activities!inner(status))
 `;
 
 export async function getParticipants(filters: ParticipantFilters): Promise<ParticipantPage> {
@@ -39,7 +40,12 @@ export async function getParticipants(filters: ParticipantFilters): Promise<Part
   if (error) throw new Error("No fue posible consultar los participantes.", { cause: error });
 
   const participants: ParticipantListItem[] = (data ?? []).map((item) => {
-    const parsed = participantListItemSchema.safeParse(item);
+    const parsed = participantListItemSchema.safeParse({
+      ...item,
+      registrations: item.registrations.filter(
+        (registration) => registration.activity.status !== "archived",
+      ),
+    });
     if (!parsed.success) throw new Error("La respuesta de participantes no tiene el formato esperado.");
     return parsed.data;
   });

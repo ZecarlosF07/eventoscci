@@ -6,6 +6,7 @@ import type {
 export type ActivityType = Enums<"activity_type">;
 export type ActivityModality = Enums<"activity_modality">;
 export type ActivityStatus = Enums<"activity_status">;
+export type ActivityAdminView = "active" | "archived";
 export type ActivityRow = Tables<"activities">;
 export type ActivityDateRow = Tables<"activity_dates">;
 
@@ -94,10 +95,12 @@ export interface ActivityAdminFilters {
   query?: string;
   status?: ActivityStatus;
   type: ActivityType;
+  view: ActivityAdminView;
 }
 
 export interface ActivityAdminPage {
   activities: ActivityListItem[];
+  archivedTotal: number;
   page: number;
   pageCount: number;
   total: number;

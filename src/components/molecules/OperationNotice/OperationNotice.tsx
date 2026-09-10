@@ -6,6 +6,7 @@ const MESSAGES: Record<string, { tone?: "error" | "warning"; text: string }> = {
   "confirmada": { text: "La inscripción fue confirmada correctamente." },
   "confirmada-correo-fallido": { tone: "warning", text: "La inscripción quedó confirmada, pero el correo no pudo enviarse. Revisa Notificaciones para ver el detalle." },
   "error-asistencia": { tone: "error", text: "No fue posible actualizar la asistencia." },
+  "error-actividad-archivada": { tone: "error", text: "La actividad está archivada y sus operaciones permanecen bloqueadas hasta restaurarla." },
   "error-cancelar": { tone: "error", text: "No fue posible cancelar la inscripción." },
   "error-confirmar": { tone: "error", text: "No fue posible confirmar la inscripción." },
   "error-inscripcion-no-confirmada": { tone: "error", text: "Solo puedes marcar asistencia de inscripciones confirmadas." },

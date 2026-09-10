@@ -12,6 +12,13 @@ export function invalidatePublicActivityContent(type: ActivityType): void {
   updateTag(PUBLIC_CACHE_TAGS.sitemap);
   revalidatePath(ROUTES.home);
   revalidatePath(type === "event" ? ROUTES.events : ROUTES.trainings);
+  revalidatePath(type === "event" ? "/eventos/[slug]" : "/capacitaciones/[slug]", "page");
+  revalidatePath("/buscar");
+  revalidatePath("/certificados/[token]", "page");
+  revalidatePath(ROUTES.certificates);
+  revalidatePath(ROUTES.campusCertificates);
+  revalidatePath(ROUTES.adminRegistrations, "layout");
+  revalidatePath(ROUTES.adminCertificatesActivities, "layout");
   revalidatePath("/sitemap.xml");
 }
 

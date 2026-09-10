@@ -1,8 +1,8 @@
-import type { ActivityAdminPage, ActivityStatus, ActivityType } from "@/features/activities/types/activity.types";
+import type { ActivityAdminFilters, ActivityAdminPage, ActivityType } from "@/features/activities/types/activity.types";
 
 export interface ActivityAdminListTemplateProps {
   data: ActivityAdminPage;
-  filters: { query?: string; status?: ActivityStatus };
+  filters: ActivityAdminFilters;
   title: string;
   type: ActivityType;
 }

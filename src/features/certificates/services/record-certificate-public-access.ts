@@ -10,13 +10,22 @@ export async function recordCertificatePublicAccess(
   input: CertificatePublicAccessInput,
 ): Promise<"duplicate" | "not_found" | "recorded"> {
   const certificateResult = await client.from("certificates")
-    .select("id")
+    .select(`
+      id, certificate_type,
+      registration:registrations!certificates_registration_id_fkey(
+        activity:activities!inner(status)
+      )
+    `)
     .eq("access_token", input.token)
     .is("deleted_at", null)
     .maybeSingle();
 
   if (certificateResult.error) throw new Error("No fue posible resolver el certificado.", { cause: certificateResult.error });
   if (!certificateResult.data) return "not_found";
+  if (
+    certificateResult.data.certificate_type === "activity"
+    && certificateResult.data.registration?.activity.status === "archived"
+  ) return "not_found";
 
   if (input.action === "certificate.public_view") {
     const since = new Date(Date.now() - VIEW_DEDUPLICATION_MINUTES * 60_000).toISOString();

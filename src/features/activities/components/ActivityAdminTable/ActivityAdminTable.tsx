@@ -6,6 +6,7 @@ import { PriceDisplay } from "@/components/molecules/PriceDisplay";
 import { ResponsiveTableFrame } from "@/components/molecules/ResponsiveTableFrame";
 import { StatusBadge } from "@/components/molecules/StatusBadge";
 import { ROUTES } from "@/constants/routes";
+import { ActivityArchiveAction } from "@/features/activities/components/ActivityArchiveAction";
 import type { ActivityAdminTableProps } from "@/features/activities/components/ActivityAdminTable/types/activity-admin-table.types";
 import { changeActivityStatusAction } from "@/features/activities/mutations/activity.actions";
 import {
@@ -31,6 +32,7 @@ export function ActivityAdminTable({ activities }: ActivityAdminTableProps) {
           {activities.map((activity) => {
             const nextDate = getNextActivityDate(activity.dates);
             const editRoute = getAdminActivityRoute(activity.type, activity.id);
+            const archived = activity.status === "archived";
             return (
               <tr key={activity.id}>
                 <td className="px-5 py-4"><Link className="font-semibold text-cci-950 hover:underline" href={editRoute}>{activity.title}</Link><Text size="sm">{activity.category?.name ?? "Sin categoría"}</Text></td>
@@ -39,7 +41,7 @@ export function ActivityAdminTable({ activities }: ActivityAdminTableProps) {
                 <td className="px-5 py-4"><PriceDisplay generalPrice={activity.general_price} isFree={activity.is_free} memberPrice={activity.member_price} /></td>
                 <td className="px-5 py-4"><StatusBadge status={activity.status} /></td>
                 <td className="px-5 py-4 text-slate-700">{activity.published_at ? formatActivityDate(activity.published_at) : "Sin publicar"}</td>
-                <td className="px-5 py-4"><div className="flex flex-wrap gap-2"><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-cci-50" href={editRoute}>Editar</Link><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-cci-50" href={getActivityParticipationRoute(activity.id)}>Participación</Link><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-cci-50" href={`${ROUTES.adminCertificatesActivities}/${activity.id}`}>Certificados</Link>{activity.status !== "published" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "published")}><SubmitButton pendingLabel="Publicando…" variant="subtle">Publicar</SubmitButton></form> : null}{activity.status !== "cancelled" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "cancelled")}><SubmitButton pendingLabel="Cancelando…" variant="subtle">Cancelar</SubmitButton></form> : null}</div></td>
+                <td className="px-5 py-4"><div className="flex flex-wrap gap-2"><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-cci-50" href={editRoute}>Editar</Link>{!archived ? <><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-cci-50" href={getActivityParticipationRoute(activity.id)}>Participación</Link><Link className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-3 font-semibold text-slate-800 hover:bg-cci-50" href={`${ROUTES.adminCertificatesActivities}/${activity.id}`}>Certificados</Link>{activity.status !== "published" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "published")}><SubmitButton pendingLabel="Publicando…" variant="subtle">Publicar</SubmitButton></form> : null}{activity.status !== "cancelled" ? <form action={changeActivityStatusAction.bind(null, activity.id, activity.type, "cancelled")}><SubmitButton pendingLabel="Cancelando…" variant="subtle">Cancelar</SubmitButton></form> : null}</> : null}<ActivityArchiveAction activityId={activity.id} activityTitle={activity.title} activityType={activity.type} status={activity.status} /></div></td>
               </tr>
             );
           })}

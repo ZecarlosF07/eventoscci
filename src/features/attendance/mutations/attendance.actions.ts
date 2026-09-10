@@ -37,9 +37,11 @@ export async function updateAttendanceAction(
     p_status: parsed.data.status,
   });
   if (error) {
-    const result = error.message.includes("REGISTRATION_NOT_CONFIRMED")
-      ? "error-inscripcion-no-confirmada"
-      : "error-asistencia";
+    const result = error.message.includes("ACTIVITY_ARCHIVED")
+      ? "error-actividad-archivada"
+      : error.message.includes("REGISTRATION_NOT_CONFIRMED")
+        ? "error-inscripcion-no-confirmada"
+        : "error-asistencia";
     redirect(withAdminResult(returnTo, fallback, result));
   }
 

@@ -52,6 +52,7 @@ export async function issueActivityCertificates(
       message: getSupabaseErrorMessage(preparedResult.error, {
         fallback: "No se pudo preparar la emisión. Actualiza la página e inténtalo nuevamente.",
         messages: {
+          ACTIVITY_ARCHIVED: "La actividad está archivada. Restáurala como borrador antes de emitir certificados.",
           TEMPLATE_NOT_AVAILABLE: "La plantilla seleccionada está inactiva o ya no está disponible. Selecciona otra plantilla.",
           VALIDATION_ERROR: "La selección contiene participantes o condiciones no válidas. Revisa los datos e inténtalo nuevamente.",
         },

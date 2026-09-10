@@ -38,6 +38,7 @@ export function ActivityForm({
   const [modality, setModality] = useState(activity?.modality ?? "in_person");
   const [status, setStatus] = useState(activity?.status ?? "draft");
   const initialIsFree = activity?.is_free ?? false;
+  const isArchived = activity?.status === "archived";
   const [isFree, setIsFree] = useState(initialIsFree);
   const [generalPrice, setGeneralPrice] = useState(initialIsFree ? "0" : String(activity?.general_price ?? ""));
   const [memberPrice, setMemberPrice] = useState(initialIsFree ? "0" : String(activity?.member_price ?? ""));
@@ -135,9 +136,10 @@ export function ActivityForm({
 
       <div className="sticky bottom-4 flex flex-col gap-3 rounded-2xl border border-cci-100 bg-white/95 p-4 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between">
         <FormField label="Estado al guardar" name="status">
-          <Select id="status" name="status" onChange={(event) => setStatus(event.target.value as typeof status)} value={status}>
-            {Object.entries(ACTIVITY_STATUS_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          <Select disabled={isArchived} id="status" name="status" onChange={(event) => setStatus(event.target.value as typeof status)} value={status}>
+            {Object.entries(ACTIVITY_STATUS_LABELS).filter(([value]) => value !== "archived" || isArchived).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </Select>
+          {isArchived ? <input name="status" type="hidden" value="archived" /> : null}
         </FormField>
         <div className="space-y-2 sm:text-right">
           <FormActionNotice compact message={state.message} success={state.success} warning={state.warning} />

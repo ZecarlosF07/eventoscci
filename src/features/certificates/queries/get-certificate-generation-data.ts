@@ -13,10 +13,18 @@ export async function getCertificateGenerationDataWithClient(
   id: string,
 ): Promise<CertificateGenerationData | null> {
   const { data, error } = await client.from("certificates")
-    .select("id, access_token, academic_hours_snapshot, certificate_code, certificate_type, condition_snapshot, date_text_snapshot, file_path, participant_name_snapshot, status, template_id, title_snapshot")
+    .select(`
+      id, access_token, academic_hours_snapshot, certificate_code, certificate_type,
+      condition_snapshot, date_text_snapshot, file_path, participant_name_snapshot,
+      status, template_id, title_snapshot,
+      registration:registrations!certificates_registration_id_fkey(
+        activity:activities!inner(status)
+      )
+    `)
     .eq("id", id).is("deleted_at", null).maybeSingle();
   if (error) throw new Error("No fue posible preparar el documento del certificado.", { cause: error });
   if (!data) return null;
+  if (data.certificate_type === "activity" && data.registration?.activity.status === "archived") return null;
   const [parsed, template] = [
     certificateGenerationSchema.safeParse(data),
     await getCertificateTemplateByIdWithClient(client, data.template_id),

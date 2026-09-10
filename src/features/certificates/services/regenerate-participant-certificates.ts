@@ -36,7 +36,7 @@ async function regenerateCertificate(
 
   const replaced = await client.rpc("replace_certificate_document", {
     p_certificate_id: certificate.id,
-    p_expected_file_path: oldFilePath,
+    p_expected_file_path: oldFilePath ?? "",
     p_expected_participant_name: participantName,
     p_expected_person_id: personId,
     p_new_file_path: newFilePath,
@@ -65,7 +65,12 @@ export async function regenerateParticipantCertificates(
 
   const participantName = `${personResult.data.first_names} ${personResult.data.last_names}`.trim();
   const certificateResult = await client.from("certificates")
-    .select("id, certificate_code")
+    .select(`
+      id, certificate_code, certificate_type,
+      registration:registrations!certificates_registration_id_fkey(
+        activity:activities!inner(status)
+      )
+    `)
     .eq("person_id", personId)
     .eq("status", "issued")
     .is("deleted_at", null)
@@ -76,7 +81,9 @@ export async function regenerateParticipantCertificates(
     return { message: "No fue posible consultar los certificados por actualizar." };
   }
 
-  const certificates = certificateResult.data ?? [];
+  const certificates = (certificateResult.data ?? []).filter(
+    (certificate) => certificate.certificate_type === "course" || certificate.registration?.activity.status !== "archived",
+  );
   if (!certificates.length) {
     return { message: "Todos los certificados vigentes ya muestran el nombre actual.", success: true };
   }

@@ -28,6 +28,7 @@ function adminListRoute(type: ActivityType): string {
 function revalidateActivityPages(type: ActivityType): void {
   invalidatePublicActivityContent(type);
   revalidatePath(adminListRoute(type));
+  revalidatePath(ROUTES.adminPendingPayments);
 }
 
 export async function saveActivityAction(
@@ -140,8 +141,7 @@ export async function changeActivityStatusAction(
     }), { cause: error });
   }
 
-  revalidatePath(adminListRoute(type));
-  invalidatePublicActivityContent(type);
+  revalidateActivityPages(type);
 }
 
 export async function deleteActivityAction(

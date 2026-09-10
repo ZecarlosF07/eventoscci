@@ -7,9 +7,12 @@ import {
   PUBLIC_CACHE_TAGS,
 } from "@/features/seo/constants/public-cache.constants";
 import type { SitemapEntries } from "@/features/seo/types/seo.types";
+import { shouldSkipRemoteBuildData } from "@/lib/env/build-env";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 
 export const getSitemapEntries = unstable_cache(async (): Promise<SitemapEntries> => {
+  if (shouldSkipRemoteBuildData()) return { activities: [], courses: [] };
+
   const client = createPublicSupabaseClient();
   const [activitiesResult, coursesResult] = await Promise.all([
     client.from("activities")

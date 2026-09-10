@@ -16,7 +16,7 @@ export async function getActivityCertificateData(
 ): Promise<ActivityCertificateData | null> {
   const client = await createServerSupabaseClient();
   const [activityResult, candidateResult, templates] = await Promise.all([
-    client.from("activities").select("id, title, type").eq("id", activityId).is("deleted_at", null).maybeSingle(),
+    client.from("activities").select("id, title, type").eq("id", activityId).neq("status", "archived").is("deleted_at", null).maybeSingle(),
     client.rpc("get_activity_certificate_candidates", {
       p_activity_id: activityId,
       p_limit: CERTIFICATE_CANDIDATE_PAGE_SIZE,
