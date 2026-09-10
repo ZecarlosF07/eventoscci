@@ -134,6 +134,7 @@ export interface RegistrationAdminFilters {
   query?: string;
   registrationType?: RegistrationType;
   status?: RegistrationStatus;
+  statusScope?: "active" | "all";
 }
 
 export interface RegistrationAdminPage {
@@ -168,6 +169,17 @@ export interface RegistrationActivityOption {
   id: string;
   title: string;
   type: ActivityType;
+}
+
+export interface ActivityRegistrationsPageProps {
+  params: Promise<{ activityId: string }>;
+  searchParams: Promise<{
+    estado?: string | string[];
+    pagina?: string | string[];
+    q?: string | string[];
+    resultado?: string | string[];
+    tipo?: string | string[];
+  }>;
 }
 
 export interface RegistrationFieldGroupProps {
@@ -209,17 +221,9 @@ export interface RegistrationCtaProps {
 export interface RegistrationsTableProps {
   registrations: RegistrationAdminItem[];
   returnTo: string;
+  showActivity?: boolean;
 }
 
 export interface RegistrationStatusBadgeProps {
   status: RegistrationStatus;
-}
-
-export interface RegistrationsAdminTemplateProps {
-  activities: RegistrationActivityOption[];
-  data: RegistrationAdminPage;
-  filters: RegistrationAdminFilters;
-  result?: string;
-  status?: RegistrationStatus;
-  title: string;
 }

@@ -7,10 +7,10 @@ import type { ParticipantsTableProps } from "@/features/participants/components/
 
 export function ParticipantsTable({ participants }: ParticipantsTableProps) {
   if (!participants.length) {
-    return <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center"><Text>No se encontraron participantes.</Text></div>;
+    return <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center"><Text>No se encontraron personas.</Text></div>;
   }
   return (
-    <ResponsiveTableFrame className="rounded-3xl" label="Listado de participantes">
+    <ResponsiveTableFrame className="rounded-3xl" label="Directorio de personas">
       <table className="w-full min-w-[1100px] text-left text-sm">
         <thead className="border-b border-cci-100 bg-cci-50 text-slate-600">
           <tr><th className="px-5 py-4">Documento</th><th className="px-5 py-4">Participante</th><th className="px-5 py-4">Contacto</th><th className="px-5 py-4">Cargo / empresa</th><th className="px-5 py-4">Participaciones</th><th className="px-5 py-4">Acción</th></tr>

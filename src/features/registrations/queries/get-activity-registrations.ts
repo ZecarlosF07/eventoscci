@@ -63,6 +63,7 @@ export async function getActivityRegistrations(
     .order("created_at", { ascending: false });
 
   if (filters.status) query = query.eq("status", filters.status);
+  else if (filters.statusScope === "active") query = query.in("status", ["pending", "confirmed"]);
   if (filters.activityId) query = query.eq("activity_id", filters.activityId);
   if (filters.activityType) query = query.eq("activity.type", filters.activityType);
   if (filters.registrationType) query = query.eq("registration_type", filters.registrationType);
@@ -70,7 +71,8 @@ export async function getActivityRegistrations(
   const search = filters.query ? escapePostgrestSearch(filters.query) : "";
   if (search) {
     const pattern = `%${search}%`;
-    query = query.or([
+    if (search.toUpperCase().startsWith("CCI-")) query = query.ilike("registration_code", pattern);
+    else query = query.or([
       `document_number.ilike.${pattern}`,
       `first_names.ilike.${pattern}`,
       `last_names.ilike.${pattern}`,
@@ -119,6 +121,7 @@ export async function getRegistrationsForExport(
     .limit(5000);
 
   if (filters.status) query = query.eq("status", filters.status);
+  else if (filters.statusScope === "active") query = query.in("status", ["pending", "confirmed"]);
   if (filters.activityId) query = query.eq("activity_id", filters.activityId);
   if (filters.activityType) query = query.eq("activity.type", filters.activityType);
   if (filters.registrationType) query = query.eq("registration_type", filters.registrationType);
@@ -126,7 +129,8 @@ export async function getRegistrationsForExport(
   const search = filters.query ? escapePostgrestSearch(filters.query) : "";
   if (search) {
     const pattern = `%${search}%`;
-    query = query.or([
+    if (search.toUpperCase().startsWith("CCI-")) query = query.ilike("registration_code", pattern);
+    else query = query.or([
       `document_number.ilike.${pattern}`,
       `first_names.ilike.${pattern}`,
       `last_names.ilike.${pattern}`,
@@ -143,12 +147,6 @@ export function getPendingRegistrations(
   filters: Omit<RegistrationAdminFilters, "status">,
 ): Promise<RegistrationAdminPage> {
   return getActivityRegistrations({ ...filters, status: "pending" });
-}
-
-export function getConfirmedRegistrations(
-  filters: Omit<RegistrationAdminFilters, "status">,
-): Promise<RegistrationAdminPage> {
-  return getActivityRegistrations({ ...filters, status: "confirmed" });
 }
 
 export async function getRegistrationByCode(

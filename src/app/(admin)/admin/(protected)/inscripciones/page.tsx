@@ -1,14 +1,16 @@
-import { RegistrationsAdminTemplate } from "@/components/templates/RegistrationsAdminTemplate";
-import { getActivityRegistrations, getRegistrationActivityOptions } from "@/features/registrations/queries/get-activity-registrations";
-import type { AdminRegistrationsPageProps } from "@/features/registrations/types/registration.types";
-import { firstValue, parseAdminRegistrationFilters } from "@/features/registrations/utils/admin-registration-filters";
+import { ParticipationOverviewTemplate } from "@/components/templates/ParticipationOverviewTemplate";
+import {
+  getParticipationGlobalMetrics,
+  getParticipationOverview,
+} from "@/features/participation/queries/get-participation-overview";
+import type { ParticipationOverviewPageProps } from "@/features/participation/types/participation.types";
+import { parseParticipationFilters } from "@/features/participation/utils/participation-filters";
 
-export default async function AdminRegistrationsPage({ searchParams }: AdminRegistrationsPageProps) {
-  const filters = await parseAdminRegistrationFilters(searchParams);
-  const [data, activities, params] = await Promise.all([
-    getActivityRegistrations(filters),
-    getRegistrationActivityOptions(),
-    searchParams,
+export default async function AdminRegistrationsPage({ searchParams }: ParticipationOverviewPageProps) {
+  const filters = await parseParticipationFilters(searchParams);
+  const [data, metrics] = await Promise.all([
+    getParticipationOverview(filters),
+    getParticipationGlobalMetrics(),
   ]);
-  return <RegistrationsAdminTemplate activities={activities} data={data} filters={filters} result={firstValue(params.resultado)} title="Inscripciones" />;
+  return <ParticipationOverviewTemplate data={data} filters={filters} metrics={metrics} />;
 }

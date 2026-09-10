@@ -23,6 +23,7 @@ export async function GET(request: Request): Promise<Response> {
     query: parsed.query,
     registrationType: parsed.registrationType,
     status: parsed.status,
+    statusScope: params.get("estado") === "active" ? "active" as const : undefined,
   };
   const registrations = await getRegistrationsForExport(filters);
   const csv = registrationsToCsv(registrations);

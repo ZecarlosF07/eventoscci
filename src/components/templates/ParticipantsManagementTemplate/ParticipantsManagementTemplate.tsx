@@ -8,7 +8,7 @@ import { ParticipantsTable } from "@/features/participants/components/Participan
 export function ParticipantsManagementTemplate({ data, filters }: ParticipantsManagementTemplateProps) {
   return (
     <div className="space-y-7">
-      <SectionHeading description={`${data.total} personas institucionales encontradas, tengan o no cuenta de Campus.`} eyebrow="Identidad centralizada" title="Participantes" />
+      <SectionHeading description={`${data.total} personas encontradas, tengan o no cuenta de Campus.`} eyebrow="Personas e historial" title="Directorio" />
       <ParticipantFilters filters={filters} />
       <ParticipantsTable participants={data.participants} />
       <Pagination page={data.page} pageCount={data.pageCount} pathname={ROUTES.adminParticipants} searchParams={{ q: filters.query }} />

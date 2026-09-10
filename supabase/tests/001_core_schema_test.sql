@@ -84,8 +84,12 @@ where id = '10000000-0000-4000-8000-000000000001';
 set local role anon;
 
 select is(
-  (select count(*) from public.categories),
-  4::bigint,
+  (
+    select count(*)
+    from public.categories
+    where id = '10000000-0000-4000-8000-000000000001'
+  ),
+  0::bigint,
   'soft-deleted categories are hidden from public reads'
 );
 

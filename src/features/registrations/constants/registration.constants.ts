@@ -8,7 +8,7 @@ import type {
 export const REGISTRATION_STATUS_LABELS: Record<RegistrationStatus, string> = {
   cancelled: "Cancelada",
   confirmed: "Confirmada",
-  pending: "Preinscrito / No confirmado",
+  pending: "Pendiente de verificación",
 };
 
 export const REGISTRATION_TYPE_LABELS: Record<RegistrationType, string> = {

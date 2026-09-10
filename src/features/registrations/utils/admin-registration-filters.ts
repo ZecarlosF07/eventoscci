@@ -1,4 +1,5 @@
 import type {
+  ActivityRegistrationsPageProps,
   AdminRegistrationsPageProps,
   RegistrationAdminFilters,
   RegistrationStatus,
@@ -53,5 +54,22 @@ export async function parseAdminRegistrationFilters(
     query: firstValue(params.q)?.trim() || undefined,
     registrationType: parseRegistrationType(params.tipo),
     status: fixedStatus ?? parseStatus(params.estado),
+  };
+}
+
+export async function parseActivityRegistrationFilters(
+  searchParams: ActivityRegistrationsPageProps["searchParams"],
+  activityId: string,
+): Promise<RegistrationAdminFilters> {
+  const params = await searchParams;
+  const statusValue = firstValue(params.estado);
+  const parsedStatus = parseStatus(params.estado);
+  return {
+    activityId,
+    page: parsePage(params.pagina),
+    query: firstValue(params.q)?.trim() || undefined,
+    registrationType: parseRegistrationType(params.tipo),
+    status: parsedStatus,
+    statusScope: parsedStatus ? undefined : statusValue === "all" ? "all" : "active",
   };
 }

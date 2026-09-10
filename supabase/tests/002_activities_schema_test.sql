@@ -111,11 +111,88 @@ select ok(
   exists (select 1 from storage.buckets where id = 'activity-images' and public),
   'public activity image bucket exists'
 );
+
+insert into public.venues (id, name, address, maps_embed_url)
+values (
+  '72000000-0000-4000-8000-000000000003',
+  'Sede temporal para prueba de actividades',
+  'Av. Temporal 123, Ica',
+  'https://www.google.com/maps/embed?pb=activity-test'
+);
+
+insert into public.activity_contacts (
+  id, label, contact_name, whatsapp_phone, email
+)
+values (
+  '72000000-0000-4000-8000-000000000004',
+  'Contacto temporal para prueba de actividades',
+  'Contacto temporal',
+  '912345678',
+  'activity.test@example.test'
+);
+
+insert into public.speakers (id, first_names, last_names)
+values (
+  '72000000-0000-4000-8000-000000000002',
+  'Ponente',
+  'Temporal'
+);
+
+insert into public.activities (
+  id,
+  venue_id,
+  contact_id,
+  type,
+  title,
+  slug,
+  description,
+  modality,
+  program_image_paths,
+  status,
+  published_at
+)
+values (
+  '72000000-0000-4000-8000-000000000001',
+  '72000000-0000-4000-8000-000000000003',
+  '72000000-0000-4000-8000-000000000004',
+  'training',
+  'Actividad visual temporal',
+  'actividad-visual-temporal',
+  'Registro transaccional para validar actividades.',
+  'in_person',
+  array['programs/activity-test/page-1.webp'],
+  'published',
+  now()
+);
+
+insert into public.activity_dates (
+  id, activity_id, starts_at, ends_at, label, sort_order
+)
+values (
+  '72000000-0000-4000-8000-000000000005',
+  '72000000-0000-4000-8000-000000000001',
+  now() + interval '30 days',
+  now() + interval '30 days 2 hours',
+  'Fecha temporal',
+  0
+);
+
+insert into public.activity_speakers (
+  id, activity_id, speaker_id, role_label, sort_order
+)
+values (
+  '72000000-0000-4000-8000-000000000006',
+  '72000000-0000-4000-8000-000000000001',
+  '72000000-0000-4000-8000-000000000002',
+  'Ponente',
+  0
+);
+
 select is(
   (
     select count(*)
     from public.activities
-    where id = '4d000000-0000-4000-8000-000000000001'
+    where id = '72000000-0000-4000-8000-000000000001'
       and deleted_at is null
   ),
   1::bigint,
@@ -124,7 +201,7 @@ select is(
 select is(
   (
     select count(*) from public.activity_dates
-    where activity_id = '4d000000-0000-4000-8000-000000000001'
+    where activity_id = '72000000-0000-4000-8000-000000000001'
       and deleted_at is null
   ),
   1::bigint,
@@ -134,7 +211,7 @@ select is(
   (
     select cardinality(program_image_paths)
     from public.activities
-    where id = '4d000000-0000-4000-8000-000000000001'
+    where id = '72000000-0000-4000-8000-000000000001'
   ),
   1,
   'seeded activity uses one visual program page'
@@ -143,7 +220,7 @@ select is(
   (
     select count(*)
     from public.activities
-    where id = '4d000000-0000-4000-8000-000000000001'
+    where id = '72000000-0000-4000-8000-000000000001'
       and program is null
       and syllabus is null
   ),
@@ -154,8 +231,8 @@ select is(
   (
     select count(*)
     from public.activity_speakers
-    where activity_id = '4d000000-0000-4000-8000-000000000001'
-      and speaker_id = '20000000-0000-4000-8000-000000000001'
+    where activity_id = '72000000-0000-4000-8000-000000000001'
+      and speaker_id = '72000000-0000-4000-8000-000000000002'
       and deleted_at is null
   ),
   1::bigint,
@@ -177,7 +254,11 @@ insert into public.activities (
 set local role anon;
 
 select is(
-  (select count(*) from public.activities where type = 'training'),
+  (
+    select count(*)
+    from public.activities
+    where id = '72000000-0000-4000-8000-000000000001'
+  ),
   1::bigint,
   'anonymous visitors see the published training'
 );
@@ -226,7 +307,7 @@ select set_config('request.jwt.claim.sub', '80000000-0000-4000-8000-000000000001
 
 select is(public.is_active_admin(), false, 'student is not an active administrator');
 select throws_ok(
-  $$select public.set_activity_status('4d000000-0000-4000-8000-000000000001', 'cancelled')$$,
+  $$select public.set_activity_status('72000000-0000-4000-8000-000000000001', 'cancelled')$$,
   '42501',
   'No autorizado para cambiar el estado.',
   'student cannot mutate activity status'
@@ -288,7 +369,7 @@ select is(
   'atomic save persists multiple dates'
 );
 select lives_ok(
-  $$select public.set_activity_status('4d000000-0000-4000-8000-000000000001', 'cancelled')$$,
+  $$select public.set_activity_status('72000000-0000-4000-8000-000000000001', 'cancelled')$$,
   'administrator can mutate activity status'
 );
 

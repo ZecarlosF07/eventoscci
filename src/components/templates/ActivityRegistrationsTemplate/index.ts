@@ -1,0 +1,1 @@
+export { ActivityRegistrationsTemplate } from "./ActivityRegistrationsTemplate";

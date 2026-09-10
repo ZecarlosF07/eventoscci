@@ -20,6 +20,11 @@ function registrationType(value?: string | string[]): RegistrationType | undefin
   return type === "general" || type === "member" ? type : undefined;
 }
 
+function pageNumber(value?: string | string[]): number {
+  const valueAsNumber = Number(firstValue(value));
+  return Number.isInteger(valueAsNumber) && valueAsNumber > 0 ? valueAsNumber : 1;
+}
+
 export async function parseAttendanceFilters(
   searchParams: AttendanceActivityPageProps["searchParams"],
 ): Promise<AttendanceFilters> {
@@ -27,7 +32,10 @@ export async function parseAttendanceFilters(
   return {
     attendanceStatus: attendanceStatus(params.asistencia),
     query: firstValue(params.q)?.trim() || undefined,
-    registrationStatus: registrationStatus(params.estado),
+    page: pageNumber(params.pagina),
+    registrationStatus: firstValue(params.estado) === "all"
+      ? undefined
+      : registrationStatus(params.estado) ?? "confirmed",
     registrationType: registrationType(params.tipo),
   };
 }

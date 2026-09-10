@@ -1,0 +1,1 @@
+export { ParticipationOverviewTemplate } from "./ParticipationOverviewTemplate";

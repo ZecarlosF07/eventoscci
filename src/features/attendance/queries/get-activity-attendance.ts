@@ -10,6 +10,7 @@ const ATTENDANCE_SELECT = `
   person:people!inner(document_number, first_names, last_names, email),
   attendance:attendance!inner(id, status, marked_at, notes)
 `;
+const ATTENDANCE_PAGE_SIZE = 30;
 
 export async function getActivityAttendance(
   activityId: string,
@@ -28,7 +29,7 @@ export async function getActivityAttendance(
 
   let query = client
     .from("registrations")
-    .select(ATTENDANCE_SELECT)
+    .select(ATTENDANCE_SELECT, { count: "exact" })
     .eq("activity_id", activityId)
     .is("deleted_at", null)
     .is("person.deleted_at", null)
@@ -49,7 +50,8 @@ export async function getActivityAttendance(
     ].join(","), { referencedTable: "person" });
   }
 
-  const { data, error } = await query;
+  const from = (filters.page - 1) * ATTENDANCE_PAGE_SIZE;
+  const { count, data, error } = await query.range(from, from + ATTENDANCE_PAGE_SIZE - 1);
   if (error) throw new Error("No fue posible consultar la asistencia.", { cause: error });
   const attendance: AttendanceItem[] = (data ?? []).map((item) => {
     const parsed = attendanceRegistrationSchema.safeParse(item);
@@ -72,5 +74,12 @@ export async function getActivityAttendance(
       status: attendanceRow.status,
     };
   });
-  return { activity: activityResult.data, attendance };
+  const total = count ?? 0;
+  return {
+    activity: activityResult.data,
+    attendance,
+    page: filters.page,
+    pageCount: Math.max(1, Math.ceil(total / ATTENDANCE_PAGE_SIZE)),
+    total,
+  };
 }

@@ -1801,7 +1801,28 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      activity_participation_summary: {
+        Row: {
+          absent_count: number | null
+          active_count: number | null
+          activity_id: string | null
+          attendance_pending_count: number | null
+          attended_count: number | null
+          cancelled_count: number | null
+          capacity: number | null
+          confirmed_count: number | null
+          is_free: boolean | null
+          last_date: string | null
+          next_date: string | null
+          pending_count: number | null
+          slug: string | null
+          status: Database["public"]["Enums"]["activity_status"] | null
+          title: string | null
+          total_count: number | null
+          type: Database["public"]["Enums"]["activity_type"] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       abandon_unfinalized_certificate: {

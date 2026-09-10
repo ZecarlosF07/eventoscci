@@ -7,6 +7,7 @@ import { z } from "zod";
 import { ROUTES } from "@/constants/routes";
 import { requireAdmin } from "@/features/auth/services/admin-session";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getActivityAttendanceRoute } from "@/features/participation/utils/participation-routes";
 import { withAdminResult } from "@/utils/admin-return-url";
 
 const attendanceInputSchema = z.object({
@@ -26,7 +27,7 @@ export async function updateAttendanceAction(
     notes: formData.get("notes") ?? "",
     status: formData.get("status"),
   });
-  const fallback = `${ROUTES.adminAttendance}/${activityId}`;
+  const fallback = getActivityAttendanceRoute(activityId);
   if (!parsed.success) redirect(withAdminResult(returnTo, fallback, "error-seleccion"));
 
   const client = await createServerSupabaseClient();
@@ -35,9 +36,15 @@ export async function updateAttendanceAction(
     p_notes: parsed.data.notes || undefined,
     p_status: parsed.data.status,
   });
-  if (error) redirect(withAdminResult(returnTo, fallback, "error-asistencia"));
+  if (error) {
+    const result = error.message.includes("REGISTRATION_NOT_CONFIRMED")
+      ? "error-inscripcion-no-confirmada"
+      : "error-asistencia";
+    redirect(withAdminResult(returnTo, fallback, result));
+  }
 
   revalidatePath(fallback);
   revalidatePath(ROUTES.adminParticipants);
+  revalidatePath(ROUTES.adminRegistrations);
   redirect(withAdminResult(returnTo, fallback, "asistencia-actualizada"));
 }

@@ -4,16 +4,9 @@ import type { Enums } from "@/lib/supabase/database.types";
 
 export type AttendanceStatus = Enums<"attendance_status">;
 
-export interface AttendanceActivityOption {
-  id: string;
-  registrationCount: number;
-  status: Enums<"activity_status">;
-  title: string;
-  type: ActivityType;
-}
-
 export interface AttendanceFilters {
   attendanceStatus?: AttendanceStatus;
+  page: number;
   query?: string;
   registrationStatus?: RegistrationStatus;
   registrationType?: RegistrationType;
@@ -42,6 +35,9 @@ export interface AttendanceItem {
 export interface AttendanceActivityData {
   activity: { id: string; title: string; type: ActivityType };
   attendance: AttendanceItem[];
+  page: number;
+  pageCount: number;
+  total: number;
 }
 
 export interface AttendanceActivityPageProps {
@@ -49,6 +45,7 @@ export interface AttendanceActivityPageProps {
   searchParams: Promise<{
     asistencia?: string | string[];
     estado?: string | string[];
+    pagina?: string | string[];
     q?: string | string[];
     resultado?: string | string[];
     tipo?: string | string[];

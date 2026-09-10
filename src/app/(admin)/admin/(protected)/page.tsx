@@ -21,16 +21,12 @@ export default function AdminPage() {
           <Text className="mt-2">Administra talleres y programas de formación empresarial.</Text>
         </Link>
         <Link className="rounded-3xl border border-cci-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-cci-200 hover:shadow-lg" href={ROUTES.adminRegistrations}>
-          <Heading level={3}>Inscripciones</Heading>
-          <Text className="mt-2">Confirma preinscritos, cancela registros y exporta relaciones filtradas.</Text>
+          <Heading level={3}>Participación</Heading>
+          <Text className="mt-2">Gestiona inscripciones y asistencia dentro del contexto de cada actividad.</Text>
         </Link>
         <Link className="rounded-3xl border border-cci-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-cci-200 hover:shadow-lg" href={ROUTES.adminParticipants}>
-          <Heading level={3}>Participantes</Heading>
-          <Text className="mt-2">Consulta datos actuales e historial institucional por persona.</Text>
-        </Link>
-        <Link className="rounded-3xl border border-cci-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-cci-200 hover:shadow-lg" href={ROUTES.adminAttendance}>
-          <Heading level={3}>Asistencia</Heading>
-          <Text className="mt-2">Registra asistencia individual o masiva por actividad.</Text>
+          <Heading level={3}>Directorio</Heading>
+          <Text className="mt-2">Consulta la ficha y el historial institucional de cada persona.</Text>
         </Link>
         <Link className="rounded-3xl border border-cci-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-cci-200 hover:shadow-lg" href={ROUTES.adminCertificates}>
           <Heading level={3}>Certificados</Heading>

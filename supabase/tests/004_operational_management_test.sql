@@ -1,6 +1,6 @@
 begin;
 
-select plan(55);
+select plan(58);
 
 select ok(to_regclass('public.audit_logs') is not null, 'audit log table exists');
 select ok((select relrowsecurity from pg_class where oid = 'public.audit_logs'::regclass), 'audit log RLS is enabled');
@@ -155,16 +155,24 @@ select lives_ok(
   'administrator corrects attendance to absent'
 );
 select is((select status from public.attendance where id = (select attendance_id from hito4_refs where document_number = '13000003')), 'absent'::public.attendance_status, 'attendance correction persists');
-select lives_ok(
+select throws_ok(
   $$select public.set_attendance_status(
     array(select attendance_id from hito4_refs order by attendance_id),
     'attended',
     'Control masivo'
   )$$,
-  'administrator marks attendance in bulk'
+  'P0001',
+  'REGISTRATION_NOT_CONFIRMED',
+  'bulk attendance rejects selections with unconfirmed registrations'
 );
-select is((select count(*) from public.attendance where id in (select attendance_id from hito4_refs) and status = 'attended'), 2::bigint, 'bulk attendance updates every selected record');
-select ok((select count(*) from public.audit_logs where action = 'attendance.status_changed') >= 4, 'attendance changes are audited');
+select is((select status from public.attendance where id = (select attendance_id from hito4_refs where document_number = '13000003')), 'absent'::public.attendance_status, 'rejected bulk change is atomic for confirmed registration');
+select is((select status from public.attendance where id = (select attendance_id from hito4_refs where document_number = '13000004')), 'pending'::public.attendance_status, 'cancelled registration keeps pending attendance');
+select lives_ok(
+  $$select public.set_attendance_status(array[(select attendance_id from hito4_refs where document_number = '13000003')], 'attended', 'Control válido')$$,
+  'administrator can mark confirmed registrations in bulk'
+);
+select is((select count(*) from public.attendance where id in (select attendance_id from hito4_refs) and status = 'attended'), 1::bigint, 'only confirmed registration is marked attended');
+select ok((select count(*) from public.audit_logs where action = 'attendance.status_changed') >= 3, 'attendance changes are audited');
 select ok((select count(*) from public.audit_logs) >= 7, 'active administrator can read audit logs through RLS');
 
 reset role;

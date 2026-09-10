@@ -1,6 +1,6 @@
 import type { RegistrationAdminItem } from "@/features/registrations/types/registration.types";
 
-const REGISTRATION_LABELS = { cancelled: "Cancelado", confirmed: "Confirmado", pending: "Preinscrito" } as const;
+const REGISTRATION_LABELS = { cancelled: "Cancelado", confirmed: "Confirmado", pending: "Pendiente de verificación" } as const;
 const ATTENDANCE_LABELS = { absent: "No asistió", attended: "Asistió", pending: "Pendiente" } as const;
 
 function csvCell(value: string | number | null): string {

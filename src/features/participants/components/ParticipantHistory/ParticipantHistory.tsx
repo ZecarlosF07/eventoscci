@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Text } from "@/components/atoms/Text";
 import { ResponsiveTableFrame } from "@/components/molecules/ResponsiveTableFrame";
 import { AttendanceStatusBadge } from "@/features/attendance/components/AttendanceStatusBadge";
+import { getActivityParticipationRoute } from "@/features/participation/utils/participation-routes";
 import type { ParticipantHistoryProps } from "@/features/participants/components/ParticipantHistory/types/participant-history.types";
 import { RegistrationStatusBadge } from "@/features/registrations/components/RegistrationStatusBadge";
 import { REGISTRATION_TYPE_LABELS } from "@/features/registrations/constants/registration.constants";
@@ -17,7 +18,7 @@ export function ParticipantHistory({ history }: ParticipantHistoryProps) {
         <tbody className="divide-y divide-slate-100">
           {history.map((item) => (
             <tr key={item.id}>
-              <td className="px-5 py-4"><Link className="font-semibold text-cci-950 hover:underline" href={`/admin/asistencia/${item.activity.id}`}>{item.activity.title}</Link><Text size="sm">{item.activity.type === "event" ? "Evento" : "Capacitación"}</Text></td>
+              <td className="px-5 py-4"><Link className="font-semibold text-cci-950 hover:underline" href={`${getActivityParticipationRoute(item.activity.id)}?estado=all&q=${encodeURIComponent(item.registration_code)}`}>{item.activity.title}</Link><Text size="sm">{item.activity.type === "event" ? "Evento" : "Capacitación"}</Text></td>
               <td className="px-5 py-4 font-mono">{item.registration_code}</td>
               <td className="px-5 py-4 text-slate-700"><p>{REGISTRATION_TYPE_LABELS[item.registration_type]}</p><p>{formatRegistrationDate(item.created_at)}</p></td>
               <td className="px-5 py-4 text-slate-700"><p>{item.company_snapshot ?? "Sin empresa"}</p><p>{item.ruc_snapshot ?? "Sin RUC"}</p><p>{formatRegistrationPrice(item.price_snapshot)}</p></td>

@@ -25,19 +25,22 @@ export async function confirmRegistrationAction(
 
   if (error) redirect(withAdminResult(returnTo, ROUTES.adminRegistrations, "error-confirmar"));
   const changed = didChange(data);
+  let notificationDelivered = true;
   if (changed) {
-    await deliverNotificationImmediately({
+    notificationDelivered = await deliverNotificationImmediately({
       eventType: "activity_paid_registration_confirmed",
       relatedEntityId: registrationId,
       relatedEntityType: "registration",
     });
   }
   revalidatePath(ROUTES.adminRegistrations);
+  revalidatePath(ROUTES.adminPendingPayments);
   revalidatePath(ROUTES.adminParticipants);
+  if (returnTo.startsWith("/admin/")) revalidatePath(returnTo.split("?")[0]);
   redirect(withAdminResult(
     returnTo,
     ROUTES.adminRegistrations,
-    changed ? "confirmada" : "ya-confirmada",
+    changed ? notificationDelivered ? "confirmada" : "confirmada-correo-fallido" : "ya-confirmada",
   ));
 }
 
@@ -57,7 +60,9 @@ export async function cancelRegistrationAction(
 
   if (error) redirect(withAdminResult(returnTo, ROUTES.adminRegistrations, "error-cancelar"));
   revalidatePath(ROUTES.adminRegistrations);
+  revalidatePath(ROUTES.adminPendingPayments);
   revalidatePath(ROUTES.adminParticipants);
+  if (returnTo.startsWith("/admin/")) revalidatePath(returnTo.split("?")[0]);
   redirect(withAdminResult(
     returnTo,
     ROUTES.adminRegistrations,

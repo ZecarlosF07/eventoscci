@@ -47,11 +47,54 @@ insert into public.user_accounts (user_id, person_id, role) values
   ('89000000-0000-4000-8000-000000000001', '39000000-0000-4000-8000-000000000002', 'student'),
   ('89000000-0000-4000-8000-000000000002', '39000000-0000-4000-8000-000000000003', 'operator');
 
+insert into public.venues (id, name, address, maps_embed_url)
+values (
+  '79000000-0000-4000-8000-000000000003',
+  'Sede temporal para certificados',
+  'Av. Certificados 16, Ica',
+  'https://www.google.com/maps/embed?pb=certificate-test'
+);
+
+insert into public.activity_contacts (
+  id, label, contact_name, whatsapp_phone, email
+)
+values (
+  '79000000-0000-4000-8000-000000000004',
+  'Contacto temporal para certificados',
+  'Contacto Certificados',
+  '900000016',
+  'certificate16.contact@example.test'
+);
+
 insert into public.activities (
-  id, type, title, slug, description, modality, is_free, contact_phone, status, published_at
+  id, venue_id, contact_id, type, title, slug, description, modality, is_free, status, published_at
 ) values
-  ('79000000-0000-4000-8000-000000000001', 'training', 'Actividad Regeneración', 'actividad-regeneracion-16', 'Prueba de regeneración', 'virtual', true, '900000016', 'published', now()),
-  ('79000000-0000-4000-8000-000000000002', 'event', 'Actividad Secundaria', 'actividad-secundaria-16', 'Prueba de paginación', 'in_person', true, '900000016', 'published', now());
+  (
+    '79000000-0000-4000-8000-000000000001',
+    null,
+    '79000000-0000-4000-8000-000000000004',
+    'training',
+    'Actividad Certificado16 Regeneración',
+    'actividad-regeneracion-16',
+    'Prueba de regeneración',
+    'virtual',
+    true,
+    'published',
+    now()
+  ),
+  (
+    '79000000-0000-4000-8000-000000000002',
+    '79000000-0000-4000-8000-000000000003',
+    '79000000-0000-4000-8000-000000000004',
+    'event',
+    'Actividad Certificado16 Secundaria',
+    'actividad-secundaria-16',
+    'Prueba de paginación',
+    'in_person',
+    true,
+    'published',
+    now()
+  );
 
 insert into public.registrations (
   id, activity_id, person_id, registration_code, status, confirmed_at
@@ -105,10 +148,13 @@ select is(
   (select access_token from public.certificates where id = '77000000-0000-4000-8000-000000000001'),
   '76000000-0000-4000-8000-000000000001'::uuid, 'replacement preserves the public token'
 );
+reset role;
 select is(
   (select count(*) from public.audit_logs where action = 'certificate.regenerated' and entity_id = '77000000-0000-4000-8000-000000000001'),
   1::bigint, 'replacement is audited'
 );
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '89000000-0000-4000-8000-000000000002', true);
 select is(
   (select count(*) from public.notification_outbox where related_entity_id = '77000000-0000-4000-8000-000000000001'),
   0::bigint, 'replacement creates no email notification'
@@ -119,11 +165,11 @@ select throws_ok(
 );
 
 select is(
-  (select total_count from public.get_certificate_activity_summaries('Actividad', null, 1, 0) limit 1),
+  (select total_count from public.get_certificate_activity_summaries('Certificado16', null, 1, 0) limit 1),
   2::bigint, 'activity summaries return the filtered total before pagination'
 );
 select is(
-  (select count(*) from public.get_certificate_activity_summaries('Actividad', null, 1, 0)),
+  (select count(*) from public.get_certificate_activity_summaries('Certificado16', null, 1, 0)),
   1::bigint, 'activity summaries honor the requested page size'
 );
 select is(

@@ -1,0 +1,1 @@
+export { PendingPaymentsTemplate } from "./PendingPaymentsTemplate";

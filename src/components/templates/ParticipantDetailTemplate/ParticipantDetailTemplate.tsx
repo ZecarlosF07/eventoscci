@@ -12,7 +12,7 @@ export function ParticipantDetailTemplate({ participant }: ParticipantDetailTemp
   return (
     <div className="space-y-8">
       <div className="space-y-3">
-        <Link className="text-sm font-semibold text-slate-700 hover:underline" href={ROUTES.adminParticipants}>← Volver a participantes</Link>
+        <Link className="text-sm font-semibold text-slate-700 hover:underline" href={ROUTES.adminParticipants}>← Volver al directorio</Link>
         <div><Text as="p" className="font-semibold uppercase tracking-[0.16em]" size="sm">Ficha institucional</Text><Heading level={1}>{participant.first_names} {participant.last_names}</Heading><Text>{participant.registrations.length} participaciones registradas.</Text></div>
       </div>
       <section className="space-y-4"><Heading level={2}>Datos actuales</Heading><Text>Las correcciones no modifican la empresa, RUC ni precio guardados históricamente en cada inscripción.</Text><ParticipantForm participant={participant} /></section>
