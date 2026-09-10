@@ -1,6 +1,7 @@
 import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
 import type { ActivityConversionPanelProps } from "@/features/activities/components/ActivityConversionPanel/types/activity-conversion-panel.types";
+import { ActivityCertificateBenefit } from "@/features/activities/components/ActivityCertificateBenefit";
 import { getWhatsAppUrl } from "@/features/activities/utils/activity-contact";
 import { formatActivityPrice } from "@/features/activities/utils/activity-formatters";
 import { hasActivityEnded } from "@/features/activities/utils/activity-lifecycle";
@@ -46,6 +47,14 @@ export function ActivityConversionPanel({
           </div>
         )}
       </div>
+      {activity.certificate_mode !== "none" ? <div className="mt-4">
+        <ActivityCertificateBenefit
+          generalPrice={activity.certificate_general_price}
+          isActivityFree={activity.is_free}
+          memberPrice={activity.certificate_member_price}
+          mode={activity.certificate_mode}
+        />
+      </div> : null}
       {canCountDown && activity.registration_close_at ? (
         <div className="mt-4 rounded-2xl bg-cci-950 p-4"><RegistrationCountdown deadline={activity.registration_close_at} initialNow={initialNow} /></div>
       ) : null}

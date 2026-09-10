@@ -3,6 +3,7 @@ import type {
   ActivityStatus,
   ActivityType,
 } from "@/features/activities/types/activity.types";
+import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 
 export const ACTIVITY_IMAGE_BUCKET = "activity-images";
 export const ACTIVITY_PAGE_SIZE = 10;
@@ -33,3 +34,9 @@ export const PUBLIC_ACTIVITY_STATUSES: ActivityStatus[] = [
   "finished",
   "cancelled",
 ];
+
+export const ACTIVITY_CERTIFICATE_MODE_LABELS: Record<ActivityCertificateMode, string> = {
+  included: "Certificado incluido en la participación",
+  none: "Sin certificado",
+  optional_paid: "Certificado opcional con costo",
+};

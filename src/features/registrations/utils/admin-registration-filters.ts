@@ -1,6 +1,7 @@
 import type {
   ActivityRegistrationsPageProps,
   AdminRegistrationsPageProps,
+  CertificateRequestFilter,
   RegistrationAdminFilters,
   RegistrationStatus,
 } from "@/features/registrations/types/registration.types";
@@ -41,6 +42,13 @@ function parseRegistrationType(value?: string | string[]): RegistrationType | un
   return type === "general" || type === "member" ? type : undefined;
 }
 
+function parseCertificateRequest(value?: string | string[]): CertificateRequestFilter | undefined {
+  const certificateRequest = firstValue(value);
+  return certificateRequest === "all" || certificateRequest === "pending" || certificateRequest === "requested"
+    ? certificateRequest
+    : undefined;
+}
+
 export async function parseAdminRegistrationFilters(
   searchParams: AdminRegistrationsPageProps["searchParams"],
   fixedStatus?: RegistrationStatus,
@@ -50,6 +58,7 @@ export async function parseAdminRegistrationFilters(
     activityId: firstValue(params.actividad),
     activityType: parseActivityType(params.tipo_actividad),
     attendanceStatus: parseAttendanceStatus(params.asistencia),
+    certificateRequest: parseCertificateRequest(params.certificado),
     page: parsePage(params.pagina),
     query: firstValue(params.q)?.trim() || undefined,
     registrationType: parseRegistrationType(params.tipo),
@@ -66,6 +75,7 @@ export async function parseActivityRegistrationFilters(
   const parsedStatus = parseStatus(params.estado);
   return {
     activityId,
+    certificateRequest: parseCertificateRequest(params.certificado),
     page: parsePage(params.pagina),
     query: firstValue(params.q)?.trim() || undefined,
     registrationType: parseRegistrationType(params.tipo),

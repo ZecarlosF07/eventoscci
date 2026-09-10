@@ -30,6 +30,9 @@ export const activityFormSchema = z
       .refine((value) => !value || Number.isInteger(Number(value)), "Debe ser un número entero.")
       .refine((value) => !value || Number(value) > 0, "Debe ser mayor que cero."),
     category_id: z.union([z.uuid(), z.literal("")]),
+    certificate_general_price: nonnegativeNumber,
+    certificate_member_price: nonnegativeNumber,
+    certificate_mode: z.enum(["none", "included", "optional_paid"]),
     contact_id: z.union([z.uuid(), z.literal("")]),
     dates: z.array(activityDateSchema).min(1, "Agrega al menos una fecha."),
     description: z.string().trim().min(10, "La descripción debe tener al menos 10 caracteres."),
@@ -66,6 +69,23 @@ export const activityFormSchema = z
     virtual_url: z.union([z.url("Ingresa una URL válida."), z.literal("")]),
   })
   .superRefine((data, context) => {
+    const certificateGeneralPrice = Number(data.certificate_general_price);
+    const certificateMemberPrice = Number(data.certificate_member_price);
+    if (
+      data.certificate_mode !== "optional_paid" &&
+      (certificateGeneralPrice !== 0 || certificateMemberPrice !== 0)
+    ) {
+      context.addIssue({ code: "custom", message: "Esta modalidad no admite un precio adicional.", path: ["certificate_general_price"] });
+    }
+    if (data.certificate_mode === "optional_paid" && certificateGeneralPrice <= 0) {
+      context.addIssue({ code: "custom", message: "Indica un precio general mayor que cero.", path: ["certificate_general_price"] });
+    }
+    if (data.certificate_mode === "optional_paid" && certificateMemberPrice <= 0) {
+      context.addIssue({ code: "custom", message: "Indica un precio para asociados mayor que cero.", path: ["certificate_member_price"] });
+    }
+    if (data.certificate_mode === "optional_paid" && certificateMemberPrice > certificateGeneralPrice) {
+      context.addIssue({ code: "custom", message: "El precio para asociados no puede superar el precio general.", path: ["certificate_member_price"] });
+    }
     if (data.is_free && (Number(data.general_price) !== 0 || Number(data.member_price) !== 0)) {
       context.addIssue({ code: "custom", message: "Una actividad gratuita debe tener precios en cero.", path: ["general_price"] });
     }

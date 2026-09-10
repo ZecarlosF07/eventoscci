@@ -192,3 +192,38 @@ export async function deliverNotificationImmediately(
     return false;
   }
 }
+
+export async function deliverActivityCertificateOffers(attendanceIds: string[]): Promise<boolean> {
+  if (!attendanceIds.length) return true;
+  try {
+    const client = createServiceRoleSupabaseClient();
+    const { data: attendance, error: attendanceError } = await client
+      .from("attendance")
+      .select("registration_id")
+      .in("id", attendanceIds);
+    if (attendanceError) throw new Error("No fue posible consultar las asistencias.", { cause: attendanceError });
+
+    const registrationIds = [...new Set((attendance ?? []).map((item) => item.registration_id))];
+    if (!registrationIds.length) return true;
+    const { data: notifications, error: notificationError } = await client
+      .from("notification_outbox")
+      .select("id")
+      .eq("event_type", "activity_certificate_offer")
+      .in("related_entity_id", registrationIds)
+      .in("status", ["failed", "pending"])
+      .is("deleted_at", null);
+    if (notificationError) throw new Error("No fue posible consultar las ofertas de certificado.", { cause: notificationError });
+
+    const results: boolean[] = [];
+    for (let index = 0; index < (notifications ?? []).length; index += 10) {
+      const chunk = (notifications ?? []).slice(index, index + 10);
+      results.push(...await Promise.all(chunk.map((notification) => (
+        deliverNotificationImmediatelyById(notification.id)
+      ))));
+    }
+    return results.every(Boolean);
+  } catch (error) {
+    logger.error("certificate_offer_delivery_unavailable", { error: getErrorMessage(error) });
+    return false;
+  }
+}

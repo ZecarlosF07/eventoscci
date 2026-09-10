@@ -69,3 +69,27 @@ export async function cancelRegistrationAction(
     didChange(data) ? "cancelada" : "ya-cancelada",
   ));
 }
+
+export async function markCertificateRequestFollowedUpAction(
+  registrationId: string,
+  returnTo: string,
+): Promise<void> {
+  await requireAdmin();
+  const client = await createServerSupabaseClient();
+  const { data, error } = await client.rpc("mark_certificate_request_followed_up", {
+    p_registration_id: registrationId,
+  });
+
+  if (error) {
+    redirect(withAdminResult(returnTo, ROUTES.adminRegistrations, "error-seguimiento-certificado"));
+  }
+
+  revalidatePath(ROUTES.adminRegistrations);
+  revalidatePath("/admin/asistencia");
+  if (returnTo.startsWith("/admin/")) revalidatePath(returnTo.split("?")[0]);
+  redirect(withAdminResult(
+    returnTo,
+    ROUTES.adminRegistrations,
+    didChange(data) ? "seguimiento-certificado" : "certificado-ya-atendido",
+  ));
+}

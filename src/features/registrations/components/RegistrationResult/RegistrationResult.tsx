@@ -3,8 +3,10 @@ import Link from "next/link";
 import { Badge } from "@/components/atoms/Badge";
 import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
-import type { RegistrationResultProps } from "@/features/registrations/types/registration.types";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
+import { CertificateRequestCard } from "@/features/registrations/components/CertificateRequestCard";
+import type { RegistrationResultProps } from "@/features/registrations/types/registration.types";
+import { formatRegistrationPrice } from "@/features/registrations/utils/registration-formatters";
 
 export function RegistrationResult({ result }: RegistrationResultProps) {
   const confirmed = result.status === "confirmed";
@@ -34,6 +36,36 @@ export function RegistrationResult({ result }: RegistrationResultProps) {
             {result.contact_email ? <Text size="sm">{result.contact_email}</Text> : null}
           </div>
         ) : null}
+        {result.certificate_mode === "included" ? (
+          <section className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+            <Badge variant="success">Certificado incluido</Badge>
+            <Text className="mt-3">
+              Esta actividad incluye certificado sin pago adicional. Se emitirá a quienes cumplan las condiciones de participación y asistencia.
+            </Text>
+          </section>
+        ) : null}
+        {result.certificate_mode === "optional_paid" && !confirmed ? (
+          <section className="mt-6 rounded-2xl border border-cci-200 bg-cci-50 p-5">
+            <Badge variant="neutral">Certificado digital opcional</Badge>
+            <p className="mt-3 text-lg font-bold text-cci-950">
+              Tarifa aplicable: {formatRegistrationPrice(result.certificate_price ?? 0)}
+            </p>
+            <Text className="mt-2" size="sm">
+              Podrás solicitarlo cuando tu participación quede confirmada.
+            </Text>
+          </section>
+        ) : null}
+        {result.certificate_mode === "optional_paid"
+        && confirmed
+        && result.certificate_price
+        && result.certificate_request_token ? (
+          <CertificateRequestCard
+            alreadyRequested={Boolean(result.certificate_requested_at)}
+            certificatePrice={result.certificate_price}
+            registrationCode={result.registration_code}
+            requestToken={result.certificate_request_token}
+          />
+          ) : null}
         <Link
           className="mt-7 inline-flex min-h-11 items-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-cci-50"
           href={getPublicActivityRoute(result.activity_type, result.activity_slug)}

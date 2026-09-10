@@ -25,3 +25,11 @@ test("el historial completo se distingue de las inscripciones activas", async ()
   assert.equal(filters.registrationType, "member");
   assert.equal(filters.page, 2);
 });
+
+test("permite filtrar solicitudes de certificado pendientes de seguimiento", async () => {
+  const filters = await parseActivityRegistrationFilters(
+    Promise.resolve({ certificado: "pending" }),
+    "activity-id",
+  );
+  assert.equal(filters.certificateRequest, "pending");
+});

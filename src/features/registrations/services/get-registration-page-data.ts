@@ -17,6 +17,9 @@ export async function getRegistrationPageData(
 
   return {
     activity: {
+      certificateGeneralPrice: activity.certificate_general_price,
+      certificateMemberPrice: activity.certificate_member_price,
+      certificateMode: activity.certificate_mode,
       generalPrice: activity.general_price,
       id: activity.id,
       isFree: activity.is_free,

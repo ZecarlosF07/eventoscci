@@ -12,6 +12,7 @@ import { FormField } from "@/components/molecules/FormField";
 import { FormActionNotice } from "@/components/molecules/FormActionNotice";
 import { FIELD_LIMITS } from "@/constants/field-limits";
 import { ActivityContentFields } from "@/features/activities/components/ActivityContentFields";
+import { ActivityCertificateFields } from "@/features/activities/components/ActivityCertificateFields";
 import { ActivityDateFields } from "@/features/activities/components/ActivityDateFields";
 import { ActivityFormSection } from "@/features/activities/components/ActivityFormSection";
 import { ActivitySpeakerFields } from "@/features/activities/components/ActivitySpeakerFields";
@@ -122,6 +123,12 @@ export function ActivityForm({
           <Label className="flex items-center gap-2" htmlFor="is_free"><Checkbox checked={isFree} id="is_free" name="is_free" onChange={(event) => { setIsFree(event.target.checked); if (event.target.checked) { setGeneralPrice("0"); setMemberPrice("0"); } }} /> Actividad gratuita</Label>
           <Label className="flex items-center gap-2" htmlFor="members_only"><Checkbox defaultChecked={activity?.members_only} id="members_only" name="members_only" /> Exclusiva para asociados</Label>
         </div>
+        <ActivityCertificateFields
+          defaultGeneralPrice={activity?.certificate_general_price}
+          defaultMemberPrice={activity?.certificate_member_price}
+          defaultMode={activity?.certificate_mode}
+          errors={state.errors}
+        />
       </ActivityFormSection>
 
       <ActivityFormSection title="Inscripciones y contacto">

@@ -10,9 +10,11 @@ export const metadata: Metadata = buildNoIndexMetadata("Resultado de inscripció
 
 export default async function TrainingRegistrationResultPage({ params, searchParams }: RegistrationResultPageProps) {
   const codeValue = (await searchParams).codigo;
+  const requestTokenValue = (await searchParams).solicitud;
   const code = Array.isArray(codeValue) ? codeValue[0] : codeValue;
+  const requestToken = Array.isArray(requestTokenValue) ? requestTokenValue[0] : requestTokenValue;
   if (!code) notFound();
-  const result = await getRegistrationResult(code);
+  const result = await getRegistrationResult(code, requestToken);
   if (!result || result.activity_type !== "training" || result.activity_slug !== (await params).slug) notFound();
   return <RegistrationResult result={result} />;
 }

@@ -11,6 +11,7 @@ export async function GET(request: Request): Promise<Response> {
   const parsed = await parseAdminRegistrationFilters(Promise.resolve({
     actividad: params.get("actividad") ?? undefined,
     asistencia: params.get("asistencia") ?? undefined,
+    certificado: params.get("certificado") ?? undefined,
     estado: params.get("estado") ?? undefined,
     q: params.get("q") ?? undefined,
     tipo: params.get("tipo") ?? undefined,
@@ -20,6 +21,7 @@ export async function GET(request: Request): Promise<Response> {
     activityId: parsed.activityId,
     activityType: parsed.activityType,
     attendanceStatus: parsed.attendanceStatus,
+    certificateRequest: parsed.certificateRequest,
     query: parsed.query,
     registrationType: parsed.registrationType,
     status: parsed.status,

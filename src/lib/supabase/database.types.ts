@@ -47,6 +47,9 @@ export type Database = {
           banner_path: string | null
           capacity: number | null
           category_id: string | null
+          certificate_general_price: number
+          certificate_member_price: number
+          certificate_mode: "included" | "none" | "optional_paid"
           contact_email: string | null
           contact_id: string | null
           contact_name: string | null
@@ -91,6 +94,9 @@ export type Database = {
           banner_path?: string | null
           capacity?: number | null
           category_id?: string | null
+          certificate_general_price?: number
+          certificate_member_price?: number
+          certificate_mode?: "included" | "none" | "optional_paid"
           contact_email?: string | null
           contact_id?: string | null
           contact_name?: string | null
@@ -135,6 +141,9 @@ export type Database = {
           banner_path?: string | null
           capacity?: number | null
           category_id?: string | null
+          certificate_general_price?: number
+          certificate_member_price?: number
+          certificate_mode?: "included" | "none" | "optional_paid"
           contact_email?: string | null
           contact_id?: string | null
           contact_name?: string | null
@@ -1572,6 +1581,12 @@ export type Database = {
           cancellation_reason: string | null
           cancelled_at: string | null
           cancelled_by: string | null
+          certificate_followed_up_at: string | null
+          certificate_followed_up_by: string | null
+          certificate_mode_snapshot: "included" | "none" | "optional_paid"
+          certificate_price_snapshot: number | null
+          certificate_request_token: string
+          certificate_requested_at: string | null
           company_snapshot: string | null
           confirmed_at: string | null
           confirmed_by: string | null
@@ -1592,6 +1607,12 @@ export type Database = {
           cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
+          certificate_followed_up_at?: string | null
+          certificate_followed_up_by?: string | null
+          certificate_mode_snapshot?: "included" | "none" | "optional_paid"
+          certificate_price_snapshot?: number | null
+          certificate_request_token?: string
+          certificate_requested_at?: string | null
           company_snapshot?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null
@@ -1612,6 +1633,12 @@ export type Database = {
           cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
+          certificate_followed_up_at?: string | null
+          certificate_followed_up_by?: string | null
+          certificate_mode_snapshot?: "included" | "none" | "optional_paid"
+          certificate_price_snapshot?: number | null
+          certificate_request_token?: string
+          certificate_requested_at?: string | null
           company_snapshot?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null
@@ -1996,6 +2023,10 @@ export type Database = {
         Args: { p_registration_code: string }
         Returns: Json
       }
+      get_public_registration_result_secure: {
+        Args: { p_registration_code: string; p_request_token: string }
+        Returns: Json
+      }
       get_quiz_attempt_result: { Args: { p_attempt_id: string }; Returns: Json }
       get_quiz_attempts: {
         Args: { p_enrollment_id: string; p_quiz_id: string }
@@ -2041,6 +2072,10 @@ export type Database = {
         Args: { p_venue_id: string }
         Returns: boolean
       }
+      mark_certificate_request_followed_up: {
+        Args: { p_registration_id: string }
+        Returns: Json
+      }
       prepare_activity_certificates: {
         Args: {
           p_condition?: string
@@ -2069,6 +2104,10 @@ export type Database = {
           p_expected_person_id: string
           p_new_file_path: string
         }
+        Returns: Json
+      }
+      request_activity_certificate: {
+        Args: { p_registration_code: string; p_request_token: string }
         Returns: Json
       }
       retry_notification: {

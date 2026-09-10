@@ -10,7 +10,10 @@ export function getRegistrationResultRoute(
   type: ActivityType,
   slug: string,
   registrationCode: string,
+  requestToken?: string,
 ): string {
   const route = `${getRegistrationRoute(type, slug)}/resultado`;
-  return `${route}?codigo=${encodeURIComponent(registrationCode)}`;
+  const params = new URLSearchParams({ codigo: registrationCode });
+  if (requestToken) params.set("solicitud", requestToken);
+  return `${route}?${params.toString()}`;
 }

@@ -857,6 +857,34 @@ El alcance detallado, las pruebas y la Definition of Done se encuentran en:
 
 ---
 
+# Hito 14 — Certificados opcionales con cobro manual
+
+## Objetivo
+
+Permitir que cada actividad no ofrezca certificado, lo incluya en la participación o lo ofrezca con precio general y para asociados, manteniendo cualquier cobro adicional fuera de la plataforma.
+
+## Actividades
+
+- Añadir las modalidades “Sin certificado”, “Certificado incluido” y “Certificado opcional con costo”.
+- Mostrar precios únicamente para la modalidad opcional con costo.
+- Conservar la tarifa aplicable mediante snapshots de inscripción.
+- Informar el certificado sin condicionar el registro.
+- Registrar el interés en la inscripción antes de abrir el WhatsApp del responsable.
+- Mostrar solicitudes pendientes y seguimiento dentro de las vistas administrativas existentes.
+- Enviar una sola oferta posterior al registrar asistencia.
+- Mantener el pago, el comprobante y su validación fuera del sistema.
+- Conservar sin cambios la selección y emisión administrativa de certificados.
+
+## Resultado esperado
+
+Cuando el certificado esté incluido, todos los asistentes confirmados tendrán derecho a recibirlo sin solicitarlo ni pagarlo nuevamente. Cuando sea opcional con costo, el participante podrá solicitarlo antes o después de asistir y el responsable conservará el seguimiento hasta coordinar el pago manual y emitirlo mediante el flujo existente.
+
+El alcance detallado, las pruebas y la Definition of Done se encuentran en:
+
+`docs/hitos/HITO 14 — CERTIFICADOS OPCIONALES CON COBRO MANUAL.md`
+
+---
+
 # Orden resumido del desarrollo
 
 ## Etapa A — Eventos y capacitaciones
@@ -896,6 +924,16 @@ Resultado:
 Resultado:
 
 **Rendimiento → SEO técnico → Contenido → Autoridad → Medición**
+
+---
+
+## Etapa E — Conversión comercial de certificados
+
+**Hito 14**
+
+Resultado:
+
+**Modalidad → Certificado incluido u opcional → Seguimiento manual cuando aplique → Asistencia → Emisión existente**
 
 ---
 

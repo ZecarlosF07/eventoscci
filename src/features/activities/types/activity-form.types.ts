@@ -4,6 +4,7 @@ import type {
   ActivityStatus,
   ActivityType,
 } from "@/features/activities/types/activity.types";
+import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 import type {
   ActivityContactSummary,
   VenueSummary,
@@ -29,6 +30,9 @@ export interface ActivityFormInput {
   banner_path: string;
   capacity: string;
   category_id: string;
+  certificate_general_price: string;
+  certificate_member_price: string;
+  certificate_mode: ActivityCertificateMode;
   contact_id: string;
   dates: ActivityDateInput[];
   description: string;

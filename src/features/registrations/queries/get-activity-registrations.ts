@@ -20,11 +20,15 @@ const REGISTRATION_ADMIN_SELECT = `
   confirmed_by,
   cancelled_at,
   cancellation_reason,
+  certificate_followed_up_at,
+  certificate_mode_snapshot,
+  certificate_price_snapshot,
+  certificate_requested_at,
   company_snapshot,
   ruc_snapshot,
   price_snapshot,
   created_at,
-  activity:activities!inner(id, title, slug, type, status),
+  activity:activities!inner(id, title, slug, type, status, certificate_mode),
   attendance:attendance!inner(id, status),
   person:people!inner(
     id,
@@ -61,7 +65,10 @@ export async function getActivityRegistrations(
     .is("attendance.deleted_at", null)
     .is("person.deleted_at", null)
     .neq("activity.status", "archived")
-    .order("created_at", { ascending: false });
+    .order(
+      filters.certificateRequest === "pending" ? "certificate_requested_at" : "created_at",
+      { ascending: filters.certificateRequest === "pending" },
+    );
 
   if (filters.status) query = query.eq("status", filters.status);
   else if (filters.statusScope === "active") query = query.in("status", ["pending", "confirmed"]);
@@ -69,6 +76,14 @@ export async function getActivityRegistrations(
   if (filters.activityType) query = query.eq("activity.type", filters.activityType);
   if (filters.registrationType) query = query.eq("registration_type", filters.registrationType);
   if (filters.attendanceStatus) query = query.eq("attendance.status", filters.attendanceStatus);
+  if (filters.certificateRequest === "pending") {
+    query = query
+      .eq("activity.certificate_mode", "optional_paid")
+      .not("certificate_requested_at", "is", null)
+      .is("certificate_followed_up_at", null);
+  } else if (filters.certificateRequest === "requested") {
+    query = query.eq("activity.certificate_mode", "optional_paid").not("certificate_requested_at", "is", null);
+  }
   const search = filters.query ? escapePostgrestSearch(filters.query) : "";
   if (search) {
     const pattern = `%${search}%`;
@@ -129,6 +144,14 @@ export async function getRegistrationsForExport(
   if (filters.activityType) query = query.eq("activity.type", filters.activityType);
   if (filters.registrationType) query = query.eq("registration_type", filters.registrationType);
   if (filters.attendanceStatus) query = query.eq("attendance.status", filters.attendanceStatus);
+  if (filters.certificateRequest === "pending") {
+    query = query
+      .eq("activity.certificate_mode", "optional_paid")
+      .not("certificate_requested_at", "is", null)
+      .is("certificate_followed_up_at", null);
+  } else if (filters.certificateRequest === "requested") {
+    query = query.eq("activity.certificate_mode", "optional_paid").not("certificate_requested_at", "is", null);
+  }
   const search = filters.query ? escapePostgrestSearch(filters.query) : "";
   if (search) {
     const pattern = `%${search}%`;

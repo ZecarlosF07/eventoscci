@@ -10,6 +10,9 @@ function validActivity(): ActivityFormInput {
     additional_info: "",
     banner_path: "",
     capacity: "",
+    certificate_general_price: "0",
+    certificate_member_price: "0",
+    certificate_mode: "none",
     category_id: "",
     contact_id: "",
     dates: [{ ends_at: "2026-09-22T11:30", label: "Día 1", sort_order: 0, starts_at: "2026-09-22T10:00" }],
@@ -53,4 +56,26 @@ test("identifica títulos de actividades que superan los 300 caracteres", () => 
   const result = activityFormSchema.safeParse({ ...validActivity(), title: "x".repeat(301) });
   assert.equal(result.success, false);
   if (!result.success) assert.ok(result.error.flatten().fieldErrors.title?.length);
+});
+
+test("acepta un certificado incluido sin precios adicionales", () => {
+  const result = activityFormSchema.safeParse({ ...validActivity(), certificate_mode: "included" });
+  assert.equal(result.success, true);
+});
+
+test("valida las tarifas de un certificado opcional", () => {
+  const valid = activityFormSchema.safeParse({
+    ...validActivity(),
+    certificate_general_price: "50",
+    certificate_member_price: "35",
+    certificate_mode: "optional_paid",
+  });
+  const invalid = activityFormSchema.safeParse({
+    ...validActivity(),
+    certificate_general_price: "35",
+    certificate_member_price: "50",
+    certificate_mode: "optional_paid",
+  });
+  assert.equal(valid.success, true);
+  assert.equal(invalid.success, false);
 });

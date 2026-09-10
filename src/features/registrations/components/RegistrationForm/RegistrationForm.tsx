@@ -63,6 +63,7 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
           activity.type,
           activity.slug,
           result.data.registration_code,
+          result.data.certificate_request_token,
         ),
       );
     } catch {

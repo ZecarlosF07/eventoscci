@@ -1,0 +1,1 @@
+export { ActivityCertificateBenefit } from "./ActivityCertificateBenefit";

@@ -1,10 +1,12 @@
 import type { ActivityType } from "@/features/activities/types/activity.types";
+import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 import type { NotificationEventType } from "@/features/notifications/types/notification.types";
 import type { Enums, Tables } from "@/lib/supabase/database.types";
 
 export type RegistrationType = Enums<"registration_type">;
 export type RegistrationStatus = Enums<"registration_status">;
 export type RegistrationRow = Tables<"registrations">;
+export type CertificateRequestFilter = "all" | "pending" | "requested";
 
 export interface RegistrationInput {
   address: string;
@@ -26,6 +28,9 @@ export interface RegistrationRpcResult {
   activity_title: string;
   activity_type: ActivityType;
   attendance_id: string;
+  certificate_mode: ActivityCertificateMode;
+  certificate_price: number | null;
+  certificate_request_token: string;
   notification_event: NotificationEventType;
   price_snapshot: number;
   registration_code: string;
@@ -37,12 +42,17 @@ export interface PublicRegistrationResult {
   activity_slug: string;
   activity_title: string;
   activity_type: ActivityType;
+  certificate_mode: ActivityCertificateMode;
+  certificate_price: number | null;
+  certificate_request_token: string | null;
+  certificate_requested_at: string | null;
   contact_email: string | null;
   contact_name: string | null;
   contact_phone: string | null;
   is_free: boolean;
   price_snapshot: number;
   registration_code: string;
+  registration_type: RegistrationType;
   status: RegistrationStatus;
 }
 
@@ -86,6 +96,9 @@ export type RegistrationErrorCode =
   | "VALIDATION_ERROR";
 
 export interface ActivityRegistrationContext {
+  certificateGeneralPrice: number;
+  certificateMemberPrice: number;
+  certificateMode: ActivityCertificateMode;
   generalPrice: number;
   id: string;
   isFree: boolean;
@@ -104,6 +117,10 @@ export interface RegistrationAdminItem
     | "confirmed_by"
     | "cancelled_at"
     | "cancellation_reason"
+    | "certificate_followed_up_at"
+    | "certificate_mode_snapshot"
+    | "certificate_price_snapshot"
+    | "certificate_requested_at"
     | "created_at"
     | "id"
     | "price_snapshot"
@@ -112,7 +129,7 @@ export interface RegistrationAdminItem
     | "ruc_snapshot"
     | "status"
   > {
-  activity: Pick<Tables<"activities">, "id" | "slug" | "title" | "type">;
+  activity: Pick<Tables<"activities">, "certificate_mode" | "id" | "slug" | "title" | "type">;
   attendance: Array<Pick<Tables<"attendance">, "id" | "status">>;
   person: Pick<
     Tables<"people">,
@@ -131,6 +148,7 @@ export interface RegistrationAdminFilters {
   activityId?: string;
   activityType?: ActivityType;
   attendanceStatus?: Enums<"attendance_status">;
+  certificateRequest?: CertificateRequestFilter;
   page: number;
   query?: string;
   registrationType?: RegistrationType;
@@ -150,13 +168,17 @@ export interface RegistrationRoutePageProps {
 }
 
 export interface RegistrationResultPageProps extends RegistrationRoutePageProps {
-  searchParams: Promise<{ codigo?: string | string[] }>;
+  searchParams: Promise<{
+    codigo?: string | string[];
+    solicitud?: string | string[];
+  }>;
 }
 
 export interface AdminRegistrationsPageProps {
   searchParams: Promise<{
     actividad?: string | string[];
     asistencia?: string | string[];
+    certificado?: string | string[];
     estado?: string | string[];
     pagina?: string | string[];
     q?: string | string[];
@@ -175,6 +197,7 @@ export interface RegistrationActivityOption {
 export interface ActivityRegistrationsPageProps {
   params: Promise<{ activityId: string }>;
   searchParams: Promise<{
+    certificado?: string | string[];
     estado?: string | string[];
     pagina?: string | string[];
     q?: string | string[];

@@ -12,7 +12,7 @@ function selectedStatus(filters: RegistrationAdminFilters): string {
 export function ActivityRegistrationFilters({ filters }: { filters: RegistrationAdminFilters }) {
   const pathname = getActivityParticipationRoute(filters.activityId ?? "");
   return (
-    <form className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 md:grid-cols-[minmax(220px,1fr)_180px_180px_auto_auto]" method="get">
+    <form className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_170px_170px_210px_auto_auto]" method="get">
       <Input defaultValue={filters.query} name="q" placeholder="Nombre, documento, correo o celular" type="search" />
       <Select aria-label="Estado de inscripción" defaultValue={selectedStatus(filters)} name="estado">
         <option value="active">Activas</option>
@@ -25,6 +25,11 @@ export function ActivityRegistrationFilters({ filters }: { filters: Registration
         <option value="">General y asociados</option>
         <option value="general">Público general</option>
         <option value="member">Asociado CCI</option>
+      </Select>
+      <Select aria-label="Solicitud de certificado" defaultValue={filters.certificateRequest ?? ""} name="certificado">
+        <option value="">Todas</option>
+        <option value="pending">Pendientes de seguimiento</option>
+        <option value="requested">Solicitadas</option>
       </Select>
       <button className="min-h-11 rounded-xl bg-cci-950 px-5 text-sm font-bold text-white hover:bg-cci-800" type="submit">Aplicar</button>
       <Link className="flex min-h-11 items-center justify-center rounded-xl border border-slate-300 px-4 text-sm font-semibold hover:bg-cci-50" href={pathname}>Limpiar</Link>

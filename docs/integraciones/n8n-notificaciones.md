@@ -17,7 +17,7 @@ Todas son exclusivas del servidor. `N8N_WEBHOOK_SECRET` se envía a n8n mediante
 ```json
 {
   "notification_id": "uuid",
-  "event_type": "activity_free_registration_confirmed | activity_paid_preregistration_created | activity_paid_registration_confirmed | activity_certificate_issued | course_certificate_issued",
+  "event_type": "activity_free_registration_confirmed | activity_paid_preregistration_created | activity_paid_registration_confirmed | activity_certificate_offer | activity_certificate_request_created | activity_certificate_issued | course_certificate_issued",
   "recipient_email": "participante@example.com",
   "payload": {}
 }
@@ -33,6 +33,8 @@ Cada operación que crea una notificación llama inmediatamente al webhook despu
 - confirmación administrativa de una inscripción pagada;
 - emisión de certificado de actividad;
 - emisión de certificado de curso.
+- oferta única de certificado opcional después de registrar asistencia;
+- aviso interno al responsable cuando una persona solicita un certificado opcional.
 
 No existe un scheduler ni un endpoint cron. Si una entrega falla, el administrador puede ejecutarla manualmente desde `/admin/notificaciones` y revisar el detalle de la ejecución en n8n.
 
@@ -45,7 +47,21 @@ El archivo [`n8n-workflow-eventos-cci.json`](./n8n-workflow-eventos-cci.json) co
 
 1. Un webhook `POST /webhook/eventos-cci` que valida el evento, selecciona una plantilla HTML según `event_type`, envía el correo mediante Gmail y responde `200` solo después de la entrega.
 
-Después de importarlo en n8n se debe reemplazar `https://REEMPLAZAR-DOMINIO` en el nodo que prepara el correo y configurar estas credenciales desde la interfaz de n8n:
+El código fuente legible del nodo de preparación se conserva en
+[`n8n-preparar-correo.js`](./n8n-preparar-correo.js). El JSON importable ya contiene esa misma versión.
+
+Los correos de inscripción presentan la certificación de manera condicional:
+
+- `included`: informa que el certificado está incluido y no muestra una llamada comercial;
+- `optional_paid`: muestra la tarifa capturada y, una vez confirmada la participación, enlaza al resultado seguro para registrar la solicitud antes de abrir WhatsApp;
+- `none`: mantiene el correo sin referencias al certificado.
+
+El evento `activity_certificate_offer` se crea una sola vez al pasar una asistencia confirmada a
+`attended`. El evento `activity_certificate_request_created` se dirige al correo del responsable y
+no sustituye el aviso persistente de la vista de inscripciones. Un fallo de cualquiera de estos correos
+queda en `notification_outbox` y nunca revierte asistencia ni solicitud.
+
+Después de importarlo en n8n se deben configurar estas credenciales desde la interfaz. El workflow ya utiliza el dominio canónico `https://eventosycursos.camaraica.org.pe`:
 
 | Nodo | Credencial | Configuración |
 | --- | --- | --- |

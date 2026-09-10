@@ -15,7 +15,12 @@ import { RegistrationStatusShortcuts } from "@/features/registrations/components
 export function ActivityRegistrationsTemplate({ activity, data, filters, result }: ActivityRegistrationsTemplateProps) {
   const pathname = getActivityParticipationRoute(activity.activityId);
   const statusValue = filters.status ?? filters.statusScope;
-  const values = { estado: statusValue, q: filters.query, tipo: filters.registrationType };
+  const values = {
+    certificado: filters.certificateRequest,
+    estado: statusValue,
+    q: filters.query,
+    tipo: filters.registrationType,
+  };
   const query = new URLSearchParams(Object.entries(values).filter((item): item is [string, string] => Boolean(item[1]))).toString();
   const returnTo = query ? `${pathname}?${query}` : pathname;
   const exportValues = new URLSearchParams(query);

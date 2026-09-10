@@ -21,6 +21,7 @@ No se libera una versión con defectos críticos o altos abiertos. Los resultado
 | Seguridad | `011_security_rls_access_control_test.sql` | Matriz visitante/Student/Operator/Admin y Storage |
 | Producción | `012_production_readiness_test.sql` | Agregaciones operativas, permisos e índices finales |
 | Regeneración de certificados | `016_certificate_regeneration_test.sql` | Corrección auditada, identidad pública, permisos y listados paginados |
+| Certificados opcionales | `020_optional_activity_certificates_test.sql` | Modalidad y tarifa capturadas, solicitud segura e idempotente, seguimiento, auditoría y oferta posterior a la asistencia |
 | SEO y rendimiento público | `tests/unit/seo.test.ts` | Metadata, JSON-LD, sesiones múltiples, slugs, búsquedas seguras y analítica sin PII |
 
 Los archivos usan transacciones con `rollback`; no conservan fixtures en la base vinculada.
@@ -45,6 +46,7 @@ Los archivos usan transacciones con `rollback`; no conservan fixtures en la base
 | Doble envío de quiz | numeración bajo bloqueo y respuestas ligadas al intento | 009 |
 | Certificado duplicado | índices únicos parciales por inscripción/matrícula | 005 y 010 |
 | Regeneración concurrente | bloqueo de fila y comparación de la ruta previa | 016 |
+| Solicitud duplicada de certificado | token opaco, bloqueo de inscripción y unicidad del outbox | 020 |
 | Finalización repetida | `check_course_completion` idempotente | 010 |
 
 Antes del lanzamiento se repite la suite vinculada y un recorrido UI con dos envíos simultáneos controlados. Las restricciones de base de datos son la barrera definitiva aunque dos instancias de Vercel procesen la misma acción.

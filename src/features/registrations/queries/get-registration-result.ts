@@ -6,11 +6,17 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function getRegistrationResult(
   registrationCode: string,
+  requestToken?: string,
 ): Promise<PublicRegistrationResult | null> {
   const client = await createServerSupabaseClient();
-  const { data, error } = await client.rpc("get_public_registration_result", {
-    p_registration_code: registrationCode,
-  });
+  const { data, error } = requestToken
+    ? await client.rpc("get_public_registration_result_secure", {
+      p_registration_code: registrationCode,
+      p_request_token: requestToken,
+    })
+    : await client.rpc("get_public_registration_result", {
+      p_registration_code: registrationCode,
+    });
 
   if (error) {
     throw new Error("No fue posible consultar el resultado de la inscripción.", {

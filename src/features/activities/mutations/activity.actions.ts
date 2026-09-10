@@ -48,8 +48,11 @@ export async function saveActivityAction(
   if (Object.keys(mediaErrors).length) return { errors: mediaErrors, savedId };
 
   const { dates, speakers, ...activityInput } = parsed.data;
+  const hasPaidCertificate = activityInput.certificate_mode === "optional_paid";
   const activity = {
     ...activityInput,
+    certificate_general_price: hasPaidCertificate ? activityInput.certificate_general_price : "0",
+    certificate_member_price: hasPaidCertificate ? activityInput.certificate_member_price : "0",
     general_price: activityInput.is_free ? "0" : activityInput.general_price || "0",
     member_price: activityInput.is_free ? "0" : activityInput.member_price || "0",
     registration_close_at: toDatabaseTimestamp(activityInput.registration_close_at),

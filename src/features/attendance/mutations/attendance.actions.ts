@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { ROUTES } from "@/constants/routes";
 import { requireAdmin } from "@/features/auth/services/admin-session";
+import { deliverActivityCertificateOffers } from "@/features/notifications/services/process-notifications";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getActivityAttendanceRoute } from "@/features/participation/utils/participation-routes";
 import { withAdminResult } from "@/utils/admin-return-url";
@@ -48,5 +49,11 @@ export async function updateAttendanceAction(
   revalidatePath(fallback);
   revalidatePath(ROUTES.adminParticipants);
   revalidatePath(ROUTES.adminRegistrations);
-  redirect(withAdminResult(returnTo, fallback, "asistencia-actualizada"));
+  const offersDelivered = parsed.data.status !== "attended"
+    || await deliverActivityCertificateOffers(parsed.data.attendanceIds);
+  redirect(withAdminResult(
+    returnTo,
+    fallback,
+    offersDelivered ? "asistencia-actualizada" : "asistencia-actualizada-correo-fallido",
+  ));
 }

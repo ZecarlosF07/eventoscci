@@ -4,6 +4,8 @@ export type NotificationStatus = Enums<"notification_status">;
 
 export type NotificationEventType =
   | "activity_certificate_issued"
+  | "activity_certificate_offer"
+  | "activity_certificate_request_created"
   | "activity_free_registration_confirmed"
   | "activity_paid_preregistration_created"
   | "activity_paid_registration_confirmed"

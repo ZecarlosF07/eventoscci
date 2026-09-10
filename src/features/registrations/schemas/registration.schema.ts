@@ -71,6 +71,9 @@ export const registrationRpcResultSchema = z.object({
   activity_title: z.string(),
   activity_type: z.enum(["event", "training"]),
   attendance_id: z.uuid(),
+  certificate_mode: z.enum(["none", "included", "optional_paid"]),
+  certificate_price: z.number().nullable(),
+  certificate_request_token: z.uuid(),
   notification_event: z.enum(REGISTRATION_NOTIFICATION_EVENT_TYPES),
   price_snapshot: z.number(),
   registration_code: z.string(),
@@ -82,12 +85,17 @@ export const publicRegistrationResultSchema = z.object({
   activity_slug: z.string(),
   activity_title: z.string(),
   activity_type: z.enum(["event", "training"]),
+  certificate_mode: z.enum(["none", "included", "optional_paid"]),
+  certificate_price: z.number().nullable(),
+  certificate_request_token: z.uuid().nullable(),
+  certificate_requested_at: z.string().nullable(),
   contact_email: z.string().nullable(),
   contact_name: z.string().nullable(),
   contact_phone: z.string().nullable(),
   is_free: z.boolean(),
   price_snapshot: z.number(),
   registration_code: z.string(),
+  registration_type: z.enum(["general", "member"]),
   status: z.enum(["pending", "confirmed", "cancelled"]),
 });
 
@@ -97,8 +105,19 @@ export const registrationAvailabilitySchema = z.object({
   remaining_capacity: z.number().nullable(),
 });
 
+export const certificateRequestRpcResultSchema = z.object({
+  activity_title: z.string(),
+  certificate_price: z.number().positive(),
+  contact_whatsapp_phone: z.string(),
+  notification_id: z.uuid().nullable(),
+  registration_code: z.string(),
+  registration_type: z.enum(["general", "member"]),
+  requested_at: z.string(),
+});
+
 export const registrationAdminItemSchema = z.object({
   activity: z.object({
+    certificate_mode: z.enum(["none", "included", "optional_paid"]),
     id: z.uuid(),
     slug: z.string(),
     title: z.string(),
@@ -109,6 +128,10 @@ export const registrationAdminItemSchema = z.object({
   confirmed_by: z.uuid().nullable(),
   cancelled_at: z.string().nullable(),
   cancellation_reason: z.string().nullable(),
+  certificate_followed_up_at: z.string().nullable(),
+  certificate_mode_snapshot: z.enum(["none", "included", "optional_paid"]),
+  certificate_price_snapshot: z.number().nullable(),
+  certificate_requested_at: z.string().nullable(),
   created_at: z.string(),
   id: z.uuid(),
   attendance: z.array(z.object({

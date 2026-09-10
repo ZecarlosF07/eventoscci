@@ -6,5 +6,10 @@ export const REGISTRATION_NOTIFICATION_EVENT_TYPES = [
   "activity_paid_preregistration_created",
 ] as const;
 
+export const ACTIVITY_CERTIFICATE_REQUEST_EVENT_TYPES = [
+  "activity_certificate_offer",
+  "activity_certificate_request_created",
+] as const;
+
 export const NOTIFICATION_WEBHOOK_TIMEOUT_MS = 15_000;
 export const NOTIFICATION_ERROR_MAX_LENGTH = 2_000;

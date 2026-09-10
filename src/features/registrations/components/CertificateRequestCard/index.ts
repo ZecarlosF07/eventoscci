@@ -1,0 +1,1 @@
+export { CertificateRequestCard } from "./CertificateRequestCard";

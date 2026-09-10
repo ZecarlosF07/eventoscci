@@ -13,7 +13,8 @@ export function registrationsToCsv(registrations: RegistrationAdminItem[]): stri
   const headers = [
     "Actividad", "Tipo de documento", "Documento", "Nombres", "Apellidos",
     "Correo", "Celular", "Cargo", "Empresa", "RUC", "Tipo de inscripción",
-    "Estado", "Asistencia", "Código", "Precio registrado",
+    "Estado", "Asistencia", "Código", "Precio registrado", "Certificado",
+    "Precio del certificado", "Certificado solicitado", "Seguimiento realizado",
   ];
   const rows = registrations.map((item) => [
     item.activity.title,
@@ -31,6 +32,12 @@ export function registrationsToCsv(registrations: RegistrationAdminItem[]): stri
     ATTENDANCE_LABELS[item.attendance[0]?.status ?? "pending"],
     item.registration_code,
     item.price_snapshot,
+    item.certificate_mode_snapshot === "included"
+      ? "Incluido"
+      : item.certificate_mode_snapshot === "optional_paid" ? "Opcional pagado" : "No disponible",
+    item.certificate_price_snapshot,
+    item.certificate_requested_at,
+    item.certificate_followed_up_at,
   ]);
   return `\uFEFF${[headers, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
 }

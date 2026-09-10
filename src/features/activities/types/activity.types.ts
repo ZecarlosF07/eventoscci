@@ -1,3 +1,4 @@
+import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 import type {
   Enums,
   Tables,
@@ -7,7 +8,9 @@ export type ActivityType = Enums<"activity_type">;
 export type ActivityModality = Enums<"activity_modality">;
 export type ActivityStatus = Enums<"activity_status">;
 export type ActivityAdminView = "active" | "archived";
-export type ActivityRow = Tables<"activities">;
+export type ActivityRow = Omit<Tables<"activities">, "certificate_mode"> & {
+  certificate_mode: ActivityCertificateMode;
+};
 export type ActivityDateRow = Tables<"activity_dates">;
 
 export type ActivityCategory = Pick<
