@@ -18,6 +18,7 @@ export function parseRegistrationFormData(formData: FormData): RegistrationInput
     phone: formValue(formData, "phone"),
     registration_type:
       formValue(formData, "registration_type") === "member" ? "member" : "general",
+    request_certificate: formData.get("request_certificate") === "on",
     ruc: formValue(formData, "ruc"),
   };
 }

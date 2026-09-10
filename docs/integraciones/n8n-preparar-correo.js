@@ -49,6 +49,8 @@ const certificatePrice = Number(payload.certificate_price);
 const certificatePriceText = Number.isFinite(certificatePrice)
   ? new Intl.NumberFormat("es-PE", { currency: "PEN", style: "currency" }).format(certificatePrice)
   : "";
+const certificateRequested = payload.certificate_requested === true
+  || (typeof payload.certificate_requested_at === "string" && Boolean(payload.certificate_requested_at));
 
 let subject = "";
 let heading = "";
@@ -91,12 +93,16 @@ if (isConfirmedRegistration && payload.certificate_mode === "included") {
   message += "<br><br><strong>Tu certificado está incluido sin pago adicional.</strong> Se emitirá cuando cumplas las condiciones de participación y asistencia.";
 }
 if (eventType === "activity_paid_preregistration_created" && payload.certificate_mode === "optional_paid") {
-  message += `<br><br>Esta actividad ofrece un certificado digital opcional por <strong>${escapeHtml(certificatePriceText)}</strong>. Podrás solicitarlo cuando confirmemos tu participación.`;
+  message += certificateRequested
+    ? `<br><br><strong>También registramos tu solicitud de certificado digital</strong> por ${escapeHtml(certificatePriceText)}. El responsable podrá contactarte y la emisión requerirá que tu participación y asistencia estén confirmadas.`
+    : `<br><br>Esta actividad ofrece un certificado digital opcional por <strong>${escapeHtml(certificatePriceText)}</strong>. Podrás solicitarlo cuando confirmemos tu participación.`;
 }
 if (isConfirmedRegistration && payload.certificate_mode === "optional_paid" && certificateResultUrl) {
-  message += `<br><br>Si deseas el certificado digital opcional, puedes solicitarlo por <strong>${escapeHtml(certificatePriceText)}</strong>. La emisión requiere asistencia registrada.`;
+  message += certificateRequested
+    ? `<br><br><strong>Tu solicitud de certificado digital ya está registrada.</strong> La tarifa aplicable es ${escapeHtml(certificatePriceText)} y la emisión requiere asistencia registrada.`
+    : `<br><br>Si deseas el certificado digital opcional, puedes solicitarlo por <strong>${escapeHtml(certificatePriceText)}</strong>. La emisión requiere asistencia registrada.`;
   actionUrl = certificateResultUrl;
-  actionLabel = "Solicitar mi certificado";
+  actionLabel = certificateRequested ? "Continuar solicitud" : "Solicitar mi certificado";
 }
 
 if (eventType === "activity_certificate_offer") {

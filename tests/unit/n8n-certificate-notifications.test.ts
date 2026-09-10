@@ -62,6 +62,18 @@ test("la confirmación opcional enlaza al resultado seguro", () => {
   assert.match(email.html, /S\/\s35\.00/u);
 });
 
+test("la confirmación reconoce una solicitud creada durante la inscripción", () => {
+  const email = prepareEmail("activity_free_registration_confirmed", {
+    ...requestContext,
+    certificate_requested: true,
+    certificate_requested_at: "2026-09-10T16:30:00-05:00",
+  });
+
+  assert.match(email.html, /solicitud de certificado digital ya está registrada/i);
+  assert.match(email.html, /Continuar solicitud/);
+  assert.doesNotMatch(email.html, />Solicitar mi certificado</);
+});
+
 test("la oferta posterior conserva el enlace seguro y evita duplicar instrucciones", () => {
   const email = prepareEmail("activity_certificate_offer", requestContext);
 

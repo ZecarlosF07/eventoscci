@@ -19,6 +19,7 @@ export interface RegistrationInput {
   last_names: string;
   phone: string;
   registration_type: RegistrationType;
+  request_certificate: boolean;
   ruc: string;
 }
 
@@ -31,6 +32,8 @@ export interface RegistrationRpcResult {
   certificate_mode: ActivityCertificateMode;
   certificate_price: number | null;
   certificate_request_token: string;
+  certificate_request_notification_id: string | null;
+  certificate_requested_at: string | null;
   notification_event: NotificationEventType;
   price_snapshot: number;
   registration_code: string;

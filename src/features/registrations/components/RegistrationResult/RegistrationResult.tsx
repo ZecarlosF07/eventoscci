@@ -46,12 +46,16 @@ export function RegistrationResult({ result }: RegistrationResultProps) {
         ) : null}
         {result.certificate_mode === "optional_paid" && !confirmed ? (
           <section className="mt-6 rounded-2xl border border-cci-200 bg-cci-50 p-5">
-            <Badge variant="neutral">Certificado digital opcional</Badge>
+            <Badge variant={result.certificate_requested_at ? "success" : "neutral"}>
+              {result.certificate_requested_at ? "Solicitud de certificado registrada" : "Certificado digital opcional"}
+            </Badge>
             <p className="mt-3 text-lg font-bold text-cci-950">
               Tarifa aplicable: {formatRegistrationPrice(result.certificate_price ?? 0)}
             </p>
             <Text className="mt-2" size="sm">
-              Podrás solicitarlo cuando tu participación quede confirmada.
+              {result.certificate_requested_at
+                ? "Conservaremos tu solicitud mientras se confirma tu participación. El responsable podrá contactarte para continuar la coordinación."
+                : "Podrás solicitarlo cuando tu participación quede confirmada."}
             </Text>
           </section>
         ) : null}

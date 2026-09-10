@@ -2,7 +2,10 @@
 
 import { updateTag } from "next/cache";
 
-import { deliverNotificationImmediately } from "@/features/notifications/services/process-notifications";
+import {
+  deliverNotificationImmediately,
+  deliverNotificationImmediatelyById,
+} from "@/features/notifications/services/process-notifications";
 import { PUBLIC_CACHE_TAGS } from "@/features/seo/constants/public-cache.constants";
 import { REGISTRATION_ERROR_MESSAGES } from "@/features/registrations/constants/registration.constants";
 import {
@@ -62,6 +65,9 @@ export async function registerActivity(
     relatedEntityId: result.data.registration_id,
     relatedEntityType: "registration",
   });
+  if (result.data.certificate_request_notification_id) {
+    await deliverNotificationImmediatelyById(result.data.certificate_request_notification_id);
+  }
   updateTag(PUBLIC_CACHE_TAGS.availability);
 
   return { data: result.data, success: true };

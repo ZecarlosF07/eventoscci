@@ -47,6 +47,7 @@ Los archivos usan transacciones con `rollback`; no conservan fixtures en la base
 | Certificado duplicado | índices únicos parciales por inscripción/matrícula | 005 y 010 |
 | Regeneración concurrente | bloqueo de fila y comparación de la ruta previa | 016 |
 | Solicitud duplicada de certificado | token opaco, bloqueo de inscripción y unicidad del outbox | 020 |
+| Interés de certificado durante la inscripción | registro atómico, auditoría y aviso interno único | 021 |
 | Finalización repetida | `check_course_completion` idempotente | 010 |
 
 Antes del lanzamiento se repite la suite vinculada y un recorrido UI con dos envíos simultáneos controlados. Las restricciones de base de datos son la barrera definitiva aunque dos instancias de Vercel procesen la misma acción.

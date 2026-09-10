@@ -35,10 +35,10 @@ select is(
 );
 
 insert into public.activities (
-  id, type, title, slug, description, modality, is_free, status, published_at
+  id, type, title, slug, description, modality, is_free, status
 ) values (
   '7e000000-0000-4000-8000-000000000003', 'event', 'Sin certificado Hito 14',
-  'sin-certificado-hito-14', 'Actividad temporal sin certificado.', 'virtual', true, 'published', now()
+  'sin-certificado-hito-14', 'Actividad temporal sin certificado.', 'virtual', true, 'draft'
 );
 
 select is(
@@ -116,6 +116,13 @@ insert into public.activity_contacts (
   '914000014',
   'certificados.hito14@example.test'
 );
+
+update public.activities
+set
+  contact_id = 'ae000000-0000-4000-8000-000000000001',
+  published_at = now(),
+  status = 'published'
+where id = '7e000000-0000-4000-8000-000000000003';
 
 insert into public.activities (
   id, contact_id, type, title, slug, description, modality, is_free,

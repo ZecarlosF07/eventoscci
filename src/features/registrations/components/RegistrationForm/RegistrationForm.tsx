@@ -8,6 +8,7 @@ import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Text } from "@/components/atoms/Text";
 import { RegistrationContactFields } from "@/features/registrations/components/RegistrationContactFields";
+import { CertificateInterestField } from "@/features/registrations/components/CertificateInterestField";
 import { RegistrationIdentityFields } from "@/features/registrations/components/RegistrationIdentityFields";
 import { RegistrationTypeSelector } from "@/features/registrations/components/RegistrationTypeSelector";
 import { trackAnalyticsEvent } from "@/features/analytics/services/track-analytics-event.client";
@@ -85,6 +86,13 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
         errors={errors}
         isMember={registrationType === "member"}
       />
+      {activity.certificateMode === "optional_paid" ? (
+        <CertificateInterestField
+          generalPrice={activity.certificateGeneralPrice}
+          memberPrice={activity.certificateMemberPrice}
+          registrationType={registrationType}
+        />
+      ) : null}
       {message ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-medium text-rose-800" role="alert">
           {message}

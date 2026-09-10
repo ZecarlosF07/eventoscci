@@ -27,7 +27,7 @@ Selección administrativa existente
 Emisión del certificado
 ```
 
-Cuando el certificado esté incluido, todos los participantes confirmados que registren asistencia tendrán derecho a recibirlo y no deberán solicitarlo ni realizar otro pago. Cuando sea opcional con costo, el participante podrá solicitarlo antes, durante o después de la actividad. Al presionar “Solicitar mi certificado”, la plataforma registrará primero la solicitud y luego abrirá el WhatsApp del responsable. Si el participante no envía el mensaje, el personal conservará un aviso pendiente y podrá contactarlo al celular registrado durante la inscripción.
+Cuando el certificado esté incluido, todos los participantes confirmados que registren asistencia tendrán derecho a recibirlo y no deberán solicitarlo ni realizar otro pago. Cuando sea opcional con costo, el participante podrá marcar “Sí, deseo solicitar el certificado digital” durante la inscripción o solicitarlo posteriormente desde el resultado y los correos. El interés se registrará antes de continuar por WhatsApp. Si el participante no envía el mensaje, el personal conservará un aviso pendiente y podrá contactarlo al celular registrado durante la inscripción.
 
 No se creará un módulo independiente de solicitudes, una tabla adicional ni un flujo de pagos. El seguimiento se resolverá dentro de las vistas administrativas de inscripciones ya existentes.
 
@@ -58,9 +58,9 @@ Implementar un recorrido simple y comercial que permita:
 - En `included`, el certificado formará parte de la participación y no tendrá precio adicional.
 - En `included`, todos los participantes confirmados con asistencia `attended` tendrán derecho al certificado mediante el flujo de emisión existente.
 - En `optional_paid`, se exigirán una tarifa general y una para asociados.
-- La inscripción no preguntará si el participante desea comprarlo y nunca quedará condicionada por esta decisión.
+- En `optional_paid`, la inscripción mostrará un checkbox opcional y desmarcado para registrar el interés sin condicionar la inscripción.
 - En `optional_paid`, el participante podrá solicitarlo antes o después de asistir.
-- La acción “Solicitar mi certificado” aparecerá exclusivamente en `optional_paid`.
+- El checkbox y la acción “Solicitar mi certificado” aparecerán exclusivamente en `optional_paid`.
 - En `included` no existirán solicitud, seguimiento comercial ni recordatorio de venta.
 - Presionar la acción registrará la solicitud antes de intentar abrir WhatsApp.
 - La solicitud quedará asociada a la inscripción; no se creará un módulo ni una entidad independiente.
@@ -84,7 +84,7 @@ El hito comprende:
 - snapshot de la modalidad y tarifa aplicable en `registrations`;
 - trazabilidad mínima de solicitud y seguimiento en la propia `registration`;
 - información visible en el detalle y registro de la actividad;
-- solicitud desde el resultado de inscripción, con persistencia previa a la redirección;
+- solicitud desde el formulario o el resultado de inscripción, con persistencia previa a la redirección;
 - enlace de WhatsApp específico del responsable;
 - aviso persistente y filtros dentro de las vistas administrativas existentes;
 - ampliación de los correos de inscripción y confirmación;
@@ -247,7 +247,7 @@ La participación es gratuita. El certificado digital es opcional y tiene costo.
 
 Para `none` no se mostrará ninguna referencia al certificado.
 
-No se añadirá un checkbox al formulario público ni se obligará al participante a tomar una decisión durante la inscripción. En `optional_paid`, antes de disponer de un código solo se informarán las condiciones; la solicitud se habilitará en el resultado de inscripción y en los correos.
+En `optional_paid`, el formulario mostrará el checkbox desmarcado “Sí, deseo solicitar el certificado digital”, acompañado de la tarifa aplicable según el tipo de inscripción. Marcarlo registrará el interés atómicamente junto con la inscripción, pero no condicionará ni bloqueará el registro. Si permanece desmarcado, el participante podrá solicitarlo posteriormente desde el resultado o los correos.
 
 ## 7.2 Resultado de inscripción
 
@@ -260,6 +260,8 @@ Si la modalidad vigente y el snapshot son `optional_paid`, y la inscripción est
 - condición “Si pagas antes y no asistes, el importe no es reembolsable”;
 - consentimiento “Al solicitarlo, autorizas a la Cámara de Comercio de Ica a contactarte al celular registrado para coordinar el certificado y su pago”.
 
+Cuando el checkbox ya fue marcado, el resultado mostrará “Solicitud de certificado registrada” y la acción “Continuar por WhatsApp”, sin crear una segunda solicitud. En una preinscripción pendiente, conservará el interés y explicará que la participación y la asistencia deberán confirmarse antes de emitir.
+
 Para preinscripciones pendientes de actividades pagadas se podrá informar la existencia del certificado, pero la acción se habilitará después de confirmar la participación para no mezclar el pago de ingreso con el pago del certificado.
 
 En `included` se mostrará “Certificado incluido” sin ninguna acción. En `none`, o cuando la actividad ya no ofrezca certificación, no se mostrará ninguna referencia al certificado.
@@ -268,7 +270,7 @@ En `included` se mostrará “Certificado incluido” sin ninguna acción. En `n
 
 # 8. Solicitud persistente y apertura de WhatsApp
 
-El botón deberá ejecutar primero una acción de servidor que:
+Tanto el checkbox enviado con la inscripción como el botón posterior deberán persistir la solicitud antes de continuar. El botón ejecutará una acción de servidor que:
 
 1. valide el código de inscripción y `certificate_request_token`;
 2. confirme que la actividad y la inscripción conservan la modalidad `optional_paid`;
@@ -290,7 +292,7 @@ Tarifa aplicable: {General|Asociado} — S/ {precio}.
 
 La URL no incluirá DNI, correo, nombre completo ni otros datos personales. El código de inscripción será la referencia operativa. Los clics repetidos devolverán el mismo destino sin duplicar la solicitud ni sus notificaciones.
 
-No se expondrá una segunda acción pública por correo: el participante verá solo “Solicitar mi certificado”. Si WhatsApp no está iniciado en la laptop, el navegador podrá mostrar el QR o la opción de continuar en el teléfono; aun si la persona cierra ese paso, su interés ya habrá quedado registrado.
+No se expondrán canales de solicitud distintos del checkbox y la acción segura “Solicitar mi certificado”. Si WhatsApp no está iniciado en la laptop, el navegador podrá mostrar el QR o la opción de continuar en el teléfono; aun si la persona cierra ese paso, su interés ya habrá quedado registrado.
 
 Cuando el contacto tenga correo, podrá utilizarse internamente para avisarle de una nueva solicitud y como `Reply-To` en mensajes transaccionales compatibles. El correo no reemplaza la acción pública única.
 
@@ -394,7 +396,7 @@ El payload nunca incluirá el comprobante ni información financiera del pagador
 
 El procedimiento será:
 
-1. El participante presiona “Solicitar mi certificado”.
+1. El participante marca el checkbox durante la inscripción o presiona posteriormente “Solicitar mi certificado”.
 2. La plataforma registra la solicitud y abre el WhatsApp del responsable.
 3. El responsable atiende el mensaje o revisa las solicitudes pendientes en la vista administrativa existente.
 4. Si al cierre de la jornada el participante no completó el contacto, el responsable le escribe al celular registrado.
@@ -520,6 +522,8 @@ Los campos de solicitud y seguimiento pertenecen a la inscripción y no modifica
 - aparición de precios únicamente en `optional_paid`;
 - mensajes de validación junto a los campos;
 - distinción visual entre participación y certificado;
+- checkbox opcional, desmarcado y exclusivo de `optional_paid` durante la inscripción;
+- solicitud atómica al enviar la inscripción con el checkbox marcado;
 - ausencia completa del certificado en `none`;
 - distintivo “Certificado incluido” sin precio ni acción en `included`;
 - tarifa correcta en detalle, resultado y correo para `optional_paid`;
@@ -570,7 +574,8 @@ Configurar modalidad y precios
 → publicar actividad
 → informar sin dificultar la inscripción
 → registrar tarifa aplicable
-→ registrar solicitud y abrir WhatsApp
+→ registrar solicitud desde el checkbox o la acción posterior
+→ permitir continuar por WhatsApp
 → mostrar seguimiento pendiente en administración
 → contactar al participante si no completa el mensaje
 → marcar asistencia

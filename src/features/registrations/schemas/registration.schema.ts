@@ -21,6 +21,7 @@ export const registrationFormSchema = z
       .transform((value) => value.replace(/[\s-]/g, ""))
       .refine((value) => /^\+?[0-9]{7,15}$/.test(value), "Ingresa un celular válido."),
     registration_type: z.enum(["general", "member"]),
+    request_certificate: z.boolean(),
     ruc: z.string().trim(),
   })
   .superRefine((data, context) => {
@@ -74,6 +75,8 @@ export const registrationRpcResultSchema = z.object({
   certificate_mode: z.enum(["none", "included", "optional_paid"]),
   certificate_price: z.number().nullable(),
   certificate_request_token: z.uuid(),
+  certificate_request_notification_id: z.uuid().nullable(),
+  certificate_requested_at: z.string().nullable(),
   notification_event: z.enum(REGISTRATION_NOTIFICATION_EVENT_TYPES),
   price_snapshot: z.number(),
   registration_code: z.string(),

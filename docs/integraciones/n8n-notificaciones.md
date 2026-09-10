@@ -53,7 +53,7 @@ El código fuente legible del nodo de preparación se conserva en
 Los correos de inscripción presentan la certificación de manera condicional:
 
 - `included`: informa que el certificado está incluido y no muestra una llamada comercial;
-- `optional_paid`: muestra la tarifa capturada y, una vez confirmada la participación, enlaza al resultado seguro para registrar la solicitud antes de abrir WhatsApp;
+- `optional_paid`: muestra la tarifa capturada; si el checkbox fue marcado, confirma que la solicitud ya está registrada y, una vez confirmada la participación, enlaza al resultado seguro para continuar por WhatsApp;
 - `none`: mantiene el correo sin referencias al certificado.
 
 El evento `activity_certificate_offer` se crea una sola vez al pasar una asistencia confirmada a
