@@ -109,6 +109,7 @@ test("la confirmación virtual conserva acceso y certificado como acciones separ
   const email = prepareEmail("activity_free_registration_confirmed", virtualContext);
 
   assert.match(email.html, /background:#072c25/);
+  assert.match(email.html, /background:#000000/);
   assert.match(email.html, /background:#b4d65c/);
   assert.match(email.html, /assets\/brand\/cci-logo-white\.webp/);
   assert.match(email.html, /class="action-cell"/);
