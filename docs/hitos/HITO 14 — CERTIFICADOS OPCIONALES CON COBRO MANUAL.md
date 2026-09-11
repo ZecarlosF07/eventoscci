@@ -9,14 +9,14 @@
 
 El Hito 14 incorpora una configuración explícita de certificación para eventos y capacitaciones. Cada actividad podrá no ofrecer certificado, incluirlo en la participación u ofrecerlo opcionalmente con tarifa general y tarifa para asociados. El cobro manual aplica únicamente a la tercera modalidad, sin incorporar una pasarela de pago ni convertir el módulo de certificados en un sistema contable.
 
-La inscripción y el certificado continuarán siendo procesos independientes. La plataforma solo conservará una señal mínima de interés para que el responsable pueda dar seguimiento si el participante no completa el contacto por WhatsApp:
+La inscripción y el certificado continuarán siendo procesos independientes. La plataforma conservará la solicitud y la verificación manual del pago para que el responsable pueda completar el seguimiento aunque el participante no termine el contacto por WhatsApp:
 
 ```text
 Inscripción a la actividad
         +
 Modalidad de certificación
         +
-Solicitud y seguimiento solo cuando tenga costo adicional
+Solicitud y pago verificado solo cuando tenga costo adicional
         +
 Coordinación y validación manual del pago
         +
@@ -29,7 +29,7 @@ Emisión del certificado
 
 Cuando el certificado esté incluido, todos los participantes confirmados que registren asistencia tendrán derecho a recibirlo y no deberán solicitarlo ni realizar otro pago. Cuando sea opcional con costo, el participante podrá marcar “Sí, deseo solicitar el certificado digital” durante la inscripción o solicitarlo posteriormente desde el resultado y los correos. El interés se registrará antes de continuar por WhatsApp. Si el participante no envía el mensaje, el personal conservará un aviso pendiente y podrá contactarlo al celular registrado durante la inscripción.
 
-No se creará un módulo independiente de solicitudes, una tabla adicional ni un flujo de pagos. El seguimiento se resolverá dentro de las vistas administrativas de inscripciones ya existentes.
+No se creará un módulo independiente de solicitudes ni una tabla adicional. El control comercial mínimo se resolverá en las vistas administrativas de inscripciones existentes; el comprobante y el cobro continuarán fuera de la plataforma.
 
 ---
 
@@ -42,7 +42,7 @@ Implementar un recorrido simple y comercial que permita:
 3. configurar un precio general y uno para asociados solo cuando exista costo adicional;
 4. informar el beneficio sin dificultar la inscripción;
 5. registrar el interés antes de abrir el WhatsApp del responsable;
-6. mostrar al personal las solicitudes que todavía requieren seguimiento;
+6. mostrar al personal las solicitudes con pago pendiente, pago verificado o listas para emitir;
 7. recordar la oferta con costo una sola vez después de registrar asistencia;
 8. conservar la modalidad y tarifa comunicadas al participante;
 9. permitir solicitudes tardías sin perder la oportunidad de venta;
@@ -67,8 +67,8 @@ Implementar un recorrido simple y comercial que permita:
 - Si el participante no completa el mensaje de WhatsApp, el personal podrá identificarlo y contactarlo al celular registrado.
 - El pago se coordinará y validará fuera de la plataforma.
 - El comprobante no se almacenará en Supabase.
-- La plataforma no guardará estados como `pagado`, `pendiente` o `rechazado`.
-- “Seguimiento realizado” solo indicará que el responsable tomó contacto o atendió la conversación; no equivaldrá a pago aprobado.
+- La plataforma derivará los estados `sin solicitar`, `pago pendiente`, `pago verificado`, `pendiente de asistencia`, `listo para emitir` y `emitido` sin almacenar información bancaria.
+- “Atendida” y “Seguimiento realizado” quedan retirados porque son ambiguos y nunca equivaldrán a un pago aprobado.
 - Pagar no garantiza la emisión: seguirá siendo obligatorio tener inscripción confirmada y asistencia `attended`.
 - El pago anticipado será no reembolsable si la persona no asiste. Esta condición deberá mostrarse antes de iniciar la coordinación.
 - En `optional_paid`, el personal decidirá a quién seleccionar para emitir el certificado después de validar el comprobante.
@@ -82,7 +82,7 @@ El hito comprende:
 - configuración administrativa de las tres modalidades y, cuando corresponda, sus precios;
 - persistencia de la configuración en `activities`;
 - snapshot de la modalidad y tarifa aplicable en `registrations`;
-- trazabilidad mínima de solicitud y seguimiento en la propia `registration`;
+- trazabilidad mínima de solicitud y verificación de pago en la propia `registration`;
 - información visible en el detalle y registro de la actividad;
 - solicitud desde el formulario o el resultado de inscripción, con persistencia previa a la redirección;
 - enlace de WhatsApp específico del responsable;
@@ -99,7 +99,7 @@ No comprende:
 - integración con Yape, Plin, bancos u otros medios;
 - carga o almacenamiento de comprobantes;
 - conciliación, facturación o devoluciones;
-- estados de pago dentro de la plataforma;
+- conciliación automática o estados contables de pago;
 - una tabla, ruta o módulo independiente de solicitudes;
 - un panel contable o una bandeja de comprobantes;
 - bloqueo automático de la emisión por pago;
@@ -164,28 +164,39 @@ La solicitud no tendrá una tabla propia. Añadir a `registrations`:
 ```text
 certificate_request_token uuid not null default gen_random_uuid()
 certificate_requested_at timestamptz
+certificate_requested_by uuid references auth.users(id) on delete set null
+certificate_payment_verified_at timestamptz
+certificate_payment_verified_by uuid references auth.users(id) on delete set null
 certificate_followed_up_at timestamptz
 certificate_followed_up_by uuid references auth.users(id) on delete set null
 ```
 
 Aplicar un índice único sobre `certificate_request_token`. Este token opaco será la credencial de la acción pública; el código correlativo de inscripción no será suficiente para modificar una solicitud.
 
-La condición operativa se derivará sin crear estados adicionales:
+Los campos `certificate_followed_up_at` y `certificate_followed_up_by` se conservan temporalmente por compatibilidad, se reinician y dejan de utilizarse. La condición operativa se deriva así:
 
 ```text
-Solicitud pendiente de seguimiento =
+Solicitud pendiente de pago =
 certificate_requested_at is not null
-and certificate_followed_up_at is null
+and certificate_payment_verified_at is null
+
+Listo para emitir =
+certificate_payment_verified_at is not null
+and registration.status = 'confirmed'
+and attendance.status = 'attended'
+and no existe certificado activo
 ```
 
 Reglas:
 
 - el primer clic establecerá `certificate_requested_at`; los clics posteriores serán idempotentes;
-- no se podrá marcar seguimiento si antes no existe una solicitud;
-- marcar seguimiento guardará fecha y usuario administrativo;
-- no se almacenarán fecha de pago, estado de pago, comprobante ni medio de pago;
+- el personal podrá registrar solicitudes recibidas por WhatsApp, teléfono o presencialmente;
+- no se podrá verificar el pago si antes no existe una solicitud y la inscripción no está confirmada;
+- verificar el pago guardará fecha y usuario administrativo;
+- una verificación podrá revertirse con motivo obligatorio mientras no exista un certificado emitido;
+- no se almacenarán comprobante, medio de pago ni información bancaria;
 - la existencia de un certificado emitido se consultará mediante la relación vigente y no se duplicará en la inscripción;
-- todos los cambios administrativos de seguimiento quedarán auditados.
+- todos los cambios administrativos de solicitud y pago quedarán auditados.
 
 ---
 
@@ -401,11 +412,11 @@ El procedimiento será:
 3. El responsable atiende el mensaje o revisa las solicitudes pendientes en la vista administrativa existente.
 4. Si al cierre de la jornada el participante no completó el contacto, el responsable le escribe al celular registrado.
 5. El responsable envía los medios de pago y recibe el comprobante fuera de la plataforma.
-6. Al tomar contacto, marca “Seguimiento realizado”; esta acción no confirma el pago.
-7. El responsable valida importe y código de inscripción.
-8. Si el pago fue anticipado, espera a que la persona figure como asistente.
-9. Si el pago fue posterior, confirma primero que la asistencia sea `attended`.
-10. Busca al participante por código en el flujo administrativo existente.
+6. Si la solicitud llegó directamente por un canal externo, utiliza “Registrar solicitud”.
+7. El responsable valida importe, código de inscripción y comprobante fuera de la plataforma.
+8. Utiliza “Confirmar pago”; la plataforma registra fecha, usuario y auditoría.
+9. Si el pago fue anticipado, espera a que la persona figure como asistente.
+10. Cuando el pago y la asistencia estén confirmados, el caso figura “Listo para emitir”.
 11. Lo selecciona junto con los demás casos validados.
 12. Emite el certificado mediante el procedimiento actual.
 
@@ -413,14 +424,14 @@ El procedimiento será:
 
 No se construirá una bandeja nueva. Para `optional_paid`, las tablas administrativas de inscripciones o asistencia mostrarán, cuando aplique:
 
-- distintivo “Solicitó certificado”;
+- estado comercial explícito;
 - fecha de solicitud;
 - nombre, código y teléfono del participante;
 - tarifa congelada;
-- estado derivado “Pendiente de seguimiento”;
-- acción “Marcar seguimiento realizado”.
+- fecha y responsable de la verificación del pago;
+- acciones “Registrar solicitud”, “Confirmar pago” y “Revertir pago”.
 
-Se añadirá el filtro `Todas | Pendientes de seguimiento | Solicitadas`. Las pendientes se ordenarán por antigüedad o permitirán ordenarlas de ese modo. El seguimiento deberá realizarse durante el mismo día hábil; las solicitudes recibidas fuera del horario se atenderán el siguiente día hábil.
+Se añadirá el filtro `Todas | Sin solicitar | Pago pendiente | Pago verificado | Listos para emitir`. Los pagos pendientes se ordenarán por antigüedad. La atención deberá realizarse durante el mismo día hábil; las solicitudes recibidas fuera del horario se atenderán el siguiente día hábil.
 
 Se recomienda utilizar etiquetas de WhatsApp Business:
 
@@ -428,7 +439,7 @@ Se recomienda utilizar etiquetas de WhatsApp Business:
 - `Certificado pagado — listo para emitir`;
 - `Certificado emitido`.
 
-Estas etiquetas son una práctica operativa externa y no constituyen estados de la base de datos.
+Estas etiquetas pueden seguir utilizándose en WhatsApp Business, pero la fuente de verdad será la inscripción y su auditoría.
 
 Para `included`, no existirán solicitudes ni seguimiento comercial. Después de registrar asistencia, el personal utilizará la selección múltiple vigente para incluir a todos los participantes confirmados y asistentes en el lote de emisión.
 
@@ -453,7 +464,7 @@ No se añadirá una condición SQL de pago a `prepare_activity_certificates`. El
 
 En actividades con `certificate_mode = 'included'`, todas las inscripciones confirmadas con asistencia `attended` tendrán derecho al certificado. Esto no requiere automatizar la generación: el personal podrá seleccionar el conjunto elegible y emitirlo por lote mediante el flujo existente.
 
-Los campos de solicitud y seguimiento pertenecen a la inscripción y no modificarán el esquema, las consultas ni la interfaz del módulo de certificados.
+Los campos comerciales pertenecen a la inscripción. El módulo de certificados mostrará su estado como orientación, sin bloquear técnicamente la selección ni modificar la emisión manual.
 
 ---
 
@@ -466,11 +477,11 @@ Los campos de solicitud y seguimiento pertenecen a la inscripción y no modifica
 - El resultado por código seguirá devolviendo solo la inscripción correspondiente.
 - La acción pública exigirá el código de inscripción junto con `certificate_request_token`; el código visible por sí solo no autorizará escrituras.
 - La actualización pública será idempotente y solo podrá establecer la primera fecha de solicitud válida.
-- Solo administradores y operadores autorizados podrán marcar el seguimiento.
+- Solo administradores y operadores autorizados podrán registrar solicitudes manuales, verificar pagos o revertirlos.
 - No se enviarán DNI, nombres, correos ni teléfonos personales en enlaces de WhatsApp.
 - El número y correo institucional del responsable podrán incluirse porque constituyen datos de contacto publicados por la Cámara.
 - No se registrará contenido de conversaciones ni comprobantes.
-- La solicitud y el seguimiento conservarán fecha, usuario y auditoría suficiente sin convertirse en historial de conversaciones.
+- La solicitud, el pago y las reversiones conservarán fecha, usuario y auditoría suficiente sin convertirse en historial de conversaciones.
 
 ---
 
@@ -491,8 +502,9 @@ Los campos de solicitud y seguimiento pertenecen a la inscripción y no modifica
 - token de solicitud único y no predecible;
 - registro idempotente de la solicitud antes de devolver la redirección;
 - rechazo de código o token inválido;
-- rechazo de seguimiento administrativo si no existe solicitud;
-- conservación de fecha y usuario que realizó el seguimiento;
+- rechazo de verificación de pago si no existe solicitud o la inscripción no está confirmada;
+- conservación de fecha y usuario de solicitud manual y verificación de pago;
+- reversión auditada con motivo obligatorio antes de la emisión;
 - creación única de `activity_certificate_offer` al pasar a `attended` en `optional_paid`;
 - ausencia de ofertas y solicitudes comerciales en `none` e `included`;
 - exclusión de pendientes, cancelados, ausentes, modalidad inactiva y solicitudes ya registradas;
@@ -531,7 +543,7 @@ Los campos de solicitud y seguimiento pertenecen a la inscripción y no modifica
 - una sola acción pública “Solicitar mi certificado” exclusivamente en `optional_paid`;
 - consentimiento de contacto y condición de no reembolso visibles;
 - solicitud conservada aunque el participante no complete el mensaje de WhatsApp;
-- distintivo, filtro y acción de seguimiento en las vistas administrativas existentes;
+- estados, filtros y acciones comerciales en las vistas administrativas existentes;
 - pendientes ordenables por antigüedad y teléfono accesible al personal autorizado;
 - acciones utilizables con teclado;
 - revisión móvil, tableta y escritorio.
@@ -576,12 +588,16 @@ Configurar modalidad y precios
 → registrar tarifa aplicable
 → registrar solicitud desde el checkbox o la acción posterior
 → permitir continuar por WhatsApp
-→ mostrar seguimiento pendiente en administración
+→ mostrar pago pendiente en administración
 → contactar al participante si no completa el mensaje
+→ validar pago externamente
+→ confirmar el pago en la inscripción
 → marcar asistencia
 → enviar un único recordatorio
-→ validar pago externamente
+→ mostrar listo para emitir
 → seleccionar y emitir con el módulo actual
 ```
 
 La implementación se considerará incorrecta si muestra una solicitud o cobra nuevamente cuando el certificado está incluido, exige registrar un pago para emitir, almacena comprobantes, crea un módulo independiente de solicitudes, abre WhatsApp sin conservar previamente el interés, envía recordatorios duplicados, mezcla el precio de participación con el precio del certificado o modifica la lógica vigente del módulo de certificados.
+
+La ampliación comercial queda cubierta por la migración `202609110002_activity_certificate_payment_tracking.sql`, la prueba SQL `023_activity_certificate_payment_tracking_test.sql` y las pruebas unitarias de estados comerciales. La migración debe aplicarse antes de desplegar el código que consulta los campos nuevos.

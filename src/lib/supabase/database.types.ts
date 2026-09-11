@@ -1661,9 +1661,12 @@ export type Database = {
           certificate_followed_up_at: string | null
           certificate_followed_up_by: string | null
           certificate_mode_snapshot: "included" | "none" | "optional_paid"
+          certificate_payment_verified_at: string | null
+          certificate_payment_verified_by: string | null
           certificate_price_snapshot: number | null
           certificate_request_token: string
           certificate_requested_at: string | null
+          certificate_requested_by: string | null
           company_snapshot: string | null
           confirmed_at: string | null
           confirmed_by: string | null
@@ -1687,9 +1690,12 @@ export type Database = {
           certificate_followed_up_at?: string | null
           certificate_followed_up_by?: string | null
           certificate_mode_snapshot?: "included" | "none" | "optional_paid"
+          certificate_payment_verified_at?: string | null
+          certificate_payment_verified_by?: string | null
           certificate_price_snapshot?: number | null
           certificate_request_token?: string
           certificate_requested_at?: string | null
+          certificate_requested_by?: string | null
           company_snapshot?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null
@@ -1713,9 +1719,12 @@ export type Database = {
           certificate_followed_up_at?: string | null
           certificate_followed_up_by?: string | null
           certificate_mode_snapshot?: "included" | "none" | "optional_paid"
+          certificate_payment_verified_at?: string | null
+          certificate_payment_verified_by?: string | null
           certificate_price_snapshot?: number | null
           certificate_request_token?: string
           certificate_requested_at?: string | null
+          certificate_requested_by?: string | null
           company_snapshot?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null
@@ -2074,6 +2083,12 @@ export type Database = {
           attendance_status: Database["public"]["Enums"]["attendance_status"]
           certificate_code: string
           certificate_id: string
+          certificate_mode_snapshot: "included" | "none" | "optional_paid"
+          certificate_payment_verified_at: string | null
+          certificate_payment_verified_by: string | null
+          certificate_price_snapshot: number | null
+          certificate_requested_at: string | null
+          certificate_requested_by: string | null
           certificate_status: Database["public"]["Enums"]["certificate_status"]
           company_snapshot: string
           document_number: string
@@ -2181,6 +2196,18 @@ export type Database = {
         Returns: boolean
       }
       mark_certificate_request_followed_up: {
+        Args: { p_registration_id: string }
+        Returns: Json
+      }
+      register_activity_certificate_request_admin: {
+        Args: { p_registration_id: string }
+        Returns: Json
+      }
+      revert_activity_certificate_payment: {
+        Args: { p_reason: string; p_registration_id: string }
+        Returns: Json
+      }
+      verify_activity_certificate_payment: {
         Args: { p_registration_id: string }
         Returns: Json
       }

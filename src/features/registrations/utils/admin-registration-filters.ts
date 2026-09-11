@@ -44,7 +44,11 @@ function parseRegistrationType(value?: string | string[]): RegistrationType | un
 
 function parseCertificateRequest(value?: string | string[]): CertificateRequestFilter | undefined {
   const certificateRequest = firstValue(value);
-  return certificateRequest === "all" || certificateRequest === "pending" || certificateRequest === "requested"
+  return certificateRequest === "all"
+    || certificateRequest === "not_requested"
+    || certificateRequest === "payment_pending"
+    || certificateRequest === "payment_verified"
+    || certificateRequest === "ready_to_issue"
     ? certificateRequest
     : undefined;
 }

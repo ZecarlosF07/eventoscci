@@ -11,6 +11,8 @@ export const attendanceActivityOptionSchema = z.object({
 export const attendanceRegistrationSchema = z.object({
   activity: z.object({
     certificate_mode: z.enum(["none", "included", "optional_paid"]),
+    id: z.uuid(),
+    status: z.enum(["draft", "published", "finished", "archived", "cancelled"]),
   }),
   attendance: z.array(z.object({
     id: z.uuid(),
@@ -19,10 +21,13 @@ export const attendanceRegistrationSchema = z.object({
     status: z.enum(["pending", "attended", "absent"]),
   })),
   company_snapshot: z.string().nullable(),
-  certificate_followed_up_at: z.string().nullable(),
+  certificate: z.array(z.object({ id: z.uuid(), status: z.enum(["issued", "revoked"]) })),
   certificate_mode_snapshot: z.enum(["none", "included", "optional_paid"]),
+  certificate_payment_verified_at: z.string().nullable(),
+  certificate_payment_verified_by: z.string().nullable(),
   certificate_price_snapshot: z.number().nullable(),
   certificate_requested_at: z.string().nullable(),
+  certificate_requested_by: z.string().nullable(),
   id: z.uuid(),
   person: z.object({
     document_number: z.string(),

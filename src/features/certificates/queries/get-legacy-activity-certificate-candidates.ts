@@ -28,7 +28,7 @@ export async function getLegacyActivityCertificateCandidates(
 ): Promise<CertificateCandidatePage> {
   const client = await createServerSupabaseClient();
   const registrationResult = await client.from("registrations")
-    .select("id, registration_code, status, company_snapshot, person:people!inner(id, document_number, first_names, last_names, email), attendance(status)")
+    .select("id, registration_code, status, company_snapshot, certificate_mode_snapshot, certificate_payment_verified_at, certificate_price_snapshot, certificate_requested_at, person:people!inner(id, document_number, first_names, last_names, email), attendance(status)")
     .eq("activity_id", activityId).is("deleted_at", null).is("person.deleted_at", null).is("attendance.deleted_at", null)
     .order("created_at", { ascending: false });
   if (registrationResult.error) {
@@ -42,6 +42,10 @@ export async function getLegacyActivityCertificateCandidates(
       ...parsed.data,
       attendance: parsed.data.attendance[0],
       certificate: null,
+      certificateMode: parsed.data.certificate_mode_snapshot,
+      certificatePaymentVerifiedAt: parsed.data.certificate_payment_verified_at,
+      certificatePrice: parsed.data.certificate_price_snapshot,
+      certificateRequestedAt: parsed.data.certificate_requested_at,
     } satisfies CertificateCandidate];
   }).filter((candidate) => matchesQuery(candidate, filters.query));
   const total = registrations.length;

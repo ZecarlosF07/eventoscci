@@ -5,6 +5,10 @@ export const certificateCandidateRegistrationSchema = z.object({
     status: z.enum(["pending", "attended", "absent"]),
   })),
   company_snapshot: z.string().nullable(),
+  certificate_mode_snapshot: z.enum(["none", "included", "optional_paid"]),
+  certificate_payment_verified_at: z.string().nullable(),
+  certificate_price_snapshot: z.number().nullable(),
+  certificate_requested_at: z.string().nullable(),
   id: z.uuid(),
   person: z.object({
     document_number: z.string(),

@@ -20,16 +20,19 @@ const REGISTRATION_ADMIN_SELECT = `
   confirmed_by,
   cancelled_at,
   cancellation_reason,
-  certificate_followed_up_at,
   certificate_mode_snapshot,
+  certificate_payment_verified_at,
+  certificate_payment_verified_by,
   certificate_price_snapshot,
   certificate_requested_at,
+  certificate_requested_by,
   company_snapshot,
   ruc_snapshot,
   price_snapshot,
   created_at,
   activity:activities!inner(id, title, slug, type, status, certificate_mode),
   attendance:attendance!inner(id, status),
+  certificate:certificates(id, status),
   person:people!inner(
     id,
     document_type,
@@ -42,7 +45,7 @@ const REGISTRATION_ADMIN_SELECT = `
   )
 `;
 
-function parseAdminItems(data: unknown[]): RegistrationAdminItem[] {
+function parseAdminItems(data: unknown[]): Omit<RegistrationAdminItem, "certificatePaymentVerifiedByName" | "certificateRequestedByName">[] {
   return data.map((item) => {
     const parsed = registrationAdminItemSchema.safeParse(item);
     if (!parsed.success) {
@@ -50,6 +53,45 @@ function parseAdminItems(data: unknown[]): RegistrationAdminItem[] {
     }
     return parsed.data;
   });
+}
+
+async function attachCertificateActorNames(
+  client: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  items: ReturnType<typeof parseAdminItems>,
+): Promise<RegistrationAdminItem[]> {
+  const actorIds = [...new Set(items.flatMap((item) => [
+    item.certificate_requested_by,
+    item.certificate_payment_verified_by,
+  ]).filter((id): id is string => Boolean(id)))];
+  if (!actorIds.length) {
+    return items.map((item) => ({
+      ...item,
+      certificatePaymentVerifiedByName: null,
+      certificateRequestedByName: null,
+    }));
+  }
+
+  const { data, error } = await client
+    .from("user_accounts")
+    .select("user_id, person:people!inner(first_names, last_names)")
+    .in("user_id", actorIds)
+    .is("deleted_at", null)
+    .is("person.deleted_at", null);
+  if (error) throw new Error("No fue posible identificar a los responsables del certificado.", { cause: error });
+
+  const actorNames = new Map((data ?? []).map((account) => [
+    account.user_id,
+    `${account.person.first_names} ${account.person.last_names}`,
+  ]));
+  return items.map((item) => ({
+    ...item,
+    certificatePaymentVerifiedByName: item.certificate_payment_verified_by
+      ? actorNames.get(item.certificate_payment_verified_by) ?? "Personal CCI"
+      : null,
+    certificateRequestedByName: item.certificate_requested_by
+      ? actorNames.get(item.certificate_requested_by) ?? "Personal CCI"
+      : null,
+  }));
 }
 
 export async function getActivityRegistrations(
@@ -63,11 +105,12 @@ export async function getActivityRegistrations(
     .select(REGISTRATION_ADMIN_SELECT, { count: "exact" })
     .is("deleted_at", null)
     .is("attendance.deleted_at", null)
+    .is("certificate.deleted_at", null)
     .is("person.deleted_at", null)
     .neq("activity.status", "archived")
     .order(
-      filters.certificateRequest === "pending" ? "certificate_requested_at" : "created_at",
-      { ascending: filters.certificateRequest === "pending" },
+      filters.certificateRequest === "payment_pending" ? "certificate_requested_at" : "created_at",
+      { ascending: filters.certificateRequest === "payment_pending" },
     );
 
   if (filters.status) query = query.eq("status", filters.status);
@@ -76,13 +119,32 @@ export async function getActivityRegistrations(
   if (filters.activityType) query = query.eq("activity.type", filters.activityType);
   if (filters.registrationType) query = query.eq("registration_type", filters.registrationType);
   if (filters.attendanceStatus) query = query.eq("attendance.status", filters.attendanceStatus);
-  if (filters.certificateRequest === "pending") {
+  if (filters.certificateRequest === "not_requested") {
     query = query
       .eq("activity.certificate_mode", "optional_paid")
+      .eq("certificate_mode_snapshot", "optional_paid")
+      .is("certificate_requested_at", null);
+  } else if (filters.certificateRequest === "payment_pending") {
+    query = query
+      .eq("activity.certificate_mode", "optional_paid")
+      .eq("certificate_mode_snapshot", "optional_paid")
       .not("certificate_requested_at", "is", null)
-      .is("certificate_followed_up_at", null);
-  } else if (filters.certificateRequest === "requested") {
-    query = query.eq("activity.certificate_mode", "optional_paid").not("certificate_requested_at", "is", null);
+      .is("certificate_payment_verified_at", null);
+  } else if (filters.certificateRequest === "payment_verified") {
+    query = query
+      .eq("activity.certificate_mode", "optional_paid")
+      .eq("certificate_mode_snapshot", "optional_paid")
+      .not("certificate_payment_verified_at", "is", null);
+  } else if (filters.certificateRequest === "ready_to_issue") {
+    query = query
+      .eq("status", "confirmed")
+      .eq("attendance.status", "attended")
+      .in("activity.certificate_mode", ["included", "optional_paid"])
+      .or([
+        "certificate_mode_snapshot.eq.included",
+        "and(certificate_mode_snapshot.eq.optional_paid,certificate_requested_at.not.is.null,certificate_payment_verified_at.not.is.null)",
+      ].join(","))
+      .is("certificate", null);
   }
   const search = filters.query ? escapePostgrestSearch(filters.query) : "";
   if (search) {
@@ -106,7 +168,7 @@ export async function getActivityRegistrations(
   return {
     page: filters.page,
     pageCount: Math.max(1, Math.ceil(total / REGISTRATION_PAGE_SIZE)),
-    registrations: parseAdminItems(data ?? []),
+    registrations: await attachCertificateActorNames(client, parseAdminItems(data ?? [])),
     total,
   };
 }
@@ -133,6 +195,7 @@ export async function getRegistrationsForExport(
     .select(REGISTRATION_ADMIN_SELECT)
     .is("deleted_at", null)
     .is("attendance.deleted_at", null)
+    .is("certificate.deleted_at", null)
     .is("person.deleted_at", null)
     .neq("activity.status", "archived")
     .order("created_at", { ascending: false })
@@ -144,13 +207,32 @@ export async function getRegistrationsForExport(
   if (filters.activityType) query = query.eq("activity.type", filters.activityType);
   if (filters.registrationType) query = query.eq("registration_type", filters.registrationType);
   if (filters.attendanceStatus) query = query.eq("attendance.status", filters.attendanceStatus);
-  if (filters.certificateRequest === "pending") {
+  if (filters.certificateRequest === "not_requested") {
     query = query
       .eq("activity.certificate_mode", "optional_paid")
+      .eq("certificate_mode_snapshot", "optional_paid")
+      .is("certificate_requested_at", null);
+  } else if (filters.certificateRequest === "payment_pending") {
+    query = query
+      .eq("activity.certificate_mode", "optional_paid")
+      .eq("certificate_mode_snapshot", "optional_paid")
       .not("certificate_requested_at", "is", null)
-      .is("certificate_followed_up_at", null);
-  } else if (filters.certificateRequest === "requested") {
-    query = query.eq("activity.certificate_mode", "optional_paid").not("certificate_requested_at", "is", null);
+      .is("certificate_payment_verified_at", null);
+  } else if (filters.certificateRequest === "payment_verified") {
+    query = query
+      .eq("activity.certificate_mode", "optional_paid")
+      .eq("certificate_mode_snapshot", "optional_paid")
+      .not("certificate_payment_verified_at", "is", null);
+  } else if (filters.certificateRequest === "ready_to_issue") {
+    query = query
+      .eq("status", "confirmed")
+      .eq("attendance.status", "attended")
+      .in("activity.certificate_mode", ["included", "optional_paid"])
+      .or([
+        "certificate_mode_snapshot.eq.included",
+        "and(certificate_mode_snapshot.eq.optional_paid,certificate_requested_at.not.is.null,certificate_payment_verified_at.not.is.null)",
+      ].join(","))
+      .is("certificate", null);
   }
   const search = filters.query ? escapePostgrestSearch(filters.query) : "";
   if (search) {
@@ -166,7 +248,7 @@ export async function getRegistrationsForExport(
   }
   const { data, error } = await query;
   if (error) throw new Error("No fue posible preparar la exportación.", { cause: error });
-  return parseAdminItems(data ?? []);
+  return attachCertificateActorNames(client, parseAdminItems(data ?? []));
 }
 
 export function getPendingRegistrations(
@@ -185,6 +267,7 @@ export async function getRegistrationByCode(
     .eq("registration_code", registrationCode.toUpperCase().trim())
     .is("deleted_at", null)
     .is("attendance.deleted_at", null)
+    .is("certificate.deleted_at", null)
     .is("person.deleted_at", null)
     .neq("activity.status", "archived")
     .maybeSingle();
@@ -198,5 +281,5 @@ export async function getRegistrationByCode(
   if (!parsed.success) {
     throw new Error("La respuesta de inscripción no tiene el formato esperado.");
   }
-  return parsed.data;
+  return (await attachCertificateActorNames(client, [parsed.data]))[0] ?? null;
 }

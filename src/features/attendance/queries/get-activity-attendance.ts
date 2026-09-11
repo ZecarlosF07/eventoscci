@@ -8,8 +8,10 @@ import { escapePostgrestSearch } from "@/utils/postgrest-search";
 const ATTENDANCE_SELECT = `
   id, registration_code, registration_type, status, company_snapshot,
   certificate_mode_snapshot, certificate_price_snapshot,
-  certificate_requested_at, certificate_followed_up_at,
-  activity:activities!inner(certificate_mode),
+  certificate_requested_at, certificate_requested_by,
+  certificate_payment_verified_at, certificate_payment_verified_by,
+  activity:activities!inner(id, certificate_mode, status),
+  certificate:certificates(id, status),
   person:people!inner(document_number, first_names, last_names, email, phone),
   attendance:attendance!inner(id, status, marked_at, notes)
 `;
@@ -38,6 +40,7 @@ export async function getActivityAttendance(
     .is("deleted_at", null)
     .is("person.deleted_at", null)
     .is("attendance.deleted_at", null)
+    .is("certificate.deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (filters.registrationStatus) query = query.eq("status", filters.registrationStatus);
@@ -69,10 +72,18 @@ export async function getActivityAttendance(
       notes: attendanceRow.notes,
       registration: {
         activity: parsed.data.activity,
-        certificate_followed_up_at: parsed.data.certificate_followed_up_at,
+        attendance: [{ status: attendanceRow.status }],
+        certificate: parsed.data.certificate,
         certificate_mode_snapshot: parsed.data.certificate_mode_snapshot,
+        certificate_payment_verified_at: parsed.data.certificate_payment_verified_at,
         certificate_price_snapshot: parsed.data.certificate_price_snapshot,
         certificate_requested_at: parsed.data.certificate_requested_at,
+        certificatePaymentVerifiedByName: parsed.data.certificate_payment_verified_by
+          ? "Personal CCI"
+          : null,
+        certificateRequestedByName: parsed.data.certificate_requested_by
+          ? "Personal CCI"
+          : null,
         company_snapshot: parsed.data.company_snapshot,
         id: parsed.data.id,
         person: parsed.data.person,

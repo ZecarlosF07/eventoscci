@@ -1,6 +1,7 @@
 import type { ActivityListItem, ActivityType } from "@/features/activities/types/activity.types";
 import type { AttendanceStatus } from "@/features/attendance/types/attendance.types";
 import type { RegistrationStatus } from "@/features/registrations/types/registration.types";
+import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 import type { Enums, Json, Tables } from "@/lib/supabase/database.types";
 
 export type CertificateStatus = Enums<"certificate_status">;
@@ -51,6 +52,10 @@ export interface CertificateActivityPage {
 export interface CertificateCandidate {
   attendance: { status: AttendanceStatus };
   certificate: Pick<CertificateRow, "certificate_code" | "file_path" | "id" | "status"> | null;
+  certificateMode: ActivityCertificateMode;
+  certificatePaymentVerifiedAt: string | null;
+  certificatePrice: number | null;
+  certificateRequestedAt: string | null;
   company_snapshot: string | null;
   id: string;
   person: {
@@ -77,7 +82,7 @@ export interface CertificateCandidatePage {
 }
 
 export interface ActivityCertificateData {
-  activity: { id: string; title: string; type: ActivityType };
+  activity: { certificate_mode: ActivityCertificateMode; id: string; title: string; type: ActivityType };
   candidatePage: CertificateCandidatePage;
   templates: CertificateTemplate[];
 }

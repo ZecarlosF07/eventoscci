@@ -9,7 +9,12 @@ import type { Enums, Tables } from "@/lib/supabase/database.types";
 export type RegistrationType = Enums<"registration_type">;
 export type RegistrationStatus = Enums<"registration_status">;
 export type RegistrationRow = Tables<"registrations">;
-export type CertificateRequestFilter = "all" | "pending" | "requested";
+export type CertificateRequestFilter =
+  | "all"
+  | "not_requested"
+  | "payment_pending"
+  | "payment_verified"
+  | "ready_to_issue";
 
 export interface RegistrationInput {
   address: string;
@@ -135,10 +140,12 @@ export interface RegistrationAdminItem
     | "confirmed_by"
     | "cancelled_at"
     | "cancellation_reason"
-    | "certificate_followed_up_at"
     | "certificate_mode_snapshot"
+    | "certificate_payment_verified_at"
+    | "certificate_payment_verified_by"
     | "certificate_price_snapshot"
     | "certificate_requested_at"
+    | "certificate_requested_by"
     | "created_at"
     | "id"
     | "price_snapshot"
@@ -147,8 +154,11 @@ export interface RegistrationAdminItem
     | "ruc_snapshot"
     | "status"
   > {
-  activity: Pick<Tables<"activities">, "certificate_mode" | "id" | "slug" | "title" | "type">;
+  activity: Pick<Tables<"activities">, "certificate_mode" | "id" | "slug" | "status" | "title" | "type">;
   attendance: Array<Pick<Tables<"attendance">, "id" | "status">>;
+  certificate: Array<Pick<Tables<"certificates">, "id" | "status">>;
+  certificatePaymentVerifiedByName: string | null;
+  certificateRequestedByName: string | null;
   person: Pick<
     Tables<"people">,
     | "id"

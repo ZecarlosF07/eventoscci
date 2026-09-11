@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
 import { ROUTES } from "@/constants/routes";
 import { requireAdmin } from "@/features/auth/services/admin-session";
@@ -11,6 +12,14 @@ import { withAdminResult } from "@/utils/admin-return-url";
 
 function didChange(data: unknown): boolean {
   return Boolean(data && typeof data === "object" && "changed" in data && data.changed);
+}
+
+function revalidateCertificateAdminPaths(activityId: string, returnTo: string): void {
+  revalidatePath(ROUTES.adminRegistrations);
+  revalidatePath("/admin/asistencia");
+  revalidatePath(`${ROUTES.adminCertificatesActivities}/${activityId}`);
+  revalidatePath(ROUTES.adminCertificatesActivities);
+  if (returnTo.startsWith("/admin/")) revalidatePath(returnTo.split("?")[0]);
 }
 
 export async function confirmRegistrationAction(
@@ -70,26 +79,78 @@ export async function cancelRegistrationAction(
   ));
 }
 
-export async function markCertificateRequestFollowedUpAction(
+export async function registerCertificateRequestAdminAction(
   registrationId: string,
+  activityId: string,
   returnTo: string,
 ): Promise<void> {
   await requireAdmin();
   const client = await createServerSupabaseClient();
-  const { data, error } = await client.rpc("mark_certificate_request_followed_up", {
+  const { data, error } = await client.rpc("register_activity_certificate_request_admin", {
     p_registration_id: registrationId,
   });
 
   if (error) {
-    redirect(withAdminResult(returnTo, ROUTES.adminRegistrations, "error-seguimiento-certificado"));
+    redirect(withAdminResult(returnTo, ROUTES.adminRegistrations, "error-solicitud-certificado"));
   }
 
-  revalidatePath(ROUTES.adminRegistrations);
-  revalidatePath("/admin/asistencia");
-  if (returnTo.startsWith("/admin/")) revalidatePath(returnTo.split("?")[0]);
+  revalidateCertificateAdminPaths(activityId, returnTo);
   redirect(withAdminResult(
     returnTo,
     ROUTES.adminRegistrations,
-    didChange(data) ? "seguimiento-certificado" : "certificado-ya-atendido",
+    didChange(data) ? "solicitud-certificado-registrada" : "solicitud-certificado-existente",
+  ));
+}
+
+export async function verifyCertificatePaymentAction(
+  registrationId: string,
+  activityId: string,
+  returnTo: string,
+): Promise<void> {
+  await requireAdmin();
+  const client = await createServerSupabaseClient();
+  const { data, error } = await client.rpc("verify_activity_certificate_payment", {
+    p_registration_id: registrationId,
+  });
+
+  if (error) {
+    redirect(withAdminResult(returnTo, ROUTES.adminRegistrations, "error-pago-certificado"));
+  }
+
+  revalidateCertificateAdminPaths(activityId, returnTo);
+  redirect(withAdminResult(
+    returnTo,
+    ROUTES.adminRegistrations,
+    didChange(data) ? "pago-certificado-verificado" : "pago-certificado-ya-verificado",
+  ));
+}
+
+export async function revertCertificatePaymentAction(
+  registrationId: string,
+  activityId: string,
+  returnTo: string,
+  formData: FormData,
+): Promise<void> {
+  await requireAdmin();
+  const reason = z.string().trim().min(3).max(500).safeParse(formData.get("reversal_reason"));
+  if (!reason.success) {
+    redirect(withAdminResult(returnTo, ROUTES.adminRegistrations, "error-motivo-reversion-certificado"));
+  }
+
+  const client = await createServerSupabaseClient();
+  const { data, error } = await client.rpc("revert_activity_certificate_payment", {
+    p_reason: reason.data,
+    p_registration_id: registrationId,
+  });
+
+  if (error) {
+    redirect(withAdminResult(returnTo, ROUTES.adminRegistrations, "error-revertir-pago-certificado"));
+  }
+
+  revalidateCertificateAdminPaths(activityId, returnTo);
+  redirect(withAdminResult(
+    returnTo,
+    ROUTES.adminRegistrations,
+    didChange(data) ? "pago-certificado-revertido" : "pago-certificado-pendiente",
   ));
 }

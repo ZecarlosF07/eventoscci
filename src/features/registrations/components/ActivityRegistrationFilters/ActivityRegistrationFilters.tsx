@@ -26,10 +26,12 @@ export function ActivityRegistrationFilters({ filters }: { filters: Registration
         <option value="general">Público general</option>
         <option value="member">Asociado CCI</option>
       </Select>
-      <Select aria-label="Solicitud de certificado" defaultValue={filters.certificateRequest ?? ""} name="certificado">
+      <Select aria-label="Estado comercial del certificado" defaultValue={filters.certificateRequest ?? ""} name="certificado">
         <option value="">Todas</option>
-        <option value="pending">Pendientes de seguimiento</option>
-        <option value="requested">Solicitadas</option>
+        <option value="not_requested">Sin solicitar</option>
+        <option value="payment_pending">Pago pendiente</option>
+        <option value="payment_verified">Pago verificado</option>
+        <option value="ready_to_issue">Listos para emitir</option>
       </Select>
       <button className="min-h-11 rounded-xl bg-cci-950 px-5 text-sm font-bold text-white hover:bg-cci-800" type="submit">Aplicar</button>
       <Link className="flex min-h-11 items-center justify-center rounded-xl border border-slate-300 px-4 text-sm font-semibold hover:bg-cci-50" href={pathname}>Limpiar</Link>

@@ -18,11 +18,19 @@ export interface AttendanceItem {
   marked_at: string | null;
   notes: string | null;
   registration: {
-    activity: { certificate_mode: ActivityCertificateMode };
-    certificate_followed_up_at: string | null;
+    activity: {
+      certificate_mode: ActivityCertificateMode;
+      id: string;
+      status: Enums<"activity_status">;
+    };
+    attendance: Array<{ status: AttendanceStatus }>;
+    certificate: Array<{ id: string; status: "issued" | "revoked" }>;
     certificate_mode_snapshot: ActivityCertificateMode;
+    certificate_payment_verified_at: string | null;
     certificate_price_snapshot: number | null;
     certificate_requested_at: string | null;
+    certificatePaymentVerifiedByName: string | null;
+    certificateRequestedByName: string | null;
     company_snapshot: string | null;
     id: string;
     person: {

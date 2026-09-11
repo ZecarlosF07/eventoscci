@@ -1,6 +1,6 @@
 begin;
 
-select plan(47);
+select plan(44);
 
 select ok(
   exists (
@@ -351,47 +351,19 @@ select is(
   'repeated request does not duplicate the internal notification'
 );
 
-set local role authenticated;
-select set_config('request.jwt.claim.sub', '8e000000-0000-4000-8000-000000000001', true);
-select throws_ok(
-  $$select public.mark_certificate_request_followed_up(
-    (select registration_id from hito14_refs where document_number = '14000003')
-  )$$,
-  '42501',
-  'UNAUTHORIZED',
-  'student cannot mark certificate follow-up'
+select is(
+  has_function_privilege('authenticated', 'public.mark_certificate_request_followed_up(uuid)', 'EXECUTE'),
+  false,
+  'the ambiguous follow-up action is disabled'
 );
-reset role;
+select ok(
+  (select certificate_followed_up_at is null and certificate_followed_up_by is null
+    from public.registrations where id = (select registration_id from hito14_refs where document_number = '14000003')),
+  'legacy follow-up fields remain unused'
+);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '8e000000-0000-4000-8000-000000000002', true);
-select throws_ok(
-  $$select public.mark_certificate_request_followed_up(
-    (select registration_id from hito14_refs where document_number = '14000004')
-  )$$,
-  'P0001',
-  'CERTIFICATE_REQUEST_NOT_FOUND',
-  'follow-up is rejected when no request exists'
-);
-select lives_ok(
-  $$select public.mark_certificate_request_followed_up(
-    (select registration_id from hito14_refs where document_number = '14000003')
-  )$$,
-  'administrator marks the request as attended'
-);
-select ok(
-  (select certificate_followed_up_at is not null
-    and certificate_followed_up_by = '8e000000-0000-4000-8000-000000000002'::uuid
-    from public.registrations where id = (select registration_id from hito14_refs where document_number = '14000003')),
-  'follow-up records timestamp and actor'
-);
-select is(
-  (select count(*) from public.audit_logs where action = 'registration.certificate_followed_up'
-    and entity_id = (select registration_id from hito14_refs where document_number = '14000003')),
-  1::bigint,
-  'follow-up is audited'
-);
-
 select lives_ok(
   $$select public.set_attendance_status(
     array[(select attendance_id from hito14_refs where document_number = '14000004')],

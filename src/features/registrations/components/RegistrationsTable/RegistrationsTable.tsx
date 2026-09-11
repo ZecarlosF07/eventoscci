@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Text } from "@/components/atoms/Text";
 import { ResponsiveTableFrame } from "@/components/molecules/ResponsiveTableFrame";
 import { ROUTES } from "@/constants/routes";
+import { AttendanceStatusBadge } from "@/features/attendance/components/AttendanceStatusBadge";
 import { getActivityParticipationRoute } from "@/features/participation/utils/participation-routes";
 import { CertificateRequestAdminStatus } from "@/features/registrations/components/CertificateRequestAdminStatus";
 import { RegistrationRowActions } from "@/features/registrations/components/RegistrationRowActions";
@@ -35,6 +36,10 @@ function MobileCards({ registrations, returnTo, showActivity }: RegistrationsTab
             <div><dt className="text-xs text-slate-500">Tipo</dt><dd>{REGISTRATION_TYPE_LABELS[registration.registration_type]}</dd></div>
             <div><dt className="text-xs text-slate-500">Registro</dt><dd>{formatRegistrationDate(registration.created_at)}</dd></div>
           </dl>
+          <div className="mt-4 flex items-center gap-2">
+            <span className="text-xs font-semibold text-slate-500">Asistencia</span>
+            <AttendanceStatusBadge status={registration.attendance[0]?.status ?? "pending"} />
+          </div>
           <div className="mt-4 border-t border-slate-100 pt-4">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Certificado</p>
             <CertificateRequestAdminStatus registration={registration} returnTo={returnTo} />
@@ -52,9 +57,9 @@ export function RegistrationsTable({ registrations, returnTo, showActivity = fal
     <>
       <MobileCards registrations={registrations} returnTo={returnTo} showActivity={showActivity} />
       <ResponsiveTableFrame className="hidden rounded-3xl md:block" label="Listado de inscripciones">
-        <table className="w-full min-w-[1320px] text-left text-sm">
+        <table className="w-full min-w-[1420px] text-left text-sm">
           <thead className="border-b border-cci-100 bg-cci-50 text-slate-600"><tr>
-            <th className="px-4 py-4">Participante</th>{showActivity ? <th className="px-4 py-4">Actividad</th> : null}<th className="px-4 py-4">Inscripción</th><th className="px-4 py-4">Contacto</th><th className="px-4 py-4">Importe</th><th className="px-4 py-4">Certificado</th><th className="px-4 py-4">Estado</th><th className="px-4 py-4">Acciones</th>
+            <th className="px-4 py-4">Participante</th>{showActivity ? <th className="px-4 py-4">Actividad</th> : null}<th className="px-4 py-4">Inscripción</th><th className="px-4 py-4">Contacto</th><th className="px-4 py-4">Importe</th><th className="px-4 py-4">Asistencia</th><th className="px-4 py-4">Certificado</th><th className="px-4 py-4">Estado</th><th className="px-4 py-4">Acciones</th>
           </tr></thead>
           <tbody className="divide-y divide-slate-100">
             {registrations.map((registration) => <tr className="hover:bg-cci-50/50" key={registration.id}>
@@ -63,6 +68,7 @@ export function RegistrationsTable({ registrations, returnTo, showActivity = fal
               <td className="px-4 py-4 align-top"><p className="font-mono font-semibold">{registration.registration_code}</p><Text size="sm">{REGISTRATION_TYPE_LABELS[registration.registration_type]} · {formatRegistrationDate(registration.created_at)}</Text></td>
               <td className="px-4 py-4 align-top text-slate-700"><p>{registration.person.email}</p><p>{registration.person.phone}</p></td>
               <td className="px-4 py-4 align-top font-semibold">{formatRegistrationPrice(registration.price_snapshot)}</td>
+              <td className="px-4 py-4 align-top"><AttendanceStatusBadge status={registration.attendance[0]?.status ?? "pending"} /></td>
               <td className="px-4 py-4 align-top"><CertificateRequestAdminStatus registration={registration} returnTo={returnTo} /></td>
               <td className="px-4 py-4 align-top"><RegistrationStatusBadge status={registration.status} /></td>
               <td className="px-4 py-4 align-top"><RegistrationRowActions registration={registration} returnTo={returnTo} /></td>

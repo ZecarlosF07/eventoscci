@@ -26,10 +26,18 @@ test("el historial completo se distingue de las inscripciones activas", async ()
   assert.equal(filters.page, 2);
 });
 
-test("permite filtrar solicitudes de certificado pendientes de seguimiento", async () => {
+test("permite filtrar certificados con pago pendiente", async () => {
+  const filters = await parseActivityRegistrationFilters(
+    Promise.resolve({ certificado: "payment_pending" }),
+    "activity-id",
+  );
+  assert.equal(filters.certificateRequest, "payment_pending");
+});
+
+test("descarta filtros comerciales antiguos o desconocidos", async () => {
   const filters = await parseActivityRegistrationFilters(
     Promise.resolve({ certificado: "pending" }),
     "activity-id",
   );
-  assert.equal(filters.certificateRequest, "pending");
+  assert.equal(filters.certificateRequest, undefined);
 });

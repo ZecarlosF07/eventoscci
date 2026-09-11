@@ -20,7 +20,7 @@ export default async function ActivityCertificatesPage({ params, searchParams }:
       <Link className="text-sm font-semibold hover:underline" href={ROUTES.adminCertificatesActivities}>← Elegir otra actividad</Link>
       <SectionHeading description={`${data.candidatePage.total} participantes. La base de datos vuelve a validar confirmación y asistencia al emitir.`} eyebrow={data.activity.type === "event" ? "Evento" : "Capacitación"} title={data.activity.title} />
       <CertificateCandidateFilters filters={filters} />
-      <CertificateCandidatesTable activityId={data.activity.id} candidates={data.candidatePage.candidates} templates={data.templates} />
+      <CertificateCandidatesTable activityId={data.activity.id} candidates={data.candidatePage.candidates} certificateMode={data.activity.certificate_mode} templates={data.templates} />
       <Pagination page={data.candidatePage.page} pageCount={data.candidatePage.pageCount} pathname={`${ROUTES.adminCertificatesActivities}/${activityId}`} searchParams={{ q: filters.query }} />
     </div>
   );
