@@ -11,6 +11,7 @@ const VARIABLES: ProductionVariable[] = [
   { kind: "secret", name: "SUPABASE_SERVICE_ROLE_KEY" },
   { kind: "secret", name: "N8N_WEBHOOK_URL", url: true },
   { kind: "secret", name: "N8N_WEBHOOK_SECRET" },
+  { kind: "secret", name: "NOTIFICATION_CRON_SECRET" },
 ];
 
 function isPlaceholder(value: string): boolean {
@@ -37,6 +38,9 @@ function validateVariable(variable: ProductionVariable): string | null {
 const errors = VARIABLES.map(validateVariable).filter((error): error is string => Boolean(error));
 if (process.env.SUPABASE_SERVICE_ROLE_KEY === process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
   errors.push("Las claves pública y service_role no pueden ser iguales");
+}
+if (process.env.NOTIFICATION_CRON_SECRET === process.env.N8N_WEBHOOK_SECRET) {
+  errors.push("NOTIFICATION_CRON_SECRET y N8N_WEBHOOK_SECRET deben ser diferentes");
 }
 
 if (errors.length) {

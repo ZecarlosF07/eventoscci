@@ -16,6 +16,7 @@ import { ActivityCertificateFields } from "@/features/activities/components/Acti
 import { ActivityDateFields } from "@/features/activities/components/ActivityDateFields";
 import { ActivityFormSection } from "@/features/activities/components/ActivityFormSection";
 import { ActivitySpeakerFields } from "@/features/activities/components/ActivitySpeakerFields";
+import { ActivityVirtualAccessFields } from "@/features/activities/components/ActivityVirtualAccessFields";
 import { CatalogSelect } from "@/features/catalogs/components/CatalogSelect";
 import { ACTIVITY_STATUS_LABELS } from "@/features/activities/constants/activity.constants";
 import { useActivityFormSubmission } from "@/features/activities/hooks/use-activity-form-submission";
@@ -92,7 +93,7 @@ export function ActivityForm({
       <ActivityFormSection description="Completa lo que corresponda a presencial, virtual o híbrida." title="Modalidad y duración">
         <div className="grid gap-5 md:grid-cols-2">
           {modality !== "virtual" ? <CatalogSelect defaultValue={activity?.venue_id ?? ""} error={error("venue_id")} kind="venues" label="Lugar" name="venue_id" options={venues.map((venue) => ({ description: venue.address, id: venue.id, label: venue.name }))} required={status === "published"} /> : <input name="venue_id" type="hidden" value="" />}
-          <FormField error={error("virtual_url")} label="Enlace virtual" name="virtual_url"><Input defaultValue={activity?.virtual_url ?? ""} id="virtual_url" name="virtual_url" type="url" /></FormField>
+          <ActivityVirtualAccessFields defaultValue={activity?.virtual_url} error={error("virtual_url")} modality={modality} published={status === "published"} />
           <FormField error={error("duration_text")} hint="Texto resumido que verá el público, por ejemplo: 5 horas, 2 días o 4 sesiones; máximo 100 caracteres." label="Duración mostrada al público" name="duration_text"><Input defaultValue={activity?.duration_text ?? ""} id="duration_text" maxLength={FIELD_LIMITS.activityDuration} name="duration_text" placeholder="Ej. 2 días" /></FormField>
           <FormField error={error("academic_hours")} hint="Cantidad oficial que aparecerá en el certificado. Déjala vacía si no corresponde." label="Horas académicas certificables" name="academic_hours"><Input defaultValue={activity?.academic_hours ?? ""} id="academic_hours" min="0" name="academic_hours" step="0.5" type="number" /></FormField>
         </div>

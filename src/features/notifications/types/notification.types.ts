@@ -9,9 +9,13 @@ export type NotificationEventType =
   | "activity_free_registration_confirmed"
   | "activity_paid_preregistration_created"
   | "activity_paid_registration_confirmed"
+  | "activity_virtual_session_reminder"
   | "course_certificate_issued";
 
-export type NotificationEntityType = "certificate" | "registration";
+export type NotificationEntityType =
+  | "activity_virtual_reminder"
+  | "certificate"
+  | "registration";
 
 export interface NotificationReference {
   eventType: NotificationEventType;
@@ -41,4 +45,10 @@ export interface NotificationPage {
 
 export interface NotificationsAdminPageProps {
   searchParams: Promise<{ pagina?: string | string[] }>;
+}
+
+export interface ScheduledNotificationBatchResult {
+  claimed: number;
+  failed: number;
+  sent: number;
 }

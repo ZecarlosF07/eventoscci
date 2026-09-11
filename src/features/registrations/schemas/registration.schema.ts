@@ -85,6 +85,12 @@ export const registrationRpcResultSchema = z.object({
 });
 
 export const publicRegistrationResultSchema = z.object({
+  activity_modality: z.enum(["in_person", "virtual", "hybrid"]).nullable().default(null),
+  activity_sessions: z.array(z.object({
+    ends_at: z.string().nullable().optional(),
+    label: z.string().nullable().optional(),
+    starts_at: z.string(),
+  })).default([]),
   activity_slug: z.string(),
   activity_title: z.string(),
   activity_type: z.enum(["event", "training"]),
@@ -100,6 +106,10 @@ export const publicRegistrationResultSchema = z.object({
   registration_code: z.string(),
   registration_type: z.enum(["general", "member"]),
   status: z.enum(["pending", "confirmed", "cancelled"]),
+  venue_address: z.string().nullable().default(null),
+  venue_name: z.string().nullable().default(null),
+  venue_reference: z.string().nullable().default(null),
+  virtual_access_url: z.url().nullable().default(null),
 });
 
 export const registrationAvailabilitySchema = z.object({

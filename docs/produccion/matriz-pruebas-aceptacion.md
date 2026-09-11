@@ -49,6 +49,19 @@ Los archivos usan transacciones con `rollback`; no conservan fixtures en la base
 | Solicitud duplicada de certificado | token opaco, bloqueo de inscripción y unicidad del outbox | 020 |
 | Interés de certificado durante la inscripción | registro atómico, auditoría y aviso interno único | 021 |
 | Finalización repetida | `check_course_completion` idempotente | 010 |
+| Acceso virtual expuesto | tabla privada, RLS y consultas públicas explícitas | 022 |
+| Recordatorio virtual duplicado | identidad única por inscripción y sesión | 022 |
+
+## Acceso virtual y recordatorios
+
+| Caso | Validación | Evidencia |
+|---|---|---|
+| VA-DB-01 | Anónimos y estudiantes no pueden consultar enlaces ni identidades de recordatorio | 022 |
+| VA-DB-02 | Cada inscripción confirmada programa exactamente un recordatorio por sesión futura | 022 |
+| VA-MAIL-01 | Registro gratuito confirmado recibe acceso; preinscripción pagada no lo recibe | Unitarias + smoke |
+| VA-MAIL-02 | Confirmación pagada e híbrida incluye acceso, sede y acciones de certificado independientes | Unitarias + smoke |
+| VA-PUBLIC-01 | Código sin token o inscripción pendiente no revela el enlace virtual | 022 |
+| VA-CRON-01 | El scheduler reclama vencidos y recupera trabajos atascados por más de 15 minutos | 022 + smoke |
 
 Antes del lanzamiento se repite la suite vinculada y un recorrido UI con dos envíos simultáneos controlados. Las restricciones de base de datos son la barrera definitiva aunque dos instancias de Vercel procesen la misma acción.
 

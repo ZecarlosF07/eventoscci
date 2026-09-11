@@ -100,7 +100,7 @@ erDiagram
         text modality
         text location_name
         text address
-        text virtual_url
+        text virtual_url "heredado; siempre NULL"
         text duration_text
         numeric academic_hours
         text program
@@ -128,6 +128,14 @@ erDiagram
         uuid deleted_by FK
     }
 
+    ACTIVITY_VIRTUAL_ACCESS {
+        uuid activity_id PK, FK
+        text virtual_url
+        timestamptz created_at
+        timestamptz updated_at
+        uuid updated_by FK
+    }
+
     ACTIVITY_DATES {
         uuid id PK
         uuid activity_id FK
@@ -139,6 +147,16 @@ erDiagram
         timestamptz updated_at
         timestamptz deleted_at
         uuid deleted_by FK
+    }
+
+    ACTIVITY_VIRTUAL_REMINDERS {
+        uuid id PK
+        uuid registration_id FK
+        uuid activity_date_id FK
+        timestamptz session_starts_at
+        timestamptz created_at
+        timestamptz updated_at
+        timestamptz deleted_at
     }
 
     ACTIVITY_SPEAKERS {
@@ -496,12 +514,15 @@ erDiagram
     CATEGORIES ||--o{ ACTIVITIES : "classifies"
 
     ACTIVITIES ||--o{ ACTIVITY_DATES : "has"
+    ACTIVITIES ||--o| ACTIVITY_VIRTUAL_ACCESS : "protects access"
     ACTIVITIES ||--o{ ACTIVITY_SPEAKERS : "has"
     SPEAKERS ||--o{ ACTIVITY_SPEAKERS : "participates"
 
     PEOPLE ||--o{ REGISTRATIONS : "registers"
     ACTIVITIES ||--o{ REGISTRATIONS : "receives"
     REGISTRATIONS ||--o| ATTENDANCE : "has"
+    REGISTRATIONS ||--o{ ACTIVITY_VIRTUAL_REMINDERS : "schedules"
+    ACTIVITY_DATES ||--o{ ACTIVITY_VIRTUAL_REMINDERS : "identifies session"
 
     COURSES ||--o{ COURSE_INSTRUCTORS : "has"
     SPEAKERS ||--o{ COURSE_INSTRUCTORS : "teaches"

@@ -68,6 +68,8 @@ descargas públicas de certificados. El token público no concede listado ni acc
 - La generación de certificados de curso valida UUID, sesión y ownership antes de usar
   `service_role`.
 - La entrega de notificaciones usa `N8N_WEBHOOK_SECRET` exclusivamente en el servidor.
+- El scheduler de recordatorios usa un `NOTIFICATION_CRON_SECRET` independiente y exclusivo del servidor.
+- Los enlaces virtuales se almacenan en `activity_virtual_access`; anónimos y estudiantes no tienen privilegios de lectura.
 - Las descargas de materiales dependen de RLS y matrícula; las de certificados resuelven un único
   archivo mediante token y generan una URL temporal.
 - Los callbacks de autenticación limitan redirecciones a rutas internas seguras.

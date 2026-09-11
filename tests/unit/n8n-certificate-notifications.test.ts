@@ -95,3 +95,67 @@ test("el aviso interno contiene la referencia operativa y enlaza al filtro pendi
   assert.match(email.html, /certificado=pending/);
   assert.equal(email.to, "destino@example.test");
 });
+
+const virtualContext = {
+  ...requestContext,
+  activity_modality: "virtual",
+  activity_sessions: [
+    { label: "Sesión 1", starts_at: "2026-09-22T15:00:00-05:00" },
+  ],
+  virtual_access_url: "https://meet.example.test/sesion-segura",
+};
+
+test("la confirmación virtual conserva acceso y certificado como acciones separadas", () => {
+  const email = prepareEmail("activity_free_registration_confirmed", virtualContext);
+
+  assert.match(email.html, /Ingresar a la actividad virtual/);
+  assert.match(email.html, /meet\.example\.test\/sesion-segura/);
+  assert.match(email.html, /Solicitar mi certificado/);
+  assert.match(email.html, /Sesión 1/);
+});
+
+test("la preinscripción pagada nunca muestra el acceso virtual", () => {
+  const email = prepareEmail("activity_paid_preregistration_created", virtualContext);
+
+  assert.doesNotMatch(email.html, /meet\.example\.test\/sesion-segura/);
+  assert.doesNotMatch(email.html, /Ingresar a la actividad virtual/);
+});
+
+test("el recordatorio identifica la sesión y entrega el enlace", () => {
+  const email = prepareEmail("activity_virtual_session_reminder", {
+    ...virtualContext,
+    registration_request_token: requestContext.certificate_request_token,
+    session_starts_at: "2026-09-22T15:00:00-05:00",
+  });
+
+  assert.match(email.subject, /comienza pronto/i);
+  assert.match(email.html, /aproximadamente una hora/i);
+  assert.match(email.html, /Ingresar a la actividad virtual/);
+  assert.match(email.html, /Ver datos de acceso/);
+});
+
+test("la confirmación híbrida informa sede y acceso virtual", () => {
+  const email = prepareEmail("activity_paid_registration_confirmed", {
+    ...virtualContext,
+    activity_modality: "hybrid",
+    venue_address: "Av. Principal 123, Ica",
+    venue_name: "Auditorio CCI",
+  });
+
+  assert.match(email.html, /Alternativa presencial/);
+  assert.match(email.html, /Auditorio CCI/);
+  assert.match(email.html, /Ingresar a la actividad virtual/);
+});
+
+test("una actividad híbrida heredada sin enlace no bloquea su confirmación", () => {
+  const legacyHybridContext = {
+    ...virtualContext,
+    activity_modality: "hybrid",
+    venue_name: "Auditorio CCI",
+    virtual_access_url: undefined,
+  };
+  const email = prepareEmail("activity_free_registration_confirmed", legacyHybridContext);
+
+  assert.match(email.html, /Tu inscripción está confirmada/);
+  assert.doesNotMatch(email.html, /Ingresar a la actividad virtual/);
+});

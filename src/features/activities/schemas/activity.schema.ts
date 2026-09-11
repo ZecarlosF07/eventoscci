@@ -6,6 +6,13 @@ const optionalText = z.string().trim();
 const nonnegativeNumber = z
   .string()
   .refine((value) => !value || Number(value) >= 0, "Debe ser cero o mayor.");
+const optionalSecureUrl = z.union([
+  z.url("Ingresa una URL válida.").refine(
+    (value) => value.startsWith("https://"),
+    "El enlace debe comenzar con https://.",
+  ),
+  z.literal(""),
+]);
 
 const activityDateSchema = z
   .object({
@@ -66,7 +73,7 @@ export const activityFormSchema = z
       .max(FIELD_LIMITS.activityTitle, maximumCharactersMessage(FIELD_LIMITS.activityTitle)),
     type: z.enum(["event", "training"]),
     venue_id: z.union([z.uuid(), z.literal("")]),
-    virtual_url: z.union([z.url("Ingresa una URL válida."), z.literal("")]),
+    virtual_url: optionalSecureUrl,
   })
   .superRefine((data, context) => {
     const certificateGeneralPrice = Number(data.certificate_general_price);
@@ -96,8 +103,16 @@ export const activityFormSchema = z
     ) {
       context.addIssue({ code: "custom", message: "El cierre debe ser posterior a la apertura.", path: ["registration_close_at"] });
     }
-    if (data.modality === "virtual" && !data.virtual_url) {
-      context.addIssue({ code: "custom", message: "Indica el enlace de la actividad virtual.", path: ["virtual_url"] });
+    if (
+      data.status === "published"
+      && data.modality !== "in_person"
+      && !data.virtual_url
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "Indica el enlace virtual antes de publicar.",
+        path: ["virtual_url"],
+      });
     }
     if (
       data.status === "published" &&

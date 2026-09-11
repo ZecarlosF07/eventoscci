@@ -260,6 +260,8 @@ deleted_at
 deleted_by
 ```
 
+> Actualización de seguridad: el formulario conserva `virtual_url` como nombre de entrada, pero el valor se almacena en la tabla privada `activity_virtual_access`. La columna homónima de `activities` queda vacía por compatibilidad temporal.
+
 La estructura deberá seguir el diseño físico corregido del proyecto.
 
 ---

@@ -30,7 +30,8 @@
 ## n8n y certificados
 
 - [ ] Webhook valida `N8N_WEBHOOK_SECRET`.
-- [ ] Cada uno de los cinco eventos invoca inmediatamente el webhook.
+- [ ] Scheduler valida un `NOTIFICATION_CRON_SECRET` diferente y ejecuta cada cinco minutos.
+- [ ] Cada evento transaccional invoca inmediatamente el webhook; los recordatorios respetan su horario.
 - [ ] Correo de prueba llega con remitente, enlaces y acentos correctos.
 - [ ] Falla controlada queda registrada y el envío manual funciona.
 - [ ] PDF fue revisado con nombre largo, tildes y título largo.

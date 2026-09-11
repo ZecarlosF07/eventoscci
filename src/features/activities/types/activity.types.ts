@@ -8,7 +8,10 @@ export type ActivityType = Enums<"activity_type">;
 export type ActivityModality = Enums<"activity_modality">;
 export type ActivityStatus = Enums<"activity_status">;
 export type ActivityAdminView = "active" | "archived";
-export type ActivityRow = Omit<Tables<"activities">, "certificate_mode"> & {
+export type ActivityRow = Omit<
+  Tables<"activities">,
+  "certificate_mode" | "virtual_url"
+> & {
   certificate_mode: ActivityCertificateMode;
 };
 export type ActivityDateRow = Tables<"activity_dates">;
@@ -75,6 +78,10 @@ export type ActivityDetail = ActivityRow & {
   dates: ActivityDateRow[];
   speakers: ActivitySpeaker[];
   venue: ActivityVenue | null;
+};
+
+export type ActivityAdminDetail = ActivityDetail & {
+  virtual_url: string | null;
 };
 
 export interface ActivityFilters {

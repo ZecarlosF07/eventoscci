@@ -2,12 +2,14 @@ import "server-only";
 
 import {
   NOTIFICATION_ERROR_MAX_LENGTH,
+  NOTIFICATION_SCHEDULED_BATCH_SIZE,
   NOTIFICATION_SELECT,
   NOTIFICATION_WEBHOOK_TIMEOUT_MS,
 } from "@/features/notifications/constants/notification.constants";
 import type {
   NotificationItem,
   NotificationReference,
+  ScheduledNotificationBatchResult,
 } from "@/features/notifications/types/notification.types";
 import { getNotificationServerEnv } from "@/lib/env/server-env";
 import { logger } from "@/lib/observability/logger";
@@ -226,4 +228,77 @@ export async function deliverActivityCertificateOffers(attendanceIds: string[]):
     logger.error("certificate_offer_delivery_unavailable", { error: getErrorMessage(error) });
     return false;
   }
+}
+
+async function completeScheduledDelivery(
+  client: ReturnType<typeof createServiceRoleSupabaseClient>,
+  notificationId: string,
+  success: boolean,
+  errorMessage?: string,
+): Promise<void> {
+  const { error } = await client.rpc("complete_notification_delivery", {
+    p_error: errorMessage,
+    p_notification_id: notificationId,
+    p_success: success,
+  });
+  if (error) {
+    throw new Error("No fue posible guardar el resultado del recordatorio.", {
+      cause: error,
+    });
+  }
+}
+
+async function processScheduledNotification(
+  client: ReturnType<typeof createServiceRoleSupabaseClient>,
+  notification: NotificationItem,
+): Promise<boolean> {
+  try {
+    await deliverNotification(notification);
+    await completeScheduledDelivery(client, notification.id, true);
+    return true;
+  } catch (error) {
+    const message = getErrorMessage(error);
+    try {
+      await completeScheduledDelivery(client, notification.id, false, message);
+    } catch (persistenceError) {
+      logger.error("scheduled_notification_status_failed", {
+        error: getErrorMessage(persistenceError),
+        notificationId: notification.id,
+      });
+    }
+    logger.warn("scheduled_notification_delivery_failed", {
+      error: message,
+      notificationId: notification.id,
+    });
+    return false;
+  }
+}
+
+export async function processDueVirtualReminders(): Promise<ScheduledNotificationBatchResult> {
+  const client = createServiceRoleSupabaseClient();
+  const { data, error } = await client.rpc("claim_due_virtual_reminders", {
+    p_limit: NOTIFICATION_SCHEDULED_BATCH_SIZE,
+  });
+  if (error) {
+    throw new Error("No fue posible reclamar los recordatorios pendientes.", {
+      cause: error,
+    });
+  }
+
+  const notifications: NotificationItem[] = data ?? [];
+  const results = await Promise.all(
+    notifications.map((notification) => processScheduledNotification(client, notification)),
+  );
+  const sent = results.filter(Boolean).length;
+
+  logger.info("scheduled_notifications_processed", {
+    claimed: notifications.length,
+    failed: notifications.length - sent,
+    sent,
+  });
+  return {
+    claimed: notifications.length,
+    failed: notifications.length - sent,
+    sent,
+  };
 }

@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { ActivityDetail } from "@/features/activities/types/activity.types";
+import type { ActivityAdminDetail } from "@/features/activities/types/activity.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const ADMIN_ACTIVITY_DETAIL_SELECT = `
@@ -20,19 +20,29 @@ const ADMIN_ACTIVITY_DETAIL_SELECT = `
 
 export async function getAdminActivityById(
   id: string,
-): Promise<ActivityDetail | null> {
+): Promise<ActivityAdminDetail | null> {
   const client = await createServerSupabaseClient();
-  const { data, error } = await client
-    .from("activities")
-    .select(ADMIN_ACTIVITY_DETAIL_SELECT)
-    .eq("id", id)
-    .is("deleted_at", null)
-    .is("activity_dates.deleted_at", null)
-    .is("activity_speakers.deleted_at", null)
-    .maybeSingle();
+  const [activityResult, accessResult] = await Promise.all([
+    client
+      .from("activities")
+      .select(ADMIN_ACTIVITY_DETAIL_SELECT)
+      .eq("id", id)
+      .is("deleted_at", null)
+      .is("activity_dates.deleted_at", null)
+      .is("activity_speakers.deleted_at", null)
+      .maybeSingle(),
+    client
+      .from("activity_virtual_access")
+      .select("virtual_url")
+      .eq("activity_id", id)
+      .maybeSingle(),
+  ]);
+  const { data, error } = activityResult;
 
-  if (error) {
-    throw new Error("No fue posible cargar la actividad.", { cause: error });
+  if (error || accessResult.error) {
+    throw new Error("No fue posible cargar la actividad.", {
+      cause: error ?? accessResult.error,
+    });
   }
   if (!data) return null;
 
@@ -48,5 +58,6 @@ export async function getAdminActivityById(
         sortOrder: link.sort_order,
       }))
       .sort((first, second) => first.sortOrder - second.sortOrder),
+    virtual_url: accessResult.data?.virtual_url ?? null,
   };
 }

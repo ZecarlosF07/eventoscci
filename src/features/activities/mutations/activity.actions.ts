@@ -91,6 +91,8 @@ export async function saveActivityAction(
           "activities_maps_embed_url_valid": "La URL del mapa no corresponde a una inserción válida de Google Maps.",
           "activities_published_venue_required": "Selecciona un lugar activo antes de publicar una actividad presencial o híbrida.",
           "activities_published_contact_required": "Selecciona un contacto activo antes de publicar.",
+          "activities_published_virtual_access_required": "Indica el enlace virtual antes de publicar.",
+          "activity_virtual_access_url_valid": "Ingresa un enlace virtual HTTPS válido.",
           "La actividad requiere al menos una fecha": "Agrega al menos una fecha y horario para guardar la actividad.",
         },
       }),
@@ -140,6 +142,7 @@ export async function changeActivityStatusAction(
       messages: {
         "activities_published_venue_required": "Selecciona un lugar activo antes de publicar una actividad presencial o híbrida.",
         "activities_published_contact_required": "Selecciona un contacto activo antes de publicar.",
+        "activities_published_virtual_access_required": "Indica el enlace virtual antes de publicar.",
       },
     }), { cause: error });
   }

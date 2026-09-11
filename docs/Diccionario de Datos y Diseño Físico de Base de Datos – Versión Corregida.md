@@ -527,7 +527,7 @@ type = training
 | `id` | `uuid` | No | `gen_random_uuid()` |
 | `category_id` | `uuid` | Sí | `NULL` |
 | `type` | `activity_type` | No | — |
-| `title` | `varchar(200)` | No | — |
+| `title` | `varchar(300)` | No | — |
 | `slug` | `varchar(220)` | No | — |
 | `short_description` | `text` | Sí | `NULL` |
 | `description` | `text` | No | — |
@@ -536,7 +536,7 @@ type = training
 | `modality` | `activity_modality` | No | — |
 | `location_name` | `text` | Sí | `NULL` |
 | `address` | `text` | Sí | `NULL` |
-| `virtual_url` | `text` | Sí | `NULL` |
+| `virtual_url` | `text` | Sí | `NULL` (columna heredada, siempre vacía; ver `activity_virtual_access`) |
 | `duration_text` | `varchar(100)` | Sí | `NULL` |
 | `academic_hours` | `numeric(6,2)` | Sí | `NULL` |
 | `program` | `text` | Sí | `NULL` |
@@ -604,6 +604,18 @@ registration_open_at
 registration_close_at
 ```
 
+## 13.1. Tabla `activity_virtual_access`
+
+Guarda el acceso de una actividad virtual o híbrida fuera de la tabla pública. Existe como máximo una fila por actividad. Anónimos y estudiantes no tienen privilegios de lectura; operadores, administradores y `service_role` acceden según RLS.
+
+| Campo | Tipo | Nulo | Default |
+|---|---|---:|---|
+| `activity_id` | `uuid` | No | FK y PK hacia `activities.id` |
+| `virtual_url` | `text` | No | — |
+| `created_at` | `timestamptz` | No | `now()` |
+| `updated_at` | `timestamptz` | No | `now()` |
+| `updated_by` | `uuid` | Sí | `NULL` |
+
 ---
 
 # 14. Tabla `activity_dates`
@@ -631,6 +643,22 @@ CHECK (
   OR ends_at > starts_at
 );
 ```
+
+## 14.1. Tabla `activity_virtual_reminders`
+
+Identidad persistente del recordatorio por inscripción y horario de sesión. La entrega y sus reintentos continúan registrándose en `notification_outbox`.
+
+| Campo | Tipo | Nulo | Default |
+|---|---|---:|---|
+| `id` | `uuid` | No | `gen_random_uuid()` |
+| `registration_id` | `uuid` | No | FK hacia `registrations.id` |
+| `activity_date_id` | `uuid` | No | FK hacia `activity_dates.id` |
+| `session_starts_at` | `timestamptz` | No | — |
+| `created_at` | `timestamptz` | No | `now()` |
+| `updated_at` | `timestamptz` | No | `now()` |
+| `deleted_at` | `timestamptz` | Sí | `NULL` |
+
+La unicidad activa se aplica sobre `(registration_id, session_starts_at)`.
 
 ---
 

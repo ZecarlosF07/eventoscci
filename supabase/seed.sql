@@ -88,7 +88,7 @@ where id in (
 
 insert into public.activities (
   id, category_id, type, title, slug, short_description, description,
-  objective, target_audience, modality, location_name, address, maps_embed_url, virtual_url,
+  objective, target_audience, modality, location_name, address, maps_embed_url,
   duration_text, academic_hours, program, syllabus, program_image_paths, is_free, general_price,
   member_price, members_only, capacity, registration_open_at,
   registration_close_at, contact_name, contact_phone, contact_email,
@@ -108,7 +108,6 @@ values (
   null,
   null,
   null,
-  'https://camaraica.org.pe/',
   '4 horas',
   4,
   null,
@@ -141,7 +140,6 @@ on conflict (id) do update set
   location_name = excluded.location_name,
   address = excluded.address,
   maps_embed_url = excluded.maps_embed_url,
-  virtual_url = excluded.virtual_url,
   duration_text = excluded.duration_text,
   academic_hours = excluded.academic_hours,
   program = excluded.program,
@@ -162,6 +160,13 @@ on conflict (id) do update set
   published_at = excluded.published_at,
   deleted_at = null,
   deleted_by = null;
+
+insert into public.activity_virtual_access (activity_id, virtual_url)
+values (
+  '4d000000-0000-4000-8000-000000000001',
+  'https://camaraica.org.pe/'
+)
+on conflict (activity_id) do update set virtual_url = excluded.virtual_url;
 
 insert into public.activity_dates (
   id, activity_id, starts_at, ends_at, label, sort_order

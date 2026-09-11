@@ -5,6 +5,7 @@ import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
 import { CertificateRequestCard } from "@/features/registrations/components/CertificateRequestCard";
+import { VirtualActivityAccess } from "@/features/registrations/components/VirtualActivityAccess";
 import type { RegistrationResultProps } from "@/features/registrations/types/registration.types";
 import { formatRegistrationPrice } from "@/features/registrations/utils/registration-formatters";
 
@@ -35,6 +36,16 @@ export function RegistrationResult({ result }: RegistrationResultProps) {
             {result.contact_phone ? <Text size="sm">{result.contact_phone}</Text> : null}
             {result.contact_email ? <Text size="sm">{result.contact_email}</Text> : null}
           </div>
+        ) : null}
+        {confirmed && result.activity_modality && result.virtual_access_url ? (
+          <VirtualActivityAccess
+            modality={result.activity_modality}
+            sessions={result.activity_sessions}
+            venueAddress={result.venue_address}
+            venueName={result.venue_name}
+            venueReference={result.venue_reference}
+            virtualAccessUrl={result.virtual_access_url}
+          />
         ) : null}
         {result.certificate_mode === "included" ? (
           <section className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">

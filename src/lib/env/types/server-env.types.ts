@@ -8,3 +8,7 @@ export interface NotificationServerEnv extends CertificateServerEnv {
   n8nWebhookSecret: string;
   n8nWebhookUrl: string;
 }
+
+export interface NotificationCronServerEnv {
+  notificationCronSecret: string;
+}

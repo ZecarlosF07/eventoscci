@@ -19,6 +19,7 @@ Los previews de Vercel deben apuntar a un Supabase de pruebas. Solo el ambiente 
 | `SUPABASE_SERVICE_ROLE_KEY` | Secreta | Production | PDF, Storage privado y entrega de notificaciones |
 | `N8N_WEBHOOK_URL` | Secreta | Production | Entrega de mensajes a n8n |
 | `N8N_WEBHOOK_SECRET` | Secreta | Production | Autenticación de webhook |
+| `NOTIFICATION_CRON_SECRET` | Secreta | Production | Autenticación del scheduler de recordatorios virtuales |
 | `APP_VERSION` | Interna/opcional | Production | Identificación explícita en logs |
 
 Ejecutar `yarn production:check` con el entorno productivo descargado mediante Vercel CLI antes de promover el despliegue. Nunca copiar `SUPABASE_SERVICE_ROLE_KEY` a una variable `NEXT_PUBLIC_*`.

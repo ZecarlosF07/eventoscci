@@ -1,5 +1,5 @@
 import type {
-  ActivityDetail,
+  ActivityAdminDetail,
   ActivityModality,
   ActivityStatus,
   ActivityType,
@@ -70,7 +70,7 @@ export interface ActivityFormState {
 }
 
 export interface ActivityFormProps {
-  activity?: ActivityDetail;
+  activity?: ActivityAdminDetail;
   contacts: ActivityContactSummary[];
   categories: Array<{ id: string; name: string }>;
   speakers: SpeakerSummary[];

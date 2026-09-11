@@ -79,3 +79,34 @@ test("valida las tarifas de un certificado opcional", () => {
   assert.equal(valid.success, true);
   assert.equal(invalid.success, false);
 });
+
+test("permite guardar borradores virtuales sin enlace", () => {
+  const result = activityFormSchema.safeParse({
+    ...validActivity(),
+    modality: "virtual",
+  });
+  assert.equal(result.success, true);
+});
+
+test("exige enlace HTTPS al publicar actividades virtuales e híbridas", () => {
+  for (const modality of ["virtual", "hybrid"] as const) {
+    const withoutUrl = activityFormSchema.safeParse({
+      ...validActivity(),
+      contact_id: "7e000000-0000-4000-8000-000000000001",
+      modality,
+      status: "published",
+      venue_id: modality === "hybrid" ? "7e000000-0000-4000-8000-000000000002" : "",
+    });
+    assert.equal(withoutUrl.success, false);
+
+    const withUrl = activityFormSchema.safeParse({
+      ...validActivity(),
+      contact_id: "7e000000-0000-4000-8000-000000000001",
+      modality,
+      status: "published",
+      venue_id: modality === "hybrid" ? "7e000000-0000-4000-8000-000000000002" : "",
+      virtual_url: "https://meet.example.test/sesion",
+    });
+    assert.equal(withUrl.success, true);
+  }
+});

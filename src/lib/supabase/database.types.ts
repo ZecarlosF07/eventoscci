@@ -247,6 +247,83 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_virtual_access: {
+        Row: {
+          activity_id: string
+          created_at: string
+          updated_at: string
+          updated_by: string | null
+          virtual_url: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+          virtual_url: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+          virtual_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_virtual_access_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: true
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_virtual_reminders: {
+        Row: {
+          activity_date_id: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          registration_id: string
+          session_starts_at: string
+          updated_at: string
+        }
+        Insert: {
+          activity_date_id: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          registration_id: string
+          session_starts_at: string
+          updated_at?: string
+        }
+        Update: {
+          activity_date_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          registration_id?: string
+          session_starts_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_virtual_reminders_activity_date_id_fkey"
+            columns: ["activity_date_id"]
+            isOneToOne: false
+            referencedRelation: "activity_dates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_virtual_reminders_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       activity_dates: {
         Row: {
           activity_id: string
@@ -1881,6 +1958,10 @@ export type Database = {
         Args: { p_certificate_id: string }
         Returns: boolean
       }
+      build_activity_virtual_notification_payload: {
+        Args: { p_registration_id: string; p_session_starts_at?: string }
+        Returns: Json
+      }
       cancel_registration: {
         Args: { p_reason?: string; p_registration_id: string }
         Returns: Json
@@ -1890,6 +1971,33 @@ export type Database = {
         Returns: boolean
       }
       claim_notification_batch: {
+        Args: { p_limit?: number }
+        Returns: {
+          attempts: number
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          event_type: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string | null
+          payload: Json
+          person_id: string | null
+          recipient_email: string
+          related_entity_id: string | null
+          related_entity_type: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["notification_status"]
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "notification_outbox"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      claim_due_virtual_reminders: {
         Args: { p_limit?: number }
         Returns: {
           attempts: number
@@ -2126,6 +2234,10 @@ export type Database = {
         Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
         Returns: string
       }
+      save_activity_with_legacy_virtual_url: {
+        Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
+        Returns: string
+      }
       save_certificate_template: {
         Args: { p_signers: Json; p_template: Json }
         Returns: string
@@ -2155,6 +2267,13 @@ export type Database = {
         }
         Returns: string
       }
+      set_activity_status_without_virtual_validation: {
+        Args: {
+          p_activity_id: string
+          p_status: Database["public"]["Enums"]["activity_status"]
+        }
+        Returns: string
+      }
       set_attendance_status: {
         Args: {
           p_attendance_ids: string[]
@@ -2178,6 +2297,10 @@ export type Database = {
       submit_quiz_attempt: {
         Args: { p_answers: Json; p_enrollment_id: string; p_quiz_id: string }
         Returns: Json
+      }
+      sync_activity_virtual_reminders: {
+        Args: { p_activity_id: string }
+        Returns: number
       }
       update_lesson_progress: {
         Args: {

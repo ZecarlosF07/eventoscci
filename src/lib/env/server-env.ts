@@ -1,6 +1,10 @@
 import "server-only";
 
-import type { CertificateServerEnv, NotificationServerEnv } from "@/lib/env/types/server-env.types";
+import type {
+  CertificateServerEnv,
+  NotificationCronServerEnv,
+  NotificationServerEnv,
+} from "@/lib/env/types/server-env.types";
 import { getPublicEnv } from "@/lib/env/public-env";
 
 function required(name: string): string {
@@ -44,4 +48,8 @@ export function getNotificationServerEnv(): NotificationServerEnv {
     n8nWebhookSecret: required("N8N_WEBHOOK_SECRET"),
     n8nWebhookUrl: validUrl(required("N8N_WEBHOOK_URL"), "N8N_WEBHOOK_URL"),
   };
+}
+
+export function getNotificationCronServerEnv(): NotificationCronServerEnv {
+  return { notificationCronSecret: required("NOTIFICATION_CRON_SECRET") };
 }

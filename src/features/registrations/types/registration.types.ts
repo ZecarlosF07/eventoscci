@@ -1,4 +1,7 @@
-import type { ActivityType } from "@/features/activities/types/activity.types";
+import type {
+  ActivityModality,
+  ActivityType,
+} from "@/features/activities/types/activity.types";
 import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 import type { NotificationEventType } from "@/features/notifications/types/notification.types";
 import type { Enums, Tables } from "@/lib/supabase/database.types";
@@ -42,6 +45,8 @@ export interface RegistrationRpcResult {
 }
 
 export interface PublicRegistrationResult {
+  activity_modality: ActivityModality | null;
+  activity_sessions: RegistrationActivitySession[];
   activity_slug: string;
   activity_title: string;
   activity_type: ActivityType;
@@ -57,6 +62,16 @@ export interface PublicRegistrationResult {
   registration_code: string;
   registration_type: RegistrationType;
   status: RegistrationStatus;
+  venue_address: string | null;
+  venue_name: string | null;
+  venue_reference: string | null;
+  virtual_access_url: string | null;
+}
+
+export interface RegistrationActivitySession {
+  ends_at?: string | null;
+  label?: string | null;
+  starts_at: string;
 }
 
 export type RegistrationAvailabilityReason =
