@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { connection } from "next/server";
 
 import { ROUTES } from "@/constants/routes";
 import { getActivityBannerUrl } from "@/features/activities/utils/activity-formatters";
@@ -18,6 +19,7 @@ const STATIC_ROUTES = [
 ] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  await connection();
   const siteUrl = getSiteUrl();
   const entries = await getSitemapEntries();
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((entry) => ({

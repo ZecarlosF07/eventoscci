@@ -7,6 +7,7 @@ import type { PublicCourseCurriculumModule } from "@/features/courses/types/publ
 import {
   PUBLIC_CACHE_REVALIDATE_SECONDS,
   PUBLIC_CACHE_TAGS,
+  PUBLIC_CACHE_VERSION,
 } from "@/features/seo/constants/public-cache.constants";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 
@@ -32,7 +33,7 @@ const getCachedPublicCourseCurriculum = unstable_cache(async function getCachedP
     sortOrder: module.sort_order,
     title: module.title,
   }));
-}, ["public-course-curriculum"], {
+}, ["public-course-curriculum", PUBLIC_CACHE_VERSION], {
   revalidate: PUBLIC_CACHE_REVALIDATE_SECONDS,
   tags: [PUBLIC_CACHE_TAGS.courses],
 });

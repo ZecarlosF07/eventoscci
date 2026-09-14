@@ -8,6 +8,7 @@ import type { CourseContent, CourseDetail } from "@/features/courses/types/cours
 import {
   PUBLIC_CACHE_REVALIDATE_SECONDS,
   PUBLIC_CACHE_TAGS,
+  PUBLIC_CACHE_VERSION,
 } from "@/features/seo/constants/public-cache.constants";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -54,7 +55,7 @@ const getCachedPublicCourseBySlug = unstable_cache(async function getCachedPubli
   if (!data || data.status !== "published" || !data.published_at) return null;
   const course = mapCourseDetail(data);
   return { ...course, modules: course.modules.filter((module) => module.is_published) };
-}, ["public-course-detail"], {
+}, ["public-course-detail", PUBLIC_CACHE_VERSION], {
   revalidate: PUBLIC_CACHE_REVALIDATE_SECONDS,
   tags: [PUBLIC_CACHE_TAGS.courses],
 });

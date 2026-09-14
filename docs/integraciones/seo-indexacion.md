@@ -39,7 +39,10 @@ Los cambios de indexación pueden tardar varios días. Search Console debe revis
 - La cabecera obtiene la cuenta después de la hidratación mediante `/api/account`; esa respuesta es privada y `no-store`, por lo que no vuelve personal el HTML público.
 - El detalle público del curso consulta la matrícula mediante `/api/courses/[courseId]/access`, también privado y `no-store`.
 - Guardar, publicar, archivar o eliminar actividades, cursos y catálogos invalida las etiquetas públicas relacionadas y las rutas principales. Una inscripción invalida disponibilidad.
-- Las actividades y cursos presentes en el sitemap se prerenderizan; nuevos slugs pueden resolverse bajo demanda.
+- El layout público y el sitemap usan `connection()` para renderizar por solicitud. No se conserva una segunda copia estática del HTML ni se enumeran slugs durante el build; la caché de datos etiquetada mantiene el rendimiento.
+- El cliente anónimo de Supabase usa `fetch` con `cache: "no-store"`; el único dueño de la caché es cada consulta etiquetada. `updateTag` expira sus resultados inmediatamente tras una escritura exitosa, incluso si la asociación de imágenes falla después.
+- La invalidación de layouts utiliza las rutas internas con el grupo `/(public)` e incluye ambos catálogos de actividades, detalles e inscripción, búsqueda y sitemap.
+- Al sustituir banners o quitar páginas del programa se conserva el archivo publicado anterior en Storage para no romper pestañas abiertas ni URLs de imágenes cacheadas. No hay borrado automático de estos archivos históricos; cualquier futura limpieza requiere una política de retención y comprobar referencias. Las cargas fallidas se siguen limpiando.
 
 ## Catálogos y URLs
 

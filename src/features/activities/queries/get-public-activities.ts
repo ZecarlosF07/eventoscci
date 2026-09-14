@@ -17,6 +17,7 @@ import { getPublicActivityHistoryCutoff } from "@/features/activities/utils/acti
 import {
   PUBLIC_CACHE_REVALIDATE_SECONDS,
   PUBLIC_CACHE_TAGS,
+  PUBLIC_CACHE_VERSION,
 } from "@/features/seo/constants/public-cache.constants";
 import { sanitizePostgrestSearchTerm } from "@/features/seo/utils/postgrest-search";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
@@ -76,7 +77,7 @@ async (type: ActivityType, filters: ActivityFilters): Promise<ActivityPublicPage
     pageCount: Math.max(1, Math.ceil(total / PUBLIC_ACTIVITY_PAGE_SIZE)),
     total,
   };
-}, ["public-activity-page"], {
+}, ["public-activity-page", PUBLIC_CACHE_VERSION], {
   revalidate: PUBLIC_CACHE_REVALIDATE_SECONDS,
   tags: [PUBLIC_CACHE_TAGS.activities],
 });

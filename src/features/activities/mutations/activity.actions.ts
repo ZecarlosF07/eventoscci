@@ -26,7 +26,7 @@ function adminListRoute(type: ActivityType): string {
 }
 
 function revalidateActivityPages(type: ActivityType): void {
-  invalidatePublicActivityContent(type);
+  invalidatePublicActivityContent();
   revalidatePath(adminListRoute(type));
   revalidatePath(ROUTES.adminPendingPayments);
 }
@@ -161,6 +161,6 @@ export async function deleteActivityAction(
   });
   if (error) throw new Error("No fue posible eliminar la actividad.", { cause: error });
 
-  invalidatePublicActivityContent(type);
+  invalidatePublicActivityContent();
   redirect(adminListRoute(type));
 }

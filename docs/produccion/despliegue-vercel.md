@@ -73,6 +73,13 @@ Importar el workflow de notificaciones, conectar la cuenta institucional de Gmai
 
 ## Monitoreo y recuperación
 
+### Actualización inmediata del contenido público
+
+- Desplegar la corrección de renderizado por solicitud y caché de datos versionada para descartar entradas antiguas. Después, guardar/publicar/archivar invalida etiquetas y rutas sin necesitar otro despliegue.
+- No activar `SKIP_REMOTE_BUILD_DATA` en Vercel; es exclusiva del build de validación de GitHub Actions.
+- Validar desde otra sesión que cambiar el banner, publicar una actividad y archivarla actualiza inicio, catálogos, detalle, búsqueda y sitemap en la siguiente solicitud. Una pestaña ya abierta no se actualiza en tiempo real: requiere recarga o navegación.
+- Las imágenes históricas sustituidas se conservan en Storage; esto aumenta el uso de almacenamiento y evita borrar recursos que siguen usando pestañas anteriores.
+
 - Vercel Logs permite filtrar los eventos JSON por `event`, `level` y `version`.
 - Supervisar `/api/health` desde un monitor HTTPS externo.
 - Revisar errores de Functions y la tabla `notification_outbox`.

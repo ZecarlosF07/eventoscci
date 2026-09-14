@@ -9,6 +9,7 @@ import type { CourseListItem, CoursePublicPage } from "@/features/courses/types/
 import {
   PUBLIC_CACHE_REVALIDATE_SECONDS,
   PUBLIC_CACHE_TAGS,
+  PUBLIC_CACHE_VERSION,
 } from "@/features/seo/constants/public-cache.constants";
 import { sanitizePostgrestSearchTerm } from "@/features/seo/utils/postgrest-search";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
@@ -54,7 +55,7 @@ const getCachedPublishedCoursePage = unstable_cache(
       total,
     };
   },
-  ["public-course-page"],
+  ["public-course-page", PUBLIC_CACHE_VERSION],
   { revalidate: PUBLIC_CACHE_REVALIDATE_SECONDS, tags: [PUBLIC_CACHE_TAGS.courses] },
 );
 

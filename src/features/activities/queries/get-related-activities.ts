@@ -12,6 +12,7 @@ import { registrationAvailabilitySchema } from "@/features/registrations/schemas
 import {
   PUBLIC_AVAILABILITY_REVALIDATE_SECONDS,
   PUBLIC_CACHE_TAGS,
+  PUBLIC_CACHE_VERSION,
 } from "@/features/seo/constants/public-cache.constants";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 
@@ -49,7 +50,7 @@ const getCachedRelatedActivities = unstable_cache(async function getCachedRelate
       return availability.success && availability.data.is_open;
     })
     .slice(0, 3);
-}, ["public-related-activities"], {
+}, ["public-related-activities", PUBLIC_CACHE_VERSION], {
   revalidate: PUBLIC_AVAILABILITY_REVALIDATE_SECONDS,
   tags: [PUBLIC_CACHE_TAGS.activities, PUBLIC_CACHE_TAGS.availability],
 });

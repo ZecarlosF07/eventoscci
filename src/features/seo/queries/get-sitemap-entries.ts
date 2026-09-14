@@ -5,6 +5,7 @@ import { unstable_cache } from "next/cache";
 import {
   PUBLIC_CACHE_REVALIDATE_SECONDS,
   PUBLIC_CACHE_TAGS,
+  PUBLIC_CACHE_VERSION,
 } from "@/features/seo/constants/public-cache.constants";
 import type { SitemapEntries } from "@/features/seo/types/seo.types";
 import { shouldSkipRemoteBuildData } from "@/lib/env/build-env";
@@ -39,7 +40,7 @@ export const getSitemapEntries = unstable_cache(async (): Promise<SitemapEntries
     activities: activitiesResult.data ?? [],
     courses: coursesResult.data ?? [],
   };
-}, ["public-sitemap-entries"], {
+}, ["public-sitemap-entries", PUBLIC_CACHE_VERSION], {
   revalidate: PUBLIC_CACHE_REVALIDATE_SECONDS,
   tags: [PUBLIC_CACHE_TAGS.sitemap],
 });

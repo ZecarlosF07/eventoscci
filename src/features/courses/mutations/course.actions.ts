@@ -103,6 +103,9 @@ export async function saveCourseAction(
         throw new Error("El curso se guardó, pero la portada no pudo asociarse. Puedes volver a cargarla al editarlo.");
       }
     } catch (uploadError) {
+      // The course RPC succeeded even if its media failed; expire public data too.
+      invalidatePublicCourseContent();
+      revalidatePath(ROUTES.adminCourses);
       return {
         message: uploadError instanceof Error ? uploadError.message : "El curso se guardó sin portada.",
         savedId: courseId,

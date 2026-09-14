@@ -11,6 +11,7 @@ import type {
 import {
   PUBLIC_CACHE_REVALIDATE_SECONDS,
   PUBLIC_CACHE_TAGS,
+  PUBLIC_CACHE_VERSION,
 } from "@/features/seo/constants/public-cache.constants";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 
@@ -76,7 +77,7 @@ const getCachedPublicActivityBySlug = unstable_cache(async function getCachedPub
     dates: activity.dates.sort((first, second) => first.sort_order - second.sort_order),
     speakers,
   };
-}, ["public-activity-detail"], {
+}, ["public-activity-detail", PUBLIC_CACHE_VERSION], {
   revalidate: PUBLIC_CACHE_REVALIDATE_SECONDS,
   tags: [PUBLIC_CACHE_TAGS.activities],
 });

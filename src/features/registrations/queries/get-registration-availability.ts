@@ -5,6 +5,7 @@ import { unstable_cache } from "next/cache";
 import {
   PUBLIC_AVAILABILITY_REVALIDATE_SECONDS,
   PUBLIC_CACHE_TAGS,
+  PUBLIC_CACHE_VERSION,
 } from "@/features/seo/constants/public-cache.constants";
 import { registrationAvailabilitySchema } from "@/features/registrations/schemas/registration.schema";
 import type { RegistrationAvailability } from "@/features/registrations/types/registration.types";
@@ -24,7 +25,7 @@ const getCachedRegistrationAvailability = unstable_cache(async function getCache
 
   const result = registrationAvailabilitySchema.safeParse(data);
   return result.success ? result.data : null;
-}, ["public-registration-availability"], {
+}, ["public-registration-availability", PUBLIC_CACHE_VERSION], {
   revalidate: PUBLIC_AVAILABILITY_REVALIDATE_SECONDS,
   tags: [PUBLIC_CACHE_TAGS.availability],
 });
