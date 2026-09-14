@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { Badge } from "@/components/atoms/Badge";
 import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
+import { BannerImage } from "@/components/molecules/BannerImage";
 import { PriceDisplay } from "@/components/molecules/PriceDisplay";
 import { StatusBadge } from "@/components/molecules/StatusBadge";
 import type { ActivityCardProps } from "@/features/activities/components/ActivityCard/types/activity-card.types";
@@ -36,7 +36,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
       <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-cci-100 bg-white shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:border-cci-200 group-hover:shadow-xl">
         <div className="relative aspect-[5/2] overflow-hidden bg-cci-950">
           {bannerUrl ? (
-            <Image alt={`Banner de ${activity.title}`} className="object-contain transition duration-300 group-hover:brightness-110" fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" src={bannerUrl} />
+            <BannerImage alt={`Banner de ${activity.title}`} className="transition duration-300 group-hover:brightness-110" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" src={bannerUrl} />
           ) : (
             <div className="relative flex h-full items-center justify-center overflow-hidden text-4xl font-bold tracking-[-0.08em] text-white/85">
               <span className="absolute -right-10 -top-16 size-52 rounded-full border border-cci-lime/50" />

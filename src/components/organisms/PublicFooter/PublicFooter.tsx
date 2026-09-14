@@ -41,8 +41,12 @@ export function PublicFooter() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <div className="mx-auto max-w-7xl px-5 py-5 text-xs text-white/55 sm:px-8">
-          © {new Date().getFullYear()} {SITE_CONFIG.organization}. Todos los derechos reservados.
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-2 px-5 py-5 text-xs text-white/55 sm:px-8">
+          <p>© {new Date().getFullYear()} {SITE_CONFIG.organization}. Todos los derechos reservados.</p>
+          <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-white/75 hover:text-cci-lime">
+            <input className="size-4 accent-cci-lime focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cci-lime" id="pause-banner-motion" type="checkbox" />
+            Pausar animaciones de banners
+          </label>
         </div>
       </div>
     </footer>

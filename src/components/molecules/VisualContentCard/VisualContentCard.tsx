@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 
+import { BannerImage } from "@/components/molecules/BannerImage";
 import type { VisualContentCardProps } from "@/components/molecules/VisualContentCard/types/visual-content-card.types";
 
 const ANIMATION_DELAYS = ["motion-safe:[animation-delay:0ms]", "motion-safe:[animation-delay:90ms]", "motion-safe:[animation-delay:180ms]"] as const;
@@ -22,10 +22,9 @@ export function VisualContentCard({
         href={href}
       >
         {bannerUrl ? (
-          <Image
+          <BannerImage
             alt={`Banner de ${title}`}
-            className="object-contain transition duration-500 ease-out group-hover:brightness-90"
-            fill
+            className="transition duration-500 ease-out group-hover:brightness-90"
             sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
             src={bannerUrl}
           />

@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { BannerImage } from "@/components/molecules/BannerImage";
 import type { HomeHeroArtworkProps } from "@/features/home/components/HomeHero/types/home-hero.types";
 
 export function HomeHeroArtwork({
@@ -16,10 +17,8 @@ export function HomeHeroArtwork({
       : "relative isolate aspect-video min-w-0 overflow-hidden bg-cci-900 text-white lg:h-full lg:aspect-auto"}
     >
       {bannerUrl ? (
-        <Image
+        <BannerImage
           alt={`Banner de ${title}`}
-          className="object-contain"
-          fill
           preload={eager}
           sizes={wide ? "100vw" : "(min-width: 1024px) 53vw, 100vw"}
           src={bannerUrl}

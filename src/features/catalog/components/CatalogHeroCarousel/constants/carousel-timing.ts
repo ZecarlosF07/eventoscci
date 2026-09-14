@@ -1,0 +1,1 @@
+export const CATALOG_CAROUSEL_INTERVAL_MS = 3_500;

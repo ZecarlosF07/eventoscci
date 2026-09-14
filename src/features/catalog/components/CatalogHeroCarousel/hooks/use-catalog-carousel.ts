@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
+import { CATALOG_CAROUSEL_INTERVAL_MS } from "@/features/catalog/components/CatalogHeroCarousel/constants/carousel-timing";
 import type { UseCatalogCarouselResult } from "@/features/catalog/components/CatalogHeroCarousel/hooks/types/use-catalog-carousel.types";
 
-const AUTOPLAY_DELAY_MS = 6500;
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 function subscribeReducedMotion(listener: () => void) {
@@ -43,7 +43,7 @@ export function useCatalogCarousel(itemCount: number, interactionPaused: boolean
       if (document.hidden) return;
       timeoutId = window.setTimeout(() => {
         setCurrentIndex((index) => (index + 1) % itemCount);
-      }, AUTOPLAY_DELAY_MS);
+      }, CATALOG_CAROUSEL_INTERVAL_MS);
     }
     scheduleNext();
     document.addEventListener("visibilitychange", scheduleNext);

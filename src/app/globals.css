@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+@theme {
+  --animate-banner-cascade: banner-cascade 3.5s linear infinite;
+  --animate-banner-edge-glow: banner-edge-glow 3.5s linear infinite;
+
+  @keyframes banner-cascade {
+    from {
+      mask-position: 0 100%;
+    }
+
+    to {
+      mask-position: 0 0%;
+    }
+  }
+  @keyframes banner-edge-glow {
+    from { transform: translateX(-110%); }
+    85%, to { transform: translateX(210%); }
+  }
+}
+
 @theme inline {
   --color-cci-50: #fbfdfc;
   --color-cci-100: #e0eee6;

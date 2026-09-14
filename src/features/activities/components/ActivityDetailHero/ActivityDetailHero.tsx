@@ -1,8 +1,7 @@
-import Image from "next/image";
-
 import { Badge } from "@/components/atoms/Badge";
 import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
+import { BannerImage } from "@/components/molecules/BannerImage";
 import type { ActivityDetailHeroProps } from "@/features/activities/components/ActivityDetailHero/types/activity-detail-hero.types";
 import { ACTIVITY_TYPE_LABELS } from "@/features/activities/constants/activity.constants";
 import {
@@ -41,7 +40,7 @@ export function ActivityDetailHero({ activity }: ActivityDetailHeroProps) {
           </p>
         </div>
         <div className="relative aspect-[5/2] overflow-hidden rounded-2xl border border-cci-100 bg-cci-950 shadow-xl shadow-cci-950/15 sm:rounded-3xl">
-          <Image alt={`Banner de ${activity.title}`} className="object-contain" fill preload sizes="(min-width: 1280px) 1216px, 100vw" src={bannerUrl} />
+          <BannerImage alt={`Banner de ${activity.title}`} preload sizes="(min-width: 1280px) 1216px, 100vw" src={bannerUrl} />
         </div>
       </header>
     );
