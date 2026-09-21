@@ -48,6 +48,7 @@ export interface NotificationsAdminPageProps {
 }
 
 export interface ScheduledNotificationBatchResult {
+  cancelled: number;
   claimed: number;
   failed: number;
   sent: number;

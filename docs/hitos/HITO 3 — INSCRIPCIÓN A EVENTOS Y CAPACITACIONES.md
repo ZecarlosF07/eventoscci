@@ -1928,3 +1928,18 @@ El Hito 3 quedará completado cuando una inscripción real pueda recorrer de for
 Una vez cumplido el Definition of Done, el proyecto podrá avanzar al:
 
 **Hito 4 — Gestión de participantes, confirmaciones y asistencia.**
+
+---
+
+# 53. Extensión de perfiles y sugerencias
+
+El tipo comercial de inscripción continuará siendo `general | member`. De manera independiente, cada persona e inscripción registrará `participant_profile = professional | student`.
+
+- Público general profesional: cargo obligatorio; dirección, empresa y RUC opcionales.
+- Público general estudiante: universidad o instituto y carrera obligatorios; utilizará tarifa general.
+- Asociado CCI: perfil profesional, con cargo, empresa y RUC obligatorios.
+- El perfil estudiante no crea una cuenta ni concede el rol de Campus.
+
+La inscripción conservará snapshots del perfil, cargo, institución y carrera. Las respuestas abiertas sobre próximos temas serán opcionales, tendrán un máximo de 500 caracteres y se consultarán desde un reporte de solo lectura en Participación. No se enviarán a analítica, correos ni n8n.
+
+El formulario seguirá siendo único y dinámico. Al cambiar temporalmente de perfil conservará los valores escritos, pero enviará únicamente los campos activos.

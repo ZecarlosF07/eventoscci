@@ -6,15 +6,19 @@ import { parseRegistrationFormData } from "@/features/registrations/utils/regist
 
 function validRegistration() {
   return {
+    academic_institution: "",
     address: "Ica",
+    career: "",
     company: "",
     document_number: "12345678",
     document_type: "dni" as const,
     email: "persona@example.test",
     first_names: "Persona",
+    future_topics_suggestion: "Marketing digital",
     job_title: "Analista",
     last_names: "Solicitante",
     phone: "914000001",
+    participant_profile: "professional" as const,
     registration_type: "general" as const,
     request_certificate: true,
     ruc: "",

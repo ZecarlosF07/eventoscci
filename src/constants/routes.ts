@@ -14,6 +14,7 @@ export const ROUTES = {
   adminParticipants: "/admin/participantes",
   adminNotifications: "/admin/notificaciones",
   adminRegistrations: "/admin/inscripciones",
+  adminRegistrationSuggestions: "/admin/inscripciones/sugerencias",
   adminTrainings: "/admin/actividades/capacitaciones",
   authCallback: "/auth/callback",
   authConfirm: "/auth/confirm",

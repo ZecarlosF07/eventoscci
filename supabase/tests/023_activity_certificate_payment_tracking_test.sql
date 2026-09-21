@@ -37,13 +37,14 @@ insert into public.activities (
   ('7a230000-0000-4000-8000-000000000003', 'training', 'Actividad archivada', 'actividad-archivada-23', 'Prueba de actividad archivada.', 'in_person', true, 0, 0, 'optional_paid', 40, 30, 'https://www.google.com/maps/embed?pb=test', '999999999', 'published', now());
 
 insert into public.registrations (
-  id, activity_id, person_id, registration_code, registration_type, status, confirmed_at, cancelled_at
+  id, activity_id, person_id, registration_code, registration_type, status, confirmed_at, cancelled_at,
+  job_title_snapshot
 ) values
-  ('6a230000-0000-4000-8000-000000000011', '7a230000-0000-4000-8000-000000000001', '3a230000-0000-4000-8000-000000000011', 'CCI-23-000011', 'general', 'confirmed', now(), null),
-  ('6a230000-0000-4000-8000-000000000012', '7a230000-0000-4000-8000-000000000001', '3a230000-0000-4000-8000-000000000012', 'CCI-23-000012', 'general', 'pending', null, null),
-  ('6a230000-0000-4000-8000-000000000013', '7a230000-0000-4000-8000-000000000002', '3a230000-0000-4000-8000-000000000013', 'CCI-23-000013', 'general', 'confirmed', now(), null),
-  ('6a230000-0000-4000-8000-000000000014', '7a230000-0000-4000-8000-000000000001', '3a230000-0000-4000-8000-000000000014', 'CCI-23-000014', 'general', 'cancelled', null, now()),
-  ('6a230000-0000-4000-8000-000000000015', '7a230000-0000-4000-8000-000000000003', '3a230000-0000-4000-8000-000000000015', 'CCI-23-000015', 'general', 'confirmed', now(), null);
+  ('6a230000-0000-4000-8000-000000000011', '7a230000-0000-4000-8000-000000000001', '3a230000-0000-4000-8000-000000000011', 'CCI-23-000011', 'general', 'confirmed', now(), null, 'Analista'),
+  ('6a230000-0000-4000-8000-000000000012', '7a230000-0000-4000-8000-000000000001', '3a230000-0000-4000-8000-000000000012', 'CCI-23-000012', 'general', 'pending', null, null, 'Analista'),
+  ('6a230000-0000-4000-8000-000000000013', '7a230000-0000-4000-8000-000000000002', '3a230000-0000-4000-8000-000000000013', 'CCI-23-000013', 'general', 'confirmed', now(), null, 'Analista'),
+  ('6a230000-0000-4000-8000-000000000014', '7a230000-0000-4000-8000-000000000001', '3a230000-0000-4000-8000-000000000014', 'CCI-23-000014', 'general', 'cancelled', null, now(), 'Analista'),
+  ('6a230000-0000-4000-8000-000000000015', '7a230000-0000-4000-8000-000000000003', '3a230000-0000-4000-8000-000000000015', 'CCI-23-000015', 'general', 'confirmed', now(), null, 'Analista');
 
 insert into public.attendance (id, registration_id, status) values
   ('5a230000-0000-4000-8000-000000000011', '6a230000-0000-4000-8000-000000000011', 'pending'),

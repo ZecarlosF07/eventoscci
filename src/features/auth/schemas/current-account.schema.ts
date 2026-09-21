@@ -11,7 +11,7 @@ export const currentAccountRowSchema = z.object({
     email: z.string(),
     first_names: z.string(),
     id: z.uuid(),
-    job_title: z.string(),
+    job_title: z.string().nullable(),
     last_names: z.string(),
     phone: z.string(),
     ruc: z.string().nullable(),

@@ -5,6 +5,7 @@ import type { RegistrationAdminItem } from "../../src/features/registrations/typ
 import { registrationsToCsv } from "../../src/features/registrations/utils/registrations-csv";
 
 const REGISTRATION: RegistrationAdminItem = {
+  academic_institution_snapshot: null,
   activity: {
     certificate_mode: "optional_paid",
     id: "7a230000-0000-4000-8000-000000000001",
@@ -25,11 +26,15 @@ const REGISTRATION: RegistrationAdminItem = {
   certificate_requested_by: "8a230000-0000-4000-8000-000000000001",
   certificatePaymentVerifiedByName: "Administradora CCI",
   certificateRequestedByName: "Administradora CCI",
+  career_snapshot: null,
   company_snapshot: "Empresa de prueba",
   confirmed_at: "2026-09-11T14:00:00Z",
   confirmed_by: "8a230000-0000-4000-8000-000000000001",
   created_at: "2026-09-11T13:00:00Z",
+  future_topics_suggestion: "Gestión comercial con inteligencia artificial",
   id: "6a230000-0000-4000-8000-000000000001",
+  job_title_snapshot: "Analista",
+  participant_profile: "professional",
   person: {
     document_number: "23000001",
     document_type: "dni",
@@ -55,4 +60,6 @@ test("exporta el estado comercial y sus responsables", () => {
   assert.match(csv, /"Solicitud registrada por"/);
   assert.match(csv, /"Pago verificado por"/);
   assert.match(csv, /"Administradora CCI"/);
+  assert.match(csv, /"Sugerencia de próximos temas"/);
+  assert.match(csv, /"Gestión comercial con inteligencia artificial"/);
 });

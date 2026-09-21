@@ -7,6 +7,7 @@ import type { NotificationEventType } from "@/features/notifications/types/notif
 import type { Enums, Tables } from "@/lib/supabase/database.types";
 
 export type RegistrationType = Enums<"registration_type">;
+export type ParticipantProfile = Enums<"participant_profile">;
 export type RegistrationStatus = Enums<"registration_status">;
 export type RegistrationRow = Tables<"registrations">;
 export type CertificateRequestFilter =
@@ -17,15 +18,19 @@ export type CertificateRequestFilter =
   | "ready_to_issue";
 
 export interface RegistrationInput {
+  academic_institution: string;
   address: string;
+  career: string;
   company: string;
   document_number: string;
   document_type: Enums<"document_type">;
   email: string;
   first_names: string;
+  future_topics_suggestion: string;
   job_title: string;
   last_names: string;
   phone: string;
+  participant_profile: ParticipantProfile;
   registration_type: RegistrationType;
   request_certificate: boolean;
   ruc: string;
@@ -136,6 +141,7 @@ export interface RegistrationAdminItem
   extends Pick<
     RegistrationRow,
     | "company_snapshot"
+    | "academic_institution_snapshot"
     | "confirmed_at"
     | "confirmed_by"
     | "cancelled_at"
@@ -148,6 +154,10 @@ export interface RegistrationAdminItem
     | "certificate_requested_by"
     | "created_at"
     | "id"
+    | "career_snapshot"
+    | "future_topics_suggestion"
+    | "job_title_snapshot"
+    | "participant_profile"
     | "price_snapshot"
     | "registration_code"
     | "registration_type"
@@ -236,7 +246,6 @@ export interface ActivityRegistrationsPageProps {
 
 export interface RegistrationFieldGroupProps {
   errors: Record<string, string[]>;
-  isMember?: boolean;
 }
 
 export interface RegistrationTypeSelectorProps {

@@ -10,6 +10,7 @@ const ALLOWED_PARAMETERS = new Set([
   "content_path",
   "content_type",
   "is_free",
+  "participant_profile",
   "registration_type",
 ]);
 

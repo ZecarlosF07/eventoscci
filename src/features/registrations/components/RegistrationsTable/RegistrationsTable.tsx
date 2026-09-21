@@ -8,7 +8,7 @@ import { getActivityParticipationRoute } from "@/features/participation/utils/pa
 import { CertificateRequestAdminStatus } from "@/features/registrations/components/CertificateRequestAdminStatus";
 import { RegistrationRowActions } from "@/features/registrations/components/RegistrationRowActions";
 import { RegistrationStatusBadge } from "@/features/registrations/components/RegistrationStatusBadge";
-import { REGISTRATION_TYPE_LABELS } from "@/features/registrations/constants/registration.constants";
+import { PARTICIPANT_PROFILE_LABELS, REGISTRATION_TYPE_LABELS } from "@/features/registrations/constants/registration.constants";
 import type { RegistrationAdminItem, RegistrationsTableProps } from "@/features/registrations/types/registration.types";
 import { formatRegistrationDate, formatRegistrationPrice } from "@/features/registrations/utils/registration-formatters";
 
@@ -19,6 +19,8 @@ function ParticipantLink({ registration }: { registration: RegistrationAdminItem
         {registration.person.first_names} {registration.person.last_names}
       </Link>
       <Text size="sm">{registration.person.document_type.toUpperCase()} {registration.person.document_number}</Text>
+      <Text size="sm">{PARTICIPANT_PROFILE_LABELS[registration.participant_profile]}</Text>
+      {registration.participant_profile === "student" ? <Text size="sm">{registration.academic_institution_snapshot} · {registration.career_snapshot}</Text> : <Text size="sm">{registration.job_title_snapshot}</Text>}
     </div>
   );
 }

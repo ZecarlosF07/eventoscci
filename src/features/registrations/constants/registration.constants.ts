@@ -1,9 +1,15 @@
 import type {
+  ParticipantProfile,
   RegistrationAvailabilityReason,
   RegistrationErrorCode,
   RegistrationStatus,
   RegistrationType,
 } from "@/features/registrations/types/registration.types";
+
+export const PARTICIPANT_PROFILE_LABELS: Record<ParticipantProfile, string> = {
+  professional: "Profesional o independiente",
+  student: "Estudiante",
+};
 
 export const REGISTRATION_STATUS_LABELS: Record<RegistrationStatus, string> = {
   cancelled: "Cancelada",

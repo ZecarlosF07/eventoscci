@@ -247,83 +247,6 @@ export type Database = {
         }
         Relationships: []
       }
-      activity_virtual_access: {
-        Row: {
-          activity_id: string
-          created_at: string
-          updated_at: string
-          updated_by: string | null
-          virtual_url: string
-        }
-        Insert: {
-          activity_id: string
-          created_at?: string
-          updated_at?: string
-          updated_by?: string | null
-          virtual_url: string
-        }
-        Update: {
-          activity_id?: string
-          created_at?: string
-          updated_at?: string
-          updated_by?: string | null
-          virtual_url?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "activity_virtual_access_activity_id_fkey"
-            columns: ["activity_id"]
-            isOneToOne: true
-            referencedRelation: "activities"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      activity_virtual_reminders: {
-        Row: {
-          activity_date_id: string
-          created_at: string
-          deleted_at: string | null
-          id: string
-          registration_id: string
-          session_starts_at: string
-          updated_at: string
-        }
-        Insert: {
-          activity_date_id: string
-          created_at?: string
-          deleted_at?: string | null
-          id?: string
-          registration_id: string
-          session_starts_at: string
-          updated_at?: string
-        }
-        Update: {
-          activity_date_id?: string
-          created_at?: string
-          deleted_at?: string | null
-          id?: string
-          registration_id?: string
-          session_starts_at?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "activity_virtual_reminders_activity_date_id_fkey"
-            columns: ["activity_date_id"]
-            isOneToOne: false
-            referencedRelation: "activity_dates"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "activity_virtual_reminders_registration_id_fkey"
-            columns: ["registration_id"]
-            isOneToOne: false
-            referencedRelation: "registrations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       activity_dates: {
         Row: {
           activity_id: string
@@ -432,6 +355,90 @@ export type Database = {
             columns: ["speaker_id"]
             isOneToOne: false
             referencedRelation: "speakers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_virtual_access: {
+        Row: {
+          activity_id: string
+          created_at: string
+          updated_at: string
+          updated_by: string | null
+          virtual_url: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+          virtual_url: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+          virtual_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_virtual_access_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: true
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_virtual_access_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: true
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+        ]
+      }
+      activity_virtual_reminders: {
+        Row: {
+          activity_date_id: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          registration_id: string
+          session_starts_at: string
+          updated_at: string
+        }
+        Insert: {
+          activity_date_id: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          registration_id: string
+          session_starts_at: string
+          updated_at?: string
+        }
+        Update: {
+          activity_date_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          registration_id?: string
+          session_starts_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_virtual_reminders_activity_date_id_fkey"
+            columns: ["activity_date_id"]
+            isOneToOne: false
+            referencedRelation: "activity_dates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_virtual_reminders_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
             referencedColumns: ["id"]
           },
         ]
@@ -1326,7 +1333,9 @@ export type Database = {
       }
       people: {
         Row: {
+          academic_institution: string | null
           address: string | null
+          career: string | null
           company: string | null
           created_at: string
           deleted_at: string | null
@@ -1336,14 +1345,17 @@ export type Database = {
           email: string
           first_names: string
           id: string
-          job_title: string
+          job_title: string | null
           last_names: string
+          participant_profile: Database["public"]["Enums"]["participant_profile"]
           phone: string
           ruc: string | null
           updated_at: string
         }
         Insert: {
+          academic_institution?: string | null
           address?: string | null
+          career?: string | null
           company?: string | null
           created_at?: string
           deleted_at?: string | null
@@ -1353,14 +1365,17 @@ export type Database = {
           email: string
           first_names: string
           id?: string
-          job_title: string
+          job_title?: string | null
           last_names: string
+          participant_profile?: Database["public"]["Enums"]["participant_profile"]
           phone: string
           ruc?: string | null
           updated_at?: string
         }
         Update: {
+          academic_institution?: string | null
           address?: string | null
+          career?: string | null
           company?: string | null
           created_at?: string
           deleted_at?: string | null
@@ -1370,8 +1385,9 @@ export type Database = {
           email?: string
           first_names?: string
           id?: string
-          job_title?: string
+          job_title?: string | null
           last_names?: string
+          participant_profile?: Database["public"]["Enums"]["participant_profile"]
           phone?: string
           ruc?: string | null
           updated_at?: string
@@ -1654,10 +1670,12 @@ export type Database = {
       }
       registrations: {
         Row: {
+          academic_institution_snapshot: string | null
           activity_id: string
           cancellation_reason: string | null
           cancelled_at: string | null
           cancelled_by: string | null
+          career_snapshot: string | null
           certificate_followed_up_at: string | null
           certificate_followed_up_by: string | null
           certificate_mode_snapshot: "included" | "none" | "optional_paid"
@@ -1673,7 +1691,10 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           deleted_by: string | null
+          future_topics_suggestion: string | null
           id: string
+          job_title_snapshot: string | null
+          participant_profile: Database["public"]["Enums"]["participant_profile"]
           person_id: string
           price_snapshot: number
           registration_code: string
@@ -1683,10 +1704,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          academic_institution_snapshot?: string | null
           activity_id: string
           cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
+          career_snapshot?: string | null
           certificate_followed_up_at?: string | null
           certificate_followed_up_by?: string | null
           certificate_mode_snapshot?: "included" | "none" | "optional_paid"
@@ -1702,7 +1725,10 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           deleted_by?: string | null
+          future_topics_suggestion?: string | null
           id?: string
+          job_title_snapshot?: string | null
+          participant_profile?: Database["public"]["Enums"]["participant_profile"]
           person_id: string
           price_snapshot?: number
           registration_code: string
@@ -1712,10 +1738,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          academic_institution_snapshot?: string | null
           activity_id?: string
           cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
+          career_snapshot?: string | null
           certificate_followed_up_at?: string | null
           certificate_followed_up_by?: string | null
           certificate_mode_snapshot?: "included" | "none" | "optional_paid"
@@ -1731,7 +1759,10 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           deleted_by?: string | null
+          future_topics_suggestion?: string | null
           id?: string
+          job_title_snapshot?: string | null
+          participant_profile?: Database["public"]["Enums"]["participant_profile"]
           person_id?: string
           price_snapshot?: number
           registration_code?: string
@@ -1971,6 +2002,7 @@ export type Database = {
         Args: { p_registration_id: string; p_session_starts_at?: string }
         Returns: Json
       }
+      cancel_expired_virtual_reminders: { Args: never; Returns: number }
       cancel_registration: {
         Args: { p_reason?: string; p_registration_id: string }
         Returns: Json
@@ -1979,7 +2011,7 @@ export type Database = {
         Args: { p_enrollment_id: string }
         Returns: boolean
       }
-      claim_notification_batch: {
+      claim_due_virtual_reminders: {
         Args: { p_limit?: number }
         Returns: {
           attempts: number
@@ -2006,7 +2038,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
-      claim_due_virtual_reminders: {
+      claim_notification_batch: {
         Args: { p_limit?: number }
         Returns: {
           attempts: number
@@ -2084,11 +2116,11 @@ export type Database = {
           certificate_code: string
           certificate_id: string
           certificate_mode_snapshot: "included" | "none" | "optional_paid"
-          certificate_payment_verified_at: string | null
-          certificate_payment_verified_by: string | null
-          certificate_price_snapshot: number | null
-          certificate_requested_at: string | null
-          certificate_requested_by: string | null
+          certificate_payment_verified_at: string
+          certificate_payment_verified_by: string
+          certificate_price_snapshot: number
+          certificate_requested_at: string
+          certificate_requested_by: string
           certificate_status: Database["public"]["Enums"]["certificate_status"]
           company_snapshot: string
           document_number: string
@@ -2199,18 +2231,6 @@ export type Database = {
         Args: { p_registration_id: string }
         Returns: Json
       }
-      register_activity_certificate_request_admin: {
-        Args: { p_registration_id: string }
-        Returns: Json
-      }
-      revert_activity_certificate_payment: {
-        Args: { p_reason: string; p_registration_id: string }
-        Returns: Json
-      }
-      verify_activity_certificate_payment: {
-        Args: { p_registration_id: string }
-        Returns: Json
-      }
       prepare_activity_certificates: {
         Args: {
           p_condition?: string
@@ -2225,6 +2245,10 @@ export type Database = {
       }
       register_activity: {
         Args: { p_activity_id: string; p_registration: Json }
+        Returns: Json
+      }
+      register_activity_certificate_request_admin: {
+        Args: { p_registration_id: string }
         Returns: Json
       }
       register_activity_internal: {
@@ -2248,6 +2272,10 @@ export type Database = {
       retry_notification: {
         Args: { p_notification_id: string }
         Returns: string
+      }
+      revert_activity_certificate_payment: {
+        Args: { p_reason: string; p_registration_id: string }
+        Returns: Json
       }
       revoke_certificate: {
         Args: { p_certificate_id: string; p_reason: string }
@@ -2343,6 +2371,10 @@ export type Database = {
         Args: { p_person: Json; p_person_id: string }
         Returns: string
       }
+      verify_activity_certificate_payment: {
+        Args: { p_registration_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       activity_modality: "in_person" | "virtual" | "hybrid"
@@ -2366,6 +2398,7 @@ export type Database = {
         | "sent"
         | "failed"
         | "cancelled"
+      participant_profile: "professional" | "student"
       registration_status: "pending" | "confirmed" | "cancelled"
       registration_type: "general" | "member"
       user_role: "student" | "operator" | "administrator"
@@ -2522,6 +2555,7 @@ export const Constants = {
         "failed",
         "cancelled",
       ],
+      participant_profile: ["professional", "student"],
       registration_status: ["pending", "confirmed", "cancelled"],
       registration_type: ["general", "member"],
       user_role: ["student", "operator", "administrator"],

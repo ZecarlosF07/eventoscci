@@ -12,6 +12,8 @@ export const FIELD_LIMITS = {
   courseSlug: 220,
   courseTitle: 200,
   documentNumber: 20,
+  academicField: 180,
+  futureTopicsSuggestion: 500,
   personName: 120,
   phone: 30,
   venueName: 160,

@@ -55,7 +55,12 @@ insert into public.activities (
 );
 
 insert into public.activity_dates (id, activity_id, starts_at, ends_at)
-values ('76000000-0000-4000-8000-000000000001', '75000000-0000-4000-8000-000000000001', '2026-09-10 09:00:00-05', '2026-09-10 17:00:00-05');
+values (
+  '76000000-0000-4000-8000-000000000001',
+  '75000000-0000-4000-8000-000000000001',
+  now() + interval '10 days',
+  now() + interval '10 days 8 hours'
+);
 
 set local role anon;
 select public.register_activity(
@@ -113,12 +118,16 @@ select lives_ok(
   'eligible participant certificate is prepared'
 );
 select is((select count(*) from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003') and deleted_at is null), 1::bigint, 'one certificate is prepared');
-select ok((select certificate_code like 'CCI-CERT-2026-%' from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003')), 'certificate code has institutional format');
+select ok((select certificate_code like ('CCI-CERT-' || to_char(now(), 'YYYY') || '-%') from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003')), 'certificate code has institutional format');
 select ok((select access_token is not null from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003')), 'certificate receives access token');
 select is((select participant_name_snapshot from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003')), 'Asistente Certificable Uno', 'participant name snapshot stored');
 select is((select title_snapshot from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003')), 'Capacitación Certificable', 'title snapshot stored');
 select is((select condition_snapshot from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003')), 'Culminó', 'condition snapshot stored');
-select is((select date_text_snapshot from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003')), '10/09/2026', 'date text snapshot stored');
+select is(
+  (select date_text_snapshot from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003')),
+  to_char((now() + interval '10 days') at time zone 'America/Lima', 'DD/MM/YYYY'),
+  'date text snapshot stored'
+);
 select is((select academic_hours_snapshot from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003')), 8::numeric, 'academic hours snapshot stored');
 select ok((select file_path is null from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003')), 'file remains pending until generation');
 

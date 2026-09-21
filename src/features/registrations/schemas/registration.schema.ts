@@ -4,22 +4,33 @@ import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits
 import { REGISTRATION_NOTIFICATION_EVENT_TYPES } from "@/features/notifications/constants/notification.constants";
 
 const optionalText = z.string().trim().max(250, "Usa como máximo 250 caracteres.");
+const optionalAcademicText = z.string().trim().max(
+  FIELD_LIMITS.academicField,
+  maximumCharactersMessage(FIELD_LIMITS.academicField),
+);
 
 export const registrationFormSchema = z
   .object({
+    academic_institution: optionalAcademicText,
     address: optionalText,
+    career: optionalAcademicText,
     company: optionalText,
     document_number: z.string().trim().max(FIELD_LIMITS.documentNumber, maximumCharactersMessage(FIELD_LIMITS.documentNumber)).toUpperCase(),
     document_type: z.enum(["dni", "ce"]),
     email: z.email("Ingresa un correo electrónico válido.").trim().toLowerCase(),
     first_names: z.string().trim().min(2, "Ingresa tus nombres.").max(FIELD_LIMITS.personName, maximumCharactersMessage(FIELD_LIMITS.personName)),
-    job_title: z.string().trim().min(2, "Ingresa tu cargo.").max(150),
+    future_topics_suggestion: z.string().trim().max(
+      FIELD_LIMITS.futureTopicsSuggestion,
+      maximumCharactersMessage(FIELD_LIMITS.futureTopicsSuggestion),
+    ),
+    job_title: z.string().trim().max(150),
     last_names: z.string().trim().min(2, "Ingresa tus apellidos.").max(FIELD_LIMITS.personName, maximumCharactersMessage(FIELD_LIMITS.personName)),
     phone: z
       .string()
       .trim()
       .transform((value) => value.replace(/[\s-]/g, ""))
       .refine((value) => /^\+?[0-9]{7,15}$/.test(value), "Ingresa un celular válido."),
+    participant_profile: z.enum(["professional", "student"]),
     registration_type: z.enum(["general", "member"]),
     request_certificate: z.boolean(),
     ruc: z.string().trim(),
@@ -46,6 +57,36 @@ export const registrationFormSchema = z
         code: "custom",
         message: "El RUC debe tener 11 dígitos.",
         path: ["ruc"],
+      });
+    }
+
+    if (data.participant_profile === "student") {
+      if (data.registration_type !== "general") {
+        context.addIssue({
+          code: "custom",
+          message: "El perfil estudiante corresponde a público general.",
+          path: ["participant_profile"],
+        });
+      }
+      if (data.academic_institution.length < 2) {
+        context.addIssue({
+          code: "custom",
+          message: "Indica tu universidad o instituto.",
+          path: ["academic_institution"],
+        });
+      }
+      if (data.career.length < 2) {
+        context.addIssue({
+          code: "custom",
+          message: "Indica tu carrera o especialidad.",
+          path: ["career"],
+        });
+      }
+    } else if (data.job_title.length < 2) {
+      context.addIssue({
+        code: "custom",
+        message: "Ingresa tu cargo.",
+        path: ["job_title"],
       });
     }
 
@@ -129,6 +170,7 @@ export const certificateRequestRpcResultSchema = z.object({
 });
 
 export const registrationAdminItemSchema = z.object({
+  academic_institution_snapshot: z.string().nullable(),
   activity: z.object({
     certificate_mode: z.enum(["none", "included", "optional_paid"]),
     id: z.uuid(),
@@ -153,7 +195,10 @@ export const registrationAdminItemSchema = z.object({
     status: z.enum(["issued", "revoked"]),
   })),
   created_at: z.string(),
+  career_snapshot: z.string().nullable(),
+  future_topics_suggestion: z.string().nullable(),
   id: z.uuid(),
+  job_title_snapshot: z.string().nullable(),
   attendance: z.array(z.object({
     id: z.uuid(),
     status: z.enum(["pending", "attended", "absent"]),
@@ -164,11 +209,12 @@ export const registrationAdminItemSchema = z.object({
     document_type: z.enum(["dni", "ce"]),
     email: z.string(),
     first_names: z.string(),
-    job_title: z.string(),
+    job_title: z.string().nullable(),
     last_names: z.string(),
     phone: z.string(),
   }),
   price_snapshot: z.number(),
+  participant_profile: z.enum(["professional", "student"]),
   registration_code: z.string(),
   registration_type: z.enum(["general", "member"]),
   ruc_snapshot: z.string().nullable(),

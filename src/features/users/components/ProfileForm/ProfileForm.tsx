@@ -20,7 +20,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       <FormField error={error("first_names")} label="Nombres" name="first_names" required><Input defaultValue={profile.first_names} id="first_names" maxLength={120} name="first_names" required /></FormField>
       <FormField error={error("last_names")} label="Apellidos" name="last_names" required><Input defaultValue={profile.last_names} id="last_names" maxLength={120} name="last_names" required /></FormField>
       <FormField error={error("phone")} label="Celular" name="phone" required><Input defaultValue={profile.phone} id="phone" maxLength={15} name="phone" required /></FormField>
-      <FormField error={error("job_title")} label="Cargo" name="job_title" required><Input defaultValue={profile.job_title} id="job_title" maxLength={160} name="job_title" required /></FormField>
+      <FormField error={error("job_title")} label="Cargo" name="job_title" required><Input defaultValue={profile.job_title ?? ""} id="job_title" maxLength={160} name="job_title" required /></FormField>
       <FormField error={error("company")} label="Empresa" name="company"><Input defaultValue={profile.company ?? ""} id="company" maxLength={180} name="company" /></FormField>
       <FormField error={error("ruc")} label="RUC" name="ruc"><Input defaultValue={profile.ruc ?? ""} id="ruc" inputMode="numeric" maxLength={11} name="ruc" /></FormField>
       <div className="sm:col-span-2"><FormField error={error("address")} label="Dirección" name="address"><Input defaultValue={profile.address ?? ""} id="address" maxLength={300} name="address" /></FormField></div>

@@ -8,7 +8,7 @@ import { escapePostgrestSearch } from "@/utils/postgrest-search";
 
 const PARTICIPANT_SELECT = `
   id, document_type, document_number, first_names, last_names, email, phone,
-  job_title, company, ruc,
+  participant_profile, job_title, academic_institution, career, company, ruc,
   registrations(id, activity:activities!inner(status))
 `;
 

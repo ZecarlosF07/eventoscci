@@ -23,6 +23,7 @@ No se libera una versión con defectos críticos o altos abiertos. Los resultado
 | Regeneración de certificados | `016_certificate_regeneration_test.sql` | Corrección auditada, identidad pública, permisos y listados paginados |
 | Certificados opcionales | `020_optional_activity_certificates_test.sql` | Modalidad y tarifa capturadas, solicitud segura e idempotente, auditoría y oferta posterior a la asistencia |
 | Solicitud y pago manual del certificado | `023_activity_certificate_payment_tracking_test.sql` | Solicitud administrativa, pago externo verificado, reversión con motivo, permisos, idempotencia y estados comerciales para emisión |
+| Perfiles de inscripción y sugerencias | `024_registration_participant_profiles_test.sql` | Profesional, estudiante y asociado; tarifa general estudiantil, snapshots, preservación de datos y sugerencia opcional |
 | SEO y rendimiento público | `tests/unit/seo.test.ts` | Metadata, JSON-LD, sesiones múltiples, slugs, búsquedas seguras y analítica sin PII |
 
 Los archivos usan transacciones con `rollback`; no conservan fixtures en la base vinculada.

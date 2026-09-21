@@ -1,6 +1,6 @@
 begin;
 
-select plan(34);
+select plan(39);
 
 select ok(to_regclass('public.activity_virtual_access') is not null, 'private virtual access table exists');
 select ok(to_regclass('public.activity_virtual_reminders') is not null, 'virtual reminder identity table exists');
@@ -8,6 +8,8 @@ select is(has_table_privilege('anon', 'public.activity_virtual_access', 'SELECT'
 select is(has_table_privilege('anon', 'public.activity_virtual_reminders', 'SELECT'), false, 'anonymous users cannot read reminder identities');
 select is(has_function_privilege('anon', 'public.claim_due_virtual_reminders(integer)', 'EXECUTE'), false, 'anonymous users cannot claim reminders');
 select is(has_function_privilege('authenticated', 'public.claim_due_virtual_reminders(integer)', 'EXECUTE'), false, 'authenticated users cannot claim reminders');
+select is(has_function_privilege('anon', 'public.cancel_expired_virtual_reminders()', 'EXECUTE'), false, 'anonymous users cannot cancel expired reminders');
+select is(has_function_privilege('authenticated', 'public.cancel_expired_virtual_reminders()', 'EXECUTE'), false, 'authenticated users cannot cancel expired reminders');
 select is(has_function_privilege('anon', 'public.build_activity_virtual_notification_payload(uuid,timestamp with time zone)', 'EXECUTE'), false, 'anonymous users cannot build private notification payloads');
 select is(has_function_privilege('authenticated', 'public.build_activity_virtual_notification_payload(uuid,timestamp with time zone)', 'EXECUTE'), false, 'authenticated users cannot build private notification payloads');
 select is(has_table_privilege('service_role', 'public.activity_virtual_access', 'INSERT'), true, 'service role can manage private access');
@@ -272,6 +274,24 @@ set local session_replication_role = origin;
 create temporary table reclaimed_virtual_reminders as
 select * from public.claim_due_virtual_reminders(1);
 select is((select count(*) from reclaimed_virtual_reminders), 1::bigint, 'scheduler recovers processing work stalled for fifteen minutes');
+
+update public.activity_virtual_reminders
+set session_starts_at = now() - interval '1 minute'
+where id = (select related_entity_id from reclaimed_virtual_reminders);
+update public.notification_outbox
+set status = 'pending'
+where id = (select id from reclaimed_virtual_reminders);
+select is(public.cancel_expired_virtual_reminders(), 1, 'scheduler cancels one reminder after its session starts');
+select is(
+  (select status from public.notification_outbox where id = (select id from reclaimed_virtual_reminders)),
+  'cancelled'::public.notification_status,
+  'expired reminder remains in history as cancelled'
+);
+select is(
+  (select last_error from public.notification_outbox where id = (select id from reclaimed_virtual_reminders)),
+  'Recordatorio omitido porque la sesión ya comenzó.',
+  'expired reminder explains why it was not sent'
+);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '8f000000-0000-4000-8000-000000000001', true);

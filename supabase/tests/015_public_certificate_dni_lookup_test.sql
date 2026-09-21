@@ -38,12 +38,12 @@ insert into public.activities (
 );
 
 insert into public.registrations (
-  id, activity_id, person_id, registration_code, status, confirmed_at
+  id, activity_id, person_id, registration_code, status, confirmed_at, job_title_snapshot
 ) values (
   '6f000000-0000-4000-8000-000000000001',
   '4f000000-0000-4000-8000-000000000001',
   '3f000000-0000-4000-8000-000000000001',
-  'REG-H15-001', 'confirmed', now()
+  'REG-H15-001', 'confirmed', now(), 'Gerente'
 );
 
 insert into public.courses (

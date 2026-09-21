@@ -21,7 +21,10 @@ export function ParticipantHistory({ history }: ParticipantHistoryProps) {
               <td className="px-5 py-4"><Link className="font-semibold text-cci-950 hover:underline" href={`${getActivityParticipationRoute(item.activity.id)}?estado=all&q=${encodeURIComponent(item.registration_code)}`}>{item.activity.title}</Link><Text size="sm">{item.activity.type === "event" ? "Evento" : "Capacitación"}</Text></td>
               <td className="px-5 py-4 font-mono">{item.registration_code}</td>
               <td className="px-5 py-4 text-slate-700"><p>{REGISTRATION_TYPE_LABELS[item.registration_type]}</p><p>{formatRegistrationDate(item.created_at)}</p></td>
-              <td className="px-5 py-4 text-slate-700"><p>{item.company_snapshot ?? "Sin empresa"}</p><p>{item.ruc_snapshot ?? "Sin RUC"}</p><p>{formatRegistrationPrice(item.price_snapshot)}</p></td>
+              <td className="px-5 py-4 text-slate-700">
+                {item.participant_profile === "student" ? <><p className="font-semibold">Estudiante</p><p>{item.academic_institution_snapshot}</p><p>{item.career_snapshot}</p></> : <><p>{item.job_title_snapshot}</p><p>{item.company_snapshot ?? "Sin empresa"}</p><p>{item.ruc_snapshot ?? "Sin RUC"}</p></>}
+                <p>{formatRegistrationPrice(item.price_snapshot)}</p>
+              </td>
               <td className="px-5 py-4"><RegistrationStatusBadge status={item.status} /></td>
               <td className="px-5 py-4"><AttendanceStatusBadge status={item.attendance[0]?.status ?? "pending"} /></td>
             </tr>

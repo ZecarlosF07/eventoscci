@@ -6,19 +6,28 @@ function formValue(formData: FormData, name: string): string {
 }
 
 export function parseRegistrationFormData(formData: FormData): RegistrationInput {
+  const registrationType = formValue(formData, "registration_type") === "member" ? "member" : "general";
+  const participantProfile = registrationType === "member"
+    ? "professional"
+    : formValue(formData, "participant_profile") === "student" ? "student" : "professional";
+  const isStudent = participantProfile === "student";
+
   return {
-    address: formValue(formData, "address"),
-    company: formValue(formData, "company"),
+    academic_institution: isStudent ? formValue(formData, "academic_institution") : "",
+    address: isStudent ? "" : formValue(formData, "address"),
+    career: isStudent ? formValue(formData, "career") : "",
+    company: isStudent ? "" : formValue(formData, "company"),
     document_number: formValue(formData, "document_number"),
     document_type: formValue(formData, "document_type") === "ce" ? "ce" : "dni",
     email: formValue(formData, "email"),
     first_names: formValue(formData, "first_names"),
-    job_title: formValue(formData, "job_title"),
+    future_topics_suggestion: formValue(formData, "future_topics_suggestion"),
+    job_title: isStudent ? "" : formValue(formData, "job_title"),
     last_names: formValue(formData, "last_names"),
     phone: formValue(formData, "phone"),
-    registration_type:
-      formValue(formData, "registration_type") === "member" ? "member" : "general",
+    participant_profile: participantProfile,
+    registration_type: registrationType,
     request_certificate: formData.get("request_certificate") === "on",
-    ruc: formValue(formData, "ruc"),
+    ruc: isStudent ? "" : formValue(formData, "ruc"),
   };
 }

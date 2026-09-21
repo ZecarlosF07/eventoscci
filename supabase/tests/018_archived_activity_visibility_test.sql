@@ -81,14 +81,15 @@ insert into public.activities (
 );
 
 insert into public.registrations (
-  id, activity_id, person_id, registration_code, status, confirmed_at
+  id, activity_id, person_id, registration_code, status, confirmed_at, job_title_snapshot
 ) values (
   '7a000000-0000-4000-8000-000000000002',
   '7a000000-0000-4000-8000-000000000001',
   '3a000000-0000-4000-8000-000000000001',
   'CCI-ARCHIVE-TEST',
   'confirmed',
-  now()
+  now(),
+  'Estudiante'
 );
 
 insert into public.attendance (id, registration_id, status, marked_at)

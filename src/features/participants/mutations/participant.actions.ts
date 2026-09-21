@@ -17,14 +17,17 @@ export async function updateParticipantAction(
 ): Promise<ParticipantFormState> {
   await requireAdmin();
   const parsed = participantFormSchema.safeParse({
-    address: formData.get("address"),
-    company: formData.get("company"),
+    academic_institution: formData.get("academic_institution") ?? "",
+    address: formData.get("address") ?? "",
+    career: formData.get("career") ?? "",
+    company: formData.get("company") ?? "",
     email: formData.get("email"),
     first_names: formData.get("first_names"),
-    job_title: formData.get("job_title"),
+    job_title: formData.get("job_title") ?? "",
     last_names: formData.get("last_names"),
+    participant_profile: formData.get("participant_profile"),
     phone: formData.get("phone"),
-    ruc: formData.get("ruc"),
+    ruc: formData.get("ruc") ?? "",
   });
   if (!parsed.success) return { errors: parsed.error.flatten().fieldErrors };
 

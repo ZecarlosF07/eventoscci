@@ -276,6 +276,14 @@ async function processScheduledNotification(
 
 export async function processDueVirtualReminders(): Promise<ScheduledNotificationBatchResult> {
   const client = createServiceRoleSupabaseClient();
+  const { data: cancelled, error: cancellationError } = await client.rpc(
+    "cancel_expired_virtual_reminders",
+  );
+  if (cancellationError) {
+    throw new Error("No fue posible cerrar los recordatorios vencidos.", {
+      cause: cancellationError,
+    });
+  }
   const { data, error } = await client.rpc("claim_due_virtual_reminders", {
     p_limit: NOTIFICATION_SCHEDULED_BATCH_SIZE,
   });
@@ -292,11 +300,13 @@ export async function processDueVirtualReminders(): Promise<ScheduledNotificatio
   const sent = results.filter(Boolean).length;
 
   logger.info("scheduled_notifications_processed", {
+    cancelled,
     claimed: notifications.length,
     failed: notifications.length - sent,
     sent,
   });
   return {
+    cancelled: cancelled ?? 0,
     claimed: notifications.length,
     failed: notifications.length - sent,
     sent,

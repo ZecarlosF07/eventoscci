@@ -127,12 +127,15 @@ test("la analítica conserva solo parámetros aprobados y descarta PII", () => {
   const event = buildSafeAnalyticsEvent("registration_started", {
     activity_id: "activity-1",
     activity_type: "event",
+    future_topics_suggestion: "Dato privado",
     email: "persona@example.com",
     document_number: "12345678",
+    participant_profile: "student",
   });
   assert.deepEqual(event.parameters, {
     activity_id: "activity-1",
     activity_type: "event",
+    participant_profile: "student",
   });
 });
 

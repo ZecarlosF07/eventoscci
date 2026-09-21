@@ -17,9 +17,10 @@ export function ParticipationOverviewTemplate({ data, filters, metrics }: Partic
           eyebrow="Operación por actividad"
           title="Participación"
         />
-        <Link className="inline-flex min-h-11 items-center justify-center rounded-xl bg-amber-100 px-5 text-sm font-bold text-amber-900 hover:bg-amber-200" href={ROUTES.adminPendingPayments}>
-          Pagos por verificar · {metrics.pending}
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link className="inline-flex min-h-11 items-center justify-center rounded-xl border border-cci-200 bg-white px-5 text-sm font-bold text-cci-950 hover:bg-cci-50" href={ROUTES.adminRegistrationSuggestions}>Ver sugerencias</Link>
+          <Link className="inline-flex min-h-11 items-center justify-center rounded-xl bg-amber-100 px-5 text-sm font-bold text-amber-900 hover:bg-amber-200" href={ROUTES.adminPendingPayments}>Pagos por verificar · {metrics.pending}</Link>
+        </div>
       </div>
       <ParticipationMetrics metrics={metrics} />
       <ParticipationOverviewFilters filters={filters} />

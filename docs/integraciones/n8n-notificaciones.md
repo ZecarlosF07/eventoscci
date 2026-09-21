@@ -39,7 +39,7 @@ Cada operación que crea una notificación llama inmediatamente al webhook despu
 
 Los correos transaccionales continúan enviándose inmediatamente. Los recordatorios virtuales se programan en `notification_outbox` con `next_attempt_at` y se procesan mediante `POST /api/internal/notifications/process`, autenticado con `NOTIFICATION_CRON_SECRET`.
 
-El procesador reclama exclusivamente `activity_virtual_session_reminder`, en lotes de 20. Recupera filas que lleven más de 15 minutos en `processing`, aplica hasta cinco intentos con espera incremental y nunca procesa recordatorios de sesiones que ya comenzaron. Los demás correos conservan el envío inmediato y su reintento manual desde `/admin/notificaciones`.
+El procesador reclama exclusivamente `activity_virtual_session_reminder`, en lotes de 20. Recupera filas que lleven más de 15 minutos en `processing`, aplica hasta cinco intentos con espera incremental y nunca envía recordatorios de sesiones que ya comenzaron. Antes de reclamar el lote, marca esos recordatorios vencidos como `cancelled` y conserva el motivo en el historial administrativo. La respuesta incluye `cancelled`, `claimed`, `sent` y `failed`. Los demás correos conservan el envío inmediato y su reintento manual desde `/admin/notificaciones`.
 
 La notificación `course_certificate_issued` se encola únicamente después de que el PDF quedó
 almacenado. Un error del webhook nunca revierte la matrícula completada ni el certificado emitido.
