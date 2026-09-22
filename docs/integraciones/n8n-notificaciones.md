@@ -75,6 +75,7 @@ queda en `notification_outbox` y nunca revierte asistencia ni solicitud.
 
 - Una inscripción gratuita confirmada recibe fechas, modalidad y enlace virtual en su primer correo.
 - Una preinscripción pagada nunca recibe el enlace; se incorpora únicamente al correo emitido después de la confirmación administrativa.
+- Los correos confirmados y cada recordatorio muestran la URL de acceso completa y clicable debajo del botón, con instrucciones para copiarla si el botón no abre la sesión. La página de resultado protegido muestra la misma URL y permite copiarla con un clic.
 - Las actividades híbridas muestran tanto la sede como el acceso virtual.
 - El botón de acceso y la acción del certificado son independientes y pueden aparecer juntos.
 - Se programa un recordatorio por cada sesión que se encuentre a más de una hora al momento de confirmar la inscripción.

@@ -2,6 +2,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { Text } from "@/components/atoms/Text";
 import type { VirtualActivityAccessProps } from "@/features/registrations/components/VirtualActivityAccess/types/virtual-activity-access.types";
 import { formatActivityDate } from "@/features/activities/utils/activity-formatters";
+import { VirtualAccessLink } from "@/features/registrations/components/VirtualAccessLink";
 
 export function VirtualActivityAccess({
   modality,
@@ -57,6 +58,7 @@ export function VirtualActivityAccess({
         Ingresar a la actividad virtual
         <span aria-hidden="true">↗</span>
       </a>
+      <VirtualAccessLink url={virtualAccessUrl} />
       <Text className="mt-3" size="sm">No compartas este enlace fuera de tu inscripción.</Text>
     </section>
   );

@@ -15,6 +15,10 @@ const templateSource = readFileSync(
   resolve(process.cwd(), "docs/integraciones/n8n-preparar-correo.js"),
   "utf8",
 );
+const workflow = JSON.parse(readFileSync(
+  resolve(process.cwd(), "docs/integraciones/n8n-workflow-eventos-cci.json"),
+  "utf8",
+));
 const executeTemplate = new Function("$json", templateSource) as (
   input: unknown,
 ) => Array<{ json: PreparedEmail }>;
@@ -105,6 +109,11 @@ const virtualContext = {
   virtual_access_url: "https://meet.example.test/sesion-segura",
 };
 
+test("el workflow importable contiene la misma plantilla de correo", () => {
+  const preparationNode = workflow.nodes.find((node: { name: string }) => node.name === "Preparar correo");
+  assert.equal(preparationNode?.parameters.jsCode, templateSource);
+});
+
 test("la confirmación virtual conserva acceso y certificado como acciones separadas", () => {
   const email = prepareEmail("activity_free_registration_confirmed", virtualContext);
 
@@ -115,6 +124,9 @@ test("la confirmación virtual conserva acceso y certificado como acciones separ
   assert.match(email.html, /class="action-cell"/);
   assert.match(email.html, /Ingresar a la actividad virtual/);
   assert.match(email.html, /meet\.example\.test\/sesion-segura/);
+  assert.match(email.html, /Tu enlace de acceso/);
+  assert.match(email.html, /copia este enlace y pégalo en tu navegador/);
+  assert.match(email.html, />https:\/\/meet\.example\.test\/sesion-segura<\/a>/);
   assert.match(email.html, /Solicitar mi certificado/);
   assert.match(email.html, /Sesión 1/);
 });
@@ -124,6 +136,7 @@ test("la preinscripción pagada nunca muestra el acceso virtual", () => {
 
   assert.doesNotMatch(email.html, /meet\.example\.test\/sesion-segura/);
   assert.doesNotMatch(email.html, /Ingresar a la actividad virtual/);
+  assert.doesNotMatch(email.html, /Tu enlace de acceso/);
 });
 
 test("el recordatorio identifica la sesión y entrega el enlace", () => {
@@ -137,6 +150,7 @@ test("el recordatorio identifica la sesión y entrega el enlace", () => {
   assert.match(email.html, /aproximadamente una hora/i);
   assert.match(email.html, /Ingresar a la actividad virtual/);
   assert.match(email.html, /Ver datos de acceso/);
+  assert.match(email.html, />https:\/\/meet\.example\.test\/sesion-segura<\/a>/);
 });
 
 test("la confirmación híbrida informa sede y acceso virtual", () => {
@@ -150,6 +164,7 @@ test("la confirmación híbrida informa sede y acceso virtual", () => {
   assert.match(email.html, /Alternativa presencial/);
   assert.match(email.html, /Auditorio CCI/);
   assert.match(email.html, /Ingresar a la actividad virtual/);
+  assert.match(email.html, />https:\/\/meet\.example\.test\/sesion-segura<\/a>/);
 });
 
 test("una actividad híbrida heredada sin enlace no bloquea su confirmación", () => {
@@ -163,4 +178,17 @@ test("una actividad híbrida heredada sin enlace no bloquea su confirmación", (
 
   assert.match(email.html, /Tu inscripción está confirmada/);
   assert.doesNotMatch(email.html, /Ingresar a la actividad virtual/);
+  assert.doesNotMatch(email.html, /Tu enlace de acceso/);
+});
+
+test("el correo protege y ajusta enlaces virtuales extensos", () => {
+  const virtualUrl = "https://meet.example.test/" + "sesion/".repeat(28) + "?token=uno&usuario=dos";
+  const email = prepareEmail("activity_paid_registration_confirmed", {
+    ...virtualContext,
+    virtual_access_url: virtualUrl,
+  });
+
+  assert.match(email.html, /word-break:break-all;overflow-wrap:anywhere/);
+  assert.match(email.html, /token=uno&amp;usuario=dos/);
+  assert.doesNotMatch(email.html, /href="[^"]*&usuario=dos"/);
 });
