@@ -1,5 +1,3 @@
-import { Heading } from "@/components/atoms/Heading";
-import { Text } from "@/components/atoms/Text";
 import type { ActivityConversionPanelProps } from "@/features/activities/components/ActivityConversionPanel/types/activity-conversion-panel.types";
 import { ActivityCertificateBenefit } from "@/features/activities/components/ActivityCertificateBenefit";
 import { getWhatsAppUrl } from "@/features/activities/utils/activity-contact";
@@ -29,25 +27,39 @@ export function ActivityConversionPanel({
     activity.registration_close_at &&
     new Date(activity.registration_close_at).getTime() > initialNow,
   );
+  const isUnavailable = activity.status === "cancelled" || isFinished;
   const panelTitle = activity.status === "cancelled"
     ? "Actividad cancelada"
     : isFinished
       ? "Actividad finalizada"
-      : activity.is_free ? "Participación gratuita" : "Inscríbete en esta actividad";
+      : "Participa en esta actividad";
 
   return (
-    <aside className="rounded-3xl border border-cci-200 bg-white p-5 shadow-xl shadow-cci-950/10 sm:p-6 lg:sticky lg:top-24">
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-700">{isFinished ? "Actividad realizada" : "Reserva tu lugar"}</p>
-      <Heading className="mt-2" level={2}>{panelTitle}</Heading>
-      <div className="mt-5 rounded-2xl bg-cci-50 p-4">
-        {activity.is_free ? <strong className="text-2xl text-cci-950">Gratis</strong> : (
-          <div className="grid grid-cols-2 gap-4">
-            <div><Text size="sm">Precio general</Text><strong className="mt-1 block text-lg text-cci-950">{formatActivityPrice(activity.general_price)}</strong></div>
-            <div><Text size="sm">Asociados</Text><strong className="mt-1 block text-lg text-cci-950">{formatActivityPrice(activity.member_price)}</strong></div>
-          </div>
-        )}
+    <aside aria-label="Inscripción a la actividad" className="rounded-3xl border border-cci-200 bg-white p-5 shadow-xl shadow-cci-950/10 sm:p-6">
+      <div className="border-b border-cci-100 pb-4">
+        <h2 className="text-2xl font-semibold leading-tight text-cci-950">{panelTitle}</h2>
       </div>
-      {activity.certificate_mode !== "none" ? <div className="mt-4">
+      {!isUnavailable ? (
+        <div className="mt-5 rounded-2xl bg-cci-50 p-4">
+          {activity.is_free ? (
+            <div><p className="text-base text-slate-600">Precio por persona</p><strong className="mt-1 block text-3xl text-cci-950">Gratis</strong></div>
+          ) : activity.members_only ? (
+            <div><p className="text-base text-slate-600">Tarifa de asociado</p><strong className="mt-1 block text-2xl text-cci-950">{formatActivityPrice(activity.member_price)}</strong></div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              <div><p className="text-sm text-slate-600">Público general</p><strong className="mt-1 block text-xl text-cci-950">{formatActivityPrice(activity.general_price)}</strong></div>
+              <div><p className="text-sm text-slate-600">Asociados</p><strong className="mt-1 block text-xl text-cci-950">{formatActivityPrice(activity.member_price)}</strong></div>
+            </div>
+          )}
+        </div>
+      ) : <p className="mt-5 rounded-2xl bg-slate-50 p-4 text-base text-slate-700">Ya no se aceptan inscripciones.</p>}
+      {!isUnavailable ? <div className="mt-5">{availability ? <RegistrationCta activityId={activity.id} activitySlug={activity.slug} activityType={activity.type} availability={availability} /> : <p className="rounded-xl bg-slate-100 p-4 text-center text-base font-semibold text-slate-600">Disponibilidad no confirmada</p>}</div> : null}
+      {availability?.is_open && !activity.is_free ? <p className="mt-2 text-center text-sm leading-relaxed text-slate-600">El personal de CCI confirmará tu inscripción después de validar el pago.</p> : null}
+      {whatsAppUrl ? <a className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-cci-700 bg-white px-4 py-2 text-base font-semibold text-cci-950 transition hover:bg-cci-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-800" href={whatsAppUrl} rel="noreferrer" target="_blank"><WhatsAppIcon /> Quiero más información</a> : null}
+      {canCountDown && activity.registration_close_at ? (
+        <div className="mt-5 rounded-2xl bg-cci-950 p-4"><RegistrationCountdown deadline={activity.registration_close_at} initialNow={initialNow} /></div>
+      ) : null}
+      {activity.certificate_mode !== "none" ? <div className="mt-5">
         <ActivityCertificateBenefit
           generalPrice={activity.certificate_general_price}
           isActivityFree={activity.is_free}
@@ -55,15 +67,10 @@ export function ActivityConversionPanel({
           mode={activity.certificate_mode}
         />
       </div> : null}
-      {canCountDown && activity.registration_close_at ? (
-        <div className="mt-4 rounded-2xl bg-cci-950 p-4"><RegistrationCountdown deadline={activity.registration_close_at} initialNow={initialNow} /></div>
-      ) : null}
-      <div className="mt-5">{availability ? <RegistrationCta activityId={activity.id} activitySlug={activity.slug} activityType={activity.type} availability={availability} /> : <p className="rounded-xl bg-slate-100 p-3 text-center text-sm font-semibold text-slate-600">Disponibilidad no confirmada</p>}</div>
-      {whatsAppUrl ? <a className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-cci-300 bg-white px-4 py-2 text-sm font-semibold text-cci-950 transition hover:border-cci-600 hover:bg-cci-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-800" href={whatsAppUrl} rel="noreferrer" target="_blank"><WhatsAppIcon /> Quiero más información</a> : null}
-      <dl className="mt-6 space-y-3 border-t border-cci-100 pt-5 text-sm">
-        {activity.capacity ? <div className="flex justify-between gap-4"><dt className="text-slate-500">Capacidad</dt><dd className="font-semibold text-cci-950">{activity.capacity} personas</dd></div> : null}
-        {activity.venue ? <div><dt className="text-slate-500">Lugar</dt><dd className="mt-1 font-semibold text-cci-950">{activity.venue.name}</dd></div> : null}
-        {activity.contact ? <div><dt className="text-slate-500">Contacto</dt><dd className="mt-1 font-semibold text-cci-950">{activity.contact.contact_name}</dd></div> : null}
+      <dl className="mt-6 space-y-3 border-t border-cci-100 pt-5 text-base">
+        {activity.capacity ? <div className="flex justify-between gap-4"><dt className="text-slate-600">Capacidad</dt><dd className="font-semibold text-cci-950">{activity.capacity} personas</dd></div> : null}
+        {activity.venue ? <div><dt className="text-slate-600">Lugar</dt><dd className="mt-1 font-semibold text-cci-950">{activity.venue.name}</dd></div> : null}
+        {activity.contact ? <div><dt className="text-slate-600">Contacto</dt><dd className="mt-1 font-semibold text-cci-950">{activity.contact.contact_name}</dd></div> : null}
       </dl>
     </aside>
   );

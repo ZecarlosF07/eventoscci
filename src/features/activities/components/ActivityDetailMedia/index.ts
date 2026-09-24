@@ -1,0 +1,1 @@
+export { ActivityDetailMedia } from "./ActivityDetailMedia";

@@ -15,19 +15,19 @@ export function ActivityInformation({ activity }: ActivityInformationProps) {
     <div className="space-y-8">
       <section>
         <Heading level={2}>Acerca de la actividad</Heading>
-        <Text className="mt-3 whitespace-pre-line">{activity.description}</Text>
+        <Text className="mt-3 whitespace-pre-line [overflow-wrap:anywhere]">{activity.description}</Text>
       </section>
       {GENERAL_INFO_FIELDS.map(([label, field]) => {
         const value = activity[field];
         return value ? (
           <section key={field}>
             <Heading level={2}>{label}</Heading>
-            <Text className="mt-2 whitespace-pre-line">{value}</Text>
+            <Text className="mt-2 whitespace-pre-line [overflow-wrap:anywhere]">{value}</Text>
           </section>
         ) : null;
       })}
-      {showLegacyProgram ? <section><Heading level={2}>Programa</Heading><Text className="mt-2 whitespace-pre-line">{legacyProgram}</Text></section> : null}
-      {activity.additional_info ? <section><Heading level={2}>Información adicional</Heading><Text className="mt-2 whitespace-pre-line">{activity.additional_info}</Text></section> : null}
+      {showLegacyProgram ? <section><Heading level={2}>Programa</Heading><Text className="mt-2 whitespace-pre-line [overflow-wrap:anywhere]">{legacyProgram}</Text></section> : null}
+      {activity.additional_info ? <section><Heading level={2}>Información adicional</Heading><Text className="mt-2 whitespace-pre-line [overflow-wrap:anywhere]">{activity.additional_info}</Text></section> : null}
     </div>
   );
 }
