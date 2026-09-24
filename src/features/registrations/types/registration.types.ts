@@ -207,7 +207,9 @@ export interface RegistrationRoutePageProps {
 
 export interface RegistrationResultPageProps extends RegistrationRoutePageProps {
   searchParams: Promise<{
+    acceso?: string | string[];
     codigo?: string | string[];
+    grupo?: string | string[];
     solicitud?: string | string[];
   }>;
 }

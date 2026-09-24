@@ -23,6 +23,7 @@ export function PendingPaymentsTemplate({ activities, data, filters, result }: P
     <div className="space-y-7">
       <Link className="text-sm font-semibold text-slate-700 hover:underline" href={ROUTES.adminRegistrations}>← Volver a Participación</Link>
       <SectionHeading description={`${data.total} inscripciones pagadas pendientes de validación.`} eyebrow="Cola de trabajo" title="Pagos por verificar" />
+      <Link className="inline-flex min-h-11 items-center rounded-xl bg-[#B6EB66] px-5 text-sm font-bold text-cci-950" href="/admin/inscripciones/solicitudes">Ver solicitudes grupales de asociados →</Link>
       <OperationNotice result={result} />
       <PendingRegistrationFilters activities={activities} filters={filters} />
       <RegistrationsTable registrations={data.registrations} returnTo={returnTo} showActivity />

@@ -47,6 +47,7 @@ export const activityFormSchema = z
     general_price: nonnegativeNumber,
     id: z.union([z.uuid(), z.literal("")]),
     is_free: z.boolean(),
+    is_listed: z.boolean(),
     member_price: nonnegativeNumber,
     members_only: z.boolean(),
     modality: z.enum(["in_person", "virtual", "hybrid"]),
@@ -95,6 +96,13 @@ export const activityFormSchema = z
     }
     if (data.is_free && (Number(data.general_price) !== 0 || Number(data.member_price) !== 0)) {
       context.addIssue({ code: "custom", message: "Una actividad gratuita debe tener precios en cero.", path: ["general_price"] });
+    }
+    if (data.type === "event" && data.members_only && !data.is_free
+      && data.status === "published" && Number(data.member_price) <= 0) {
+      context.addIssue({ code: "custom", message: "Indica un precio de asociado mayor que cero o marca el evento como gratuito.", path: ["member_price"] });
+    }
+    if (data.type !== "event" && !data.is_listed) {
+      context.addIssue({ code: "custom", message: "La opción de no listar solo está disponible para eventos.", path: ["is_listed"] });
     }
     if (
       data.registration_open_at &&

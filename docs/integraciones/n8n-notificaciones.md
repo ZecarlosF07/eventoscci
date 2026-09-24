@@ -18,7 +18,7 @@ Todas son exclusivas del servidor. `N8N_WEBHOOK_SECRET` se envía a n8n mediante
 ```json
 {
   "notification_id": "uuid",
-  "event_type": "activity_free_registration_confirmed | activity_paid_preregistration_created | activity_paid_registration_confirmed | activity_virtual_session_reminder | activity_certificate_offer | activity_certificate_request_created | activity_certificate_issued | course_certificate_issued",
+  "event_type": "activity_free_registration_confirmed | activity_group_request_received | activity_paid_preregistration_created | activity_paid_registration_confirmed | activity_virtual_session_reminder | activity_certificate_offer | activity_certificate_request_created | activity_certificate_issued | course_certificate_issued",
   "recipient_email": "participante@example.com",
   "payload": {}
 }

@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: ActivityDetailPageProps): Pro
     ),
     follow: true,
     image,
-    index: activity.status !== "cancelled",
+    index: activity.is_listed && activity.status !== "cancelled",
     path: getPublicActivityRoute(activity.type, activity.slug),
     title: activity.title,
   });
@@ -42,13 +42,13 @@ export default async function EventDetailPage({ params }: ActivityDetailPageProp
     { name: "Eventos", path: ROUTES.events },
     { name: activity.title, path },
   ], siteUrl);
-  const structuredData = activity.status === "cancelled"
-    ? [breadcrumbs]
-    : [breadcrumbs, buildActivityJsonLd({
+  const structuredData = activity.is_listed && activity.status !== "cancelled"
+    ? [breadcrumbs, buildActivityJsonLd({
       activity,
       image: getActivityBannerUrl(activity.banner_path),
       pageUrl: absoluteUrl(path, siteUrl),
-    })];
+    })]
+    : [];
 
   return (
     <>

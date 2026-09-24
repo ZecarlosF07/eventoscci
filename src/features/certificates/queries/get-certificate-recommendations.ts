@@ -14,6 +14,7 @@ export async function getCertificateRecommendations(
   const client = await createServerSupabaseClient();
   const { data, error } = await client.from("activities")
     .select(ACTIVITY_LIST_SELECT)
+    .eq("is_listed", true)
     .eq("status", "published")
     .is("deleted_at", null)
     .not("published_at", "is", null)

@@ -19,7 +19,7 @@ const ACTIVITY_DETAIL_SELECT = `
   academic_hours, additional_info, address, banner_path, capacity, category_id,
   certificate_general_price, certificate_member_price, certificate_mode,
   contact_email, contact_id, contact_name, contact_phone, created_at, created_by,
-  deleted_at, deleted_by, description, duration_text, general_price, id, is_free,
+  deleted_at, deleted_by, description, duration_text, general_price, id, is_free, is_listed,
   location_name, maps_embed_url, member_price, members_only, modality, objective,
   program, program_image_paths, published_at, registration_close_at,
   registration_open_at, registrations_closed_manually, short_description, slug,

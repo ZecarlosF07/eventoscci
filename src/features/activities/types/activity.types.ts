@@ -55,6 +55,7 @@ export type ActivityListItem = Pick<
   | "general_price"
   | "id"
   | "is_free"
+  | "is_listed"
   | "member_price"
   | "members_only"
   | "modality"

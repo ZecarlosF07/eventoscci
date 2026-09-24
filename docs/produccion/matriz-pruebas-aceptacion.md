@@ -37,6 +37,30 @@ Los archivos usan transacciones con `rollback`; no conservan fixtures en la base
 | C — curso gratuito | publicar → registrar alumno → matricular → progreso → quiz → completar → certificado → valorar | 006 a 010 | Ejecutar smoke controlado |
 | D — curso pagado | publicar → alta manual → contenido → progreso → completar → certificado → valorar | 007 a 010 | Ejecutar smoke controlado |
 
+## Hito 15 — Eventos exclusivos para asociados e inscripción grupal
+
+La implementación y las pruebas automatizadas del Hito 15 ya se ejecutaron en local y Supabase vinculado. Los casos integrales siguen **NO EJECUTADOS** hasta completar la revisión visual y accesible en 390/768/1440, un correo real desde el workflow activo de n8n y el recorrido administrativo con un archivo `.xlsx` real. Las pruebas SQL usan transacciones con `rollback` y no dejan datos de prueba.
+
+| Caso | Recorrido y resultado exigido | Evidencia prevista | Estado |
+|---|---|---|---|
+| H15-01 — Evento no listado | publicar → desactivar «Mostrar en el portal» → abrir enlace directo; ausente de inicio, catálogo, búsqueda, sugerencias y sitemap; metadata `noindex` | SQL, unitarias SEO y smoke público | NO EJECUTADO |
+| H15-02 — Padrón | previsualizar Excel válido e inválido → confirmar reemplazo; duplicados y errores no sustituyen datos; solo administrador importa | SQL, unitarias de archivo y prueba administrativa | NO EJECUTADO |
+| H15-02A — Vista previa obsoleta | administrador A previsualiza → B reemplaza padrón → A intenta confirmar; rechazar lote/versión obsoletos sin alterar el padrón de B | SQL de concurrencia y prueba administrativa | NO EJECUTADO |
+| H15-03 — RUC asociado | RUC activo muestra razón social y permite continuar; ausente o inactivo bloquea; cambio de padrón respeta solicitudes previas | SQL y formulario | NO EJECUTADO |
+| H15-04 — Grupo atómico | titular y adicionales → detectar duplicado o cupos insuficientes; cero registros parciales; cada plaza válida tiene precio, cupo y asistencia propios | SQL de concurrencia y unitarias | NO EJECUTADO |
+| H15-04A — Mismo RUC | crear dos solicitudes del mismo RUC para sumar asistentes; ambas aparecen en panel agrupadas por empresa; repetir persona activa en cualquiera se rechaza | SQL, panel y formulario | NO EJECUTADO |
+| H15-04B — Nombre existente | completar grupo con DNI previo y nombres distintos → actualizar persona con auditoría y mantener snapshots históricos; un fallo del grupo no cambia el nombre | SQL transaccional y auditoría | NO EJECUTADO |
+| H15-05 — Comprobante | boleta del titular u otra persona; factura al mismo u otro RUC con dirección; guardar solo datos para emisión externa, sin registrar comprobante emitido | SQL, formulario y panel | NO EJECUTADO |
+| H15-05A — Evento gratuito | exclusivo gratuito → omitir elección de boleta/factura y confirmar todas las plazas; exclusivo pagado con tarifa de asociado cero no se publica | SQL, formulario y resultado | NO EJECUTADO |
+| H15-06 — Pago parcial | grupo pagado pendiente → seleccionar parte del grupo → verificar importe y referencia → confirmar solo esas plazas → completar el resto después; rechazar selección repetida | SQL, panel y auditoría | NO EJECUTADO |
+| H15-06A — Cupos y cancelación | solicitud impaga conserva cupos sin vencimiento; panel muestra antigüedad → cancelar manualmente solo plazas pendientes y liberar cupos; bloquear cancelación ordinaria de plaza pagada | SQL, panel y auditoría | NO EJECUTADO |
+| H15-06B — Cobro por RUC | ver varias solicitudes del mismo RUC asociado con plazas, total, confirmado y pendiente; distinguir RUC de facturación distinto sin duplicar ingresos | Panel, consultas y CSV | NO EJECUTADO |
+| H15-06C — Atajos antiguos | `register_activity` rechaza evento exclusivo y `confirm_registration` rechaza plaza grupal aunque se invoquen directamente | SQL de seguridad y regresión | NO EJECUTADO |
+| H15-06D — Reintentos | repetir solicitud o pago con misma clave/datos devuelve resultado original sin plazas, pagos ni correos nuevos; clave reutilizada con datos distintos falla | SQL, unitarias y outbox | NO EJECUTADO |
+| H15-07 — Comunicaciones | titular recibe un resumen; cada asistente recibe su confirmación individual; certificado opcional sigue separado; sin duplicados por reintentos | Unitarias, outbox y correo de prueba | NO EJECUTADO |
+| H15-08 — Privacidad y accesibilidad | resultado grupal exige token; padrón no es enumerable; roles y RLS correctos; flujo usable con teclado y en móvil | SQL de seguridad y revisión 390/768/1440 | NO EJECUTADO |
+| H15-09 — Coordinación del pago | resultado pagado muestra código e importe y abre WhatsApp del contacto del evento sin DNI, RUC ni asistentes en el mensaje; resultado gratuito no pide coordinar pago | Unitarias, UI y smoke móvil | NO EJECUTADO |
+
 ## Concurrencia e idempotencia
 
 | Riesgo | Protección implementada | Prueba |
@@ -93,3 +117,5 @@ Las tablas administrativas pueden usar desplazamiento horizontal en móvil; los 
 | 2026-09-09 | Por versionar | Local/Next 16.2.10 | Hito 13: 47 unitarias, lint, TypeScript y build | APROBADO | Validación de producción, Rich Results, Lighthouse posterior y navegadores aún pendientes |
 | 2026-09-11 | Por versionar | Local/Next 16.2.10 | Ampliación Hito 14: 81 unitarias, lint, TypeScript y build | APROBADO | Sin incidencias locales |
 | 2026-09-11 | Por versionar | Supabase vinculado | Migración 202609110002; pruebas SQL 020 y 023, 78 aserciones | APROBADO | Migración aplicada; pruebas transaccionales finalizadas con `rollback` |
+| 2026-09-24 | Por versionar | Supabase vinculado | Hito 15: migraciones 202609240001–005, SQL 025–026 (43 aserciones) y suite SQL previa 001–024 | APROBADO | `supabase db push --linked`; pruebas transaccionales con `rollback`, sin seeds |
+| 2026-09-24 | Por versionar | Local/Next 16.2.10 | Hito 15: 105 unitarias, lint, TypeScript, build y smoke HTTP (`/api/health`, `/eventos`, protección de `/admin/asociados`) | APROBADO | Pendientes: validación visual y accesible, recorrido administrativo real y workflow activo de n8n |

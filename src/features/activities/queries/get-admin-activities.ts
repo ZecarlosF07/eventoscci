@@ -8,7 +8,7 @@ import type {
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const ADMIN_ACTIVITY_SELECT = `
-  id, banner_path, capacity, general_price, is_free, member_price, members_only,
+  id, banner_path, capacity, general_price, is_free, is_listed, member_price, members_only,
   modality, published_at, registration_close_at, registration_open_at,
   registrations_closed_manually,
   short_description, slug, status, title, type,

@@ -21,6 +21,7 @@ function validActivity(): ActivityFormInput {
     general_price: "0",
     id: "",
     is_free: true,
+    is_listed: true,
     member_price: "0",
     members_only: false,
     modality: "in_person",
@@ -45,6 +46,13 @@ function validActivity(): ActivityFormInput {
 
 test("permite crear un borrador sin banner ni programa", () => {
   assert.equal(activityFormSchema.safeParse(validActivity()).success, true);
+});
+
+test("solo eventos pueden quedar no listados y los exclusivos pagados requieren tarifa", () => {
+  assert.equal(activityFormSchema.safeParse({ ...validActivity(), is_listed: false }).success, true);
+  assert.equal(activityFormSchema.safeParse({ ...validActivity(), type: "training", is_listed: false }).success, false);
+  const exclusive = { ...validActivity(), members_only: true, is_free: false, status: "published" as const };
+  assert.equal(activityFormSchema.safeParse({ ...exclusive, member_price: "0" }).success, false);
 });
 
 test("permite títulos de actividades de hasta 300 caracteres", () => {

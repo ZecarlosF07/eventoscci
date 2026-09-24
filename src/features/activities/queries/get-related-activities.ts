@@ -24,6 +24,7 @@ const getCachedRelatedActivities = unstable_cache(async function getCachedRelate
     .from("activities")
     .select(ACTIVITY_LIST_SELECT)
     .eq("status", "published")
+    .eq("is_listed", true)
     .neq("id", activity.id)
     .is("deleted_at", null)
     .not("published_at", "is", null)

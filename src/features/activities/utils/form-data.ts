@@ -49,6 +49,7 @@ export function parseActivityFormData(formData: FormData): ActivityFormInput {
     general_price: stringValue(formData, "general_price"),
     id: stringValue(formData, "id"),
     is_free: formData.get("is_free") === "on",
+    is_listed: formData.get("type") !== "event" || formData.get("is_listed") === "on",
     member_price: stringValue(formData, "member_price"),
     members_only: formData.get("members_only") === "on",
     modality: stringValue(formData, "modality") as ActivityFormInput["modality"],

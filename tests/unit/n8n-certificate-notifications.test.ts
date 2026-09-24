@@ -114,6 +114,28 @@ test("el workflow importable contiene la misma plantilla de correo", () => {
   assert.equal(preparationNode?.parameters.jsCode, templateSource);
 });
 
+test("la solicitud grupal pagada informa total y espera validación, sin datos sensibles", () => {
+  const email = prepareEmail("activity_group_request_received", {
+    activity_slug: "encuentro-cci", activity_title: "Encuentro CCI", group_request_code: "CCI-GR-000123",
+    group_access_token: "7e000000-0000-4000-8000-000000000010",
+    group_attendees: ["Ana Pérez", "Bea Pérez"], group_total: 80,
+  });
+  assert.match(email.html, /CCI-GR-000123/);
+  assert.match(email.html, /S\/\s80\.00/u);
+  assert.match(email.html, /verificará el pago/i);
+  assert.match(email.html, /grupo=CCI-GR-000123&amp;acceso=7e000000-0000-4000-8000-000000000010/);
+  assert.doesNotMatch(email.html, /DNI|20123456789/);
+});
+
+test("la confirmación gratuita muestra el resumen solo al titular", () => {
+  const email = prepareEmail("activity_free_registration_confirmed", {
+    activity_title: "Encuentro CCI", registration_code: "CCI-EV-000123",
+    group_request_code: "CCI-GR-000123", group_attendees: ["Ana Pérez", "Bea Pérez"],
+  });
+  assert.match(email.html, /Resumen de tu grupo/);
+  assert.match(email.html, /Bea Pérez/);
+});
+
 test("la confirmación virtual conserva acceso y certificado como acciones separadas", () => {
   const email = prepareEmail("activity_free_registration_confirmed", virtualContext);
 

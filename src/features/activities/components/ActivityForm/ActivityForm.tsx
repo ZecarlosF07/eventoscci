@@ -124,6 +124,12 @@ export function ActivityForm({
           <Label className="flex items-center gap-2" htmlFor="is_free"><Checkbox checked={isFree} id="is_free" name="is_free" onChange={(event) => { setIsFree(event.target.checked); if (event.target.checked) { setGeneralPrice("0"); setMemberPrice("0"); } }} /> Actividad gratuita</Label>
           <Label className="flex items-center gap-2" htmlFor="members_only"><Checkbox defaultChecked={activity?.members_only} id="members_only" name="members_only" /> Exclusiva para asociados</Label>
         </div>
+        {type === "event" ? (
+          <div className="rounded-xl border border-cci-100 bg-cci-50 p-4">
+            <Label className="flex items-center gap-2" htmlFor="is_listed"><Checkbox defaultChecked={activity?.is_listed ?? true} id="is_listed" name="is_listed" /> Mostrar en el portal</Label>
+            <p className="mt-2 text-sm text-slate-600">Si lo desactivas, el evento publicado seguirá disponible por enlace directo y aceptará inscripciones, pero no aparecerá en Inicio, Eventos ni la búsqueda.</p>
+          </div>
+        ) : null}
         <ActivityCertificateFields
           defaultGeneralPrice={activity?.certificate_general_price}
           defaultMemberPrice={activity?.certificate_member_price}

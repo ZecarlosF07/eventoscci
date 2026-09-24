@@ -156,8 +156,8 @@ select throws_ok(
     '{"document_type":"dni","document_number":"10000004","first_names":"Diego","last_names":"General","email":"diego@example.test","phone":"900100004","job_title":"Analista","registration_type":"general"}'::jsonb
   )$$,
   'P0001',
-  'INVALID_MEMBER_DATA',
-  'members-only activity rejects general registration'
+  'EXCLUSIVE_EVENT_REQUIRES_GROUP',
+  'members-only event requires the dedicated group registration flow'
 );
 select throws_ok(
   $$select public.register_activity(

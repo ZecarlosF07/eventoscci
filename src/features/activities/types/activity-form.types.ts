@@ -40,6 +40,7 @@ export interface ActivityFormInput {
   general_price: string;
   id: string;
   is_free: boolean;
+  is_listed: boolean;
   member_price: string;
   members_only: boolean;
   modality: ActivityModality;

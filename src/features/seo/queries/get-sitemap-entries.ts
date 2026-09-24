@@ -19,6 +19,7 @@ export const getSitemapEntries = unstable_cache(async (): Promise<SitemapEntries
     client.from("activities")
       .select("banner_path, slug, type, updated_at")
       .in("status", ["published", "finished"])
+      .eq("is_listed", true)
       .not("published_at", "is", null)
       .is("deleted_at", null)
       .order("updated_at", { ascending: false }),

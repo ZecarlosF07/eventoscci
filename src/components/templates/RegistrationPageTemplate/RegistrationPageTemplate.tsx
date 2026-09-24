@@ -7,7 +7,9 @@ import type { RegistrationPageTemplateProps } from "@/components/templates/Regis
 import { PriceDisplay } from "@/components/molecules/PriceDisplay";
 import { ActivityCertificateBenefit } from "@/features/activities/components/ActivityCertificateBenefit";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
+import { formatActivityPrice } from "@/features/activities/utils/activity-formatters";
 import { RegistrationForm } from "@/features/registrations/components/RegistrationForm";
+import { MemberGroupRegistrationForm } from "@/features/member-groups/components/MemberGroupRegistrationForm/MemberGroupRegistrationForm";
 import { REGISTRATION_AVAILABILITY_LABELS } from "@/features/registrations/constants/registration.constants";
 
 export function RegistrationPageTemplate({
@@ -15,6 +17,7 @@ export function RegistrationPageTemplate({
   availability,
 }: RegistrationPageTemplateProps) {
   const detailRoute = getPublicActivityRoute(activity.type, activity.slug);
+  const isExclusiveMemberEvent = activity.type === "event" && activity.membersOnly;
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-12 lg:px-8">
@@ -23,12 +26,14 @@ export function RegistrationPageTemplate({
       </Link>
       <div className="mt-7 grid gap-8 lg:grid-cols-[0.7fr_0.3fr] lg:items-start">
         <div className="rounded-2xl border border-cci-100 bg-white p-5 shadow-lg shadow-cci-950/5 sm:rounded-3xl sm:p-8">
-          <Badge>{activity.isFree ? "Inscripción gratuita" : "Preinscripción"}</Badge>
+          <Badge>{activity.isFree ? "Inscripción gratuita" : isExclusiveMemberEvent ? "Solicitud grupal para asociados" : "Preinscripción"}</Badge>
           <Heading className="mt-4" level={1}>Inscripción</Heading>
           <Text className="mt-3" size="lg">{activity.title}</Text>
           <div className="mt-7 border-t border-cci-100 pt-7">
             {availability.is_open ? (
-              <RegistrationForm activity={activity} />
+              isExclusiveMemberEvent
+                ? <MemberGroupRegistrationForm activity={activity} />
+                : <RegistrationForm activity={activity} />
             ) : (
               <div className="rounded-2xl bg-cci-100 p-6 text-center">
                 <Heading level={3}>{REGISTRATION_AVAILABILITY_LABELS[availability.reason]}</Heading>
@@ -39,11 +44,11 @@ export function RegistrationPageTemplate({
         </div>
         <aside className="space-y-4 rounded-3xl border border-cci-100 bg-cci-100 p-6 lg:sticky lg:top-24">
           <Heading level={3}>Resumen</Heading>
-          <PriceDisplay
+          {isExclusiveMemberEvent && !activity.isFree ? <Text className="font-semibold text-cci-950" size="sm">Tarifa por persona: {formatActivityPrice(activity.memberPrice)}</Text> : <PriceDisplay
             generalPrice={activity.generalPrice}
             isFree={activity.isFree}
             memberPrice={activity.memberPrice}
-          />
+          />}
           <ActivityCertificateBenefit
             generalPrice={activity.certificateGeneralPrice}
             isActivityFree={activity.isFree}
@@ -52,7 +57,7 @@ export function RegistrationPageTemplate({
           />
           <Text size="sm">No necesitas crear una cuenta para completar este proceso.</Text>
           {!activity.isFree ? (
-            <Text size="sm">La preinscripción requiere confirmación posterior de la Cámara.</Text>
+            <Text size="sm">{isExclusiveMemberEvent ? "Las plazas se reservarán y el personal validará el pago manualmente antes de confirmarlas." : "La preinscripción requiere confirmación posterior de la Cámara."}</Text>
           ) : null}
         </aside>
       </div>

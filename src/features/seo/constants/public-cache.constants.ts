@@ -1,7 +1,7 @@
 export const PUBLIC_CACHE_REVALIDATE_SECONDS = 900;
 export const PUBLIC_AVAILABILITY_REVALIDATE_SECONDS = 30;
 // Do not reuse entries generated before the public rendering/cache consistency fix.
-export const PUBLIC_CACHE_VERSION = "request-rendering-v2";
+export const PUBLIC_CACHE_VERSION = "member-listing-v3";
 
 export const PUBLIC_CACHE_TAGS = {
   activities: "public-activities",

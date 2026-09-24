@@ -8,6 +8,7 @@ const {
 
 const allowedEvents = new Set([
   "activity_free_registration_confirmed",
+  "activity_group_request_received",
   "activity_paid_preregistration_created",
   "activity_paid_registration_confirmed",
   "activity_virtual_session_reminder",
@@ -62,6 +63,9 @@ const requestToken = payload.registration_request_token ?? payload.certificate_r
 const registrationResultUrl = payload.activity_slug && payload.registration_code && requestToken
   ? `${siteUrl}/${section}/${encodeURIComponent(payload.activity_slug)}/inscripcion/resultado?codigo=${encodeURIComponent(payload.registration_code)}&solicitud=${encodeURIComponent(requestToken)}`
   : "";
+const groupResultUrl = payload.activity_slug && payload.group_request_code && payload.group_access_token
+  ? `${siteUrl}/eventos/${encodeURIComponent(payload.activity_slug)}/inscripcion/resultado?grupo=${encodeURIComponent(payload.group_request_code)}&acceso=${encodeURIComponent(payload.group_access_token)}`
+  : "";
 const certificatePrice = Number(payload.certificate_price);
 const certificatePriceText = Number.isFinite(certificatePrice)
   ? new Intl.NumberFormat("es-PE", { currency: "PEN", style: "currency" }).format(certificatePrice)
@@ -101,6 +105,24 @@ if (eventType === "activity_free_registration_confirmed") {
   heading = "Tu inscripción está confirmada";
   eyebrow = "INSCRIPCIÓN CONFIRMADA";
   message = `${paragraph(`Te registraste correctamente en <strong>${activityTitle}</strong>.`)}${detailPanel("Código de inscripción", registrationCode)}${sessionList}`;
+  if (Array.isArray(payload.group_attendees) && payload.group_attendees.length) {
+    message += notice("Resumen de tu grupo", `Solicitud ${escapeHtml(payload.group_request_code ?? "")} · ${payload.group_attendees.map(escapeHtml).join(", ")}. Cada persona recibió su confirmación individual.`);
+    addAction("Ver mi grupo", groupResultUrl);
+  }
+}
+
+if (eventType === "activity_group_request_received") {
+  requiredText("activity_title");
+  const groupCode = requiredText("group_request_code");
+  const attendees = Array.isArray(payload.group_attendees) ? payload.group_attendees.map(escapeHtml) : [];
+  const total = Number(payload.group_total);
+  if (!attendees.length || !Number.isFinite(total)) throw new Error("Faltan datos de la solicitud grupal");
+  const totalText = new Intl.NumberFormat("es-PE", { currency: "PEN", style: "currency" }).format(total);
+  subject = `Solicitud recibida ${groupCode} — ${payload.activity_title}`;
+  heading = "Recibimos tu solicitud grupal";
+  eyebrow = "PENDIENTE DE VALIDACIÓN DEL PAGO";
+  message = `${paragraph(`Reservamos ${attendees.length} ${attendees.length === 1 ? "plaza" : "plazas"} para <strong>${activityTitle}</strong>.`)}${detailPanel("Código de solicitud", escapeHtml(groupCode))}${detailPanel("Importe de participación", escapeHtml(totalText))}${paragraph(`Asistentes: ${attendees.join(", ")}.`)}${notice("¿Qué sigue?", "Coordina el pago manual con la CCI. El personal verificará el pago y cada asistente recibirá su confirmación individual cuando su plaza esté cubierta.")}`;
+  addAction("Ver estado de mi solicitud", groupResultUrl, true);
 }
 
 if (eventType === "activity_paid_preregistration_created") {

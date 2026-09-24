@@ -885,6 +885,33 @@ El alcance detallado, las pruebas y la Definition of Done se encuentran en:
 
 ---
 
+# Hito 15 — Eventos exclusivos para asociados e inscripción grupal
+
+## Objetivo
+
+Permitir compartir eventos publicados no listados y registrar a varios asistentes de una empresa asociada mediante un RUC activo. Los eventos exclusivos gratuitos se confirman sin pedir comprobante; los pagados recogen datos para boleta o factura y permiten validar manualmente pagos parciales.
+
+## Actividades
+
+- Configurar la visibilidad del evento sin confundirla con publicación o archivado.
+- Reemplazar de forma segura y auditada el padrón de RUC activos desde Excel.
+- Verificar RUC y razón social antes de registrar un evento exclusivo para asociados.
+- Inscribir al titular y a los asistentes adicionales en una operación transaccional, con cupo, precio y asistencia individuales.
+- Permitir nuevas solicitudes del mismo RUC sin duplicar personas y actualizar nombres existentes solo tras completar el grupo, con auditoría y snapshots históricos intactos.
+- Recoger datos de boleta o factura solo si hay cobro, incluso para un RUC de facturación distinto, sin registrar comprobantes emitidos.
+- Presentar una solicitud grupal pagada como pendiente de validación, nunca como confirmada, con código e importe para coordinar el pago por WhatsApp del evento.
+- Agrupar la revisión administrativa por solicitud y RUC, mostrar cantidades, importes y antigüedad, asignar pagos manuales a los asistentes cubiertos y, en eventos pagados, cancelar solo plazas impagas sin vencimiento automático.
+- Proteger el reemplazo del padrón frente a vistas previas obsoletas y bloquear las RPC individuales anteriores para que no eludan el nuevo flujo; hacer idempotentes el registro y el pago.
+- Enviar un resumen al titular y confirmaciones individuales, conservando separado el certificado opcional.
+
+## Resultado esperado
+
+El personal podrá compartir un evento exclusivo no listado, gestionar el padrón y validar pagos parciales desde una solicitud clara. Los asociados podrán completar el registro de su grupo sin crear cuenta ni repetir los datos de la empresa. El alcance, los riesgos de usar el RUC como único requisito y de reservar cupos impagos hasta cancelación manual, las pruebas y la Definition of Done se describen en:
+
+`docs/hitos/HITO 15 — EVENTOS EXCLUSIVOS PARA ASOCIADOS E INSCRIPCIÓN GRUPAL.md`
+
+---
+
 # Orden resumido del desarrollo
 
 ## Etapa A — Eventos y capacitaciones
@@ -934,6 +961,16 @@ Resultado:
 Resultado:
 
 **Modalidad → Certificado incluido u opcional → Seguimiento manual cuando aplique → Asistencia → Emisión existente**
+
+---
+
+## Etapa F — Operación de eventos exclusivos para asociados
+
+**Hito 15**
+
+Resultado:
+
+**Evento no listado → Padrón de asociados → Solicitud grupal → Comprobante solicitado → Pago manual parcial → Confirmaciones individuales**
 
 ---
 

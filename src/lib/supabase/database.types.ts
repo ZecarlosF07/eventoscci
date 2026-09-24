@@ -49,7 +49,7 @@ export type Database = {
           category_id: string | null
           certificate_general_price: number
           certificate_member_price: number
-          certificate_mode: "included" | "none" | "optional_paid"
+          certificate_mode: "none" | "included" | "optional_paid"
           contact_email: string | null
           contact_id: string | null
           contact_name: string | null
@@ -63,6 +63,7 @@ export type Database = {
           general_price: number
           id: string
           is_free: boolean
+          is_listed: boolean
           location_name: string | null
           maps_embed_url: string | null
           member_price: number
@@ -96,7 +97,7 @@ export type Database = {
           category_id?: string | null
           certificate_general_price?: number
           certificate_member_price?: number
-          certificate_mode?: "included" | "none" | "optional_paid"
+          certificate_mode?: string
           contact_email?: string | null
           contact_id?: string | null
           contact_name?: string | null
@@ -110,6 +111,7 @@ export type Database = {
           general_price?: number
           id?: string
           is_free?: boolean
+          is_listed?: boolean
           location_name?: string | null
           maps_embed_url?: string | null
           member_price?: number
@@ -143,7 +145,7 @@ export type Database = {
           category_id?: string | null
           certificate_general_price?: number
           certificate_member_price?: number
-          certificate_mode?: "included" | "none" | "optional_paid"
+          certificate_mode?: string
           contact_email?: string | null
           contact_id?: string | null
           contact_name?: string | null
@@ -157,6 +159,7 @@ export type Database = {
           general_price?: number
           id?: string
           is_free?: boolean
+          is_listed?: boolean
           location_name?: string | null
           maps_embed_url?: string | null
           member_price?: number
@@ -1266,6 +1269,320 @@ export type Database = {
           },
         ]
       }
+      member_companies: {
+        Row: {
+          created_at: string
+          import_id: string | null
+          is_active: boolean
+          legal_name: string
+          ruc: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          import_id?: string | null
+          is_active?: boolean
+          legal_name: string
+          ruc: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          import_id?: string | null
+          is_active?: boolean
+          legal_name?: string
+          ruc?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_companies_import_id_fkey"
+            columns: ["import_id"]
+            isOneToOne: false
+            referencedRelation: "member_roster_imports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_group_payment_allocations: {
+        Row: {
+          amount: number
+          payment_id: string
+          registration_id: string
+        }
+        Insert: {
+          amount: number
+          payment_id: string
+          registration_id: string
+        }
+        Update: {
+          amount?: number
+          payment_id?: string
+          registration_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_group_payment_allocations_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "member_group_payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_group_payment_allocations_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_group_payments: {
+        Row: {
+          amount: number
+          id: string
+          idempotency_key: string
+          note: string | null
+          payment_reference: string
+          request_hash: string
+          request_id: string
+          verified_at: string
+          verified_by: string | null
+        }
+        Insert: {
+          amount: number
+          id?: string
+          idempotency_key: string
+          note?: string | null
+          payment_reference: string
+          request_hash: string
+          request_id: string
+          verified_at?: string
+          verified_by?: string | null
+        }
+        Update: {
+          amount?: number
+          id?: string
+          idempotency_key?: string
+          note?: string | null
+          payment_reference?: string
+          request_hash?: string
+          request_id?: string
+          verified_at?: string
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_group_payments_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "member_group_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_group_requests: {
+        Row: {
+          access_token: string
+          activity_id: string
+          billing_address: string | null
+          billing_document: string | null
+          billing_name: string | null
+          billing_type: string | null
+          company_name_snapshot: string
+          company_ruc: string
+          coordinator_email: string | null
+          coordinator_person_id: string | null
+          created_at: string
+          future_topics_suggestion: string | null
+          id: string
+          idempotency_key: string
+          is_free_snapshot: boolean
+          request_code: string
+          request_hash: string
+          updated_at: string
+        }
+        Insert: {
+          access_token?: string
+          activity_id: string
+          billing_address?: string | null
+          billing_document?: string | null
+          billing_name?: string | null
+          billing_type?: string | null
+          company_name_snapshot: string
+          company_ruc: string
+          coordinator_email?: string | null
+          coordinator_person_id?: string | null
+          created_at?: string
+          future_topics_suggestion?: string | null
+          id?: string
+          idempotency_key: string
+          is_free_snapshot: boolean
+          request_code: string
+          request_hash: string
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          activity_id?: string
+          billing_address?: string | null
+          billing_document?: string | null
+          billing_name?: string | null
+          billing_type?: string | null
+          company_name_snapshot?: string
+          company_ruc?: string
+          coordinator_email?: string | null
+          coordinator_person_id?: string | null
+          created_at?: string
+          future_topics_suggestion?: string | null
+          id?: string
+          idempotency_key?: string
+          is_free_snapshot?: boolean
+          request_code?: string
+          request_hash?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_group_requests_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_group_requests_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "member_group_requests_company_ruc_fkey"
+            columns: ["company_ruc"]
+            isOneToOne: false
+            referencedRelation: "member_companies"
+            referencedColumns: ["ruc"]
+          },
+          {
+            foreignKeyName: "member_group_requests_coordinator_person_id_fkey"
+            columns: ["coordinator_person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_group_submission_limits: {
+        Row: {
+          attempts: number
+          company_ruc: string
+          window_started_at: string
+        }
+        Insert: {
+          attempts?: number
+          company_ruc: string
+          window_started_at?: string
+        }
+        Update: {
+          attempts?: number
+          company_ruc?: string
+          window_started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_group_submission_limits_company_ruc_fkey"
+            columns: ["company_ruc"]
+            isOneToOne: true
+            referencedRelation: "member_companies"
+            referencedColumns: ["ruc"]
+          },
+        ]
+      }
+      member_roster_imports: {
+        Row: {
+          added_count: number
+          applied_at: string | null
+          base_version: number
+          changed_count: number
+          created_at: string
+          created_by: string | null
+          file_hash: string
+          file_name: string
+          id: string
+          removed_count: number
+          row_count: number
+          rows_json: Json
+          status: string
+        }
+        Insert: {
+          added_count: number
+          applied_at?: string | null
+          base_version: number
+          changed_count: number
+          created_at?: string
+          created_by?: string | null
+          file_hash: string
+          file_name: string
+          id?: string
+          removed_count: number
+          row_count: number
+          rows_json: Json
+          status?: string
+        }
+        Update: {
+          added_count?: number
+          applied_at?: string | null
+          base_version?: number
+          changed_count?: number
+          created_at?: string
+          created_by?: string | null
+          file_hash?: string
+          file_name?: string
+          id?: string
+          removed_count?: number
+          row_count?: number
+          rows_json?: Json
+          status?: string
+        }
+        Relationships: []
+      }
+      member_roster_lookup_limits: {
+        Row: {
+          attempts: number
+          bucket_hash: string
+          window_started_at: string
+        }
+        Insert: {
+          attempts?: number
+          bucket_hash: string
+          window_started_at?: string
+        }
+        Update: {
+          attempts?: number
+          bucket_hash?: string
+          window_started_at?: string
+        }
+        Relationships: []
+      }
+      member_roster_state: {
+        Row: {
+          singleton: boolean
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          singleton?: boolean
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          singleton?: boolean
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
       notification_outbox: {
         Row: {
           attempts: number
@@ -1678,7 +1995,7 @@ export type Database = {
           career_snapshot: string | null
           certificate_followed_up_at: string | null
           certificate_followed_up_by: string | null
-          certificate_mode_snapshot: "included" | "none" | "optional_paid"
+          certificate_mode_snapshot: "none" | "included" | "optional_paid"
           certificate_payment_verified_at: string | null
           certificate_payment_verified_by: string | null
           certificate_price_snapshot: number | null
@@ -1691,9 +2008,12 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           deleted_by: string | null
+          first_names_snapshot: string | null
           future_topics_suggestion: string | null
           id: string
           job_title_snapshot: string | null
+          last_names_snapshot: string | null
+          member_group_request_id: string | null
           participant_profile: Database["public"]["Enums"]["participant_profile"]
           person_id: string
           price_snapshot: number
@@ -1712,7 +2032,7 @@ export type Database = {
           career_snapshot?: string | null
           certificate_followed_up_at?: string | null
           certificate_followed_up_by?: string | null
-          certificate_mode_snapshot?: "included" | "none" | "optional_paid"
+          certificate_mode_snapshot?: string
           certificate_payment_verified_at?: string | null
           certificate_payment_verified_by?: string | null
           certificate_price_snapshot?: number | null
@@ -1725,9 +2045,12 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           deleted_by?: string | null
+          first_names_snapshot?: string | null
           future_topics_suggestion?: string | null
           id?: string
           job_title_snapshot?: string | null
+          last_names_snapshot?: string | null
+          member_group_request_id?: string | null
           participant_profile?: Database["public"]["Enums"]["participant_profile"]
           person_id: string
           price_snapshot?: number
@@ -1746,7 +2069,7 @@ export type Database = {
           career_snapshot?: string | null
           certificate_followed_up_at?: string | null
           certificate_followed_up_by?: string | null
-          certificate_mode_snapshot?: "included" | "none" | "optional_paid"
+          certificate_mode_snapshot?: string
           certificate_payment_verified_at?: string | null
           certificate_payment_verified_by?: string | null
           certificate_price_snapshot?: number | null
@@ -1759,9 +2082,12 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           deleted_by?: string | null
+          first_names_snapshot?: string | null
           future_topics_suggestion?: string | null
           id?: string
           job_title_snapshot?: string | null
+          last_names_snapshot?: string | null
+          member_group_request_id?: string | null
           participant_profile?: Database["public"]["Enums"]["participant_profile"]
           person_id?: string
           price_snapshot?: number
@@ -1785,6 +2111,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "activity_participation_summary"
             referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_member_group_request_id_fkey"
+            columns: ["member_group_request_id"]
+            isOneToOne: false
+            referencedRelation: "member_group_requests"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "registrations_person_id_fkey"
@@ -1994,6 +2327,10 @@ export type Database = {
         Args: { p_certificate_id: string }
         Returns: boolean
       }
+      apply_member_roster_import: {
+        Args: { p_import_id: string }
+        Returns: Json
+      }
       authorize_course_certificate_generation: {
         Args: { p_certificate_id: string }
         Returns: boolean
@@ -2077,6 +2414,14 @@ export type Database = {
         Args: { p_registration_id: string }
         Returns: Json
       }
+      confirm_registration_individual: {
+        Args: { p_registration_id: string }
+        Returns: Json
+      }
+      correct_member_group_billing: {
+        Args: { p_billing: Json; p_reason: string; p_request_id: string }
+        Returns: Json
+      }
       current_course_enrollment: {
         Args: { p_course_id: string }
         Returns: string
@@ -2115,7 +2460,7 @@ export type Database = {
           attendance_status: Database["public"]["Enums"]["attendance_status"]
           certificate_code: string
           certificate_id: string
-          certificate_mode_snapshot: "included" | "none" | "optional_paid"
+          certificate_mode_snapshot: "none" | "included" | "optional_paid"
           certificate_payment_verified_at: string
           certificate_payment_verified_by: string
           certificate_price_snapshot: number
@@ -2155,6 +2500,10 @@ export type Database = {
           total_count: number
           type: Database["public"]["Enums"]["activity_type"]
         }[]
+      }
+      get_member_group_result: {
+        Args: { p_access_token: string; p_request_code: string }
+        Returns: Json
       }
       get_my_certificates: { Args: never; Returns: Json }
       get_my_course_certificate: {
@@ -2227,6 +2576,21 @@ export type Database = {
         Args: { p_venue_id: string }
         Returns: boolean
       }
+      list_member_group_requests: {
+        Args: {
+          p_activity_id?: string
+          p_page?: number
+          p_page_size?: number
+          p_query?: string
+          p_status?: string
+        }
+        Returns: Json
+      }
+      lookup_active_member_company: { Args: { p_ruc: string }; Returns: Json }
+      lookup_active_member_company_limited: {
+        Args: { p_bucket_hash: string; p_ruc: string }
+        Returns: Json
+      }
       mark_certificate_request_followed_up: {
         Args: { p_registration_id: string }
         Returns: Json
@@ -2237,6 +2601,10 @@ export type Database = {
           p_registration_ids: string[]
           p_template_id: string
         }
+        Returns: Json
+      }
+      preview_member_roster_import: {
+        Args: { p_file_hash: string; p_file_name: string; p_rows: Json }
         Returns: Json
       }
       recalculate_course_progress: {
@@ -2251,8 +2619,20 @@ export type Database = {
         Args: { p_registration_id: string }
         Returns: Json
       }
+      register_activity_individual: {
+        Args: { p_activity_id: string; p_registration: Json }
+        Returns: Json
+      }
       register_activity_internal: {
         Args: { p_activity_id: string; p_registration: Json }
+        Returns: Json
+      }
+      register_member_group: {
+        Args: {
+          p_activity_id: string
+          p_idempotency_key: string
+          p_request: Json
+        }
         Returns: Json
       }
       replace_certificate_document: {
@@ -2290,6 +2670,10 @@ export type Database = {
         Returns: string
       }
       save_activity_with_legacy_virtual_url: {
+        Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
+        Returns: string
+      }
+      save_activity_without_listing: {
         Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
         Returns: string
       }
@@ -2373,6 +2757,17 @@ export type Database = {
       }
       verify_activity_certificate_payment: {
         Args: { p_registration_id: string }
+        Returns: Json
+      }
+      verify_member_group_payment: {
+        Args: {
+          p_idempotency_key: string
+          p_note: string
+          p_payment_reference: string
+          p_received_amount: number
+          p_registration_ids: string[]
+          p_request_id: string
+        }
         Returns: Json
       }
     }

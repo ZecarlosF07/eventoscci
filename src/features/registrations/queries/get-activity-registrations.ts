@@ -101,6 +101,7 @@ async function attachCertificateActorNames(
 
 export async function getActivityRegistrations(
   filters: RegistrationAdminFilters,
+  excludeGroupRegistrations = false,
 ): Promise<RegistrationAdminPage> {
   const client = await createServerSupabaseClient();
   const from = (filters.page - 1) * REGISTRATION_PAGE_SIZE;
@@ -119,6 +120,7 @@ export async function getActivityRegistrations(
     );
 
   if (filters.status) query = query.eq("status", filters.status);
+  if (excludeGroupRegistrations) query = query.is("member_group_request_id", null);
   else if (filters.statusScope === "active") query = query.in("status", ["pending", "confirmed"]);
   if (filters.activityId) query = query.eq("activity_id", filters.activityId);
   if (filters.activityType) query = query.eq("activity.type", filters.activityType);
@@ -259,7 +261,7 @@ export async function getRegistrationsForExport(
 export function getPendingRegistrations(
   filters: Omit<RegistrationAdminFilters, "status">,
 ): Promise<RegistrationAdminPage> {
-  return getActivityRegistrations({ ...filters, status: "pending" });
+  return getActivityRegistrations({ ...filters, status: "pending" }, true);
 }
 
 export async function getRegistrationByCode(

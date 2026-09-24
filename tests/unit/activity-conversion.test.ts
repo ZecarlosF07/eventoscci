@@ -83,6 +83,7 @@ function activity(
     general_price: 0,
     id,
     is_free: true,
+    is_listed: true,
     member_price: 0,
     members_only: false,
     modality: "virtual",
