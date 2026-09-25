@@ -21,6 +21,14 @@ function cellText(value: ExcelJS.CellValue): string | null {
   return typeof value === "string" ? value.trim() : null;
 }
 
+function rucText(value: ExcelJS.CellValue): string | null {
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "number" && Number.isSafeInteger(value) && value >= 0) {
+    return String(value);
+  }
+  return null;
+}
+
 export async function parseMemberRosterWorkbook(file: File): Promise<ParsedMemberRoster> {
   if (!file.name.toLowerCase().endsWith(".xlsx") || file.size > MAX_FILE_BYTES || file.size < 100) {
     throw new Error("Selecciona un archivo .xlsx de hasta 5 MB.");
@@ -58,12 +66,13 @@ export async function parseMemberRosterWorkbook(file: File): Promise<ParsedMembe
     const rawName = row.getCell(2).value;
     if (rawRuc === null && rawName === null && row.actualCellCount === 0) continue;
 
-    const ruc = cellText(rawRuc);
+    const ruc = rucText(rawRuc);
     const legalName = cellText(rawName);
     let message: string | null = null;
     if (row.actualCellCount > 2) message = "La fila tiene columnas adicionales.";
-    else if (ruc === null || legalName === null) message = "RUC y razón social deben ser texto; no se aceptan fórmulas ni números.";
-    else if (!/^\d{11}$/.test(ruc)) message = "El RUC debe tener exactamente 11 dígitos y estar guardado como texto.";
+    else if (ruc === null) message = "El RUC debe ser texto o un número entero; no se aceptan fórmulas.";
+    else if (legalName === null) message = "La razón social debe ser texto; no se aceptan fórmulas ni números.";
+    else if (!/^\d{11}$/.test(ruc)) message = "El RUC debe tener exactamente 11 dígitos. Si comienza con cero, guárdalo como texto.";
     else if (legalName.length < 2 || legalName.length > 250) message = "La razón social debe tener entre 2 y 250 caracteres.";
     else if (seen.has(ruc)) message = "El RUC está duplicado en el archivo.";
 

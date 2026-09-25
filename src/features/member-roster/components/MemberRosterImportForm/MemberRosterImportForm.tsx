@@ -51,7 +51,8 @@ export function MemberRosterImportForm({ activeCount, version }: MemberRosterImp
   return (
     <section className="rounded-3xl border border-cci-100 bg-white p-6 shadow-sm">
       <h2 className="text-xl font-bold text-cci-950">Reemplazar padrón</h2>
-      <p className="mt-2 text-sm text-slate-600">Padrón actual: {activeCount} RUC activos · versión {version}. El Excel debe tener solo dos columnas: RUC (texto de 11 dígitos) y Razón social.</p>
+      <p className="mt-2 text-sm text-slate-600">Padrón actual: {activeCount} RUC activos · versión {version}. En la primera hoja, usa solo dos columnas: RUC y Razón social, en ese orden.</p>
+      <p className="mt-2 text-sm text-slate-600">El RUC puede ser texto o número entero de 11 dígitos. Si comienza con cero, guárdalo como texto para no perderlo. La razón social debe ser texto; no se aceptan fórmulas.</p>
       <form className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end" onSubmit={handlePreview}>
         <label className="grid flex-1 gap-2 text-sm font-semibold text-cci-950" htmlFor="member-roster-file">Archivo .xlsx
           <input accept=".xlsx" className="min-h-11 w-full rounded-xl border border-slate-300 p-2" id="member-roster-file" onChange={(event) => { setFile(event.target.files?.[0] ?? null); setPreview(null); }} required type="file" />
