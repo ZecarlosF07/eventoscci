@@ -36,7 +36,7 @@ export function CertificateRequestCard({
         {alreadyRequested ? "Solicitud registrada" : "Certificado digital opcional"}
       </Badge>
       <p className="mt-3 text-xl font-bold text-cci-950">
-        Tarifa aplicable: {formatRegistrationPrice(certificatePrice)}
+        Precio aplicable: {formatRegistrationPrice(certificatePrice)}
       </p>
       <Text className="mt-2" size="sm">Puedes solicitarlo ahora o después de participar.</Text>
       <Text className="mt-2" size="sm">

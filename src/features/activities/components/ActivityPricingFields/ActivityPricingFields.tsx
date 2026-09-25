@@ -23,7 +23,7 @@ export function ActivityPricingFields({
       <div className="grid gap-3 md:grid-cols-2">
         <Label className={classNames("flex min-h-20 cursor-pointer items-start gap-3 rounded-2xl border p-4 focus-within:ring-2 focus-within:ring-cci-700", membersOnly ? "border-cci-700 bg-cci-50" : "border-slate-200 bg-white hover:border-cci-300")} htmlFor="members_only">
           <Checkbox checked={membersOnly} className="mt-1" id="members_only" name="members_only" onChange={(event) => onMembersOnlyChange(event.target.checked)} />
-          <span><strong className="block text-base text-cci-950">Exclusiva para asociados</strong><span className="mt-1 block text-sm leading-5 text-slate-600">Solo los asociados podrán inscribirse. Se mostrará únicamente su tarifa.</span></span>
+          <span><strong className="block text-base text-cci-950">Exclusiva para asociados</strong><span className="mt-1 block text-sm leading-5 text-slate-600">Solo los asociados podrán inscribirse. Se mostrará únicamente su precio.</span></span>
         </Label>
         <Label className={classNames("flex min-h-20 cursor-pointer items-start gap-3 rounded-2xl border p-4 focus-within:ring-2 focus-within:ring-cci-700", isFree ? "border-cci-700 bg-cci-50" : "border-slate-200 bg-white hover:border-cci-300")} htmlFor="is_free">
           <Checkbox checked={isFree} className="mt-1" id="is_free" name="is_free" onChange={(event) => onFreeChange(event.target.checked)} />
@@ -33,12 +33,12 @@ export function ActivityPricingFields({
 
       {!isFree ? (
         <div className="space-y-5 rounded-2xl border border-cci-100 bg-slate-50 p-4 sm:p-5">
-          <div><h4 className="font-semibold text-cci-950">Tarifa de inscripción</h4><p className="mt-1 text-sm text-slate-600">Indica el importe por persona para cada público habilitado.</p></div>
+          <div><h4 className="font-semibold text-cci-950">Precio de inscripción</h4><p className="mt-1 text-sm text-slate-600">Indica el importe por persona para cada público habilitado.</p></div>
           <div className="grid gap-5 md:grid-cols-2">
-            {!membersOnly ? <FormField error={errors?.general_price?.[0]} hint="Importe para quienes no son asociados." label="Tarifa general" name="general_price" required={published}>
+            {!membersOnly ? <FormField error={errors?.general_price?.[0]} hint="Importe para quienes no son asociados." label="Precio general" name="general_price" required={published}>
               <Input id="general_price" min={published ? "0.01" : "0"} name="general_price" onChange={(event) => setGeneralPrice(event.target.value)} required={published} step="0.01" type="number" value={generalPrice} />
             </FormField> : <input name="general_price" type="hidden" value="0" />}
-            <FormField error={errors?.member_price?.[0]} hint="Importe por cada asociado." label="Tarifa para asociados" name="member_price" required={published}>
+            <FormField error={errors?.member_price?.[0]} hint="Importe por cada asociado." label="Precio para asociados" name="member_price" required={published}>
               <Input id="member_price" min={published ? "0.01" : "0"} name="member_price" onChange={(event) => setMemberPrice(event.target.value)} required={published} step="0.01" type="number" value={memberPrice} />
             </FormField>
           </div>

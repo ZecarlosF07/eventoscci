@@ -90,8 +90,8 @@ export async function saveActivityAction(
           "activities_published_contact_required": "Selecciona un contacto activo antes de publicar.",
           "activities_published_virtual_access_required": "Indica el enlace virtual antes de publicar.",
           "activities_published_payment_note_required": "Indica cómo realizar el pago antes de publicar.",
-          "activities_published_paid_prices_positive": "Indica tarifas mayores que cero para los públicos habilitados antes de publicar.",
-          "activities_exclusive_general_price_zero": "Una actividad exclusiva no puede tener una tarifa general.",
+          "activities_published_paid_prices_positive": "Indica precios mayores que cero para los públicos habilitados antes de publicar.",
+          "activities_exclusive_general_price_zero": "Una actividad exclusiva no puede tener un precio general.",
           "activity_virtual_access_url_valid": "Ingresa un enlace virtual HTTPS válido.",
           "La actividad requiere al menos una fecha": "Agrega al menos una fecha y horario para guardar la actividad.",
         },
@@ -144,7 +144,7 @@ export async function changeActivityStatusAction(
         "activities_published_contact_required": "Selecciona un contacto activo antes de publicar.",
         "activities_published_virtual_access_required": "Indica el enlace virtual antes de publicar.",
         "activities_published_payment_note_required": "Indica cómo realizar el pago antes de publicar.",
-        "activities_published_paid_prices_positive": "Indica tarifas mayores que cero para los públicos habilitados antes de publicar.",
+        "activities_published_paid_prices_positive": "Indica precios mayores que cero para los públicos habilitados antes de publicar.",
       },
     }), { cause: error });
   }

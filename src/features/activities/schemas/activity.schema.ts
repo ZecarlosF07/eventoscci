@@ -99,20 +99,20 @@ export const activityFormSchema = z
       context.addIssue({ code: "custom", message: "Una actividad gratuita debe tener precios en cero.", path: ["general_price"] });
     }
     if (data.members_only && Number(data.general_price) !== 0) {
-      context.addIssue({ code: "custom", message: "Una actividad exclusiva no tiene tarifa general.", path: ["general_price"] });
+      context.addIssue({ code: "custom", message: "Una actividad exclusiva no tiene precio general.", path: ["general_price"] });
     }
     if (data.members_only && data.certificate_mode === "optional_paid"
       && certificateGeneralPrice !== certificateMemberPrice) {
-      context.addIssue({ code: "custom", message: "En una actividad exclusiva solo corresponde la tarifa de certificado para asociados.", path: ["certificate_member_price"] });
+      context.addIssue({ code: "custom", message: "En una actividad exclusiva solo corresponde el precio de certificado para asociados.", path: ["certificate_member_price"] });
     }
     if (data.status === "published" && !data.is_free && !data.payment_note) {
       context.addIssue({ code: "custom", message: "Indica cómo realizar el pago antes de publicar.", path: ["payment_note"] });
     }
     if (data.status === "published" && !data.is_free && Number(data.member_price) <= 0) {
-      context.addIssue({ code: "custom", message: "Indica una tarifa para asociados mayor que cero o marca la actividad como gratuita.", path: ["member_price"] });
+      context.addIssue({ code: "custom", message: "Indica un precio para asociados mayor que cero o marca la actividad como gratuita.", path: ["member_price"] });
     }
     if (data.status === "published" && !data.is_free && !data.members_only && Number(data.general_price) <= 0) {
-      context.addIssue({ code: "custom", message: "Indica una tarifa general mayor que cero o marca la actividad como gratuita.", path: ["general_price"] });
+      context.addIssue({ code: "custom", message: "Indica un precio general mayor que cero o marca la actividad como gratuita.", path: ["general_price"] });
     }
     if (data.type !== "event" && !data.is_listed) {
       context.addIssue({ code: "custom", message: "La opción de no listar solo está disponible para eventos.", path: ["is_listed"] });

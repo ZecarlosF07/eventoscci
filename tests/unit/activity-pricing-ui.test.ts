@@ -21,19 +21,19 @@ test("el formulario presenta exclusividad antes de gratuidad y oculta precios in
     ...common, isFree: false, membersOnly: true,
   }));
   assert.ok(exclusive.indexOf("Exclusiva para asociados") < exclusive.indexOf("Actividad gratuita"));
-  assert.match(exclusive, /Tarifa para asociados/);
-  assert.doesNotMatch(exclusive, /Tarifa general/);
+  assert.match(exclusive, /Precio para asociados/);
+  assert.doesNotMatch(exclusive, /Precio general/);
   assert.match(exclusive, /Cupos disponibles/);
 
   const free = renderToStaticMarkup(createElement(ActivityPricingFields, {
     ...common, isFree: true, membersOnly: false,
   }));
-  assert.doesNotMatch(free, /Tarifa de inscripción/);
+  assert.doesNotMatch(free, /Precio de inscripción/);
   assert.doesNotMatch(free, /Indicaciones para realizar el pago/);
   assert.match(free, /Cupos disponibles/);
 });
 
-test("las horas y la tarifa general del certificado aparecen solo cuando corresponden", () => {
+test("las horas y el precio general del certificado aparecen solo cuando corresponden", () => {
   const none = renderToStaticMarkup(createElement(ActivityCertificateFields, { membersOnly: false }));
   assert.doesNotMatch(none, /Horas académicas certificables/);
 
@@ -45,7 +45,7 @@ test("las horas y la tarifa general del certificado aparecen solo cuando corresp
   assert.doesNotMatch(exclusive, /Precio general del certificado/);
 });
 
-test("las vistas públicas no anuncian tarifas generales en actividades exclusivas", () => {
+test("las vistas públicas no anuncian precios generales en actividades exclusivas", () => {
   const participation = renderToStaticMarkup(createElement(PriceDisplay, {
     generalPrice: 0, isFree: false, memberPrice: 30, membersOnly: true,
   }));

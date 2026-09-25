@@ -44,7 +44,7 @@ export function ActivityConversionPanel({
           {activity.is_free ? (
             <div><p className="text-base text-slate-600">Precio por persona</p><strong className="mt-1 block text-3xl text-cci-950">Gratis</strong></div>
           ) : activity.members_only ? (
-            <div><p className="text-base text-slate-600">Tarifa de asociado</p><strong className="mt-1 block text-2xl text-cci-950">{formatActivityPrice(activity.member_price)}</strong></div>
+            <div><p className="text-base text-slate-600">Precio para asociados</p><strong className="mt-1 block text-2xl text-cci-950">{formatActivityPrice(activity.member_price)}</strong></div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
               <div><p className="text-sm text-slate-600">Público general</p><strong className="mt-1 block text-xl text-cci-950">{formatActivityPrice(activity.general_price)}</strong></div>

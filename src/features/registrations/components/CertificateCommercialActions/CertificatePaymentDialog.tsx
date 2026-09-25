@@ -58,7 +58,7 @@ export function CertificatePaymentDialog({
         </div>
         <dl className="mt-5 grid gap-3 rounded-2xl bg-cci-50 p-4 text-sm sm:grid-cols-2">
           <div><dt className="text-slate-500">Participante</dt><dd className="font-semibold text-cci-950">{participantName}</dd></div>
-          <div><dt className="text-slate-500">Tarifa</dt><dd className="font-semibold text-cci-950">{formatRegistrationPrice(certificatePrice)}</dd></div>
+          <div><dt className="text-slate-500">Precio</dt><dd className="font-semibold text-cci-950">{formatRegistrationPrice(certificatePrice)}</dd></div>
         </dl>
         {isVerify ? (
           <p className="mt-4 text-sm leading-6 text-slate-700">Confirma solo después de validar el comprobante fuera de la plataforma. Se registrarán tu usuario y la fecha.</p>

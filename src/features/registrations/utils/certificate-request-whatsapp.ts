@@ -16,7 +16,7 @@ export function getCertificateRequestWhatsAppUrl({
   const message = [
     `Hola, deseo solicitar el certificado de “${activityTitle}”.`,
     `Código de inscripción: ${registrationCode}.`,
-    `Tarifa aplicable: ${REGISTRATION_TYPE_LABELS[registrationType]} — ${formatRegistrationPrice(certificatePrice)}.`,
+    `Precio aplicable: ${REGISTRATION_TYPE_LABELS[registrationType]} — ${formatRegistrationPrice(certificatePrice)}.`,
   ].join("\n");
 
   return `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(message)}`;

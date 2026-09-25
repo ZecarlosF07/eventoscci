@@ -30,13 +30,19 @@ const course: CourseListItem = {
   status: "published", title: "Curso empresarial", updated_at: FUTURE_DATE,
 };
 
-test("el banner de eventos conserva la tarifa general y lleva al detalle correcto", () => {
+test("el banner de eventos conserva el precio general y lleva al detalle correcto", () => {
   const [slide] = createActivityCarouselSlides([activity]);
   assert.equal(slide.href, "/eventos/evento");
   assert.equal(slide.ctaLabel, "Conocer el evento");
   assert.match(slide.priceLabel, /80[.,]00/);
   assert.equal(slide.bannerUrl, null);
   assert.equal(slide.visualMode, "banner");
+});
+
+test("el banner exclusivo muestra solo el precio para asociados", () => {
+  const [slide] = createActivityCarouselSlides([{ ...activity, general_price: 0, members_only: true }]);
+  assert.match(slide.priceLabel, /Precio para asociados/);
+  assert.match(slide.priceLabel, /50[.,]00/);
 });
 
 test("las capacitaciones gratuitas tienen su propia acción y precio", () => {

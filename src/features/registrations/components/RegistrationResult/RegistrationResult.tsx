@@ -61,7 +61,7 @@ export function RegistrationResult({ result }: RegistrationResultProps) {
               {result.certificate_requested_at ? "Solicitud de certificado registrada" : "Certificado digital opcional"}
             </Badge>
             <p className="mt-3 text-lg font-bold text-cci-950">
-              Tarifa aplicable: {formatRegistrationPrice(result.certificate_price ?? 0)}
+              Precio aplicable: {formatRegistrationPrice(result.certificate_price ?? 0)}
             </p>
             <Text className="mt-2" size="sm">
               {result.certificate_requested_at

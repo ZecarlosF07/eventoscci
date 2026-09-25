@@ -18,7 +18,7 @@ export function HomePageTemplate({ content }: HomePageTemplateProps) {
           <div className="max-w-2xl">
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-cci-600">Comunidad empresarial</p>
             <Heading className="mt-3" level={2}>Más oportunidades para los asociados CCI</Heading>
-            <p className="mt-4 leading-7 text-slate-700">Accede a tarifas preferenciales y actividades exclusivas dentro de una red que impulsa el desarrollo empresarial de Ica.</p>
+            <p className="mt-4 leading-7 text-slate-700">Accede a precios preferenciales y actividades exclusivas dentro de una red que impulsa el desarrollo empresarial de Ica.</p>
           </div>
           <a className="mt-7 inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-cci-950 px-5 text-sm font-bold text-white hover:bg-cci-800 lg:mt-0" href="https://camaraica.org.pe/formulario-asociados/" rel="noreferrer" target="_blank">Quiero asociarme</a>
         </section>

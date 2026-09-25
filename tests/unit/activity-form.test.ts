@@ -50,14 +50,14 @@ test("permite crear un borrador sin banner ni programa", () => {
   assert.equal(activityFormSchema.safeParse(validActivity()).success, true);
 });
 
-test("solo eventos pueden quedar no listados y los exclusivos pagados requieren tarifa", () => {
+test("solo eventos pueden quedar no listados y los exclusivos pagados requieren precio", () => {
   assert.equal(activityFormSchema.safeParse({ ...validActivity(), is_listed: false }).success, true);
   assert.equal(activityFormSchema.safeParse({ ...validActivity(), type: "training", is_listed: false }).success, false);
   const exclusive = { ...validActivity(), members_only: true, is_free: false, status: "published" as const };
   assert.equal(activityFormSchema.safeParse({ ...exclusive, member_price: "0" }).success, false);
 });
 
-test("una actividad exclusiva no admite tarifa general y publica solo con tarifa de asociado positiva", () => {
+test("una actividad exclusiva no admite precio general y publica solo con precio de asociado positivo", () => {
   for (const type of ["event", "training"] as const) {
     const exclusive = {
       ...validActivity(), contact_id: "7e000000-0000-4000-8000-000000000001",
@@ -72,7 +72,7 @@ test("una actividad exclusiva no admite tarifa general y publica solo con tarifa
   }
 });
 
-test("una actividad abierta pagada requiere ambas tarifas positivas al publicar", () => {
+test("una actividad abierta pagada requiere ambos precios positivos al publicar", () => {
   for (const type of ["event", "training"] as const) {
     const paid = {
       ...validActivity(), contact_id: "7e000000-0000-4000-8000-000000000001",
@@ -87,7 +87,7 @@ test("una actividad abierta pagada requiere ambas tarifas positivas al publicar"
   }
 });
 
-test("un certificado opcional exclusivo usa la misma tarifa solo para asociados", () => {
+test("un certificado opcional exclusivo usa el mismo precio solo para asociados", () => {
   const exclusive = {
     ...validActivity(), certificate_general_price: "25", certificate_member_price: "25",
     certificate_mode: "optional_paid" as const, members_only: true,
@@ -96,7 +96,7 @@ test("un certificado opcional exclusivo usa la misma tarifa solo para asociados"
   assert.equal(activityFormSchema.safeParse({ ...exclusive, certificate_general_price: "40" }).success, false);
 });
 
-test("normaliza únicamente tarifas y horas aplicables al guardar", () => {
+test("normaliza únicamente precios y horas aplicables al guardar", () => {
   const base = { ...validActivity(), is_free: false, general_price: "40", member_price: "30", payment_note: "Transferencia" };
   assert.deepEqual(normalizeActivityCommercialFields({ ...base, is_free: true }).general_price, "0");
   assert.deepEqual(normalizeActivityCommercialFields({ ...base, is_free: true }).member_price, "0");
@@ -131,7 +131,7 @@ test("acepta un certificado incluido sin precios adicionales", () => {
   assert.equal(result.success, true);
 });
 
-test("valida las tarifas de un certificado opcional", () => {
+test("valida los precios de un certificado opcional", () => {
   const valid = activityFormSchema.safeParse({
     ...validActivity(),
     certificate_general_price: "50",

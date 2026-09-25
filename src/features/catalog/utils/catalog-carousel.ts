@@ -24,7 +24,11 @@ export function createActivityCarouselSlides(activities: ActivityListItem[]): Ca
       badge: activity.category?.name ?? getModalityLabel(activity.modality),
       ctaLabel: activity.type === "event" ? "Conocer el evento" : "Ver la capacitación",
       kindLabel: activity.type === "event" ? "Evento destacado" : "Capacitación destacada",
-      priceLabel: activity.is_free ? "Participación gratuita" : `Tarifa general ${formatActivityPrice(activity.general_price)}`,
+      priceLabel: activity.is_free
+        ? "Participación gratuita"
+        : activity.members_only
+          ? `Precio para asociados ${formatActivityPrice(activity.member_price)}`
+          : `Precio general ${formatActivityPrice(activity.general_price)}`,
       bannerUrl: getActivityBannerUrl(activity.banner_path),
       description: activity.short_description,
       href: getPublicActivityRoute(activity.type, activity.slug),
@@ -43,7 +47,7 @@ export function createCourseCarouselSlides(courses: CourseListItem[]): CatalogCa
       badge: "Campus virtual",
       ctaLabel: "Ver curso",
       kindLabel: "Curso destacado",
-      priceLabel: course.is_free ? "Acceso gratuito" : `Tarifa general ${formatCoursePrice(course.general_price)}`,
+      priceLabel: course.is_free ? "Acceso gratuito" : `Precio general ${formatCoursePrice(course.general_price)}`,
       bannerUrl: getCourseBannerUrl(course.banner_path),
       description: course.short_description,
       href: getPublicCourseRoute(course.slug),

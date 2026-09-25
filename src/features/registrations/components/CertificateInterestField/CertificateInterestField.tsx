@@ -18,7 +18,7 @@ export function CertificateInterestField({
             Sí, deseo solicitar el certificado digital
           </strong>
           <span className="mt-1 block text-sm leading-6 text-slate-600">
-            Tarifa aplicable: <strong>{formatRegistrationPrice(price)}</strong>. Registraremos tu
+            Precio aplicable: <strong>{formatRegistrationPrice(price)}</strong>. Registraremos tu
             interés y podrás continuar la coordinación después de inscribirte.
           </span>
         </span>
