@@ -3,9 +3,7 @@
 import { useState } from "react";
 
 import { Button } from "@/components/atoms/Button";
-import { Checkbox } from "@/components/atoms/Checkbox";
 import { Input } from "@/components/atoms/Input";
-import { Label } from "@/components/atoms/Label";
 import { Select } from "@/components/atoms/Select";
 import { Textarea } from "@/components/atoms/Textarea";
 import { FormField } from "@/components/molecules/FormField";
@@ -16,6 +14,7 @@ import { ActivityCertificateFields } from "@/features/activities/components/Acti
 import { ActivityDateFields } from "@/features/activities/components/ActivityDateFields";
 import { ActivityFormSection } from "@/features/activities/components/ActivityFormSection";
 import { ActivityPricingFields } from "@/features/activities/components/ActivityPricingFields";
+import { ActivityRegistrationPauseField } from "@/features/activities/components/ActivityRegistrationPauseField";
 import { ActivitySpeakerFields } from "@/features/activities/components/ActivitySpeakerFields";
 import { ActivityVirtualAccessFields } from "@/features/activities/components/ActivityVirtualAccessFields";
 import { CatalogSelect } from "@/features/catalogs/components/CatalogSelect";
@@ -43,6 +42,7 @@ export function ActivityForm({
   const isArchived = activity?.status === "archived";
   const [isFree, setIsFree] = useState(activity?.is_free ?? false);
   const [membersOnly, setMembersOnly] = useState(activity?.members_only ?? false);
+  const [registrationsPaused, setRegistrationsPaused] = useState(activity?.registrations_closed_manually ?? false);
   const error = (name: string) => state.errors?.[name]?.[0];
   const selectedSpeakers = activity?.speakers.map((speaker) => ({
     role_label: speaker.roleLabel ?? "",
@@ -130,7 +130,7 @@ export function ActivityForm({
           <FormField error={error("registration_close_at")} label="Cierre de inscripción" name="registration_close_at"><Input defaultValue={formatDateTimeLocal(activity?.registration_close_at ?? null)} id="registration_close_at" name="registration_close_at" type="datetime-local" /></FormField>
           <CatalogSelect defaultValue={activity?.contact_id ?? contacts.find((contact) => contact.is_default)?.id ?? ""} error={error("contact_id")} kind="contacts" label="Contacto de atención" name="contact_id" options={contacts.map((contact) => ({ description: `${contact.contact_name} · ${contact.whatsapp_phone}`, id: contact.id, label: contact.label }))} required={status === "published"} />
         </div>
-        <Label className="flex items-center gap-2" htmlFor="registrations_closed_manually"><Checkbox defaultChecked={activity?.registrations_closed_manually} id="registrations_closed_manually" name="registrations_closed_manually" /> Inscripciones cerradas manualmente</Label>
+        <ActivityRegistrationPauseField checked={registrationsPaused} onChange={setRegistrationsPaused} visible={Boolean(activity && status === "published")} />
         <FormField label="Información adicional" name="additional_info"><Textarea defaultValue={activity?.additional_info ?? ""} id="additional_info" name="additional_info" /></FormField>
       </ActivityFormSection>
 
