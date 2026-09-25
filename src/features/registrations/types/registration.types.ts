@@ -132,6 +132,7 @@ export interface ActivityRegistrationContext {
   isFree: boolean;
   memberPrice: number;
   membersOnly: boolean;
+  paymentNote: string | null;
   slug: string;
   title: string;
   type: ActivityType;

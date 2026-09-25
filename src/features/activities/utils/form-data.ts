@@ -54,6 +54,7 @@ export function parseActivityFormData(formData: FormData): ActivityFormInput {
     members_only: formData.get("members_only") === "on",
     modality: stringValue(formData, "modality") as ActivityFormInput["modality"],
     objective: stringValue(formData, "objective"),
+    payment_note: stringValue(formData, "payment_note"),
     program: stringValue(formData, "program"),
     program_image_paths: formData.getAll("program_image_paths").map(String),
     registration_close_at: stringValue(formData, "registration_close_at"),

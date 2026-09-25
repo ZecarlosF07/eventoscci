@@ -15,6 +15,7 @@ import { ActivityContentFields } from "@/features/activities/components/Activity
 import { ActivityCertificateFields } from "@/features/activities/components/ActivityCertificateFields";
 import { ActivityDateFields } from "@/features/activities/components/ActivityDateFields";
 import { ActivityFormSection } from "@/features/activities/components/ActivityFormSection";
+import { ActivityPaymentNoteField } from "@/features/activities/components/ActivityPaymentNoteField";
 import { ActivitySpeakerFields } from "@/features/activities/components/ActivitySpeakerFields";
 import { ActivityVirtualAccessFields } from "@/features/activities/components/ActivityVirtualAccessFields";
 import { CatalogSelect } from "@/features/catalogs/components/CatalogSelect";
@@ -44,6 +45,7 @@ export function ActivityForm({
   const [isFree, setIsFree] = useState(initialIsFree);
   const [generalPrice, setGeneralPrice] = useState(initialIsFree ? "0" : String(activity?.general_price ?? ""));
   const [memberPrice, setMemberPrice] = useState(initialIsFree ? "0" : String(activity?.member_price ?? ""));
+  const [paymentNote, setPaymentNote] = useState(activity?.payment_note ?? "");
   const error = (name: string) => state.errors?.[name]?.[0];
   const selectedSpeakers = activity?.speakers.map((speaker) => ({
     role_label: speaker.roleLabel ?? "",
@@ -124,6 +126,7 @@ export function ActivityForm({
           <Label className="flex items-center gap-2" htmlFor="is_free"><Checkbox checked={isFree} id="is_free" name="is_free" onChange={(event) => { setIsFree(event.target.checked); if (event.target.checked) { setGeneralPrice("0"); setMemberPrice("0"); } }} /> Actividad gratuita</Label>
           <Label className="flex items-center gap-2" htmlFor="members_only"><Checkbox defaultChecked={activity?.members_only} id="members_only" name="members_only" /> Exclusiva para asociados</Label>
         </div>
+        <ActivityPaymentNoteField error={error("payment_note")} isFree={isFree} isPublished={status === "published"} onChange={setPaymentNote} value={paymentNote} />
         {type === "event" ? (
           <div className="rounded-xl border border-cci-100 bg-cci-50 p-4">
             <Label className="flex items-center gap-2" htmlFor="is_listed"><Checkbox defaultChecked={activity?.is_listed ?? true} id="is_listed" name="is_listed" /> Mostrar en el portal</Label>

@@ -52,6 +52,7 @@ export const activityFormSchema = z
     members_only: z.boolean(),
     modality: z.enum(["in_person", "virtual", "hybrid"]),
     objective: optionalText,
+    payment_note: optionalText.max(FIELD_LIMITS.activityPaymentNote, maximumCharactersMessage(FIELD_LIMITS.activityPaymentNote)),
     program: optionalText,
     program_image_paths: z.array(z.string().min(1)).max(10),
     registration_close_at: optionalText,
@@ -96,6 +97,9 @@ export const activityFormSchema = z
     }
     if (data.is_free && (Number(data.general_price) !== 0 || Number(data.member_price) !== 0)) {
       context.addIssue({ code: "custom", message: "Una actividad gratuita debe tener precios en cero.", path: ["general_price"] });
+    }
+    if (data.status === "published" && !data.is_free && !data.payment_note) {
+      context.addIssue({ code: "custom", message: "Indica cómo realizar el pago antes de publicar.", path: ["payment_note"] });
     }
     if (data.type === "event" && data.members_only && !data.is_free
       && data.status === "published" && Number(data.member_price) <= 0) {

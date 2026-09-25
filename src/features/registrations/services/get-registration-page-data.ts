@@ -25,6 +25,7 @@ export async function getRegistrationPageData(
       isFree: activity.is_free,
       memberPrice: activity.member_price,
       membersOnly: activity.members_only,
+      paymentNote: activity.payment_note,
       slug: activity.slug,
       title: activity.title,
       type: activity.type,

@@ -9,6 +9,7 @@ import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
 import { MemberAttendeeFields } from "@/features/member-groups/components/MemberAttendeeFields/MemberAttendeeFields";
 import { MemberBillingFields } from "@/features/member-groups/components/MemberBillingFields/MemberBillingFields";
+import { PaymentInstructions } from "@/features/registrations/components/PaymentInstructions";
 import { lookupMemberCompany, registerMemberGroup } from "@/features/member-groups/mutations/member-group.actions";
 import { memberGroupInputSchema } from "@/features/member-groups/schemas/member-group.schema";
 import type { MemberAttendeeInput, MemberBillingInput, MemberGroupRegistrationFormProps } from "@/features/member-groups/types/member-group.types";
@@ -120,6 +121,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
         </FormField>
         <Button type="submit" disabled={busy}>Siguiente: {activity.isFree ? "revisar solicitud" : "comprobante"} →</Button>
       </form> : <>
+        {!activity.isFree && activity.paymentNote ? <PaymentInstructions note={activity.paymentNote} /> : null}
         {!activity.isFree ? <MemberBillingFields billing={billing} companyName={companyName} companyRuc={ruc} errors={Object.fromEntries(Object.entries(fieldErrors).filter(([key]) => key.startsWith("billing.")).map(([key, value]) => [key.split(".")[1], value]))} onChange={(next) => { setBilling(next); setFieldErrors({}); }} /> : null}
         <section className="space-y-3 rounded-2xl border border-cci-200 bg-cci-50 p-5" aria-label="Resumen de la solicitud">
           <h2 className="text-lg font-bold text-cci-950">Revisa tu solicitud</h2>

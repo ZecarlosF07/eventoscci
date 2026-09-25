@@ -70,6 +70,7 @@ export type Database = {
           members_only: boolean
           modality: Database["public"]["Enums"]["activity_modality"]
           objective: string | null
+          payment_note: string | null
           program: string | null
           program_image_paths: string[]
           published_at: string | null
@@ -118,6 +119,7 @@ export type Database = {
           members_only?: boolean
           modality: Database["public"]["Enums"]["activity_modality"]
           objective?: string | null
+          payment_note?: string | null
           program?: string | null
           program_image_paths?: string[]
           published_at?: string | null
@@ -166,6 +168,7 @@ export type Database = {
           members_only?: boolean
           modality?: Database["public"]["Enums"]["activity_modality"]
           objective?: string | null
+          payment_note?: string | null
           program?: string | null
           program_image_paths?: string[]
           published_at?: string | null

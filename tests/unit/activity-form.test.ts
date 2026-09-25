@@ -26,6 +26,7 @@ function validActivity(): ActivityFormInput {
     members_only: false,
     modality: "in_person",
     objective: "",
+    payment_note: "",
     program: "",
     program_image_paths: [],
     registration_close_at: "",
@@ -117,4 +118,32 @@ test("exige enlace HTTPS al publicar actividades virtuales e híbridas", () => {
     });
     assert.equal(withUrl.success, true);
   }
+});
+
+test("exige indicaciones de pago al publicar eventos y capacitaciones pagados", () => {
+  for (const type of ["event", "training"] as const) {
+    for (const membersOnly of type === "event" ? [false, true] : [false]) {
+      const paid = {
+        ...validActivity(),
+        contact_id: "7e000000-0000-4000-8000-000000000001",
+        general_price: "40",
+        is_free: false,
+        member_price: "30",
+        members_only: membersOnly,
+        status: "published" as const,
+        type,
+        venue_id: "7e000000-0000-4000-8000-000000000002",
+      };
+      const missing = activityFormSchema.safeParse(paid);
+      assert.equal(missing.success, false);
+      if (!missing.success) assert.ok(missing.error.flatten().fieldErrors.payment_note?.length);
+      assert.equal(activityFormSchema.safeParse({ ...paid, payment_note: "Coordina el pago con la CCI." }).success, true);
+      assert.equal(activityFormSchema.safeParse({ ...paid, status: "draft" }).success, true);
+    }
+  }
+});
+
+test("limita las indicaciones a 600 caracteres sin exigirlas en actividades gratuitas", () => {
+  assert.equal(activityFormSchema.safeParse({ ...validActivity(), payment_note: "x".repeat(601) }).success, false);
+  assert.equal(activityFormSchema.safeParse({ ...validActivity(), payment_note: "" }).success, true);
 });

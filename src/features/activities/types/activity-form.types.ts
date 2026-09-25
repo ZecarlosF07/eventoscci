@@ -45,6 +45,7 @@ export interface ActivityFormInput {
   members_only: boolean;
   modality: ActivityModality;
   objective: string;
+  payment_note: string;
   program: string;
   program_image_paths: string[];
   registration_close_at: string;

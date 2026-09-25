@@ -4,13 +4,14 @@ import { Badge } from "@/components/atoms/Badge";
 import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
 import type { RegistrationPageTemplateProps } from "@/components/templates/RegistrationPageTemplate/types/registration-page-template.types";
-import { PriceDisplay } from "@/components/molecules/PriceDisplay";
 import { ActivityCertificateBenefit } from "@/features/activities/components/ActivityCertificateBenefit";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
 import { formatActivityPrice } from "@/features/activities/utils/activity-formatters";
 import { RegistrationForm } from "@/features/registrations/components/RegistrationForm";
+import { PaymentInstructions } from "@/features/registrations/components/PaymentInstructions";
 import { MemberGroupRegistrationForm } from "@/features/member-groups/components/MemberGroupRegistrationForm/MemberGroupRegistrationForm";
 import { REGISTRATION_AVAILABILITY_LABELS } from "@/features/registrations/constants/registration.constants";
+import { getRegistrationProcessMessage } from "@/features/registrations/utils/registration-summary-copy";
 
 export function RegistrationPageTemplate({
   activity,
@@ -43,22 +44,24 @@ export function RegistrationPageTemplate({
           </div>
         </div>
         <aside className="space-y-4 rounded-3xl border border-cci-100 bg-cci-100 p-6 lg:sticky lg:top-24">
-          <Heading level={3}>Resumen</Heading>
-          {isExclusiveMemberEvent && !activity.isFree ? <Text className="font-semibold text-cci-950" size="sm">Tarifa por persona: {formatActivityPrice(activity.memberPrice)}</Text> : <PriceDisplay
-            generalPrice={activity.generalPrice}
-            isFree={activity.isFree}
-            memberPrice={activity.memberPrice}
-          />}
+          <Heading level={3}>Tu participación</Heading>
+          {activity.isFree ? <p className="text-lg font-bold text-cci-950">Sin costo de inscripción</p> : isExclusiveMemberEvent ? (
+            <p className="text-base text-cci-950">Tarifa por asistente: <strong>{formatActivityPrice(activity.memberPrice)}</strong></p>
+          ) : (
+            <div className="space-y-1 text-base text-cci-950">
+              <p>Tarifa general: <strong>{formatActivityPrice(activity.generalPrice)}</strong></p>
+              <p>Tarifa para asociados: <strong>{formatActivityPrice(activity.memberPrice)}</strong></p>
+            </div>
+          )}
+          {!activity.isFree && activity.paymentNote ? <PaymentInstructions note={activity.paymentNote} /> : null}
           <ActivityCertificateBenefit
             generalPrice={activity.certificateGeneralPrice}
             isActivityFree={activity.isFree}
             memberPrice={activity.certificateMemberPrice}
             mode={activity.certificateMode}
           />
-          <Text size="sm">No necesitas crear una cuenta para completar este proceso.</Text>
-          {!activity.isFree ? (
-            <Text size="sm">{isExclusiveMemberEvent ? "Las plazas se reservarán y el personal validará el pago manualmente antes de confirmarlas." : "La preinscripción requiere confirmación posterior de la Cámara."}</Text>
-          ) : null}
+          <Text size="sm">{getRegistrationProcessMessage(activity.isFree, isExclusiveMemberEvent)}</Text>
+          <Text size="sm">Puedes inscribirte sin crear una cuenta.</Text>
         </aside>
       </div>
     </section>

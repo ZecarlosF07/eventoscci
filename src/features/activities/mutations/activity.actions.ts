@@ -55,6 +55,7 @@ export async function saveActivityAction(
     certificate_member_price: hasPaidCertificate ? activityInput.certificate_member_price : "0",
     general_price: activityInput.is_free ? "0" : activityInput.general_price || "0",
     member_price: activityInput.is_free ? "0" : activityInput.member_price || "0",
+    payment_note: activityInput.is_free ? null : activityInput.payment_note || null,
     registration_close_at: toDatabaseTimestamp(activityInput.registration_close_at),
     registration_open_at: toDatabaseTimestamp(activityInput.registration_open_at),
     slug: activityInput.slug ? slugify(activityInput.slug) : createContentSlug(activityInput.title),
@@ -92,6 +93,7 @@ export async function saveActivityAction(
           "activities_published_venue_required": "Selecciona un lugar activo antes de publicar una actividad presencial o híbrida.",
           "activities_published_contact_required": "Selecciona un contacto activo antes de publicar.",
           "activities_published_virtual_access_required": "Indica el enlace virtual antes de publicar.",
+          "activities_published_payment_note_required": "Indica cómo realizar el pago antes de publicar.",
           "activity_virtual_access_url_valid": "Ingresa un enlace virtual HTTPS válido.",
           "La actividad requiere al menos una fecha": "Agrega al menos una fecha y horario para guardar la actividad.",
         },
@@ -143,6 +145,7 @@ export async function changeActivityStatusAction(
         "activities_published_venue_required": "Selecciona un lugar activo antes de publicar una actividad presencial o híbrida.",
         "activities_published_contact_required": "Selecciona un contacto activo antes de publicar.",
         "activities_published_virtual_access_required": "Indica el enlace virtual antes de publicar.",
+        "activities_published_payment_note_required": "Indica cómo realizar el pago antes de publicar.",
       },
     }), { cause: error });
   }
