@@ -59,7 +59,8 @@ export async function parseMemberRosterWorkbook(file: File): Promise<ParsedMembe
 
   const errors: MemberRosterRowError[] = [];
   const rows: ParsedMemberRoster["rows"] = [];
-  const seen = new Set<string>();
+  const firstRowByRuc = new Map<string, number>();
+  const reportedFirstRows = new Set<string>();
   for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber += 1) {
     const row = worksheet.getRow(rowNumber);
     const rawRuc = row.getCell(1).value;
@@ -68,25 +69,32 @@ export async function parseMemberRosterWorkbook(file: File): Promise<ParsedMembe
 
     const ruc = rucText(rawRuc);
     const legalName = cellText(rawName);
+    const firstRow = ruc === null ? undefined : firstRowByRuc.get(ruc);
     let message: string | null = null;
     if (row.actualCellCount > 2) message = "La fila tiene columnas adicionales.";
     else if (ruc === null) message = "El RUC debe ser texto o un número entero; no se aceptan fórmulas.";
     else if (legalName === null) message = "La razón social debe ser texto; no se aceptan fórmulas ni números.";
     else if (!/^\d{11}$/.test(ruc)) message = "El RUC debe tener exactamente 11 dígitos. Si comienza con cero, guárdalo como texto.";
     else if (legalName.length < 2 || legalName.length > 250) message = "La razón social debe tener entre 2 y 250 caracteres.";
-    else if (seen.has(ruc)) message = "El RUC está duplicado en el archivo.";
+    else if (firstRow !== undefined) {
+      message = `El RUC ${ruc} ya aparece en la fila ${firstRow}.`;
+      if (!reportedFirstRows.has(ruc) && errors.length < MAX_ERRORS) {
+        errors.push({ message: `El RUC ${ruc} también aparece en la fila ${rowNumber}.`, row: firstRow });
+        reportedFirstRows.add(ruc);
+      }
+    }
 
     if (message) {
       if (errors.length < MAX_ERRORS) errors.push({ message, row: rowNumber });
       continue;
     }
-    seen.add(ruc!);
+    firstRowByRuc.set(ruc!, rowNumber);
     rows.push({ legal_name: legalName!, ruc: ruc! });
   }
 
   if (!rows.length && !errors.length) throw new Error("El padrón no puede estar vacío.");
   return {
-    errors,
+    errors: errors.toSorted((first, second) => first.row - second.row),
     fileHash: createHash("sha256").update(buffer).digest("hex"),
     fileName: file.name,
     rows,
