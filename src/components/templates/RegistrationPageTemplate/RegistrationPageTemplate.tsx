@@ -48,16 +48,18 @@ export function RegistrationPageTemplate({
           {activity.isFree ? <p className="text-lg font-bold text-cci-950">Sin costo de inscripción</p> : isExclusiveMemberEvent ? (
             <p className="text-base text-cci-950">Tarifa por asistente: <strong>{formatActivityPrice(activity.memberPrice)}</strong></p>
           ) : (
-            <div className="space-y-1 text-base text-cci-950">
-              <p>Tarifa general: <strong>{formatActivityPrice(activity.generalPrice)}</strong></p>
-              <p>Tarifa para asociados: <strong>{formatActivityPrice(activity.memberPrice)}</strong></p>
-            </div>
+            activity.membersOnly ? <p className="text-base text-cci-950">Tarifa para asociados: <strong>{formatActivityPrice(activity.memberPrice)}</strong></p>
+              : <div className="space-y-1 text-base text-cci-950">
+                <p>Tarifa general: <strong>{formatActivityPrice(activity.generalPrice)}</strong></p>
+                <p>Tarifa para asociados: <strong>{formatActivityPrice(activity.memberPrice)}</strong></p>
+              </div>
           )}
           {!activity.isFree && activity.paymentNote ? <PaymentInstructions note={activity.paymentNote} /> : null}
           <ActivityCertificateBenefit
             generalPrice={activity.certificateGeneralPrice}
             isActivityFree={activity.isFree}
             memberPrice={activity.certificateMemberPrice}
+            membersOnly={activity.membersOnly}
             mode={activity.certificateMode}
           />
           <Text size="sm">{getRegistrationProcessMessage(activity.isFree, isExclusiveMemberEvent)}</Text>

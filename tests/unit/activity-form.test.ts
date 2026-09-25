@@ -3,6 +3,7 @@ import test from "node:test";
 
 import { activityFormSchema } from "../../src/features/activities/schemas/activity.schema";
 import type { ActivityFormInput } from "../../src/features/activities/types/activity-form.types";
+import { normalizeActivityCommercialFields } from "../../src/features/activities/utils/activity-commercial-fields";
 
 function validActivity(): ActivityFormInput {
   return {
@@ -54,6 +55,64 @@ test("solo eventos pueden quedar no listados y los exclusivos pagados requieren 
   assert.equal(activityFormSchema.safeParse({ ...validActivity(), type: "training", is_listed: false }).success, false);
   const exclusive = { ...validActivity(), members_only: true, is_free: false, status: "published" as const };
   assert.equal(activityFormSchema.safeParse({ ...exclusive, member_price: "0" }).success, false);
+});
+
+test("una actividad exclusiva no admite tarifa general y publica solo con tarifa de asociado positiva", () => {
+  for (const type of ["event", "training"] as const) {
+    const exclusive = {
+      ...validActivity(), contact_id: "7e000000-0000-4000-8000-000000000001",
+      general_price: "0", is_free: false, member_price: "30", members_only: true,
+      payment_note: "Coordina el pago con la CCI.", status: "published" as const,
+      type, venue_id: "7e000000-0000-4000-8000-000000000002",
+    };
+    assert.equal(activityFormSchema.safeParse(exclusive).success, true);
+    assert.equal(activityFormSchema.safeParse({ ...exclusive, general_price: "40" }).success, false);
+    assert.equal(activityFormSchema.safeParse({ ...exclusive, member_price: "0" }).success, false);
+    assert.equal(activityFormSchema.safeParse({ ...exclusive, status: "draft", member_price: "0" }).success, true);
+  }
+});
+
+test("una actividad abierta pagada requiere ambas tarifas positivas al publicar", () => {
+  for (const type of ["event", "training"] as const) {
+    const paid = {
+      ...validActivity(), contact_id: "7e000000-0000-4000-8000-000000000001",
+      general_price: "40", is_free: false, member_price: "30",
+      payment_note: "Coordina el pago con la CCI.", status: "published" as const,
+      type, venue_id: "7e000000-0000-4000-8000-000000000002",
+    };
+    assert.equal(activityFormSchema.safeParse(paid).success, true);
+    assert.equal(activityFormSchema.safeParse({ ...paid, general_price: "0" }).success, false);
+    assert.equal(activityFormSchema.safeParse({ ...paid, member_price: "0" }).success, false);
+    assert.equal(activityFormSchema.safeParse({ ...paid, status: "draft", general_price: "0", member_price: "0" }).success, true);
+  }
+});
+
+test("un certificado opcional exclusivo usa la misma tarifa solo para asociados", () => {
+  const exclusive = {
+    ...validActivity(), certificate_general_price: "25", certificate_member_price: "25",
+    certificate_mode: "optional_paid" as const, members_only: true,
+  };
+  assert.equal(activityFormSchema.safeParse(exclusive).success, true);
+  assert.equal(activityFormSchema.safeParse({ ...exclusive, certificate_general_price: "40" }).success, false);
+});
+
+test("normaliza únicamente tarifas y horas aplicables al guardar", () => {
+  const base = { ...validActivity(), is_free: false, general_price: "40", member_price: "30", payment_note: "Transferencia" };
+  assert.deepEqual(normalizeActivityCommercialFields({ ...base, is_free: true }).general_price, "0");
+  assert.deepEqual(normalizeActivityCommercialFields({ ...base, is_free: true }).member_price, "0");
+  assert.equal(normalizeActivityCommercialFields({ ...base, is_free: true }).payment_note, null);
+
+  const exclusive = normalizeActivityCommercialFields({
+    ...base, members_only: true, certificate_mode: "optional_paid",
+    certificate_general_price: "50", certificate_member_price: "25", academic_hours: "3",
+  });
+  assert.equal(exclusive.general_price, "0");
+  assert.equal(exclusive.member_price, "30");
+  assert.equal(exclusive.certificate_general_price, "25");
+  assert.equal(exclusive.academic_hours, "3");
+
+  assert.equal(normalizeActivityCommercialFields({ ...base, academic_hours: "3" }).academic_hours, null);
+  assert.equal(normalizeActivityCommercialFields({ ...base, academic_hours: "3", status: "archived" }).academic_hours, "3");
 });
 
 test("permite títulos de actividades de hasta 300 caracteres", () => {
@@ -122,11 +181,11 @@ test("exige enlace HTTPS al publicar actividades virtuales e híbridas", () => {
 
 test("exige indicaciones de pago al publicar eventos y capacitaciones pagados", () => {
   for (const type of ["event", "training"] as const) {
-    for (const membersOnly of type === "event" ? [false, true] : [false]) {
+    for (const membersOnly of [false, true]) {
       const paid = {
         ...validActivity(),
         contact_id: "7e000000-0000-4000-8000-000000000001",
-        general_price: "40",
+        general_price: membersOnly ? "0" : "40",
         is_free: false,
         member_price: "30",
         members_only: membersOnly,

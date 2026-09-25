@@ -12,6 +12,7 @@ import {
 } from "@/features/activities/services/activity-media.service";
 import type { ActivityFormState } from "@/features/activities/types/activity-form.types";
 import type { ActivityStatus, ActivityType } from "@/features/activities/types/activity.types";
+import { normalizeActivityCommercialFields } from "@/features/activities/utils/activity-commercial-fields";
 import { toDatabaseTimestamp } from "@/features/activities/utils/activity-formatters";
 import { parseActivityFormData } from "@/features/activities/utils/form-data";
 import { createContentSlug, slugify } from "@/features/activities/utils/slugify";
@@ -48,14 +49,9 @@ export async function saveActivityAction(
   if (Object.keys(mediaErrors).length) return { errors: mediaErrors, savedId };
 
   const { dates, speakers, ...activityInput } = parsed.data;
-  const hasPaidCertificate = activityInput.certificate_mode === "optional_paid";
   const activity = {
     ...activityInput,
-    certificate_general_price: hasPaidCertificate ? activityInput.certificate_general_price : "0",
-    certificate_member_price: hasPaidCertificate ? activityInput.certificate_member_price : "0",
-    general_price: activityInput.is_free ? "0" : activityInput.general_price || "0",
-    member_price: activityInput.is_free ? "0" : activityInput.member_price || "0",
-    payment_note: activityInput.is_free ? null : activityInput.payment_note || null,
+    ...normalizeActivityCommercialFields(parsed.data),
     registration_close_at: toDatabaseTimestamp(activityInput.registration_close_at),
     registration_open_at: toDatabaseTimestamp(activityInput.registration_open_at),
     slug: activityInput.slug ? slugify(activityInput.slug) : createContentSlug(activityInput.title),
@@ -94,6 +90,8 @@ export async function saveActivityAction(
           "activities_published_contact_required": "Selecciona un contacto activo antes de publicar.",
           "activities_published_virtual_access_required": "Indica el enlace virtual antes de publicar.",
           "activities_published_payment_note_required": "Indica cómo realizar el pago antes de publicar.",
+          "activities_published_paid_prices_positive": "Indica tarifas mayores que cero para los públicos habilitados antes de publicar.",
+          "activities_exclusive_general_price_zero": "Una actividad exclusiva no puede tener una tarifa general.",
           "activity_virtual_access_url_valid": "Ingresa un enlace virtual HTTPS válido.",
           "La actividad requiere al menos una fecha": "Agrega al menos una fecha y horario para guardar la actividad.",
         },
@@ -146,6 +144,7 @@ export async function changeActivityStatusAction(
         "activities_published_contact_required": "Selecciona un contacto activo antes de publicar.",
         "activities_published_virtual_access_required": "Indica el enlace virtual antes de publicar.",
         "activities_published_payment_note_required": "Indica cómo realizar el pago antes de publicar.",
+        "activities_published_paid_prices_positive": "Indica tarifas mayores que cero para los públicos habilitados antes de publicar.",
       },
     }), { cause: error });
   }

@@ -7,6 +7,7 @@ export function ActivityCertificateBenefit({
   generalPrice,
   isActivityFree,
   memberPrice,
+  membersOnly = false,
   mode,
 }: ActivityCertificateBenefitProps) {
   if (mode === "none") return null;
@@ -25,11 +26,11 @@ export function ActivityCertificateBenefit({
   return (
     <section className="rounded-2xl border border-cci-200 bg-cci-50 p-4">
       <Badge>Certificado digital opcional</Badge>
-      <div className="mt-3 grid grid-cols-2 gap-4 text-sm">
-        <div>
+      <div className={membersOnly ? "mt-3 text-sm" : "mt-3 grid gap-4 text-sm sm:grid-cols-2"}>
+        {!membersOnly ? <div>
           <span className="text-slate-600">General</span>
           <strong className="block text-base text-cci-950">{formatActivityPrice(generalPrice)}</strong>
-        </div>
+        </div> : null}
         <div>
           <span className="text-slate-600">Asociados</span>
           <strong className="block text-base text-cci-950">{formatActivityPrice(memberPrice)}</strong>

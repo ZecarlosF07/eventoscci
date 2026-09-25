@@ -18,24 +18,26 @@ const MODE_DESCRIPTIONS: Record<ActivityCertificateMode, string> = {
 const MODES: ActivityCertificateMode[] = ["none", "included", "optional_paid"];
 
 export function ActivityCertificateFields({
+  defaultAcademicHours,
   defaultGeneralPrice = 0,
   defaultMemberPrice = 0,
   defaultMode = "none",
   errors,
+  membersOnly,
+  preserveHistoricalHours = false,
 }: ActivityCertificateFieldsProps) {
   const [mode, setMode] = useState<ActivityCertificateMode>(defaultMode);
+  const [academicHours, setAcademicHours] = useState(String(defaultAcademicHours ?? ""));
   const [generalPrice, setGeneralPrice] = useState(String(defaultGeneralPrice));
   const [memberPrice, setMemberPrice] = useState(String(defaultMemberPrice));
   const hasAdditionalCost = mode === "optional_paid";
 
   return (
     <fieldset className="space-y-4 border-t border-cci-100 pt-6">
-      <div>
-        <legend className="text-base font-bold text-cci-950">Certificación de la actividad</legend>
-        <p className="mt-1 text-sm text-slate-600">
-          Define si el certificado está incluido o se coordina como un beneficio adicional.
-        </p>
-      </div>
+      <legend className="text-base font-bold text-cci-950">Certificación de la actividad</legend>
+      <p className="text-sm text-slate-600">
+        Define si el certificado está incluido o se coordina como un beneficio adicional.
+      </p>
       <div className="grid gap-3 lg:grid-cols-3">
         {MODES.map((value) => (
           <label
@@ -69,9 +71,14 @@ export function ActivityCertificateFields({
       {errors?.certificate_mode?.[0] ? (
         <p className="text-sm font-medium text-rose-700">{errors.certificate_mode[0]}</p>
       ) : null}
+      {mode !== "none" ? <div className="rounded-2xl border border-cci-100 bg-slate-50 p-4 sm:p-5">
+        <FormField error={errors?.academic_hours?.[0]} hint="Cantidad oficial que aparecerá en el certificado. Déjala vacía si no corresponde." label="Horas académicas certificables" name="academic_hours">
+          <Input id="academic_hours" min="0" name="academic_hours" onChange={(event) => setAcademicHours(event.target.value)} step="0.5" type="number" value={academicHours} />
+        </FormField>
+      </div> : <input name="academic_hours" type="hidden" value={preserveHistoricalHours ? academicHours : ""} />}
       {hasAdditionalCost ? (
         <div className="grid gap-5 rounded-2xl bg-slate-50 p-4 md:grid-cols-2">
-          <FormField
+          {!membersOnly ? <FormField
             error={errors?.certificate_general_price?.[0]}
             hint="Importe adicional; no reemplaza el precio de participación."
             label="Precio general del certificado"
@@ -79,10 +86,10 @@ export function ActivityCertificateFields({
             required
           >
             <Input id="certificate_general_price" min="0.01" name="certificate_general_price" onChange={(event) => setGeneralPrice(event.target.value)} required step="0.01" type="number" value={generalPrice} />
-          </FormField>
+          </FormField> : <input name="certificate_general_price" type="hidden" value={memberPrice} />}
           <FormField
             error={errors?.certificate_member_price?.[0]}
-            hint="Debe ser menor o igual al precio general."
+            hint={membersOnly ? "Importe adicional por certificado para asociados." : "Debe ser menor o igual al precio general."}
             label="Precio del certificado para asociados"
             name="certificate_member_price"
             required

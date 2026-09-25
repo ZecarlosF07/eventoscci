@@ -64,7 +64,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
             </Text>
           ) : null}
           <div className="mt-auto flex items-end justify-between gap-4 border-t border-cci-100 pt-4">
-            <PriceDisplay generalPrice={activity.general_price} isFree={activity.is_free} memberPrice={activity.member_price} />
+            <PriceDisplay generalPrice={activity.general_price} isFree={activity.is_free} memberPrice={activity.member_price} membersOnly={activity.members_only} />
             <span className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl bg-cci-950 px-4 py-2 text-sm font-bold text-white transition group-hover:bg-cci-800" id={actionId}>
               {canRegister ? "Inscríbete" : "Ver detalles"} <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
             </span>

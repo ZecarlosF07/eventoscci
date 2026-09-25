@@ -7,8 +7,11 @@ export function PriceDisplay({
   generalPrice,
   isFree,
   memberPrice,
+  membersOnly = false,
 }: PriceDisplayProps) {
   if (isFree) return <Badge variant="success">Gratis</Badge>;
+
+  if (membersOnly) return <Text className="font-semibold text-cci-950" size="sm">Asociados: {formatActivityPrice(memberPrice)}</Text>;
 
   return (
     <div className="space-y-1">

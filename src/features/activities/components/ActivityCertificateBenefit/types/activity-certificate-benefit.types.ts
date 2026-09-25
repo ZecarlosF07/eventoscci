@@ -4,5 +4,6 @@ export interface ActivityCertificateBenefitProps {
   generalPrice: number;
   isActivityFree: boolean;
   memberPrice: number;
+  membersOnly?: boolean;
   mode: ActivityCertificateMode;
 }

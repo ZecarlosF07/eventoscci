@@ -64,6 +64,7 @@ export function ActivityConversionPanel({
           generalPrice={activity.certificate_general_price}
           isActivityFree={activity.is_free}
           memberPrice={activity.certificate_member_price}
+          membersOnly={activity.members_only}
           mode={activity.certificate_mode}
         />
       </div> : null}

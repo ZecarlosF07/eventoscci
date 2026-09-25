@@ -15,7 +15,7 @@ import { ActivityContentFields } from "@/features/activities/components/Activity
 import { ActivityCertificateFields } from "@/features/activities/components/ActivityCertificateFields";
 import { ActivityDateFields } from "@/features/activities/components/ActivityDateFields";
 import { ActivityFormSection } from "@/features/activities/components/ActivityFormSection";
-import { ActivityPaymentNoteField } from "@/features/activities/components/ActivityPaymentNoteField";
+import { ActivityPricingFields } from "@/features/activities/components/ActivityPricingFields";
 import { ActivitySpeakerFields } from "@/features/activities/components/ActivitySpeakerFields";
 import { ActivityVirtualAccessFields } from "@/features/activities/components/ActivityVirtualAccessFields";
 import { CatalogSelect } from "@/features/catalogs/components/CatalogSelect";
@@ -40,12 +40,9 @@ export function ActivityForm({
   const { onSubmit, pending, state, uploadLabel } = useActivityFormSubmission(INITIAL_STATE);
   const [modality, setModality] = useState(activity?.modality ?? "in_person");
   const [status, setStatus] = useState(activity?.status ?? "draft");
-  const initialIsFree = activity?.is_free ?? false;
   const isArchived = activity?.status === "archived";
-  const [isFree, setIsFree] = useState(initialIsFree);
-  const [generalPrice, setGeneralPrice] = useState(initialIsFree ? "0" : String(activity?.general_price ?? ""));
-  const [memberPrice, setMemberPrice] = useState(initialIsFree ? "0" : String(activity?.member_price ?? ""));
-  const [paymentNote, setPaymentNote] = useState(activity?.payment_note ?? "");
+  const [isFree, setIsFree] = useState(activity?.is_free ?? false);
+  const [membersOnly, setMembersOnly] = useState(activity?.members_only ?? false);
   const error = (name: string) => state.errors?.[name]?.[0];
   const selectedSpeakers = activity?.speakers.map((speaker) => ({
     role_label: speaker.roleLabel ?? "",
@@ -97,7 +94,6 @@ export function ActivityForm({
           {modality !== "virtual" ? <CatalogSelect defaultValue={activity?.venue_id ?? ""} error={error("venue_id")} kind="venues" label="Lugar" name="venue_id" options={venues.map((venue) => ({ description: venue.address, id: venue.id, label: venue.name }))} required={status === "published"} /> : <input name="venue_id" type="hidden" value="" />}
           <ActivityVirtualAccessFields defaultValue={activity?.virtual_url} error={error("virtual_url")} modality={modality} published={status === "published"} />
           <FormField error={error("duration_text")} hint="Texto resumido que verá el público, por ejemplo: 5 horas, 2 días o 4 sesiones; máximo 100 caracteres." label="Duración mostrada al público" name="duration_text"><Input defaultValue={activity?.duration_text ?? ""} id="duration_text" maxLength={FIELD_LIMITS.activityDuration} name="duration_text" placeholder="Ej. 2 días" /></FormField>
-          <FormField error={error("academic_hours")} hint="Cantidad oficial que aparecerá en el certificado. Déjala vacía si no corresponde." label="Horas académicas certificables" name="academic_hours"><Input defaultValue={activity?.academic_hours ?? ""} id="academic_hours" min="0" name="academic_hours" step="0.5" type="number" /></FormField>
         </div>
       </ActivityFormSection>
 
@@ -115,29 +111,16 @@ export function ActivityForm({
         <ActivitySpeakerFields initialSpeakers={selectedSpeakers} speakers={speakers} />
       </ActivityFormSection>
 
-      <ActivityFormSection title="Precio, asociados y cupos">
-        <div className="grid gap-5 md:grid-cols-3">
-          <FormField error={error("general_price")} label="Precio general" name="general_price"><Input disabled={isFree} id="general_price" min="0" name="general_price" onChange={(event) => setGeneralPrice(event.target.value)} step="0.01" type="number" value={generalPrice} /></FormField>
-          <FormField error={error("member_price")} label="Precio asociado" name="member_price"><Input disabled={isFree} id="member_price" min="0" name="member_price" onChange={(event) => setMemberPrice(event.target.value)} step="0.01" type="number" value={memberPrice} /></FormField>
-          <FormField error={error("capacity")} hint="Vacío significa sin límite." label="Cupos" name="capacity"><Input defaultValue={activity?.capacity ?? ""} id="capacity" min="1" name="capacity" type="number" /></FormField>
-        </div>
-        {isFree ? <><input name="general_price" type="hidden" value="0" /><input name="member_price" type="hidden" value="0" /></> : null}
-        <div className="flex flex-wrap gap-6">
-          <Label className="flex items-center gap-2" htmlFor="is_free"><Checkbox checked={isFree} id="is_free" name="is_free" onChange={(event) => { setIsFree(event.target.checked); if (event.target.checked) { setGeneralPrice("0"); setMemberPrice("0"); } }} /> Actividad gratuita</Label>
-          <Label className="flex items-center gap-2" htmlFor="members_only"><Checkbox defaultChecked={activity?.members_only} id="members_only" name="members_only" /> Exclusiva para asociados</Label>
-        </div>
-        <ActivityPaymentNoteField error={error("payment_note")} isFree={isFree} isPublished={status === "published"} onChange={setPaymentNote} value={paymentNote} />
-        {type === "event" ? (
-          <div className="rounded-xl border border-cci-100 bg-cci-50 p-4">
-            <Label className="flex items-center gap-2" htmlFor="is_listed"><Checkbox defaultChecked={activity?.is_listed ?? true} id="is_listed" name="is_listed" /> Mostrar en el portal</Label>
-            <p className="mt-2 text-sm text-slate-600">Si lo desactivas, el evento publicado seguirá disponible por enlace directo y aceptará inscripciones, pero no aparecerá en Inicio, Eventos ni la búsqueda.</p>
-          </div>
-        ) : null}
+      <ActivityFormSection description="Define quién puede participar, si tiene costo y cuántas plazas hay." title="Participación y cupos">
+        <ActivityPricingFields activity={activity} errors={state.errors} isFree={isFree} membersOnly={membersOnly} onFreeChange={setIsFree} onMembersOnlyChange={setMembersOnly} status={status} type={type} />
         <ActivityCertificateFields
+          defaultAcademicHours={activity?.academic_hours}
           defaultGeneralPrice={activity?.certificate_general_price}
           defaultMemberPrice={activity?.certificate_member_price}
           defaultMode={activity?.certificate_mode}
           errors={state.errors}
+          membersOnly={membersOnly}
+          preserveHistoricalHours={isArchived}
         />
       </ActivityFormSection>
 

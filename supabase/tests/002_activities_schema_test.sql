@@ -148,6 +148,7 @@ insert into public.activities (
   description,
   modality,
   program_image_paths,
+  is_free,
   status,
   published_at
 )
@@ -161,6 +162,7 @@ values (
   'Registro transaccional para validar actividades.',
   'in_person',
   array['programs/activity-test/page-1.webp'],
+  true,
   'published',
   now()
 );
