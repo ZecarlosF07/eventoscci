@@ -21,6 +21,7 @@ export interface MemberBillingInput {
 export interface MemberGroupInput {
   attendees: MemberAttendeeInput[];
   billing: MemberBillingInput | null;
+  expected_free_count: number;
   future_topics_suggestion: string;
   ruc: string;
 }
@@ -29,6 +30,7 @@ export interface MemberGroupAttendeeResult {
   first_names: string;
   last_names: string;
   price: number;
+  is_complimentary: boolean;
   registration_code: string;
   status: "pending" | "confirmed" | "cancelled";
 }
@@ -44,6 +46,7 @@ export interface MemberGroupResult {
   confirmed_count: number;
   contact_whatsapp_phone: string | null;
   is_free: boolean;
+  complimentary_count: number;
   pending_amount: number;
   pending_count: number;
   request_code: string;
@@ -59,6 +62,12 @@ export interface MemberGroupSubmissionResult {
 
 export interface MemberGroupRegistrationFormProps {
   activity: ActivityRegistrationContext;
+}
+
+export interface MemberPassAvailability {
+  quota: number;
+  used: number;
+  remaining: number;
 }
 
 export interface MemberAttendeeFieldsProps {
@@ -88,6 +97,8 @@ export interface MemberGroupAdminListItem {
   billing_type: string | null;
   company_name_snapshot: string;
   company_ruc: string;
+  complimentary_quota: number;
+  complimentary_used: number;
   confirmed_amount: number;
   confirmed_count: number;
   coordinator_email: string | null;
@@ -113,14 +124,19 @@ export interface MemberGroupAdminDetail {
     id: string; code: string; firstNames: string; lastNames: string;
     document: string; email: string; phone: string; jobTitle: string | null;
     price: number; status: "pending" | "confirmed" | "cancelled";
+    isComplimentary: boolean;
+    passId: string | null;
     attendance: string; certificate: string | null;
   }[];
   payments: { id: string; amount: number; reference: string; note: string | null; verifiedAt: string; verifiedByName: string; seats: string[] }[];
+  passHistory: { id: string; createdAt: string; sourceCode: string; targetCode: string; reason: string }[];
+  transferCandidates: { id: string; label: string }[];
   request: {
     id: string; code: string; companyRuc: string; companyName: string;
     billingType: string | null; billingDocument: string | null;
     billingName: string | null; billingAddress: string | null;
     createdAt: string; coordinatorEmail: string | null; isFree: boolean;
+    complimentaryQuota: number; complimentaryUsed: number;
     ageDays: number;
   };
 }

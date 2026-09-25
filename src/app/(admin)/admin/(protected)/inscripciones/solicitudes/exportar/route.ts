@@ -25,7 +25,7 @@ export async function GET(request: Request): Promise<Response> {
   for (let offset = 0; offset < groups.length; offset += 100) {
     const ids = groups.slice(offset, offset + 100).map((group) => group.id);
     const { data, error } = await client.from("registrations")
-      .select("member_group_request_id, registration_code, first_names_snapshot, last_names_snapshot, status, price_snapshot, person:people!inner(document_type, document_number, email)")
+      .select("member_group_request_id, registration_code, first_names_snapshot, last_names_snapshot, status, price_snapshot, is_complimentary, person:people!inner(document_type, document_number, email)")
       .in("member_group_request_id", ids).is("deleted_at", null);
     if (error) throw new Error("No se pudieron exportar los asistentes.", { cause: error });
     seats.push(...(data ?? []).map((item) => ({
@@ -33,6 +33,7 @@ export async function GET(request: Request): Promise<Response> {
       firstNames: item.first_names_snapshot ?? "", lastNames: item.last_names_snapshot ?? "",
       document: `${item.person.document_type.toUpperCase()} ${item.person.document_number}`,
       email: item.person.email, status: item.status, price: item.price_snapshot,
+      isComplimentary: item.is_complimentary,
     })));
   }
   return new Response(memberGroupsToCsv(groups, seats), {

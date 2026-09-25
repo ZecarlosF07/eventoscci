@@ -12,7 +12,7 @@ export function MemberGroupSeatCancel({ requestId, registrationId }: { requestId
   const [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
   function cancel() {
-    if (!window.confirm("¿Cancelar esta plaza? Se liberará el cupo y no podrá restaurarse desde este formulario.")) return;
+    if (!window.confirm("¿Cancelar esta plaza? Se liberará el cupo. Si usó un pase gratuito, el pase no volverá a estar disponible automáticamente.")) return;
     startTransition(async () => {
       const result = await cancelMemberGroupSeatAction(requestId, registrationId, reason);
       setMessage(result.message);

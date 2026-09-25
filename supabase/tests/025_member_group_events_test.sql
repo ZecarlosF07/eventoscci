@@ -12,11 +12,12 @@ insert into public.member_companies(ruc, legal_name) values ('20123456789', 'Emp
 insert into public.activities (
   id, type, title, slug, description, modality, is_free, general_price,
   member_price, members_only, is_listed, capacity, registration_open_at,
-  registration_close_at, maps_embed_url, contact_phone, status, published_at
+  registration_close_at, maps_embed_url, contact_phone, status, published_at,
+  payment_note
 ) values
-  ('25000000-0000-4000-8000-000000000001', 'event', 'Evento exclusivo pagado', 'evento-exclusivo-pagado', 'Prueba.', 'in_person', false, 80, 40, true, false, 3, now() - interval '1 day', now() + interval '1 day', 'https://www.google.com/maps/embed?pb=member-paid', '900000001', 'published', now()),
-  ('25000000-0000-4000-8000-000000000002', 'event', 'Evento exclusivo gratuito', 'evento-exclusivo-gratuito', 'Prueba.', 'in_person', true, 0, 0, true, true, 3, now() - interval '1 day', now() + interval '1 day', 'https://www.google.com/maps/embed?pb=member-free', '900000002', 'published', now()),
-  ('25000000-0000-4000-8000-000000000003', 'event', 'Evento histórico normal', 'evento-historico-normal', 'Prueba.', 'in_person', true, 0, 0, false, true, 3, now() - interval '1 day', now() + interval '1 day', 'https://www.google.com/maps/embed?pb=member-old', '900000003', 'published', now());
+  ('25000000-0000-4000-8000-000000000001', 'event', 'Evento exclusivo pagado', 'evento-exclusivo-pagado', 'Prueba.', 'in_person', false, 0, 40, true, false, 3, now() - interval '1 day', now() + interval '1 day', 'https://www.google.com/maps/embed?pb=member-paid', '900000001', 'published', now(), 'Coordina el pago con la CCI.'),
+  ('25000000-0000-4000-8000-000000000002', 'event', 'Evento exclusivo gratuito', 'evento-exclusivo-gratuito', 'Prueba.', 'in_person', true, 0, 0, true, true, 3, now() - interval '1 day', now() + interval '1 day', 'https://www.google.com/maps/embed?pb=member-free', '900000002', 'published', now(), null),
+  ('25000000-0000-4000-8000-000000000003', 'event', 'Evento histórico normal', 'evento-historico-normal', 'Prueba.', 'in_person', true, 0, 0, false, true, 3, now() - interval '1 day', now() + interval '1 day', 'https://www.google.com/maps/embed?pb=member-old', '900000003', 'published', now(), null);
 
 select is((select is_listed from public.activities where id = '25000000-0000-4000-8000-000000000001'), false, 'paid event can be published without listing');
 

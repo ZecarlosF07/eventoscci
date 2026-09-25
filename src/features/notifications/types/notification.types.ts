@@ -10,6 +10,7 @@ export type NotificationEventType =
   | "activity_group_request_received"
   | "activity_paid_preregistration_created"
   | "activity_paid_registration_confirmed"
+  | "activity_registration_cancelled"
   | "activity_virtual_session_reminder"
   | "course_certificate_issued";
 

@@ -11,6 +11,7 @@ const allowedEvents = new Set([
   "activity_group_request_received",
   "activity_paid_preregistration_created",
   "activity_paid_registration_confirmed",
+  "activity_registration_cancelled",
   "activity_virtual_session_reminder",
   "activity_certificate_issued",
   "activity_certificate_offer",
@@ -118,10 +119,11 @@ if (eventType === "activity_group_request_received") {
   const total = Number(payload.group_total);
   if (!attendees.length || !Number.isFinite(total)) throw new Error("Faltan datos de la solicitud grupal");
   const totalText = new Intl.NumberFormat("es-PE", { currency: "PEN", style: "currency" }).format(total);
+  const complimentaryCount = Number(payload.group_complimentary_count ?? 0);
   subject = `Solicitud recibida ${groupCode} — ${payload.activity_title}`;
   heading = "Recibimos tu solicitud grupal";
   eyebrow = "PENDIENTE DE VALIDACIÓN DEL PAGO";
-  message = `${paragraph(`Reservamos ${attendees.length} ${attendees.length === 1 ? "plaza" : "plazas"} para <strong>${activityTitle}</strong>.`)}${detailPanel("Código de solicitud", escapeHtml(groupCode))}${detailPanel("Importe de participación", escapeHtml(totalText))}${paragraph(`Asistentes: ${attendees.join(", ")}.`)}${notice("¿Qué sigue?", "Coordina el pago manual con la CCI. El personal verificará el pago y cada asistente recibirá su confirmación individual cuando su plaza esté cubierta.")}`;
+  message = `${paragraph(`Registramos ${attendees.length} ${attendees.length === 1 ? "plaza" : "plazas"} para <strong>${activityTitle}</strong>.`)}${detailPanel("Código de solicitud", escapeHtml(groupCode))}${complimentaryCount > 0 ? notice("Pases gratuitos confirmados", `${complimentaryCount} ${complimentaryCount === 1 ? "plaza quedó confirmada" : "plazas quedaron confirmadas"} sin pago. Consulta el estado individual en el enlace de tu solicitud.`) : ""}${detailPanel("Importe pendiente de participación", escapeHtml(totalText))}${paragraph(`Asistentes: ${attendees.join(", ")}.`)}${notice("¿Qué sigue?", "Coordina el pago manual de las plazas pendientes con la CCI. Cada asistente recibirá su confirmación individual cuando su plaza quede cubierta.")}`;
   addAction("Ver estado de mi solicitud", groupResultUrl, true);
 }
 
@@ -141,6 +143,15 @@ if (eventType === "activity_paid_registration_confirmed") {
   heading = "Tu inscripción está confirmada";
   eyebrow = "PAGO E INSCRIPCIÓN CONFIRMADOS";
   message = `${paragraph(`El pago y la inscripción para <strong>${activityTitle}</strong> fueron confirmados.`)}${detailPanel("Código de inscripción", registrationCode)}${sessionList}`;
+}
+
+if (eventType === "activity_registration_cancelled") {
+  requiredText("activity_title");
+  requiredText("registration_code");
+  subject = `Plaza cancelada — ${payload.activity_title}`;
+  heading = "Tu plaza fue cancelada";
+  eyebrow = "CAMBIO EN TU INSCRIPCIÓN";
+  message = `${paragraph(`La plaza con código <strong>${registrationCode}</strong> para <strong>${activityTitle}</strong> fue cancelada por el personal de la CCI.`)}${notice("¿Necesitas ayuda?", "Comunícate con la Cámara de Comercio de Ica si esta cancelación no corresponde a lo acordado.")}`;
 }
 
 const isConfirmedRegistration = eventType === "activity_free_registration_confirmed"

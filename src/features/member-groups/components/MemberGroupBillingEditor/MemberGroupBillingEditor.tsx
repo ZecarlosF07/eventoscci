@@ -20,7 +20,7 @@ export function MemberGroupBillingEditor({ detail }: { detail: MemberGroupAdminD
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
-  if (detail.request.isFree) return null;
+  if (!detail.request.billingType) return null;
   function submit() {
     startTransition(async () => {
       const result = await correctMemberGroupBillingAction(detail.request.id, billing, reason);

@@ -16,6 +16,7 @@ export function ActivityPricingFields({
   const [generalPrice, setGeneralPrice] = useState(String(activity?.general_price ?? ""));
   const [memberPrice, setMemberPrice] = useState(String(activity?.member_price ?? ""));
   const [paymentNote, setPaymentNote] = useState(activity?.payment_note ?? "");
+  const [freePasses, setFreePasses] = useState(String(activity?.member_free_passes_per_company ?? 0));
   const published = status === "published";
 
   return (
@@ -42,9 +43,12 @@ export function ActivityPricingFields({
               <Input id="member_price" min={published ? "0.01" : "0"} name="member_price" onChange={(event) => setMemberPrice(event.target.value)} required={published} step="0.01" type="number" value={memberPrice} />
             </FormField>
           </div>
+          {type === "event" && membersOnly ? <FormField error={errors?.member_free_passes_per_company?.[0]} hint="Cantidad disponible para cada RUC durante todo el evento, aunque envíe varias solicitudes. No aumenta los cupos del evento; 0 significa que todos pagan." label="Pases gratuitos por empresa asociada" name="member_free_passes_per_company">
+            <Input id="member_free_passes_per_company" inputMode="numeric" min="0" name="member_free_passes_per_company" onChange={(event) => setFreePasses(event.target.value)} step="1" type="number" value={freePasses} />
+          </FormField> : <input name="member_free_passes_per_company" type="hidden" value="0" />}
           <ActivityPaymentNoteField error={errors?.payment_note?.[0]} isFree={false} isPublished={published} onChange={setPaymentNote} value={paymentNote} />
         </div>
-      ) : <><input name="general_price" type="hidden" value="0" /><input name="member_price" type="hidden" value="0" /></>}
+      ) : <><input name="general_price" type="hidden" value="0" /><input name="member_price" type="hidden" value="0" /><input name="member_free_passes_per_company" type="hidden" value="0" /></>}
 
       <div className="rounded-2xl border border-cci-100 p-4 sm:p-5">
         <FormField error={errors?.capacity?.[0]} hint="Déjalo vacío si no hay límite. Cada asistente ocupa un cupo." label="Cupos disponibles" name="capacity">

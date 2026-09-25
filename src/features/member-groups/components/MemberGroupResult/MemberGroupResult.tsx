@@ -11,8 +11,8 @@ export function MemberGroupResult({ result }: { result: MemberGroupResultData })
     <main className="mx-auto max-w-3xl space-y-6 px-4 py-10 sm:py-16">
       <div className="rounded-3xl border border-cci-100 bg-white p-6 shadow-lg shadow-cci-950/5 sm:p-9">
         <p className="text-sm font-bold uppercase tracking-widest text-cci-700">Solicitud {result.request_code}</p>
-        <h1 className="mt-3 text-3xl font-bold text-cci-950">{result.is_free ? "Plazas confirmadas" : "Solicitud recibida"}</h1>
-        <p className="mt-3 text-slate-700">{result.is_free ? "Cada asistente tiene su plaza confirmada." : "Las plazas están reservadas. El personal de la CCI validará el pago y confirmará las plazas correspondientes."}</p>
+        <h1 className="mt-3 text-3xl font-bold text-cci-950">{result.pending_count === 0 ? "Plazas confirmadas" : "Solicitud recibida"}</h1>
+        <p className="mt-3 text-slate-700">{result.pending_count === 0 ? "Cada asistente tiene su plaza confirmada." : result.confirmed_count > 0 ? "Los pases gratuitos están confirmados. La CCI confirmará las demás plazas después de validar el pago." : "Las plazas están reservadas. El personal de la CCI validará el pago y confirmará las plazas correspondientes."}</p>
         <div className="mt-6 rounded-2xl bg-cci-50 p-5">
           <p className="font-bold text-cci-950">{result.activity_title}</p>
           <p className="mt-1 text-sm text-slate-700">{result.company_name} · RUC {result.company_ruc}</p>
@@ -24,9 +24,9 @@ export function MemberGroupResult({ result }: { result: MemberGroupResultData })
         </div>
         <h2 className="mt-7 text-xl font-bold text-cci-950">Personas incluidas</h2>
         <ul className="mt-3 divide-y divide-cci-100 rounded-xl border border-cci-100">
-          {result.attendees.map((attendee) => <li key={attendee.registration_code} className="flex flex-wrap items-center justify-between gap-2 p-4 text-sm"><span>{attendee.first_names} {attendee.last_names}<span className="ml-2 text-slate-500">{attendee.registration_code}</span></span><strong>{attendee.status === "confirmed" ? "Confirmada" : attendee.status === "pending" ? "Pendiente de pago" : "Cancelada"}</strong></li>)}
+          {result.attendees.map((attendee) => <li key={attendee.registration_code} className="flex flex-wrap items-center justify-between gap-2 p-4 text-sm"><span>{attendee.first_names} {attendee.last_names}<span className="ml-2 text-slate-500">{attendee.registration_code}</span></span><strong>{attendee.status === "confirmed" ? attendee.is_complimentary ? "Confirmada · pase gratuito" : "Confirmada" : attendee.status === "pending" ? `Pendiente de pago · S/ ${attendee.price.toFixed(2)}` : "Cancelada"}</strong></li>)}
         </ul>
-        {!result.is_free && whatsappUrl ? <a className="mt-7 inline-flex min-h-12 items-center rounded-xl bg-[#B6EB66] px-5 font-bold text-cci-950 hover:bg-[#A4DC50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-950" href={whatsappUrl} target="_blank" rel="noreferrer">Coordinar el pago por WhatsApp ↗</a> : null}
+        {result.pending_amount > 0 && whatsappUrl ? <a className="mt-7 inline-flex min-h-12 items-center rounded-xl bg-[#B6EB66] px-5 font-bold text-cci-950 hover:bg-[#A4DC50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-950" href={whatsappUrl} target="_blank" rel="noreferrer">Coordinar el pago por WhatsApp ↗</a> : null}
         <p className="mt-5 text-sm text-slate-600">Guarda el código de solicitud. No es necesario enviar datos de identidad por WhatsApp.</p>
       </div>
       <Link className="inline-block font-bold text-cci-700 underline underline-offset-4" href={`/eventos/${result.activity_slug}`}>← Volver al evento</Link>

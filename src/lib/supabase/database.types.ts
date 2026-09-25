@@ -66,6 +66,7 @@ export type Database = {
           is_listed: boolean
           location_name: string | null
           maps_embed_url: string | null
+          member_free_passes_per_company: number
           member_price: number
           members_only: boolean
           modality: Database["public"]["Enums"]["activity_modality"]
@@ -115,6 +116,7 @@ export type Database = {
           is_listed?: boolean
           location_name?: string | null
           maps_embed_url?: string | null
+          member_free_passes_per_company?: number
           member_price?: number
           members_only?: boolean
           modality: Database["public"]["Enums"]["activity_modality"]
@@ -164,6 +166,7 @@ export type Database = {
           is_listed?: boolean
           location_name?: string | null
           maps_embed_url?: string | null
+          member_free_passes_per_company?: number
           member_price?: number
           members_only?: boolean
           modality?: Database["public"]["Enums"]["activity_modality"]
@@ -1307,6 +1310,65 @@ export type Database = {
           },
         ]
       }
+      member_complimentary_passes: {
+        Row: {
+          activity_id: string
+          company_ruc: string
+          created_at: string
+          id: string
+          registration_id: string
+          slot_number: number
+          transferred_at: string | null
+        }
+        Insert: {
+          activity_id: string
+          company_ruc: string
+          created_at?: string
+          id?: string
+          registration_id: string
+          slot_number: number
+          transferred_at?: string | null
+        }
+        Update: {
+          activity_id?: string
+          company_ruc?: string
+          created_at?: string
+          id?: string
+          registration_id?: string
+          slot_number?: number
+          transferred_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_complimentary_passes_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_complimentary_passes_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "member_complimentary_passes_company_ruc_fkey"
+            columns: ["company_ruc"]
+            isOneToOne: false
+            referencedRelation: "member_companies"
+            referencedColumns: ["ruc"]
+          },
+          {
+            foreignKeyName: "member_complimentary_passes_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_group_payment_allocations: {
         Row: {
           amount: number
@@ -2014,6 +2076,7 @@ export type Database = {
           first_names_snapshot: string | null
           future_topics_suggestion: string | null
           id: string
+          is_complimentary: boolean
           job_title_snapshot: string | null
           last_names_snapshot: string | null
           member_group_request_id: string | null
@@ -2051,6 +2114,7 @@ export type Database = {
           first_names_snapshot?: string | null
           future_topics_suggestion?: string | null
           id?: string
+          is_complimentary?: boolean
           job_title_snapshot?: string | null
           last_names_snapshot?: string | null
           member_group_request_id?: string | null
@@ -2088,6 +2152,7 @@ export type Database = {
           first_names_snapshot?: string | null
           future_topics_suggestion?: string | null
           id?: string
+          is_complimentary?: boolean
           job_title_snapshot?: string | null
           last_names_snapshot?: string | null
           member_group_request_id?: string | null
@@ -2347,6 +2412,10 @@ export type Database = {
         Args: { p_reason?: string; p_registration_id: string }
         Returns: Json
       }
+      cancel_registration_without_pass_notice: {
+        Args: { p_reason?: string; p_registration_id: string }
+        Returns: Json
+      }
       check_course_completion: {
         Args: { p_enrollment_id: string }
         Returns: boolean
@@ -2508,6 +2577,10 @@ export type Database = {
         Args: { p_access_token: string; p_request_code: string }
         Returns: Json
       }
+      get_member_pass_availability: {
+        Args: { p_activity_id: string; p_ruc: string }
+        Returns: Json
+      }
       get_my_certificates: { Args: never; Returns: Json }
       get_my_course_certificate: {
         Args: { p_course_id: string }
@@ -2589,6 +2662,16 @@ export type Database = {
         }
         Returns: Json
       }
+      list_member_group_requests_without_passes: {
+        Args: {
+          p_activity_id?: string
+          p_page?: number
+          p_page_size?: number
+          p_query?: string
+          p_status?: string
+        }
+        Returns: Json
+      }
       lookup_active_member_company: { Args: { p_ruc: string }; Returns: Json }
       lookup_active_member_company_limited: {
         Args: { p_bucket_hash: string; p_ruc: string }
@@ -2638,6 +2721,14 @@ export type Database = {
         }
         Returns: Json
       }
+      register_member_group_without_passes: {
+        Args: {
+          p_activity_id: string
+          p_idempotency_key: string
+          p_request: Json
+        }
+        Returns: Json
+      }
       replace_certificate_document: {
         Args: {
           p_certificate_id: string
@@ -2677,6 +2768,10 @@ export type Database = {
         Returns: string
       }
       save_activity_without_listing: {
+        Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
+        Returns: string
+      }
+      save_activity_without_passes: {
         Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
         Returns: string
       }
@@ -2743,6 +2838,14 @@ export type Database = {
       sync_activity_virtual_reminders: {
         Args: { p_activity_id: string }
         Returns: number
+      }
+      transfer_member_complimentary_pass: {
+        Args: {
+          p_pass_id: string
+          p_reason: string
+          p_target_registration_id: string
+        }
+        Returns: Json
       }
       update_lesson_progress: {
         Args: {

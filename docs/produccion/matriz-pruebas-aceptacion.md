@@ -24,6 +24,8 @@ No se libera una versión con defectos críticos o altos abiertos. Los resultado
 | Certificados opcionales | `020_optional_activity_certificates_test.sql` | Modalidad y tarifa capturadas, solicitud segura e idempotente, auditoría y oferta posterior a la asistencia |
 | Solicitud y pago manual del certificado | `023_activity_certificate_payment_tracking_test.sql` | Solicitud administrativa, pago externo verificado, reversión con motivo, permisos, idempotencia y estados comerciales para emisión |
 | Perfiles de inscripción y sugerencias | `024_registration_participant_profiles_test.sql` | Profesional, estudiante y asociado; tarifa general estudiantil, snapshots, preservación de datos y sugerencia opcional |
+| Eventos exclusivos y padrón | `025_member_group_events_test.sql`, `026_member_roster_version_test.sql` | Inscripción grupal, pagos y reemplazo del padrón |
+| Pases gratuitos por empresa | `027_member_company_complimentary_passes_test.sql` | Cuota por RUC, grupo mixto, importe cero, reintentos, cancelación, transferencia y auditoría |
 | SEO y rendimiento público | `tests/unit/seo.test.ts` | Metadata, JSON-LD, sesiones múltiples, slugs, búsquedas seguras y analítica sin PII |
 
 Los archivos usan transacciones con `rollback`; no conservan fixtures en la base vinculada.
@@ -60,6 +62,27 @@ La implementación y las pruebas automatizadas del Hito 15 ya se ejecutaron en l
 | H15-07 — Comunicaciones | titular recibe un resumen; cada asistente recibe su confirmación individual; certificado opcional sigue separado; sin duplicados por reintentos | Unitarias, outbox y correo de prueba | NO EJECUTADO |
 | H15-08 — Privacidad y accesibilidad | resultado grupal exige token; padrón no es enumerable; roles y RLS correctos; flujo usable con teclado y en móvil | SQL de seguridad y revisión 390/768/1440 | NO EJECUTADO |
 | H15-09 — Coordinación del pago | resultado pagado muestra código e importe y abre WhatsApp del contacto del evento sin DNI, RUC ni asistentes en el mensaje; resultado gratuito no pide coordinar pago | Unitarias, UI y smoke móvil | NO EJECUTADO |
+
+## Hito 16 — Pases gratuitos por empresa asociada
+
+El Hito 16 está implementado en el repositorio y la migración `202609250003` se aplicó a la base Supabase vinculada el **25/09/2026**. La revisión posterior de migraciones quedó al día. Sobre base `daefbd4` más cambios locales sin commit, pasaron las pruebas SQL transaccionales 025 (34 casos), 026 (9 casos) y 027 (30 casos), las 125 pruebas unitarias, `yarn lint`, `yarn typecheck` y `yarn build`. Los casos integrales permanecen **NO EJECUTADOS** hasta revisar el flujo visual/accesible y actualizar y probar el workflow activo de n8n. Ninguna evidencia del Hito 15 se atribuye al Hito 16.
+
+| Caso | Recorrido y resultado exigido | Evidencia prevista | Estado |
+|---|---|---|---|
+| H16-01 — Configuración | exclusivo pagado admite entero 0, 1 o mayor por RUC; gratuito o no exclusivo guarda 0; errores junto al campo y ayuda comprensible | Formulario, servidor y SQL | NO EJECUTADO |
+| H16-02 — Edición segura | antes de inscripciones se puede ajustar; tras la primera solo aumentar; reducción o cambio de exclusividad/gratuidad incompatible se rechaza sin alterar inscripciones | SQL y formulario administrativo | NO EJECUTADO |
+| H16-03 — Solicitudes del mismo RUC | primera solicitud usa hasta la cuota disponible; solicitud posterior del mismo RUC recibe solo el remanente y no bloquea nuevas personas; otro RUC tiene cuota propia | SQL y formulario grupal | NO EJECUTADO |
+| H16-04 — Asignación y cupos | asistentes reciben pases por orden de ingreso; los demás tienen precio de asociado; cada persona ocupa cupo; duplicados y último cupo mantienen atomicidad | SQL, unitarias y smoke | NO EJECUTADO |
+| H16-05 — Concurrencia y reintentos | dos solicitudes simultáneas no superan la cuota; repetir envío idéntico devuelve el resultado previo sin pases, plazas ni correos nuevos | SQL concurrente, unitarias y outbox | NO EJECUTADO |
+| H16-06 — Vista previa obsoleta | otra solicitud consume pases antes del envío; el sistema conserva datos, recalcula el total y exige aceptación expresa antes de registrar | Formulario, SQL y smoke | NO EJECUTADO |
+| H16-07 — Total cero y comprobante | evento pagado con solicitud íntegramente cubierta confirma plazas y omite boleta/factura y WhatsApp; evento totalmente gratuito conserva su flujo anterior | SQL, UI y resultado | NO EJECUTADO |
+| H16-08 — Grupo mixto y pago | pases se confirman al enviar; plazas de precio positivo permanecen pendientes; se pide comprobante solo por importe a cobrar y el pago parcial confirma solo plazas seleccionadas con costo | SQL, panel y resultado | NO EJECUTADO |
+| H16-09 — Cancelación y transferencia | cancelar no repone cuota; personal transfiere el mismo pase a inscripción activa impaga del mismo RUC y evento, con motivo y auditoría; rechazar pago previo, asistencia, otro RUC, doble operación y rol indebido | SQL, RLS, panel y auditoría | NO EJECUTADO |
+| H16-10 — Historial y administración | cambiar precio o padrón no recalcula solicitudes previas; detalle por RUC muestra pases utilizados/disponibles y estados; CSV no cuenta cortesías como ingreso | SQL, panel y CSV | NO EJECUTADO |
+| H16-11 — Comunicaciones y certificados | confirmación inmediata solo a beneficiarios; pagados confirmados tras validar; titular recibe resumen único; cancelación/transferencia notifican; certificado opcional mantiene cobro separado | Outbox, plantillas, n8n y smoke | NO EJECUTADO |
+| H16-12 — Privacidad y accesibilidad | visitante no enumera padrón ni beneficiarios; formulario y panel funcionan con teclado y lector de pantalla, sin desbordar 390 × 844, 768 × 1024 y 1440 × 900 | SQL de seguridad y revisión visual/accesible | NO EJECUTADO |
+
+Para cambiar un caso a **APROBADO** faltan las comprobaciones específicas de interfaz, concurrencia real, correos desde el workflow activo y vistas accesibles en 390, 768 y 1440 px que correspondan a ese caso.
 
 ## Concurrencia e idempotencia
 

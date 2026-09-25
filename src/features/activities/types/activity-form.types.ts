@@ -42,6 +42,7 @@ export interface ActivityFormInput {
   is_free: boolean;
   is_listed: boolean;
   member_price: string;
+  member_free_passes_per_company: string;
   members_only: boolean;
   modality: ActivityModality;
   objective: string;

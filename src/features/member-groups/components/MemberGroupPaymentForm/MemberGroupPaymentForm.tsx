@@ -16,7 +16,7 @@ export function MemberGroupPaymentForm({ detail }: { detail: MemberGroupAdminDet
   const [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
   const key = useRef(crypto.randomUUID());
-  const seats = detail.attendees.filter((attendee) => attendee.status === "pending");
+  const seats = detail.attendees.filter((attendee) => attendee.status === "pending" && attendee.price > 0);
   const amount = seats.filter((seat) => selected.includes(seat.id)).reduce((sum, seat) => sum + seat.price, 0);
 
   function toggle(id: string) { setSelected((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]); }

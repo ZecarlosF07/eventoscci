@@ -12,6 +12,8 @@ export function normalizeActivityCommercialFields(input: ActivityFormInput) {
     certificate_member_price: paidCertificate ? input.certificate_member_price : "0",
     general_price: input.is_free || input.members_only ? "0" : input.general_price || "0",
     member_price: input.is_free ? "0" : input.member_price || "0",
+    member_free_passes_per_company: input.type === "event" && input.members_only && !input.is_free
+      ? input.member_free_passes_per_company || "0" : "0",
     payment_note: input.is_free ? null : input.payment_note || null,
   };
 }

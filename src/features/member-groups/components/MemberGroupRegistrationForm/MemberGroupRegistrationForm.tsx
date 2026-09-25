@@ -9,10 +9,12 @@ import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
 import { MemberAttendeeFields } from "@/features/member-groups/components/MemberAttendeeFields/MemberAttendeeFields";
 import { MemberBillingFields } from "@/features/member-groups/components/MemberBillingFields/MemberBillingFields";
+import { MemberGroupSummary } from "@/features/member-groups/components/MemberGroupSummary/MemberGroupSummary";
 import { PaymentInstructions } from "@/features/registrations/components/PaymentInstructions";
 import { lookupMemberCompany, registerMemberGroup } from "@/features/member-groups/mutations/member-group.actions";
 import { memberGroupInputSchema } from "@/features/member-groups/schemas/member-group.schema";
-import type { MemberAttendeeInput, MemberBillingInput, MemberGroupRegistrationFormProps } from "@/features/member-groups/types/member-group.types";
+import type { MemberAttendeeInput, MemberBillingInput, MemberGroupRegistrationFormProps, MemberPassAvailability } from "@/features/member-groups/types/member-group.types";
+import { getMemberPassPricing } from "@/features/member-groups/utils/member-pass-pricing";
 
 const emptyAttendee = (): MemberAttendeeInput => ({ document_type: "dni", document_number: "", first_names: "", last_names: "", email: "", phone: "", job_title: "", request_certificate: false });
 
@@ -21,6 +23,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
   const [step, setStep] = useState<1 | 2>(1);
   const [ruc, setRuc] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [availability, setAvailability] = useState<MemberPassAvailability | null>(null);
   const [attendees, setAttendees] = useState<MemberAttendeeInput[]>([emptyAttendee()]);
   const [billing, setBilling] = useState<MemberBillingInput>({ type: "boleta", document: "", name: "" });
   const [suggestion, setSuggestion] = useState("");
@@ -29,7 +32,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [authorized, setAuthorized] = useState(false);
   const idempotencyKey = useRef<string>("");
-  const total = activity.isFree ? 0 : activity.memberPrice * attendees.length;
+  const { complimentaryCount, total } = getMemberPassPricing(attendees.length, activity.memberPrice, activity.isFree, availability);
 
   function updateAttendee(index: number, attendee: MemberAttendeeInput) {
     setAttendees((current) => current.map((item, position) => position === index ? attendee : item));
@@ -39,13 +42,15 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
 
   async function verifyCompany() {
     setCompanyName("");
+    setAvailability(null);
     setMessage("");
     setBusy(true);
     try {
-      const result = await lookupMemberCompany(ruc);
+      const result = await lookupMemberCompany(ruc, activity.id);
       if (!result.legalName) setMessage(result.message ?? "No se pudo verificar el RUC.");
       else {
         setCompanyName(result.legalName);
+        setAvailability(result.availability ?? null);
         setBilling((current) => current.type === "factura" ? { ...current, document: ruc, name: result.legalName! } : current);
       }
     } catch { setMessage("No se pudo verificar el RUC. Inténtalo nuevamente."); }
@@ -53,7 +58,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
   }
 
   function proceed() {
-    const candidate = memberGroupInputSchema.safeParse({ ruc, attendees, billing: activity.isFree ? null : { type: "factura", document: ruc, name: companyName, address: "Pendiente" }, future_topics_suggestion: suggestion });
+    const candidate = memberGroupInputSchema.safeParse({ ruc, attendees, expected_free_count: complimentaryCount, billing: total === 0 ? null : { type: "factura", document: ruc, name: companyName, address: "Pendiente" }, future_topics_suggestion: suggestion });
     if (!companyName) { setMessage("Verifica primero el RUC de la empresa asociada."); return; }
     if (!candidate.success) {
       const issue = candidate.error.issues[0];
@@ -73,7 +78,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
 
   async function submit() {
     if (!authorized) { setMessage("Confirma que cuentas con autorización para registrar a las personas indicadas."); return; }
-    const input = { ruc, attendees, billing: activity.isFree ? null : billing, future_topics_suggestion: suggestion };
+    const input = { ruc, attendees, expected_free_count: complimentaryCount, billing: total === 0 ? null : billing, future_topics_suggestion: suggestion };
     const parsed = memberGroupInputSchema.safeParse(input);
     if (!parsed.success) {
       setFieldErrors(Object.fromEntries(parsed.error.issues.map((item) => [item.path.join("."), item.message])));
@@ -87,7 +92,15 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
     setMessage("");
     try {
       const result = await registerMemberGroup(activity.id, parsed.data, idempotencyKey.current);
-      if (!result.success || !result.data) { setMessage(result.message ?? "No se pudo enviar la solicitud."); return; }
+      if (!result.success || !result.data) {
+        if (result.message?.includes("pases gratuitos cambió")) {
+          const current = await lookupMemberCompany(ruc, activity.id);
+          if (current.availability) setAvailability(current.availability);
+          idempotencyKey.current = "";
+        }
+        setMessage(result.message ?? "No se pudo enviar la solicitud.");
+        return;
+      }
       const query = new URLSearchParams({ grupo: result.data.group.request_code, acceso: result.data.access_token });
       router.push(`/eventos/${activity.slug}/inscripcion/resultado?${query.toString()}`);
     } catch { setMessage("No se pudo conectar. Puedes volver a intentar sin duplicar la solicitud."); }
@@ -97,7 +110,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
   return (
     <div className="space-y-7">
       <div className="rounded-xl bg-cci-50 p-4 text-sm text-cci-950" aria-live="polite">
-        <strong>Paso {step} de 2:</strong> {step === 1 ? "Empresa y asistentes" : activity.isFree ? "Revisa y confirma" : "Comprobante y resumen"}
+        <strong>Paso {step} de 2:</strong> {step === 1 ? "Empresa y asistentes" : total === 0 ? "Revisa y confirma" : "Comprobante y resumen"}
       </div>
       {step === 1 ? <form className="space-y-7" onSubmit={(event) => { event.preventDefault(); proceed(); }}>
         <div className="space-y-4">
@@ -105,34 +118,29 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
           <p className="text-sm text-slate-600">Ingresa el RUC de una empresa asociada activa. La razón social aparecerá automáticamente.</p>
           <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-end">
             <FormField label="RUC de la empresa" name="member-ruc" required>
-              <Input id="member-ruc" inputMode="numeric" maxLength={11} value={ruc} onChange={(event) => { setRuc(event.target.value.replace(/\D/g, "")); setCompanyName(""); }} />
+              <Input id="member-ruc" inputMode="numeric" maxLength={11} value={ruc} onChange={(event) => { setRuc(event.target.value.replace(/\D/g, "")); setCompanyName(""); setAvailability(null); }} />
             </FormField>
             <Button type="button" disabled={busy || ruc.length !== 11} onClick={verifyCompany}>Verificar RUC</Button>
           </div>
           {companyName ? <p className="rounded-xl border border-cci-200 bg-cci-50 p-4 font-semibold text-cci-950" role="status">Empresa validada: {companyName}</p> : null}
+          {companyName && !activity.isFree && activity.memberFreePassesPerCompany > 0 ? <p className="rounded-xl border border-cci-200 p-4 text-sm text-cci-950" role="status">{availability?.remaining ?? 0} de {availability?.quota ?? activity.memberFreePassesPerCompany} pases gratuitos disponibles para este RUC. La disponibilidad se confirmará al enviar.</p> : null}
         </div>
         <div className="space-y-5">
           <div><h2 className="text-xl font-bold text-cci-950">2. Personas que asistirán</h2><p className="mt-1 text-sm text-slate-600">Cada persona tendrá su propia plaza, asistencia y certificado. Puedes añadir más asistentes.</p></div>
           {attendees.map((attendee, index) => <MemberAttendeeFields key={index} attendee={attendee} index={index} errors={Object.fromEntries(Object.entries(fieldErrors).filter(([key]) => key.startsWith(`attendees.${index}.`)).map(([key, value]) => [key.split(".")[2], value]))} certificateMode={activity.certificateMode} certificatePrice={activity.certificateMemberPrice} onChange={(next) => updateAttendee(index, next)} onRemove={index ? () => { if (window.confirm(`¿Quitar al asistente ${index + 1}?`)) setAttendees((current) => current.filter((_, position) => position !== index)); } : undefined} />)}
-          <Button type="button" variant="secondary" onClick={() => setAttendees((current) => [...current, emptyAttendee()])}>+ Agregar otra persona</Button>
+          <Button type="button" variant="secondary" disabled={attendees.length >= 500} onClick={() => setAttendees((current) => [...current, emptyAttendee()])}>+ Agregar otra persona</Button>
+          {attendees.length >= 500 ? <p className="text-sm text-slate-600">Puedes enviar otra solicitud para añadir más personas de la misma empresa.</p> : null}
         </div>
         <FormField label="¿Sobre qué temas te gustaría aprender en próximos eventos o capacitaciones? (opcional)" name="future-topics-suggestion">
           <textarea id="future-topics-suggestion" className="min-h-24 w-full rounded-xl border border-cci-200 p-3 text-sm" maxLength={500} value={suggestion} onChange={(event) => setSuggestion(event.target.value)} />
         </FormField>
-        <Button type="submit" disabled={busy}>Siguiente: {activity.isFree ? "revisar solicitud" : "comprobante"} →</Button>
+        <Button type="submit" disabled={busy}>Siguiente: {total === 0 ? "revisar solicitud" : "comprobante"} →</Button>
       </form> : <>
-        {!activity.isFree && activity.paymentNote ? <PaymentInstructions note={activity.paymentNote} /> : null}
-        {!activity.isFree ? <MemberBillingFields billing={billing} companyName={companyName} companyRuc={ruc} errors={Object.fromEntries(Object.entries(fieldErrors).filter(([key]) => key.startsWith("billing.")).map(([key, value]) => [key.split(".")[1], value]))} onChange={(next) => { setBilling(next); setFieldErrors({}); }} /> : null}
-        <section className="space-y-3 rounded-2xl border border-cci-200 bg-cci-50 p-5" aria-label="Resumen de la solicitud">
-          <h2 className="text-lg font-bold text-cci-950">Revisa tu solicitud</h2>
-          <p><strong>Empresa:</strong> {companyName} · RUC {ruc}</p>
-          <p><strong>Asistentes:</strong> {attendees.length}</p>
-          <ul className="list-inside list-disc text-sm text-slate-700">{attendees.map((person, index) => <li key={index}>{person.first_names} {person.last_names}</li>)}</ul>
-          <p className="text-xl font-bold text-cci-950">{activity.isFree ? "Gratuito" : `Total de la actividad: S/ ${total.toFixed(2)}`}</p>
-          {!activity.isFree ? <p className="text-sm text-slate-600">Tras enviar, las plazas quedarán reservadas. El personal validará el pago manualmente antes de confirmarlas. El certificado opcional se paga por separado.</p> : <p className="text-sm text-slate-600">Las plazas se confirmarán al enviar la solicitud.</p>}
-        </section>
+        {total > 0 && activity.paymentNote ? <PaymentInstructions note={activity.paymentNote} /> : null}
+        {total > 0 ? <MemberBillingFields billing={billing} companyName={companyName} companyRuc={ruc} errors={Object.fromEntries(Object.entries(fieldErrors).filter(([key]) => key.startsWith("billing.")).map(([key, value]) => [key.split(".")[1], value]))} onChange={(next) => { setBilling(next); setFieldErrors({}); }} /> : null}
+        <MemberGroupSummary attendees={attendees} certificateMode={activity.certificateMode} companyName={companyName} complimentaryCount={complimentaryCount} isFree={activity.isFree} memberPrice={activity.memberPrice} ruc={ruc} total={total} />
         <label className="flex min-h-11 items-start gap-3 text-sm text-cci-950"><input className="mt-1" type="checkbox" checked={authorized} onChange={(event) => setAuthorized(event.target.checked)} />Confirmo que cuento con autorización para registrar los datos de las demás personas.</label>
-        <div className="flex flex-wrap gap-3"><Button type="button" variant="secondary" disabled={busy} onClick={() => setStep(1)}>← Volver y editar</Button><Button type="button" disabled={busy} onClick={submit}>{busy ? "Enviando…" : activity.isFree ? "Confirmar plazas" : "Enviar solicitud"}</Button></div>
+        <div className="flex flex-wrap gap-3"><Button type="button" variant="secondary" disabled={busy} onClick={() => setStep(1)}>← Volver y editar</Button><Button type="button" disabled={busy} onClick={submit}>{busy ? "Enviando…" : total === 0 ? "Confirmar plazas" : "Enviar solicitud"}</Button></div>
       </>}
       {message ? <p className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800" role="alert">{message}</p> : null}
     </div>

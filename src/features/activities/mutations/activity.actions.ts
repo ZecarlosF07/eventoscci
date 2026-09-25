@@ -70,6 +70,13 @@ export async function saveActivityAction(
 
   if (error) {
     logSupabaseError("activity_save_failed", error, { activityType: parsed.data.type });
+    if (matchesSupabaseError(error, "MEMBER_FREE_PASSES_LOCKED")) {
+      return { errors: { member_free_passes_per_company: ["Ya existen inscripciones. Puedes aumentar los pases, pero no reducirlos ni cambiar la exclusividad o gratuidad del evento."] }, savedId };
+    }
+    if (matchesSupabaseError(error, "INVALID_MEMBER_FREE_PASSES")
+      || matchesSupabaseError(error, "activities_member_free_passes_valid")) {
+      return { errors: { member_free_passes_per_company: ["Indica un número válido de pases para un evento exclusivo pagado."] }, savedId };
+    }
     if (error.code === "23505" && matchesSupabaseError(error, "slug")) {
       return { errors: { slug: ["Este slug ya pertenece a otra actividad. Modifícalo o déjalo vacío para generarlo nuevamente."] }, savedId };
     }

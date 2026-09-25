@@ -912,6 +912,30 @@ El personal podrá compartir un evento exclusivo no listado, gestionar el padró
 
 ---
 
+# Hito 16 — Pases gratuitos por empresa asociada
+
+## Objetivo
+
+Permitir que un evento exclusivo para asociados y pagado ofrezca 0 o más pases gratuitos **por RUC y por evento**, sin impedir que la misma empresa envíe nuevas solicitudes para añadir asistentes.
+
+## Actividades
+
+- Configurar la cantidad de pases por empresa al crear o editar el evento; después de la primera inscripción, permitir solo aumentarla.
+- Asignar los pases disponibles por orden de ingreso entre todas las solicitudes del mismo RUC, de forma transaccional e idempotente.
+- Confirmar automáticamente las plazas con pase y mantener pendientes las pagadas hasta validar su pago manual.
+- Mostrar el desglose individual y el total; pedir boleta o factura y coordinar el pago solo cuando exista importe por cobrar.
+- Evitar cambios silenciosos de precio cuando otra solicitud consuma los pases durante el registro.
+- Permitir cancelación y transferencia administrativa auditada del mismo pase, sin reponerlo automáticamente ni transferir pagos.
+- Adaptar resultados, panel, CSV y comunicaciones a solicitudes mixtas sin alterar certificados opcionales.
+
+## Resultado esperado
+
+Una empresa podrá registrar asistentes en distintos momentos sin recibir pases adicionales por cada solicitud. Las plazas gratuitas quedarán confirmadas y las pagadas seguirán el proceso manual existente. El alcance, el riesgo aceptado de usar el RUC como único requisito, las pruebas y la Definition of Done se describen en:
+
+`docs/hitos/HITO 16 — PASES GRATUITOS POR EMPRESA ASOCIADA.md`
+
+---
+
 # Orden resumido del desarrollo
 
 ## Etapa A — Eventos y capacitaciones
@@ -971,6 +995,16 @@ Resultado:
 Resultado:
 
 **Evento no listado → Padrón de asociados → Solicitud grupal → Comprobante solicitado → Pago manual parcial → Confirmaciones individuales**
+
+---
+
+## Etapa G — Beneficios por empresa asociada
+
+**Hito 16**
+
+Resultado:
+
+**Cuota gratuita por RUC → Solicitudes sucesivas → Plazas gratuitas confirmadas y pagadas pendientes → Transferencia auditada**
 
 ---
 

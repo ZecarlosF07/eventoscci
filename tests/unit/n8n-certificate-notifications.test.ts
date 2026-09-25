@@ -111,7 +111,7 @@ const virtualContext = {
 
 test("el workflow importable contiene la misma plantilla de correo", () => {
   const preparationNode = workflow.nodes.find((node: { name: string }) => node.name === "Preparar correo");
-  assert.equal(preparationNode?.parameters.jsCode, templateSource);
+  assert.equal(preparationNode?.parameters.jsCode.trimEnd(), templateSource.trimEnd());
 });
 
 test("la solicitud grupal pagada informa total y espera validación, sin datos sensibles", () => {
@@ -122,9 +122,28 @@ test("la solicitud grupal pagada informa total y espera validación, sin datos s
   });
   assert.match(email.html, /CCI-GR-000123/);
   assert.match(email.html, /S\/\s80\.00/u);
-  assert.match(email.html, /verificará el pago/i);
+  assert.match(email.html, /Coordina el pago manual/i);
   assert.match(email.html, /grupo=CCI-GR-000123&amp;acceso=7e000000-0000-4000-8000-000000000010/);
   assert.doesNotMatch(email.html, /DNI|20123456789/);
+});
+
+test("el resumen mixto distingue pases confirmados del importe pendiente", () => {
+  const email = prepareEmail("activity_group_request_received", {
+    activity_slug: "encuentro-cci", activity_title: "Encuentro CCI",
+    group_request_code: "CCI-GR-000124", group_attendees: ["Ana", "Bea"],
+    group_total: 40, group_complimentary_count: 1,
+  });
+  assert.match(email.html, /Pases gratuitos confirmados/);
+  assert.match(email.html, /S\/\s40\.00/u);
+});
+
+test("la cancelación de una plaza gratuita avisa solo al titular", () => {
+  const email = prepareEmail("activity_registration_cancelled", {
+    activity_title: "Encuentro CCI", registration_code: "CCI-EV-000123",
+  });
+  assert.match(email.html, /Tu plaza fue cancelada/);
+  assert.match(email.html, /CCI-EV-000123/);
+  assert.doesNotMatch(email.html, /pago|otros asistentes/i);
 });
 
 test("la confirmación gratuita muestra el resumen solo al titular", () => {

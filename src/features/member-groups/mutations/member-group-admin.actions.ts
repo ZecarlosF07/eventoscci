@@ -63,12 +63,39 @@ export async function cancelMemberGroupSeatAction(requestId: string, registratio
   }
   const client = await createServerSupabaseClient();
   const { data: seat, error: seatError } = await client.from("registrations")
-    .select("id").eq("id", registrationId).eq("member_group_request_id", requestId).maybeSingle();
+    .select("id, is_complimentary").eq("id", registrationId).eq("member_group_request_id", requestId).maybeSingle();
   if (seatError || !seat) return { success: false, message: "La plaza no pertenece a esta solicitud." };
   const { error } = await client.rpc("cancel_registration", { p_registration_id: registrationId, p_reason: reason.trim() });
   if (error) return { success: false, message: "No se puede cancelar una plaza pagada. Actualiza el detalle y revisa su estado." };
+  if (seat.is_complimentary) await deliverNotificationImmediately({
+    eventType: "activity_registration_cancelled", relatedEntityId: registrationId,
+    relatedEntityType: "registration",
+  });
   refreshGroup(requestId);
-  return { success: true, message: "Plaza cancelada y cupo liberado." };
+  return { success: true, message: seat.is_complimentary
+    ? "Plaza cancelada. El pase sigue utilizado; puedes transferirlo a otra plaza pendiente del mismo RUC."
+    : "Plaza cancelada y cupo liberado." };
+}
+
+export async function transferMemberPassAction(requestId: string, passId: string, targetId: string, reason: string): Promise<{ success: boolean; message: string }> {
+  await requireAdmin();
+  if (![requestId, passId, targetId].every((value) => id.safeParse(value).success)
+    || reason.trim().length < 2 || reason.length > 500) {
+    return { success: false, message: "Selecciona una plaza e indica un motivo de al menos dos caracteres." };
+  }
+  const client = await createServerSupabaseClient();
+  const { data, error } = await client.rpc("transfer_member_complimentary_pass", {
+    p_pass_id: passId, p_target_registration_id: targetId, p_reason: reason.trim(),
+  });
+  if (error) return { success: false, message: "No se pudo transferir el pase. Comprueba que la plaza siga pendiente, sin pago ni asistencia." };
+  const parsed = z.object({ target_registration_id: id }).safeParse(data);
+  if (!parsed.success) return { success: false, message: "Se registró la transferencia; actualiza la página para comprobarla." };
+  await deliverNotificationImmediately({
+    eventType: "activity_free_registration_confirmed", relatedEntityId: parsed.data.target_registration_id,
+    relatedEntityType: "registration",
+  });
+  refreshGroup(requestId);
+  return { success: true, message: "Pase transferido. La nueva plaza quedó confirmada sin pago." };
 }
 
 export async function correctMemberGroupBillingAction(requestId: string, billing: MemberBillingInput, reason: string): Promise<{ success: boolean; message: string }> {

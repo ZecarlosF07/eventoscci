@@ -24,6 +24,7 @@ function validActivity(): ActivityFormInput {
     is_free: true,
     is_listed: true,
     member_price: "0",
+    member_free_passes_per_company: "0",
     members_only: false,
     modality: "in_person",
     objective: "",
@@ -113,6 +114,19 @@ test("normaliza únicamente precios y horas aplicables al guardar", () => {
 
   assert.equal(normalizeActivityCommercialFields({ ...base, academic_hours: "3" }).academic_hours, null);
   assert.equal(normalizeActivityCommercialFields({ ...base, academic_hours: "3", status: "archived" }).academic_hours, "3");
+});
+
+test("los pases solo se guardan en eventos exclusivos pagados", () => {
+  const exclusive = {
+    ...validActivity(), is_free: false, members_only: true,
+    member_price: "40", member_free_passes_per_company: "2",
+  };
+  assert.equal(activityFormSchema.safeParse(exclusive).success, true);
+  assert.equal(normalizeActivityCommercialFields(exclusive).member_free_passes_per_company, "2");
+  assert.equal(normalizeActivityCommercialFields({ ...exclusive, is_free: true }).member_free_passes_per_company, "0");
+  assert.equal(normalizeActivityCommercialFields({ ...exclusive, members_only: false }).member_free_passes_per_company, "0");
+  assert.equal(normalizeActivityCommercialFields({ ...exclusive, type: "training" }).member_free_passes_per_company, "0");
+  assert.equal(activityFormSchema.safeParse({ ...exclusive, member_free_passes_per_company: "1.5" }).success, false);
 });
 
 test("permite títulos de actividades de hasta 300 caracteres", () => {

@@ -85,6 +85,7 @@ function activity(
     is_free: true,
     is_listed: true,
     member_price: 0,
+    member_free_passes_per_company: 0,
     members_only: false,
     modality: "virtual",
     published_at: "2026-08-01T00:00:00Z",

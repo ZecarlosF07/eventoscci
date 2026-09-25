@@ -11,7 +11,7 @@ const FUTURE_DATE = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(
 
 const activity: ActivityListItem = {
   banner_path: null, capacity: null, category: null, general_price: 80,
-  id: "event", is_free: false, is_listed: true, member_price: 50, members_only: false,
+  id: "event", is_free: false, is_listed: true, member_price: 50, member_free_passes_per_company: 0, members_only: false,
   modality: "virtual", published_at: FUTURE_DATE, registration_close_at: null,
   registration_open_at: null, registrations_closed_manually: false,
   short_description: "Una oportunidad para aprender.", slug: "evento", status: "published",

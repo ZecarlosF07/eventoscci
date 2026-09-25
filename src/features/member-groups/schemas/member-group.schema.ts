@@ -25,6 +25,7 @@ const billingSchema = z.discriminatedUnion("type", [
 export const memberGroupInputSchema = z.object({
   attendees: z.array(attendeeSchema).min(1).max(500),
   billing: billingSchema.nullable(),
+  expected_free_count: z.number().int().min(0).max(500),
   future_topics_suggestion: z.string().trim().max(500),
   ruc: z.string().regex(/^\d{11}$/),
 }).superRefine((input, context) => {
@@ -37,6 +38,7 @@ export const memberGroupInputSchema = z.object({
 });
 
 export const memberCompanyLookupSchema = z.object({ legal_name: z.string(), ruc: z.string() });
+export const memberPassAvailabilitySchema = z.object({ quota: z.number(), used: z.number(), remaining: z.number() });
 
 export const memberGroupResultSchema = z.object({
   activity_slug: z.string(),
@@ -44,6 +46,7 @@ export const memberGroupResultSchema = z.object({
   activity_type: z.literal("event"),
   attendees: z.array(z.object({
     first_names: z.string(), last_names: z.string(), price: z.number(),
+    is_complimentary: z.boolean(),
     registration_code: z.string(), status: z.enum(["pending", "confirmed", "cancelled"]),
   })),
   company_name: z.string(),
@@ -52,6 +55,7 @@ export const memberGroupResultSchema = z.object({
   confirmed_count: z.number(),
   contact_whatsapp_phone: z.string().nullable(),
   is_free: z.boolean(),
+  complimentary_count: z.number(),
   pending_amount: z.number(),
   pending_count: z.number(),
   request_code: z.string(),
@@ -69,6 +73,7 @@ export const memberGroupAdminListSchema = z.object({
     id: z.uuid(), activity_id: z.uuid(), activity_title: z.string(), age_days: z.number(),
     billing_document: z.string().nullable(), billing_type: z.string().nullable(),
     company_name_snapshot: z.string(), company_ruc: z.string(),
+    complimentary_quota: z.number(), complimentary_used: z.number(),
     confirmed_amount: z.number(), confirmed_count: z.number(),
     coordinator_email: z.string().nullable(), coordinator_name: z.string(), created_at: z.string(),
     group_status: z.enum(["pending", "partial", "complete"]),

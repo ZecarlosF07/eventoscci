@@ -49,6 +49,10 @@ export const activityFormSchema = z
     is_free: z.boolean(),
     is_listed: z.boolean(),
     member_price: nonnegativeNumber,
+    member_free_passes_per_company: z.string().refine(
+      (value) => /^\d+$/.test(value || "0") && Number(value || "0") <= 999999999,
+      "Indica un número entero de pases, desde cero.",
+    ),
     members_only: z.boolean(),
     modality: z.enum(["in_person", "virtual", "hybrid"]),
     objective: optionalText,

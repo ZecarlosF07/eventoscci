@@ -44,7 +44,7 @@ export function ActivityConversionPanel({
           {activity.is_free ? (
             <div><p className="text-base text-slate-600">Precio por persona</p><strong className="mt-1 block text-3xl text-cci-950">Gratis</strong></div>
           ) : activity.members_only ? (
-            <div><p className="text-base text-slate-600">Precio para asociados</p><strong className="mt-1 block text-2xl text-cci-950">{formatActivityPrice(activity.member_price)}</strong></div>
+            <div><p className="text-base text-slate-600">Precio para asociados</p><strong className="mt-1 block text-2xl text-cci-950">{formatActivityPrice(activity.member_price)}</strong>{activity.type === "event" && activity.member_free_passes_per_company > 0 ? <p className="mt-2 text-sm text-cci-950">Hasta {activity.member_free_passes_per_company} {activity.member_free_passes_per_company === 1 ? "pase gratuito" : "pases gratuitos"} por empresa asociada, según disponibilidad al inscribirse.</p> : null}</div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
               <div><p className="text-sm text-slate-600">Público general</p><strong className="mt-1 block text-xl text-cci-950">{formatActivityPrice(activity.general_price)}</strong></div>
@@ -54,7 +54,7 @@ export function ActivityConversionPanel({
         </div>
       ) : <p className="mt-5 rounded-2xl bg-slate-50 p-4 text-base text-slate-700">Ya no se aceptan inscripciones.</p>}
       {!isUnavailable ? <div className="mt-5">{availability ? <RegistrationCta activityId={activity.id} activitySlug={activity.slug} activityType={activity.type} availability={availability} /> : <p className="rounded-xl bg-slate-100 p-4 text-center text-base font-semibold text-slate-600">Disponibilidad no confirmada</p>}</div> : null}
-      {availability?.is_open && !activity.is_free ? <p className="mt-2 text-center text-sm leading-relaxed text-slate-600">El personal de CCI confirmará tu inscripción después de validar el pago.</p> : null}
+      {availability?.is_open && !activity.is_free ? <p className="mt-2 text-center text-sm leading-relaxed text-slate-600">{activity.member_free_passes_per_company > 0 && activity.members_only && activity.type === "event" ? "Los pases gratuitos disponibles se confirman al registrarse. Las demás plazas se confirman tras validar el pago." : "El personal de CCI confirmará tu inscripción después de validar el pago."}</p> : null}
       {whatsAppUrl ? <a className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-cci-700 bg-white px-4 py-2 text-base font-semibold text-cci-950 transition hover:bg-cci-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-800" href={whatsAppUrl} rel="noreferrer" target="_blank"><WhatsAppIcon /> Quiero más información</a> : null}
       {canCountDown && activity.registration_close_at ? (
         <div className="mt-5 rounded-2xl bg-cci-950 p-4"><RegistrationCountdown deadline={activity.registration_close_at} initialNow={initialNow} /></div>

@@ -51,6 +51,7 @@ export function parseActivityFormData(formData: FormData): ActivityFormInput {
     is_free: formData.get("is_free") === "on",
     is_listed: formData.get("type") !== "event" || formData.get("is_listed") === "on",
     member_price: stringValue(formData, "member_price"),
+    member_free_passes_per_company: stringValue(formData, "member_free_passes_per_company"),
     members_only: formData.get("members_only") === "on",
     modality: stringValue(formData, "modality") as ActivityFormInput["modality"],
     objective: stringValue(formData, "objective"),
