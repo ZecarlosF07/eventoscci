@@ -5,6 +5,9 @@ import { Pagination } from "@/components/molecules/Pagination";
 import { SectionHeading } from "@/components/molecules/SectionHeading";
 import type { ActivityAttendanceTemplateProps } from "@/components/templates/ActivityAttendanceTemplate/types/activity-attendance-template.types";
 import { ROUTES } from "@/constants/routes";
+import { FilterResults } from "@/features/admin-filters/components/FilterWorkspace";
+import { FilterExportLink } from "@/features/admin-filters/components/FilterWorkspace";
+import { SelectionWorkspace } from "@/features/admin-filters/components/SelectionWorkspace";
 import { AttendanceFilters } from "@/features/attendance/components/AttendanceFilters";
 import { AttendanceTable } from "@/features/attendance/components/AttendanceTable";
 import { ActivityParticipationMetrics } from "@/features/participation/components/ActivityParticipationMetrics/ActivityParticipationMetrics";
@@ -24,18 +27,18 @@ export function ActivityAttendanceTemplate({ data, filters, result, summary }: A
   const exportValues = new URLSearchParams(query);
   exportValues.set("actividad", data.activity.id);
   return (
-    <div className="space-y-7">
+    <SelectionWorkspace key={data.activity.id}><div className="space-y-7">
       <Link className="text-sm font-semibold text-slate-700 hover:underline" href={ROUTES.adminRegistrations}>← Volver a actividades</Link>
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <SectionHeading description={`${data.total} participantes en la vista actual. Solo las inscripciones confirmadas pueden marcarse.`} eyebrow={data.activity.type === "event" ? "Evento" : "Capacitación"} title={data.activity.title} />
-        <Link className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold hover:bg-cci-50" href={`${ROUTES.adminRegistrations}/exportar?${exportValues}`}>Exportar CSV</Link>
+        <FilterExportLink className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold hover:bg-cci-50" href={`${ROUTES.adminRegistrations}/exportar?${exportValues}`}>Exportar CSV</FilterExportLink>
       </div>
       <ParticipationActivityTabs activityId={data.activity.id} current="attendance" />
       <ActivityParticipationMetrics activity={summary} mode="attendance" />
       <OperationNotice result={result} />
-      <AttendanceFilters filters={filters} />
-      <AttendanceTable activityId={data.activity.id} attendance={data.attendance} returnTo={returnTo} />
+      <AttendanceFilters filters={filters} total={data.total} />
+      <FilterResults><AttendanceTable activityId={data.activity.id} attendance={data.attendance} returnTo={returnTo} /></FilterResults>
       <Pagination page={data.page} pageCount={data.pageCount} pathname={pathname} searchParams={values} />
-    </div>
+    </div></SelectionWorkspace>
   );
 }

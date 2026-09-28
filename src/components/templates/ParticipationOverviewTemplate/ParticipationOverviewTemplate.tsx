@@ -4,6 +4,7 @@ import { Pagination } from "@/components/molecules/Pagination";
 import { SectionHeading } from "@/components/molecules/SectionHeading";
 import type { ParticipationOverviewTemplateProps } from "@/components/templates/ParticipationOverviewTemplate/types/participation-overview-template.types";
 import { ROUTES } from "@/constants/routes";
+import { FilterResults } from "@/features/admin-filters/components/FilterWorkspace";
 import { ParticipationActivityGrid } from "@/features/participation/components/ParticipationActivityGrid/ParticipationActivityGrid";
 import { ParticipationMetrics } from "@/features/participation/components/ParticipationMetrics/ParticipationMetrics";
 import { ParticipationOverviewFilters } from "@/features/participation/components/ParticipationOverviewFilters/ParticipationOverviewFilters";
@@ -22,17 +23,17 @@ export function ParticipationOverviewTemplate({ data, filters, metrics }: Partic
         </div>
       </div>
       <ParticipationMetrics metrics={metrics} />
-      <ParticipationOverviewFilters filters={filters} />
+      <ParticipationOverviewFilters filters={filters} total={data.total} />
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-slate-600">{data.total} actividades encontradas</p>
         <p className="text-xs text-slate-500">Las actividades con pendientes aparecen primero.</p>
       </div>
-      <ParticipationActivityGrid activities={data.activities} />
+      <FilterResults><ParticipationActivityGrid activities={data.activities} /></FilterResults>
       <Pagination
         page={data.page}
         pageCount={data.pageCount}
         pathname={ROUTES.adminRegistrations}
-        searchParams={{ periodo: filters.period, q: filters.query, tipo: filters.activityType }}
+        searchParams={{ periodo: filters.period, pagos: filters.paymentsOnly ? "1" : undefined, q: filters.query, tipo: filters.activityType }}
       />
     </div>
   );

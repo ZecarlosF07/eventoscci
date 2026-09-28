@@ -34,7 +34,7 @@ export async function getActivityAttendance(
   if (!activityResult.data) return null;
 
   let query = client
-    .from("registrations")
+    .from("admin_registration_records")
     .select(ATTENDANCE_SELECT, { count: "exact" })
     .eq("activity_id", activityId)
     .is("deleted_at", null)
@@ -47,15 +47,7 @@ export async function getActivityAttendance(
   if (filters.registrationType) query = query.eq("registration_type", filters.registrationType);
   if (filters.attendanceStatus) query = query.eq("attendance.status", filters.attendanceStatus);
   const search = filters.query ? escapePostgrestSearch(filters.query) : "";
-  if (search) {
-    const pattern = `%${search}%`;
-    query = query.or([
-      `document_number.ilike.${pattern}`,
-      `first_names.ilike.${pattern}`,
-      `last_names.ilike.${pattern}`,
-      `email.ilike.${pattern}`,
-    ].join(","), { referencedTable: "person" });
-  }
+  if (search) query = query.ilike("search_text", `%${search}%`);
 
   const from = (filters.page - 1) * ATTENDANCE_PAGE_SIZE;
   const { count, data, error } = await query.range(from, from + ATTENDANCE_PAGE_SIZE - 1);

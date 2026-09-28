@@ -3,15 +3,10 @@ import {
   CERTIFICATE_COMMERCIAL_STATUS_LABELS,
   getCertificateCommercialStatus,
 } from "@/features/registrations/utils/certificate-commercial-status";
+import { csvCell } from "@/utils/csv-cell";
 
 const REGISTRATION_LABELS = { cancelled: "Cancelado", confirmed: "Confirmado", pending: "Pendiente de verificación" } as const;
 const ATTENDANCE_LABELS = { absent: "No asistió", attended: "Asistió", pending: "Pendiente" } as const;
-
-function csvCell(value: string | number | null): string {
-  let text = value === null ? "" : String(value);
-  if (/^[=+\-@]/.test(text)) text = `'${text}`;
-  return `"${text.replace(/"/g, '""')}"`;
-}
 
 export function registrationsToCsv(registrations: RegistrationAdminItem[]): string {
   const headers = [

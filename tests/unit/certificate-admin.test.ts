@@ -28,6 +28,7 @@ test("normaliza filtros administrativos de certificados", () => {
   assert.deepEqual(parseCertificateCandidateFilters({ pagina: "no válida", q: "  12345678 " }), {
     page: 1,
     query: "12345678",
+    emissionState: "all",
   });
 });
 

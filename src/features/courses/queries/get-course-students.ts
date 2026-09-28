@@ -29,7 +29,7 @@ export async function searchPeopleForCourse(query: string): Promise<PersonCourse
   const { data, error } = await client.from("people")
     .select("id, document_number, first_names, last_names, email, accounts:user_accounts(user_id, deleted_at, is_active)")
     .is("deleted_at", null)
-    .or(`document_number.ilike.${pattern},first_names.ilike.${pattern},last_names.ilike.${pattern},email.ilike.${pattern}`)
+    .ilike("admin_search_text", pattern)
     .order("last_names").limit(20);
   if (error) throw new Error("No fue posible buscar personas.", { cause: error });
   return (data ?? []).map(({ accounts, ...person }) => ({

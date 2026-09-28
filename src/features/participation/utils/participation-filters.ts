@@ -22,7 +22,8 @@ export async function parseParticipationFilters(
   return {
     activityType: type === "event" || type === "training" ? type : undefined,
     page: Number.isInteger(page) && page > 0 ? page : 1,
-    period,
+    period: period === "payments" ? "all" : period,
+    paymentsOnly: periodValue === "payments" || firstValue(params.pagos) === "1",
     query: firstValue(params.q)?.trim() || undefined,
   };
 }

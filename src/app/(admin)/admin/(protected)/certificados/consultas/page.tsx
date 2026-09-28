@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Pagination } from "@/components/molecules/Pagination";
 import { SectionHeading } from "@/components/molecules/SectionHeading";
 import { ROUTES } from "@/constants/routes";
+import { FilterResults } from "@/features/admin-filters/components/FilterWorkspace";
+import { isCompleteFilterDate } from "@/features/admin-filters/utils/filter-url";
 import { requireAdmin } from "@/features/auth/services/admin-session";
 import { CertificateQueryLogFilters } from "@/features/certificates/components/CertificateQueryLogFilters";
 import { CertificateQueryLogsTable } from "@/features/certificates/components/CertificateQueryLogsTable";
@@ -14,8 +16,7 @@ function first(value?: string | string[]): string | undefined {
 }
 
 function validDate(value?: string): string | undefined {
-  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
-  return Number.isNaN(Date.parse(`${value}T12:00:00Z`)) ? undefined : value;
+  return value && isCompleteFilterDate(value) ? value : undefined;
 }
 
 function parseFilters(params: Awaited<CertificateQueryLogsPageProps["searchParams"]>): QueryFilters {
@@ -39,8 +40,8 @@ export default async function CertificateQueriesPage({ searchParams }: Certifica
   return (
     <div className="space-y-7">
       <SectionHeading description={`${data.total} consultas registradas. Solo los administradores pueden acceder a esta bitácora.`} eyebrow="Auditoría" title="Consultas públicas de certificados" />
-      <CertificateQueryLogFilters filters={filters} />
-      <CertificateQueryLogsTable items={data.items} />
+      <CertificateQueryLogFilters filters={filters} total={data.total} />
+      <FilterResults><CertificateQueryLogsTable items={data.items} /></FilterResults>
       <Pagination page={data.page} pageCount={data.pageCount} pathname={ROUTES.adminCertificateQueries} searchParams={{ desde: filters.dateFrom, dni: filters.documentNumber, hasta: filters.dateTo, resultado: filters.outcome }} />
     </div>
   );

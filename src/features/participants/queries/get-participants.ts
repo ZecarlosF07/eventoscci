@@ -24,17 +24,9 @@ export async function getParticipants(filters: ParticipantFilters): Promise<Part
     .order("first_names")
     .range(from, from + PARTICIPANT_PAGE_SIZE - 1);
 
+  if (filters.profile) query = query.eq("participant_profile", filters.profile);
   const search = filters.query ? escapePostgrestSearch(filters.query) : "";
-  if (search) {
-    const pattern = `%${search}%`;
-    query = query.or([
-      `document_number.ilike.${pattern}`,
-      `first_names.ilike.${pattern}`,
-      `last_names.ilike.${pattern}`,
-      `email.ilike.${pattern}`,
-      `phone.ilike.${pattern}`,
-    ].join(","));
-  }
+  if (search) query = query.ilike("admin_search_text", `%${search}%`);
 
   const { count, data, error } = await query;
   if (error) throw new Error("No fue posible consultar los participantes.", { cause: error });

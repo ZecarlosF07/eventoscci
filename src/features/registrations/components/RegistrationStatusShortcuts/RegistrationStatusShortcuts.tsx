@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 import type { ParticipationActivitySummary } from "@/features/participation/types/participation.types";
-import type { RegistrationAdminFilters } from "@/features/registrations/types/registration.types";
 import { getActivityParticipationRoute } from "@/features/participation/utils/participation-routes";
+import type { RegistrationAdminFilters } from "@/features/registrations/types/registration.types";
 
 export function RegistrationStatusShortcuts({ activity, filters }: { activity: ParticipationActivitySummary; filters: RegistrationAdminFilters }) {
   const current = filters.status ?? filters.statusScope ?? "active";
@@ -19,6 +19,8 @@ export function RegistrationStatusShortcuts({ activity, filters }: { activity: P
       {items.map(([status, label, count]) => {
         const params = new URLSearchParams();
         params.set("estado", status);
+        if (filters.profile) params.set("perfil", filters.profile);
+        if (filters.certificateRequest) params.set("certificado", filters.certificateRequest);
         if (filters.query) params.set("q", filters.query);
         if (filters.registrationType) params.set("tipo", filters.registrationType);
         return <Link aria-current={current === status ? "page" : undefined} className={current === status ? "shrink-0 rounded-full bg-cci-950 px-4 py-2 text-sm font-bold text-white" : "shrink-0 rounded-full border border-cci-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-cci-50"} href={`${pathname}?${params}`} key={status}>{label} · {count}</Link>;

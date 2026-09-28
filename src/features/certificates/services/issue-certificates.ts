@@ -69,12 +69,17 @@ export async function issueActivityCertificates(
     ...parsed.data.prepared.map((item) => item.certificate_id),
     ...parsed.data.existing.filter((item) => !item.file_ready).map((item) => item.certificate_id),
   ];
+  const registrationByCertificate = new Map([...parsed.data.prepared, ...parsed.data.existing].map((item) => [item.certificate_id, item.registration_id]));
+  const processedRegistrationIds = parsed.data.existing.filter((item) => item.file_ready).map((item) => item.registration_id);
   let issuedCount = 0;
-  let errorCount = parsed.data.rejected.length;
+  const reportedIds = new Set([...parsed.data.prepared, ...parsed.data.existing, ...parsed.data.rejected].map((item) => item.registration_id));
+  let errorCount = parsed.data.rejected.length + registrationIds.filter((id) => !reportedIds.has(id)).length;
   for (const certificateId of pendingIds) {
     try {
       await generateAndStoreCertificate(certificateId);
       issuedCount += 1;
+      const registrationId = registrationByCertificate.get(certificateId);
+      if (registrationId) processedRegistrationIds.push(registrationId);
     } catch (error) {
       errorCount += 1;
       logSupabaseError("activity_certificate_generation_failed", error instanceof Error ? error : { message: "Unknown generation error" }, { certificateId });
@@ -84,6 +89,8 @@ export async function issueActivityCertificates(
   }
   const alreadyReady = parsed.data.existing.filter((item) => item.file_ready).length;
   return {
+    processedRegistrationIds,
+    failedRegistrationIds: registrationIds.filter((id) => !processedRegistrationIds.includes(id)),
     errorCount,
     issuedCount,
     message: errorCount

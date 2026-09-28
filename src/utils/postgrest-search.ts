@@ -1,3 +1,3 @@
 export function escapePostgrestSearch(value: string): string {
-  return value.replace(/[%,()_]/g, " ").replace(/\s+/g, " ").trim();
+  return value.trim().replace(/\s+/g, " ").replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
 }

@@ -1,14 +1,12 @@
-import Link from "next/link";
-
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
-import { ROUTES } from "@/constants/routes";
+import { AutoFilterForm } from "@/features/admin-filters/components/AutoFilterForm";
 import type { RegistrationSuggestionFiltersProps } from "@/features/registrations/components/RegistrationSuggestionFilters/types/registration-suggestion-filters.types";
 
-export function RegistrationSuggestionFilters({ activities, filters }: RegistrationSuggestionFiltersProps) {
+export function RegistrationSuggestionFilters({ activities, filters, total }: RegistrationSuggestionFiltersProps) {
   return (
-    <form className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 lg:grid-cols-[minmax(200px,1fr)_minmax(220px,1fr)_170px_190px_auto_auto]" method="get">
-      <Input defaultValue={filters.query} name="q" placeholder="Buscar en sugerencias" type="search" />
+    <AutoFilterForm total={total} valueLabels={Object.fromEntries(activities.map((activity) => [activity.id, activity.title]))} className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 lg:grid-cols-[minmax(200px,1fr)_minmax(220px,1fr)_170px_190px]" defaults={{ perfil: "all" }}>
+      <Input defaultValue={filters.query} name="q" aria-label="Buscar en sugerencias" placeholder="Buscar en sugerencias" type="search" />
       <Select aria-label="Actividad" defaultValue={filters.activityId ?? ""} name="actividad">
         <option value="">Todas las actividades</option>
         {activities.map((activity) => <option key={activity.id} value={activity.id}>{activity.title}</option>)}
@@ -24,8 +22,6 @@ export function RegistrationSuggestionFilters({ activities, filters }: Registrat
         <option value="student">Estudiantes</option>
         <option value="member">Asociados CCI</option>
       </Select>
-      <button className="min-h-11 rounded-xl bg-cci-950 px-5 text-sm font-bold text-white hover:bg-cci-800" type="submit">Aplicar</button>
-      <Link className="flex min-h-11 items-center justify-center rounded-xl border border-slate-300 px-4 text-sm font-semibold hover:bg-cci-50" href={ROUTES.adminRegistrationSuggestions}>Limpiar</Link>
-    </form>
+    </AutoFilterForm>
   );
 }

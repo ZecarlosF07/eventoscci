@@ -103,6 +103,7 @@ export interface ActivityPublicPage {
 }
 
 export interface ActivityAdminFilters {
+  visibility?: "listed" | "unlisted";
   page: number;
   query?: string;
   status?: ActivityStatus;

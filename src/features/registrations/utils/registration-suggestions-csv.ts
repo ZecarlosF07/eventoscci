@@ -1,10 +1,5 @@
 import type { RegistrationSuggestionItem } from "@/features/registrations/types/registration-suggestion.types";
-
-function csvCell(value: string | null): string {
-  let text = value ?? "";
-  if (/^[=+\-@]/.test(text)) text = `'${text}`;
-  return `"${text.replace(/"/g, '""')}"`;
-}
+import { csvCell } from "@/utils/csv-cell";
 
 export function registrationSuggestionsToCsv(items: RegistrationSuggestionItem[]): string {
   const headers = ["Fecha", "Actividad", "Tipo", "Participante", "Documento", "Perfil", "Contexto", "Sugerencia"];

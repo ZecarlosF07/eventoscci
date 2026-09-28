@@ -48,7 +48,7 @@ export function NotificationsTable({ notifications }: NotificationsTableProps) {
   if (!notifications.length) {
     return (
       <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center">
-        <Text>No hay notificaciones en la cola.</Text>
+        <Text>No hay notificaciones con los filtros seleccionados.</Text>
       </div>
     );
   }

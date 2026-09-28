@@ -489,6 +489,13 @@ export type Database = {
             foreignKeyName: "activity_virtual_reminders_registration_id_fkey"
             columns: ["registration_id"]
             isOneToOne: false
+            referencedRelation: "admin_registration_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_virtual_reminders_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
             referencedRelation: "certificate_payment_requests"
             referencedColumns: ["id"]
           },
@@ -539,6 +546,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "attendance_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "admin_registration_records"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "attendance_registration_id_fkey"
             columns: ["registration_id"]
@@ -817,6 +831,13 @@ export type Database = {
             columns: ["person_id"]
             isOneToOne: false
             referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificates_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "admin_registration_records"
             referencedColumns: ["id"]
           },
           {
@@ -1249,6 +1270,13 @@ export type Database = {
             foreignKeyName: "individual_registration_payments_registration_id_fkey"
             columns: ["registration_id"]
             isOneToOne: true
+            referencedRelation: "admin_registration_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "individual_registration_payments_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
             referencedRelation: "certificate_payment_requests"
             referencedColumns: ["id"]
           },
@@ -1492,6 +1520,13 @@ export type Database = {
             foreignKeyName: "member_complimentary_passes_registration_id_fkey"
             columns: ["registration_id"]
             isOneToOne: true
+            referencedRelation: "admin_registration_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_complimentary_passes_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
             referencedRelation: "certificate_payment_requests"
             referencedColumns: ["id"]
           },
@@ -1526,6 +1561,13 @@ export type Database = {
             columns: ["payment_id"]
             isOneToOne: false
             referencedRelation: "member_group_payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_group_payment_allocations_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
+            referencedRelation: "admin_registration_records"
             referencedColumns: ["id"]
           },
           {
@@ -1873,6 +1915,7 @@ export type Database = {
         Row: {
           academic_institution: string | null
           address: string | null
+          admin_search_text: string | null
           career: string | null
           company: string | null
           created_at: string
@@ -1893,6 +1936,7 @@ export type Database = {
         Insert: {
           academic_institution?: string | null
           address?: string | null
+          admin_search_text?: string | null
           career?: string | null
           company?: string | null
           created_at?: string
@@ -1913,6 +1957,7 @@ export type Database = {
         Update: {
           academic_institution?: string | null
           address?: string | null
+          admin_search_text?: string | null
           career?: string | null
           company?: string | null
           created_at?: string
@@ -2599,6 +2644,95 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_registration_records: {
+        Row: {
+          academic_institution_snapshot: string | null
+          activity_id: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
+          career_snapshot: string | null
+          certificate_followed_up_at: string | null
+          certificate_followed_up_by: string | null
+          certificate_mode_snapshot: "none" | "included" | "optional_paid" | null
+          certificate_payment_verified_at: string | null
+          certificate_payment_verified_by: string | null
+          certificate_price_snapshot: number | null
+          certificate_request_token: string | null
+          certificate_requested_at: string | null
+          certificate_requested_by: string | null
+          company_snapshot: string | null
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          first_names_snapshot: string | null
+          future_topics_suggestion: string | null
+          id: string | null
+          is_complimentary: boolean | null
+          job_title_snapshot: string | null
+          last_names_snapshot: string | null
+          member_group_request_id: string | null
+          participant_profile:
+            | Database["public"]["Enums"]["participant_profile"]
+            | null
+          person_id: string | null
+          price_snapshot: number | null
+          registration_code: string | null
+          registration_type:
+            | Database["public"]["Enums"]["registration_type"]
+            | null
+          ruc_snapshot: string | null
+          search_text: string | null
+          status: Database["public"]["Enums"]["registration_status"] | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_payment_totals"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_member_group_request_id_fkey"
+            columns: ["member_group_request_id"]
+            isOneToOne: false
+            referencedRelation: "member_group_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       certificate_payment_requests: {
         Row: {
           activity_id: string | null
@@ -2714,6 +2848,7 @@ export type Database = {
         Args: { p_certificate_id: string }
         Returns: boolean
       }
+      admin_literal_pattern: { Args: { p_query: string }; Returns: string }
       apply_member_roster_import: {
         Args: { p_import_id: string }
         Returns: Json
@@ -2843,6 +2978,38 @@ export type Database = {
       get_activity_certificate_candidates: {
         Args: {
           p_activity_id: string
+          p_limit?: number
+          p_offset?: number
+          p_query?: string
+        }
+        Returns: {
+          attendance_status: Database["public"]["Enums"]["attendance_status"]
+          certificate_code: string
+          certificate_id: string
+          certificate_mode_snapshot: "none" | "included" | "optional_paid"
+          certificate_payment_verified_at: string
+          certificate_payment_verified_by: string
+          certificate_price_snapshot: number
+          certificate_requested_at: string
+          certificate_requested_by: string
+          certificate_status: Database["public"]["Enums"]["certificate_status"]
+          company_snapshot: string
+          document_number: string
+          email: string
+          file_path: string
+          first_names: string
+          last_names: string
+          person_id: string
+          registration_code: string
+          registration_id: string
+          registration_status: Database["public"]["Enums"]["registration_status"]
+          total_count: number
+        }[]
+      }
+      get_activity_certificate_candidates_filtered: {
+        Args: {
+          p_activity_id: string
+          p_emission_state?: string
           p_limit?: number
           p_offset?: number
           p_query?: string

@@ -4,6 +4,7 @@ import test from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { renderAdminFilters } from "./fixtures/admin-router";
 import { ActivityPaymentFilters } from "../../src/features/participation/components/ActivityPaymentFilters/ActivityPaymentFilters";
 import { ActivityPaymentList } from "../../src/features/participation/components/ActivityPaymentList/ActivityPaymentList";
 import { ParticipationActivityTabs } from "../../src/features/participation/components/ParticipationActivityTabs/ParticipationActivityTabs";
@@ -38,9 +39,9 @@ test("group payment list shows one request and distinguishes seats, courtesy and
 test("empty list is explicit and filters have visible labels", () => {
   const empty = renderToStaticMarkup(createElement(ActivityPaymentList, { activityId, filters, items: [] }));
   assert.match(empty, /No hay solicitudes de participación/);
-  const controls = renderToStaticMarkup(createElement(ActivityPaymentFilters, { filters }));
+  const controls = renderAdminFilters(createElement(ActivityPaymentFilters, { filters }));
   assert.match(controls, /Pago de participación/);
-  assert.match(controls, /Pago de certificado/);
+  assert.match(controls, /Certificados opcionales/);
   assert.match(controls, /Individuales y grupales/);
   assert.match(controls, /Pendientes \(incluye parciales\)/);
 });

@@ -17,11 +17,12 @@ export async function getActivityCertificateData(
   const client = await createServerSupabaseClient();
   const [activityResult, candidateResult, templates] = await Promise.all([
     client.from("activities").select("id, title, type, certificate_mode").eq("id", activityId).neq("status", "archived").is("deleted_at", null).maybeSingle(),
-    client.rpc("get_activity_certificate_candidates", {
+    client.rpc("get_activity_certificate_candidates_filtered", {
       p_activity_id: activityId,
       p_limit: CERTIFICATE_CANDIDATE_PAGE_SIZE,
       p_offset: (filters.page - 1) * CERTIFICATE_CANDIDATE_PAGE_SIZE,
       p_query: filters.query,
+      p_emission_state: filters.emissionState ?? "all",
     }),
     getCertificateTemplates(true),
   ]);
@@ -30,6 +31,7 @@ export async function getActivityCertificateData(
   if (!activityResult.data) return null;
 
   if (candidateResult.error?.code === "PGRST202") {
+    if (filters.emissionState && filters.emissionState !== "all") throw new Error("Actualiza la base de datos para aplicar filtros de emisión.");
     return {
       activity: activityResult.data,
       candidatePage: await getLegacyActivityCertificateCandidates(activityId, filters),

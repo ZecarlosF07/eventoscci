@@ -33,11 +33,14 @@ export interface ParticipationActivitySummary {
 }
 
 export interface ParticipationOverviewFilters {
+  paymentsOnly?: boolean;
   activityType?: ActivityType;
   page: number;
   period: ParticipationPeriod;
   query?: string;
 }
+
+export interface ParticipationOverviewFiltersProps { filters: ParticipationOverviewFilters; total?: number }
 
 export interface ParticipationOverviewPage {
   activities: ParticipationActivitySummary[];
@@ -57,6 +60,7 @@ export interface ParticipationOverviewPageProps {
   searchParams: Promise<{
     pagina?: string | string[];
     periodo?: string | string[];
+    pagos?: string | string[];
     q?: string | string[];
     resultado?: string | string[];
     tipo?: string | string[];

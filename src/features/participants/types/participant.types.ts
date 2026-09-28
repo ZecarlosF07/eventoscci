@@ -51,7 +51,7 @@ export interface ParticipantDetail extends Pick<ParticipantRow,
   registrations: ParticipantHistoryItem[];
 }
 
-export interface ParticipantFilters { page: number; query?: string }
+export interface ParticipantFilters { page: number; query?: string; profile?: "professional" | "student" }
 export interface ParticipantPage {
   page: number;
   pageCount: number;
@@ -59,7 +59,7 @@ export interface ParticipantPage {
   total: number;
 }
 export interface AdminParticipantsPageProps {
-  searchParams: Promise<{ pagina?: string | string[]; q?: string | string[] }>;
+  searchParams: Promise<{ pagina?: string | string[]; q?: string | string[]; perfil?: string | string[] }>;
 }
 export interface ParticipantDetailPageProps {
   params: Promise<{ id: string }>;

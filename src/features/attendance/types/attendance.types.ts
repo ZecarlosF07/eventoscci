@@ -1,9 +1,12 @@
-import type { ActivityType } from "@/features/activities/types/activity.types";
 import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
+import type { ActivityType } from "@/features/activities/types/activity.types";
 import type { RegistrationStatus, RegistrationType } from "@/features/registrations/types/registration.types";
 import type { Enums } from "@/lib/supabase/database.types";
 
 export type AttendanceStatus = Enums<"attendance_status">;
+
+export interface AttendanceBulkFormProps { activityId: string; visibleIds: string[] }
+export interface AttendanceWorkspaceResult { success: boolean; message: string; resultCode?: string }
 
 export interface AttendanceFilters {
   attendanceStatus?: AttendanceStatus;

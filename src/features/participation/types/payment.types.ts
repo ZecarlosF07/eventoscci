@@ -1,5 +1,5 @@
-import type { Database } from "@/lib/supabase/database.types";
 import type { ActivityStatus } from "@/features/activities/types/activity.types";
+import type { Database } from "@/lib/supabase/database.types";
 
 export type PaymentRequest = Database["public"]["Views"]["participation_payment_requests"]["Row"];
 export type CertificatePaymentRequest = Database["public"]["Views"]["certificate_payment_requests"]["Row"];
@@ -16,7 +16,7 @@ export interface PaymentFilters {
   requestId?: string;
   certificateId?: string;
 }
-export interface PaymentPage<T> { items: T[]; total: number; page: number; pageCount: number }
+export interface PaymentPage<T> { items: T[]; total: number; page: number; pageCount: number; outsideResultId?: string }
 export interface IndividualPaymentInput {
   registrationId: string;
   receivedAmount: number;

@@ -1,3 +1,6 @@
+export interface MemberRosterFiltersProps { query?: string; total: number }
+export interface MemberRosterPageProps { searchParams: Promise<Record<string, string | string[] | undefined>> }
+
 export interface MemberCompanyInput {
   legal_name: string;
   ruc: string;

@@ -1,15 +1,16 @@
 import Link from "next/link";
 
-import { CertificateCommercialActions } from "@/features/registrations/components/CertificateCommercialActions";
 import type { CertificatePaymentsProps } from "@/features/participation/types/payment.types";
-import { paymentFilterParams, paymentWorkspaceUrl } from "@/features/participation/utils/payment-filters";
 import { getActivityPaymentsRoute } from "@/features/participation/utils/participation-routes";
+import { paymentFilterParams, paymentWorkspaceUrl } from "@/features/participation/utils/payment-filters";
+import { CertificateCommercialActions } from "@/features/registrations/components/CertificateCommercialActions";
 
 export function CertificatePayments({ data, activityId, activityStatus, filters, returnTo }: CertificatePaymentsProps) {
   const params = paymentFilterParams(filters);
   const pageUrl = (page: number) => `${getActivityPaymentsRoute(activityId)}?${new URLSearchParams({ ...params, pagina_certificados: String(page) })}#certificados`;
   return <section className="space-y-4 scroll-mt-6" id="certificados">
     <div><h2 className="text-2xl font-bold text-cci-950">Certificados opcionales</h2><p className="text-sm text-slate-600">{data.total} solicitudes con estos filtros. Su cobro es independiente de la participación.</p></div>
+    {data.outsideResultId ? <p className="rounded-xl bg-cci-50 p-3 text-sm">El certificado abierto está fuera de esta página de resultados. Lo mantenemos visible para conservar tu revisión y lo escrito.</p> : null}
     {!data.items.length ? <p className="rounded-2xl border border-dashed border-cci-200 p-6">No hay solicitudes de certificado con estos filtros.</p> : null}
     {data.items.map((item) => <article className="space-y-3 rounded-2xl border border-cci-100 bg-white p-5" id={`certificado-${item.id}`} key={item.id}>
       <div className="flex flex-wrap justify-between gap-3"><div><h3 className="font-bold text-cci-950">{item.name}</h3><p className="text-sm text-slate-600">{item.code} · {item.phone}</p><p className="text-sm">Precio del certificado: S/ {(item.price ?? 0).toFixed(2)}</p></div>

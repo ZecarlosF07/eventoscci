@@ -10,6 +10,7 @@ test("la vista administrativa excluye archivados de forma predeterminada", () =>
     status: undefined,
     type: "event",
     view: "active",
+    visibility: undefined,
   });
 });
 

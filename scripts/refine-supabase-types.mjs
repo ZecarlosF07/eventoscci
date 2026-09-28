@@ -6,7 +6,7 @@ const certificateMode = '"none" | "included" | "optional_paid"';
 
 for (const [field, expected] of [
   ["certificate_mode", 1],
-  ["certificate_mode_snapshot", 2],
+  ["certificate_mode_snapshot", 4],
 ]) {
   const original = `${field}: string`;
   const count = source.split(original).length - 1;

@@ -57,8 +57,8 @@ export async function getParticipationOverview(
 
   if (filters.activityType) query = query.eq("type", filters.activityType);
   if (filters.period === "upcoming") query = query.eq("is_operational_upcoming", true);
-  if (filters.period === "past") query = query.eq("is_operational_upcoming", false).not("operational_ends_at", "is", null);
-  if (filters.period === "payments") query = query.or("payment_pending_requests.gt.0,certificate_pending_count.gt.0");
+  if (filters.period === "past") query = query.lte("operational_ends_at", new Date().toISOString());
+  if (filters.paymentsOnly || filters.period === "payments") query = query.or("payment_pending_requests.gt.0,certificate_pending_count.gt.0");
   const search = filters.query ? escapePostgrestSearch(filters.query) : "";
   if (search) query = query.ilike("title", `%${search}%`);
 

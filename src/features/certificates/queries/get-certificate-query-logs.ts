@@ -1,5 +1,6 @@
 import "server-only";
 
+import { filterDateError } from "@/features/admin-filters/utils/filter-url";
 import { CERTIFICATE_QUERY_LOG_PAGE_SIZE } from "@/features/certificates/constants/certificate.constants";
 import { certificateQueryAuditRowSchema } from "@/features/certificates/schemas/certificate-query-log.schema";
 import type { CertificateQueryLogFilters, CertificateQueryLogItem, CertificateQueryLogPage } from "@/features/certificates/types/certificate.types";
@@ -10,6 +11,8 @@ function ipText(value: unknown): string | null {
 }
 
 export async function getCertificateQueryLogs(filters: CertificateQueryLogFilters): Promise<CertificateQueryLogPage> {
+  const dateError = filterDateError({ desde: filters.dateFrom ?? "", hasta: filters.dateTo ?? "" });
+  if (dateError) throw new Error(dateError);
   const client = await createServerSupabaseClient();
   const from = (filters.page - 1) * CERTIFICATE_QUERY_LOG_PAGE_SIZE;
   let query = client.from("audit_logs")

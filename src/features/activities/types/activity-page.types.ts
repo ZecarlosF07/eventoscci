@@ -70,6 +70,7 @@ export function parseAdminFilters(
       ? (status as ActivityStatus)
       : undefined,
     type,
+    visibility: firstValue(params.visibilidad) === "listed" ? "listed" : firstValue(params.visibilidad) === "unlisted" ? "unlisted" : undefined,
     view,
   };
 }

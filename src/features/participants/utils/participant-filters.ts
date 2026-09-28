@@ -11,6 +11,7 @@ export async function parseParticipantFilters(
   const page = Number(firstValue(params.pagina));
   return {
     page: Number.isInteger(page) && page > 0 ? page : 1,
+    profile: firstValue(params.perfil) === "student" ? "student" : firstValue(params.perfil) === "professional" ? "professional" : undefined,
     query: firstValue(params.q)?.trim() || undefined,
   };
 }

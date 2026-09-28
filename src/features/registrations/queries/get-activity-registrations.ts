@@ -1,6 +1,7 @@
 import "server-only";
 
 import { REGISTRATION_PAGE_SIZE } from "@/features/registrations/constants/registration.constants";
+import { applyRegistrationFilters } from "@/features/registrations/queries/apply-registration-filters";
 import { registrationAdminItemSchema } from "@/features/registrations/schemas/registration.schema";
 import type {
   RegistrationActivityOption,
@@ -9,7 +10,6 @@ import type {
   RegistrationAdminPage,
 } from "@/features/registrations/types/registration.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { escapePostgrestSearch } from "@/utils/postgrest-search";
 
 const REGISTRATION_ADMIN_SELECT = `
   id,
@@ -109,7 +109,7 @@ export async function getActivityRegistrations(
   const from = (filters.page - 1) * REGISTRATION_PAGE_SIZE;
   const to = from + REGISTRATION_PAGE_SIZE - 1;
   let query = client
-    .from("registrations")
+    .from("admin_registration_records")
     .select(REGISTRATION_ADMIN_SELECT, { count: "exact" })
     .is("deleted_at", null)
     .is("attendance.deleted_at", null)
@@ -121,52 +121,7 @@ export async function getActivityRegistrations(
       { ascending: filters.certificateRequest === "payment_pending" },
     );
 
-  if (filters.status) query = query.eq("status", filters.status);
-  if (excludeGroupRegistrations) query = query.is("member_group_request_id", null);
-  else if (filters.statusScope === "active") query = query.in("status", ["pending", "confirmed"]);
-  if (filters.activityId) query = query.eq("activity_id", filters.activityId);
-  if (filters.activityType) query = query.eq("activity.type", filters.activityType);
-  if (filters.registrationType) query = query.eq("registration_type", filters.registrationType);
-  if (filters.attendanceStatus) query = query.eq("attendance.status", filters.attendanceStatus);
-  if (filters.certificateRequest === "not_requested") {
-    query = query
-      .eq("activity.certificate_mode", "optional_paid")
-      .eq("certificate_mode_snapshot", "optional_paid")
-      .is("certificate_requested_at", null);
-  } else if (filters.certificateRequest === "payment_pending") {
-    query = query
-      .eq("activity.certificate_mode", "optional_paid")
-      .eq("certificate_mode_snapshot", "optional_paid")
-      .not("certificate_requested_at", "is", null)
-      .is("certificate_payment_verified_at", null);
-  } else if (filters.certificateRequest === "payment_verified") {
-    query = query
-      .eq("activity.certificate_mode", "optional_paid")
-      .eq("certificate_mode_snapshot", "optional_paid")
-      .not("certificate_payment_verified_at", "is", null);
-  } else if (filters.certificateRequest === "ready_to_issue") {
-    query = query
-      .eq("status", "confirmed")
-      .eq("attendance.status", "attended")
-      .in("activity.certificate_mode", ["included", "optional_paid"])
-      .or([
-        "certificate_mode_snapshot.eq.included",
-        "and(certificate_mode_snapshot.eq.optional_paid,certificate_requested_at.not.is.null,certificate_payment_verified_at.not.is.null)",
-      ].join(","))
-      .is("certificate", null);
-  }
-  const search = filters.query ? escapePostgrestSearch(filters.query) : "";
-  if (search) {
-    const pattern = `%${search}%`;
-    if (search.toUpperCase().startsWith("CCI-")) query = query.ilike("registration_code", pattern);
-    else query = query.or([
-      `document_number.ilike.${pattern}`,
-      `first_names.ilike.${pattern}`,
-      `last_names.ilike.${pattern}`,
-      `email.ilike.${pattern}`,
-      `phone.ilike.${pattern}`,
-    ].join(","), { referencedTable: "person" });
-  }
+  query = applyRegistrationFilters(query, filters, excludeGroupRegistrations);
 
   const { count, data, error } = await query.range(from, to);
   if (error) {
@@ -200,7 +155,7 @@ export async function getRegistrationsForExport(
 ): Promise<RegistrationAdminItem[]> {
   const client = await createServerSupabaseClient();
   let query = client
-    .from("registrations")
+    .from("admin_registration_records")
     .select(REGISTRATION_ADMIN_SELECT)
     .is("deleted_at", null)
     .is("attendance.deleted_at", null)
@@ -210,51 +165,7 @@ export async function getRegistrationsForExport(
     .order("created_at", { ascending: false })
     .limit(5000);
 
-  if (filters.status) query = query.eq("status", filters.status);
-  else if (filters.statusScope === "active") query = query.in("status", ["pending", "confirmed"]);
-  if (filters.activityId) query = query.eq("activity_id", filters.activityId);
-  if (filters.activityType) query = query.eq("activity.type", filters.activityType);
-  if (filters.registrationType) query = query.eq("registration_type", filters.registrationType);
-  if (filters.attendanceStatus) query = query.eq("attendance.status", filters.attendanceStatus);
-  if (filters.certificateRequest === "not_requested") {
-    query = query
-      .eq("activity.certificate_mode", "optional_paid")
-      .eq("certificate_mode_snapshot", "optional_paid")
-      .is("certificate_requested_at", null);
-  } else if (filters.certificateRequest === "payment_pending") {
-    query = query
-      .eq("activity.certificate_mode", "optional_paid")
-      .eq("certificate_mode_snapshot", "optional_paid")
-      .not("certificate_requested_at", "is", null)
-      .is("certificate_payment_verified_at", null);
-  } else if (filters.certificateRequest === "payment_verified") {
-    query = query
-      .eq("activity.certificate_mode", "optional_paid")
-      .eq("certificate_mode_snapshot", "optional_paid")
-      .not("certificate_payment_verified_at", "is", null);
-  } else if (filters.certificateRequest === "ready_to_issue") {
-    query = query
-      .eq("status", "confirmed")
-      .eq("attendance.status", "attended")
-      .in("activity.certificate_mode", ["included", "optional_paid"])
-      .or([
-        "certificate_mode_snapshot.eq.included",
-        "and(certificate_mode_snapshot.eq.optional_paid,certificate_requested_at.not.is.null,certificate_payment_verified_at.not.is.null)",
-      ].join(","))
-      .is("certificate", null);
-  }
-  const search = filters.query ? escapePostgrestSearch(filters.query) : "";
-  if (search) {
-    const pattern = `%${search}%`;
-    if (search.toUpperCase().startsWith("CCI-")) query = query.ilike("registration_code", pattern);
-    else query = query.or([
-      `document_number.ilike.${pattern}`,
-      `first_names.ilike.${pattern}`,
-      `last_names.ilike.${pattern}`,
-      `email.ilike.${pattern}`,
-      `phone.ilike.${pattern}`,
-    ].join(","), { referencedTable: "person" });
-  }
+  query = applyRegistrationFilters(query, filters);
   const { data, error } = await query;
   if (error) throw new Error("No fue posible preparar la exportación.", { cause: error });
   return attachCertificateActorNames(client, parseAdminItems(data ?? []));
@@ -271,7 +182,7 @@ export async function getRegistrationByCode(
 ): Promise<RegistrationAdminItem | null> {
   const client = await createServerSupabaseClient();
   const { data, error } = await client
-    .from("registrations")
+    .from("admin_registration_records")
     .select(REGISTRATION_ADMIN_SELECT)
     .eq("registration_code", registrationCode.toUpperCase().trim())
     .is("deleted_at", null)

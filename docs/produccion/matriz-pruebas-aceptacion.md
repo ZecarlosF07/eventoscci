@@ -27,6 +27,7 @@ No se libera una versión con defectos críticos o altos abiertos. Los resultado
 | Eventos exclusivos y padrón | `025_member_group_events_test.sql`, `026_member_roster_version_test.sql` | Inscripción grupal, pagos y reemplazo del padrón |
 | Pases gratuitos por empresa | `027_member_company_complimentary_passes_test.sql` | Cuota por RUC, grupo mixto, importe cero, reintentos, cancelación, transferencia y auditoría |
 | Pagos por actividad | `028_activity_payments_workspace_test.sql`, `tests/unit/payment-workspace*.test.ts` | Conteos grupales/individuales, saldos separados, idempotencia, fechas operativas, historial, permisos, paginación y rutas compatibles |
+| Filtros administrativos | `029_admin_dynamic_filters_test.sql`, `tests/unit/admin-dynamic-filters.test.ts` | Búsqueda literal y por nombre completo, perfiles, elegibilidad antes de paginar, conteos, permisos, URL, selección conservada y CSV seguro |
 | SEO y rendimiento público | `tests/unit/seo.test.ts` | Metadata, JSON-LD, sesiones múltiples, slugs, búsquedas seguras y analítica sin PII |
 
 Los archivos usan transacciones con `rollback`; no conservan fixtures en la base vinculada.
@@ -163,3 +164,27 @@ Las tablas administrativas pueden usar desplazamiento horizontal en móvil; los 
 | 2026-09-11 | Por versionar | Supabase vinculado | Migración 202609110002; pruebas SQL 020 y 023, 78 aserciones | APROBADO | Migración aplicada; pruebas transaccionales finalizadas con `rollback` |
 | 2026-09-24 | Por versionar | Supabase vinculado | Hito 15: migraciones 202609240001–005, SQL 025–026 (43 aserciones) y suite SQL previa 001–024 | APROBADO | `supabase db push --linked`; pruebas transaccionales con `rollback`, sin seeds |
 | 2026-09-24 | Por versionar | Local/Next 16.2.10 | Hito 15: 105 unitarias, lint, TypeScript, build y smoke HTTP (`/api/health`, `/eventos`, protección de `/admin/asociados`) | APROBADO | Pendientes: validación visual y accesible, recorrido administrativo real y workflow activo de n8n |
+
+## Búsquedas automáticas administrativas — 28/09/2026
+
+Implementación y alcance: [Búsquedas administrativas](../integraciones/busquedas-administrativas.md). No se modifica el header, el buscador público ni las reglas comerciales.
+
+| Caso | Verificación | Estado | Evidencia |
+|---|---|---|---|
+| BA-01 | Utilidades de debounce de 350 ms, URL, páginas independientes, parsers y búsqueda literal | APROBADO | Suite de 150 unitarias; la prueba de debounce comprueba su configuración, no sustituye la medición temporal en navegador |
+| BA-02 | RPC filtrada: perfiles/datos contextuales, permisos, sin comodines, Listos/Emitidos/Revocados, pago opcional, conteo de segunda página y límites | APROBADO | SQL 029, 28 aserciones, `finish(true)` y rollback en Supabase vinculado |
+| BA-03 | Regresión de participación, pago de certificado y perfiles | APROBADO | SQL 028 (51 aserciones), 023 (34) y 024 (22); las dos últimas repetidas con finalización estricta en copias temporales; rollback |
+| BA-04 | Migraciones revisadas/aplicadas sin seeds; tipos regenerados | APROBADO | 202609280004 y 202609280005; dry-run final `upToDate: true`, sin migraciones ni seeds pendientes |
+| BA-05 | Lint, typecheck y build | APROBADO | Yarn, Next 16.2.10; build con acceso a las fuentes existentes Google Fonts |
+| BA-06 | Texto + selector sin perder valores, Enter, limpieza y mensaje actualizado | APROBADO | Sesión administrativa local: Participación, «Prueba» + periodo Todas, una coincidencia, limpieza a Próximas y en curso; foco/texto conservados |
+| BA-07 | Listado real de inscripciones sobre vista nueva y filtros iniciales de asistencia | APROBADO | Sesión local autenticada; tres inscripciones y una confirmada en Asistencia; sin mutaciones |
+| BA-08 | Seleccionado oculto conserva selección y nota | APROBADO | Selección de una persona en Asistencia, nota temporal y búsqueda sin resultados: 1 seleccionado, 0 visibles, 1 fuera de la vista; nota conservada. No se guardó asistencia |
+| BA-09 | Confirmación de operación masiva con seleccionados ocultos | BLOQUEADO | El navegador de automatización quedó bloqueado al abrir el diálogo. Se pidió pulsar Cancelar; no se confirmó ni guardó la operación |
+| BA-10 | Escritura rápida, medición exacta del debounce, consultas lentas, errores y respuestas fuera de orden | NO EJECUTADO | Pendiente de prueba integral de red; no basta la cobertura de utilidades ni el manejo de navegación de Next |
+| BA-11 | Atrás/adelante y enlaces guardados de todos los módulos | NO EJECUTADO | Parsers y compatibilidad cubiertos en unitarias; recorrido integral pendiente |
+| BA-12 | Nuevos filtros y CSV real fuera de primera página en todos los módulos | NO EJECUTADO | Criterios compartidos y seguridad CSV comprobados en unitarias; falta revisión integral con volumen real |
+| BA-13 | Selección/páginas de certificados, emisión parcial, límite, permisos y elegibilidad cambiada durante una operación | NO EJECUTADO | Revalidación implementada; no se emitieron certificados ni se enviaron correos reales para esta prueba |
+| BA-14 | Pagos abiertos conservan borradores al filtrar, ambas páginas y certificados separados | NO EJECUTADO | URL y separación cubiertas en unitarias; comprobación integral pendiente |
+| BA-15 | Vistas 390×844, 768×1024 y 1440×900; lectores de pantalla y teclado completo | NO EJECUTADO | Recorrido parcial por teclado realizado, pero no se aprueba el conjunto de tamaños/accesibilidad sin completarlo |
+
+No hay despliegue del frontend productivo asociado a este registro. Las migraciones sí están aplicadas en la base vinculada. Las pruebas SQL no dejan fixtures, pagos, notificaciones ni semillas.

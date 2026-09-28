@@ -1,29 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { Text } from "@/components/atoms/Text";
+import { useLocalFilters } from "@/features/admin-filters/hooks/use-local-filters";
 import type { CatalogAdminListProps } from "@/features/catalogs/components/CatalogAdminList/types/catalog-admin-list.types";
 import { CATALOG_ROUTE_SEGMENTS } from "@/features/catalogs/constants/catalog.constants";
 import { deleteUnusedCatalogAction, setCatalogActiveAction } from "@/features/catalogs/mutations/catalog.actions";
 
 export function CatalogAdminList({ items, kind }: CatalogAdminListProps) {
   const basePath = `/admin/catalogos/${CATALOG_ROUTE_SEGMENTS[kind]}`;
-  const [query, setQuery] = useState("");
+  const { params, change } = useLocalFilters();
+  const query = params.get("q") ?? "";
+  const rawStatus = params.get("estado");
+  const status = rawStatus === "active" || rawStatus === "inactive" ? rawStatus : "all";
   const visibleItems = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("es");
-    if (!normalized) return items;
-    return items.filter((item) => [item.label, item.description, item.meta].filter(Boolean).join(" ").toLocaleLowerCase("es").includes(normalized));
-  }, [items, query]);
+    if (!normalized) return items.filter((item) => status === "all" || item.isActive === (status === "active"));
+    return items.filter((item) => (status === "all" || item.isActive === (status === "active")) && [item.label, item.description, item.meta].filter(Boolean).join(" ").toLocaleLowerCase("es").includes(normalized));
+  }, [items, query, status]);
   if (!items.length) return <div className="rounded-3xl border border-dashed border-cci-200 bg-white p-10 text-center"><Text>Aún no hay registros en este catálogo.</Text></div>;
 
   return (
     <div className="space-y-4">
-      <div className="max-w-md"><label className="sr-only" htmlFor="catalog-search">Buscar en el catálogo</label><Input id="catalog-search" onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por nombre o información" type="search" value={query} /></div>
+      <div className="max-w-md"><label className="sr-only" htmlFor="catalog-search">Buscar en el catálogo</label><Input id="catalog-search" onChange={(event) => change({ q: event.target.value })} placeholder="Buscar por nombre o información" type="search" value={query} /></div>
+      <div className="flex flex-wrap items-center gap-3"><label className="text-sm font-semibold">Estado <select className="min-h-11 rounded-xl border border-cci-200 px-3" onChange={(event) => change({ estado: event.target.value })} value={status}><option value="all">Todos</option><option value="active">Activos</option><option value="inactive">Inactivos</option></select></label><button className="min-h-11 rounded-xl border px-4 text-sm" onClick={() => { change({ q: "", estado: "all" }); }} type="button">Limpiar filtros</button><p className="text-sm text-slate-600" role="status">{visibleItems.length} resultados · actualización automática</p></div>
     <div className="overflow-hidden rounded-3xl border border-cci-100 bg-white shadow-sm">
       <div className="hidden grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_100px_140px] gap-4 border-b border-cci-100 bg-cci-50 px-5 py-3 text-xs font-bold uppercase tracking-wider text-cci-700 md:grid">
         <span>Registro</span><span>Información</span><span>Usos</span><span className="text-right">Acciones</span>

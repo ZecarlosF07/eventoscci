@@ -1,13 +1,13 @@
 import Link from "next/link";
 
 import { Badge } from "@/components/atoms/Badge";
-import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
 import { SubmitButton } from "@/components/atoms/SubmitButton";
 import { Text } from "@/components/atoms/Text";
 import { FormField } from "@/components/molecules/FormField";
 import { ROUTES } from "@/constants/routes";
+import { AutoFilterForm } from "@/features/admin-filters/components/AutoFilterForm";
 import type { CourseStudentsTableProps } from "@/features/courses/components/CourseStudentsTable/types/course-students-table.types";
 import { COURSE_ENROLLMENT_STATUS_LABELS } from "@/features/courses/constants/course.constants";
 import {
@@ -25,12 +25,11 @@ export function CourseStudentsTable({
 }: CourseStudentsTableProps) {
   return (
     <div className="space-y-7">
-      <form className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_auto]">
+      <AutoFilterForm className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_auto]" defaults={{}}>
         <FormField hint="Documento, nombre o correo." label="Buscar persona" name="q">
           <Input defaultValue={query} id="q" name="q" />
         </FormField>
-        <div className="flex items-end"><Button className="w-full lg:w-auto" type="submit">Buscar</Button></div>
-      </form>
+      </AutoFilterForm>
 
       {people.length ? (
         <div className="space-y-3">

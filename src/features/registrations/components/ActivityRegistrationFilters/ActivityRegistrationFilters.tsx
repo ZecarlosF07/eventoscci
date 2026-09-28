@@ -1,22 +1,20 @@
-import Link from "next/link";
-
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
-import type { RegistrationAdminFilters } from "@/features/registrations/types/registration.types";
-import { getActivityParticipationRoute } from "@/features/participation/utils/participation-routes";
+import { AutoFilterForm } from "@/features/admin-filters/components/AutoFilterForm";
+import { MoreFilters } from "@/features/admin-filters/components/MoreFilters";
+import type { RegistrationAdminFilters, ActivityRegistrationFiltersProps } from "@/features/registrations/types/registration.types";
 
 function selectedStatus(filters: RegistrationAdminFilters): string {
   return filters.status ?? filters.statusScope ?? "active";
 }
 
-export function ActivityRegistrationFilters({ filters }: { filters: RegistrationAdminFilters }) {
-  const pathname = getActivityParticipationRoute(filters.activityId ?? "");
+export function ActivityRegistrationFilters({ filters, total }: ActivityRegistrationFiltersProps) {
   return (
-    <form className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_170px_170px_210px_auto_auto]" method="get">
-      <Input defaultValue={filters.query} name="q" placeholder="Nombre, documento, correo o celular" type="search" />
+    <AutoFilterForm total={total} className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_220px_200px]" defaults={{ estado: "active" }}>
+      <Input defaultValue={filters.query} name="q" aria-label="Buscar inscripción" placeholder="Nombre, documento, correo, código o RUC" type="search" />
       <Select aria-label="Estado de inscripción" defaultValue={selectedStatus(filters)} name="estado">
         <option value="active">Activas</option>
-        <option value="pending">Por verificar</option>
+        <option value="pending">Pendientes de confirmación</option>
         <option value="confirmed">Confirmadas</option>
         <option value="cancelled">Canceladas</option>
         <option value="all">Historial completo</option>
@@ -26,15 +24,19 @@ export function ActivityRegistrationFilters({ filters }: { filters: Registration
         <option value="general">Público general</option>
         <option value="member">Asociado CCI</option>
       </Select>
+      <MoreFilters names={["certificado", "perfil"]}>
+      <label className="text-sm font-semibold">Perfil<Select defaultValue={filters.profile ?? ""} name="perfil"><option value="">Todos</option><option value="professional">Profesional</option><option value="student">Estudiante</option></Select></label>
+      <label className="text-sm font-semibold">Certificado
       <Select aria-label="Estado comercial del certificado" defaultValue={filters.certificateRequest ?? ""} name="certificado">
         <option value="">Todas</option>
         <option value="not_requested">Sin solicitar</option>
         <option value="payment_pending">Pago pendiente</option>
         <option value="payment_verified">Pago verificado</option>
         <option value="ready_to_issue">Listos para emitir</option>
-      </Select>
-      <button className="min-h-11 rounded-xl bg-cci-950 px-5 text-sm font-bold text-white hover:bg-cci-800" type="submit">Aplicar</button>
-      <Link className="flex min-h-11 items-center justify-center rounded-xl border border-slate-300 px-4 text-sm font-semibold hover:bg-cci-50" href={pathname}>Limpiar</Link>
-    </form>
+      </Select></label>
+      </MoreFilters>
+      {filters.profile === "student" && filters.registrationType === "member" ? <p className="col-span-full text-sm text-amber-800" role="status">El perfil estudiante utiliza público general. Cambia el tipo de inscripción o el perfil para consultar resultados.</p> : null}
+      {filters.status && filters.status !== "confirmed" && filters.certificateRequest === "ready_to_issue" ? <p className="col-span-full text-sm text-amber-800" role="status">Para estar listo para emitir, el participante debe tener inscripción confirmada y asistencia registrada. Cambia el estado o el filtro de certificado.</p> : null}
+    </AutoFilterForm>
   );
 }

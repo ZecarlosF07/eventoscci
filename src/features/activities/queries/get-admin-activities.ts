@@ -6,6 +6,7 @@ import type {
   ActivityAdminPage,
 } from "@/features/activities/types/activity.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { escapePostgrestSearch } from "@/utils/postgrest-search";
 
 const ADMIN_ACTIVITY_SELECT = `
   id, banner_path, capacity, general_price, is_free, is_listed, member_price, member_free_passes_per_company, members_only,
@@ -43,7 +44,8 @@ export async function getAdminActivities(
     ? query.eq("status", "archived")
     : query.neq("status", "archived");
 
-  if (filters.query) query = query.ilike("title", `%${filters.query}%`);
+  if (filters.query) query = query.ilike("title", `%${escapePostgrestSearch(filters.query)}%`);
+  if (filters.visibility) query = query.eq("is_listed", filters.visibility === "listed");
   if (filters.status) query = query.eq("status", filters.status);
 
   const [{ count, data, error }, archivedResult] = await Promise.all([

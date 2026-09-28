@@ -5,6 +5,8 @@ import { Pagination } from "@/components/molecules/Pagination";
 import { SectionHeading } from "@/components/molecules/SectionHeading";
 import type { ActivityRegistrationsTemplateProps } from "@/components/templates/ActivityRegistrationsTemplate/types/activity-registrations-template.types";
 import { ROUTES } from "@/constants/routes";
+import { FilterResults } from "@/features/admin-filters/components/FilterWorkspace";
+import { FilterExportLink } from "@/features/admin-filters/components/FilterWorkspace";
 import { ActivityParticipationMetrics } from "@/features/participation/components/ActivityParticipationMetrics/ActivityParticipationMetrics";
 import { ParticipationActivityTabs } from "@/features/participation/components/ParticipationActivityTabs/ParticipationActivityTabs";
 import { getActivityParticipationRoute } from "@/features/participation/utils/participation-routes";
@@ -16,6 +18,7 @@ export function ActivityRegistrationsTemplate({ activity, data, filters, result 
   const pathname = getActivityParticipationRoute(activity.activityId);
   const statusValue = filters.status ?? filters.statusScope;
   const values = {
+    perfil: filters.profile,
     certificado: filters.certificateRequest,
     estado: statusValue,
     q: filters.query,
@@ -31,14 +34,14 @@ export function ActivityRegistrationsTemplate({ activity, data, filters, result 
       <Link className="text-sm font-semibold text-slate-700 hover:underline" href={ROUTES.adminRegistrations}>← Volver a actividades</Link>
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <SectionHeading description={`${data.total} inscripciones en la vista actual.`} eyebrow={activity.type === "event" ? "Evento" : "Capacitación"} title={activity.title} />
-        <Link className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold hover:bg-cci-50" href={`${ROUTES.adminRegistrations}/exportar?${exportValues}`}>Exportar CSV</Link>
+        <FilterExportLink className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold hover:bg-cci-50" href={`${ROUTES.adminRegistrations}/exportar?${exportValues}`}>Exportar CSV</FilterExportLink>
       </div>
       <ParticipationActivityTabs activityId={activity.activityId} current="registrations" />
       <ActivityParticipationMetrics activity={activity} />
       <RegistrationStatusShortcuts activity={activity} filters={filters} />
       <OperationNotice result={result} />
-      <ActivityRegistrationFilters filters={filters} />
-      <RegistrationsTable registrations={data.registrations} returnTo={returnTo} />
+      <ActivityRegistrationFilters filters={filters} total={data.total} />
+      <FilterResults><RegistrationsTable registrations={data.registrations} returnTo={returnTo} /></FilterResults>
       <Pagination page={data.page} pageCount={data.pageCount} pathname={pathname} searchParams={values} />
     </div>
   );

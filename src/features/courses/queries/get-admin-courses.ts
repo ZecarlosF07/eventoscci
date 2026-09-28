@@ -4,6 +4,7 @@ import { COURSE_PAGE_SIZE } from "@/features/courses/constants/course.constants"
 import { mapCourseListItem } from "@/features/courses/services/map-course-data";
 import type { CourseAdminFilters, CourseAdminPage } from "@/features/courses/types/course.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { escapePostgrestSearch } from "@/utils/postgrest-search";
 
 const COURSE_LIST_SELECT = `
   id, title, slug, short_description, duration_text, academic_hours, banner_path,
@@ -25,7 +26,7 @@ export async function getAdminCourses(filters: CourseAdminFilters): Promise<Cour
     .order("updated_at", { ascending: false })
     .range(from, from + COURSE_PAGE_SIZE - 1);
 
-  if (filters.query) query = query.ilike("title", `%${filters.query}%`);
+  if (filters.query) query = query.ilike("title", `%${escapePostgrestSearch(filters.query)}%`);
   if (filters.status) query = query.eq("status", filters.status);
 
   const { count, data, error } = await query;

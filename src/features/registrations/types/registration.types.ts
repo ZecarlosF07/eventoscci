@@ -1,8 +1,8 @@
+import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 import type {
   ActivityModality,
   ActivityType,
 } from "@/features/activities/types/activity.types";
-import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 import type { NotificationEventType } from "@/features/notifications/types/notification.types";
 import type { Enums, Tables } from "@/lib/supabase/database.types";
 
@@ -186,7 +186,10 @@ export interface RegistrationAdminItem
   >;
 }
 
+export interface ActivityRegistrationFiltersProps { filters: RegistrationAdminFilters; total?: number }
+
 export interface RegistrationAdminFilters {
+  profile?: ParticipantProfile;
   activityId?: string;
   activityType?: ActivityType;
   attendanceStatus?: Enums<"attendance_status">;
@@ -225,6 +228,7 @@ export interface AdminRegistrationsPageProps {
     certificado?: string | string[];
     estado?: string | string[];
     pagina?: string | string[];
+    perfil?: string | string[];
     q?: string | string[];
     resultado?: string | string[];
     tipo?: string | string[];
@@ -244,6 +248,7 @@ export interface ActivityRegistrationsPageProps {
     certificado?: string | string[];
     estado?: string | string[];
     pagina?: string | string[];
+    perfil?: string | string[];
     q?: string | string[];
     resultado?: string | string[];
     tipo?: string | string[];

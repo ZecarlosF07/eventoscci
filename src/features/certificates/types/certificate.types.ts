@@ -1,7 +1,7 @@
+import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 import type { ActivityListItem, ActivityType } from "@/features/activities/types/activity.types";
 import type { AttendanceStatus } from "@/features/attendance/types/attendance.types";
 import type { RegistrationStatus } from "@/features/registrations/types/registration.types";
-import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 import type { Enums, Json, Tables } from "@/lib/supabase/database.types";
 
 export type CertificateStatus = Enums<"certificate_status">;
@@ -70,6 +70,7 @@ export interface CertificateCandidate {
 }
 
 export interface CertificateCandidateFilters {
+  emissionState?: "all" | "ready" | "issued" | "revoked";
   page: number;
   query?: string;
 }
@@ -218,6 +219,8 @@ export interface CertificateGenerationData extends Pick<CertificateRow,
 }
 
 export interface CertificateIssueState {
+  processedRegistrationIds?: string[];
+  failedRegistrationIds?: string[];
   errorCount?: number;
   issuedCount?: number;
   message?: string;

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { applyPaymentFilters } from "@/features/participation/queries/apply-payment-filters";
 import type { CertificatePaymentRequest, PaymentFilters, PaymentPage, PaymentRequest } from "@/features/participation/types/payment.types";
 import { PAYMENTS_PAGE_SIZE } from "@/features/participation/utils/payment-filters";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -9,10 +10,7 @@ export async function getActivityPayments(activityId: string, filters: PaymentFi
   const client = await createServerSupabaseClient();
   let query = client.from("participation_payment_requests").select("*", { count: "exact" })
     .eq("activity_id", activityId).order("created_at").order("id");
-  if (filters.state === "pending") query = query.gt("pending_count", 0);
-  if (filters.state === "complete") query = query.eq("status", "complete");
-  if (filters.kind !== "all") query = query.eq("kind", filters.kind);
-  if (filters.query) query = query.ilike("search_text", `%${escapePostgrestSearch(filters.query)}%`);
+  query = applyPaymentFilters(query, filters);
   const from = (filters.page - 1) * PAYMENTS_PAGE_SIZE;
   const { data, count, error } = await query.range(from, from + PAYMENTS_PAGE_SIZE - 1);
   if (error) throw new Error("No fue posible consultar los pagos de participación.", { cause: error });
@@ -33,14 +31,15 @@ export async function getCertificatePayments(activityId: string, filters: Paymen
   const pageCount = Math.max(1, Math.ceil((count ?? 0) / PAYMENTS_PAGE_SIZE));
   if (filters.certificatePage > pageCount) return getCertificatePayments(activityId, { ...filters, certificatePage: pageCount });
   let items = data ?? [];
+  let outsideResultId: string | undefined;
   if (filters.certificateId && !items.some((item) => item.id === filters.certificateId)) {
     const selected = await client.from("certificate_payment_requests").select("*")
       .eq("activity_id", activityId).eq("id", filters.certificateId).maybeSingle();
     if (selected.error) throw new Error("No fue posible abrir el pago del certificado.", { cause: selected.error });
-    if (selected.data) items = [selected.data, ...items];
+    if (selected.data) { items = [selected.data, ...items]; outsideResultId = filters.certificateId; }
   }
   return { items, total: count ?? 0, page: filters.certificatePage,
-    pageCount };
+    pageCount, outsideResultId };
 }
 
 export async function getActivityPaymentTotals(activityId: string) {

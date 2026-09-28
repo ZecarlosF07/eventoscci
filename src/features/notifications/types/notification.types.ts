@@ -46,8 +46,11 @@ export interface NotificationPage {
   total: number;
 }
 
+export interface NotificationFiltersProps { filters: NotificationFilters; total: number }
+export interface NotificationFilters { page: number; query?: string; status?: NotificationStatus; eventType?: string }
+
 export interface NotificationsAdminPageProps {
-  searchParams: Promise<{ pagina?: string | string[] }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export interface ScheduledNotificationBatchResult {

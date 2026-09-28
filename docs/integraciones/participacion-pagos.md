@@ -11,6 +11,8 @@ Elegir una actividad en Participación y utilizar **Inscripciones · Pagos · As
 
 Cada tarjeta diferencia **solicitudes con pago pendiente** de **plazas pendientes**. Un grupo de cinco personas impagas son una solicitud y cinco plazas. Los certificados no se suman a esos números; se presentan por separado. «Todas con pagos pendientes» localiza también actividades terminadas con saldo de participación o de certificados.
 
+La mejora de buscadores del 28/09/2026 separa el periodo del checkbox «Solo con pagos pendientes»: pueden combinarse. Los enlaces antiguos `periodo=payments` siguen siendo compatibles. La pestaña Pagos exporta solicitudes de participación filtradas, individuales y grupales, sin mezclar cobros de certificados. El CSV grupal original conserva su ruta por compatibilidad. Consultar [Búsquedas administrativas](busquedas-administrativas.md) para filtros, selección y evidencia actualizada.
+
 ## Fechas operativas
 
 «Próximas y en curso» usa `operational_ends_at`: máximo del fin de las sesiones activas. Sin hora de fin, se usa la medianoche siguiente al día de esa sesión en **America/Lima**, excluida del periodo. Con fin exacto en el instante actual la actividad deja de ser próxima/en curso. Actividades sin fechas solo aparecen en Todas o en el filtro de pagos si tienen deuda; finalizadas y canceladas no son próximas/en curso.

@@ -49,7 +49,9 @@ test("certificate links point only to payments and open history regardless of st
   assert.equal(url.searchParams.get("estado_certificado"), "all");
 });
 test("overdue payments filter is independent of upcoming dates", async () => {
-  assert.equal((await parseParticipationFilters(Promise.resolve({ periodo: "payments" }))).period, "payments");
+  const filters = await parseParticipationFilters(Promise.resolve({ periodo: "payments" }));
+  assert.equal(filters.period, "all");
+  assert.equal(filters.paymentsOnly, true);
 });
 test("age is whole elapsed days and is never negative", () => {
   const now = new Date("2026-09-28T15:00:00Z").getTime();

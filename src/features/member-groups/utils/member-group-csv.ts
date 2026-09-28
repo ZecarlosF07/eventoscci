@@ -1,4 +1,5 @@
 import type { MemberGroupAdminListItem } from "@/features/member-groups/types/member-group.types";
+import { csvCell } from "@/utils/csv-cell";
 
 export interface MemberGroupExportSeat {
   requestId: string;
@@ -10,12 +11,6 @@ export interface MemberGroupExportSeat {
   status: string;
   price: number;
   isComplimentary: boolean;
-}
-
-function csvCell(value: string | number | null): string {
-  let text = value === null ? "" : String(value);
-  if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
-  return `"${text.replace(/"/g, '""')}"`;
 }
 
 export function memberGroupsToCsv(groups: MemberGroupAdminListItem[], seats: MemberGroupExportSeat[]): string {

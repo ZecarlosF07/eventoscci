@@ -31,8 +31,10 @@ export function parseCertificateActivityFilters(
 export function parseCertificateCandidateFilters(
   params: Record<string, string | string[] | undefined>,
 ): CertificateCandidateFilters {
+  const emission = firstValue(params.emision);
   return {
     page: positivePage(firstValue(params.pagina)),
     query: cleanQuery(firstValue(params.q)),
+    emissionState: emission === "ready" || emission === "issued" || emission === "revoked" ? emission : "all",
   };
 }

@@ -6,7 +6,7 @@ import { parseActivityRegistrationFilters } from "../../src/features/registratio
 
 test("la vista de participación inicia con actividades próximas", async () => {
   const filters = await parseParticipationFilters(Promise.resolve({}));
-  assert.deepEqual(filters, { activityType: undefined, page: 1, period: "upcoming", query: undefined });
+  assert.deepEqual(filters, { activityType: undefined, page: 1, period: "upcoming", paymentsOnly: false, query: undefined });
 });
 
 test("el detalle inicia mostrando inscripciones activas", async () => {

@@ -1,3 +1,5 @@
+import type { ActivityType } from "@/features/activities/types/activity.types";
+import type { AttendanceStatus } from "@/features/attendance/types/attendance.types";
 import type {
   ActivityRegistrationsPageProps,
   AdminRegistrationsPageProps,
@@ -5,8 +7,6 @@ import type {
   RegistrationAdminFilters,
   RegistrationStatus,
 } from "@/features/registrations/types/registration.types";
-import type { ActivityType } from "@/features/activities/types/activity.types";
-import type { AttendanceStatus } from "@/features/attendance/types/attendance.types";
 import type { RegistrationType } from "@/features/registrations/types/registration.types";
 
 export function firstValue(value?: string | string[]): string | undefined {
@@ -65,6 +65,7 @@ export async function parseAdminRegistrationFilters(
     certificateRequest: parseCertificateRequest(params.certificado),
     page: parsePage(params.pagina),
     query: firstValue(params.q)?.trim() || undefined,
+    profile: firstValue(params.perfil) === "student" ? "student" : firstValue(params.perfil) === "professional" ? "professional" : undefined,
     registrationType: parseRegistrationType(params.tipo),
     status: fixedStatus ?? parseStatus(params.estado),
   };
@@ -82,6 +83,7 @@ export async function parseActivityRegistrationFilters(
     certificateRequest: parseCertificateRequest(params.certificado),
     page: parsePage(params.pagina),
     query: firstValue(params.q)?.trim() || undefined,
+    profile: firstValue(params.perfil) === "student" ? "student" : firstValue(params.perfil) === "professional" ? "professional" : undefined,
     registrationType: parseRegistrationType(params.tipo),
     status: parsedStatus,
     statusScope: parsedStatus ? undefined : statusValue === "all" ? "all" : "active",

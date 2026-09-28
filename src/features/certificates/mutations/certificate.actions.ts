@@ -19,7 +19,11 @@ export async function issueCertificatesAction(
   formData: FormData,
 ): Promise<CertificateIssueState> {
   await requireAdmin();
-  const registrationIds = formData.getAll("registration_ids").filter((value): value is string => typeof value === "string");
+  const registrationIds = [...new Set(formData.getAll("registration_ids").filter((value): value is string => typeof value === "string"))];
+  if (!z.uuid().safeParse(activityId).success || registrationIds.length > 100 || registrationIds.some((id) => !z.uuid().safeParse(id).success)) return { message: "Selecciona hasta 100 participantes de esta actividad; no se ha emitido ningún certificado." };
+  const client = await createServerSupabaseClient();
+  const scope = registrationIds.length ? await client.from("registrations").select("id").in("id", registrationIds).eq("activity_id", activityId).is("deleted_at", null) : { data: [], error: null };
+  if (scope.error || scope.data.length !== registrationIds.length) return { message: "La selección contiene registros de otra actividad o eliminados. Revisa los seleccionados." };
   const templateId = formData.get("template_id");
   const condition = formData.get("condition");
   if (!registrationIds.length || typeof templateId !== "string" || typeof condition !== "string" || !condition.trim()) {

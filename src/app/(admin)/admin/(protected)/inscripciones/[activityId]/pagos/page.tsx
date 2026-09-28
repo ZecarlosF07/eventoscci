@@ -2,8 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 
-import { Pagination } from "@/components/molecules/Pagination";
 import { OperationNotice } from "@/components/molecules/OperationNotice";
+import { Pagination } from "@/components/molecules/Pagination";
+import { FilterResults } from "@/features/admin-filters/components/FilterWorkspace";
+import { FilterExportLink } from "@/features/admin-filters/components/FilterWorkspace";
 import { ActivityPaymentFilters } from "@/features/participation/components/ActivityPaymentFilters/ActivityPaymentFilters";
 import { ActivityPaymentList } from "@/features/participation/components/ActivityPaymentList/ActivityPaymentList";
 import { CertificatePayments } from "@/features/participation/components/CertificatePayments/CertificatePayments";
@@ -12,8 +14,8 @@ import { PaymentRequestDetail } from "@/features/participation/components/Paymen
 import { getActivityPayments, getActivityPaymentTotals, getCertificatePayments } from "@/features/participation/queries/get-activity-payments";
 import { getParticipationActivitySummary } from "@/features/participation/queries/get-participation-overview";
 import type { ActivityPaymentsPageProps } from "@/features/participation/types/payment.types";
-import { firstPaymentValue, parsePaymentFilters, paymentFilterParams, paymentWorkspaceUrl } from "@/features/participation/utils/payment-filters";
 import { getActivityPaymentsRoute } from "@/features/participation/utils/participation-routes";
+import { firstPaymentValue, parsePaymentFilters, paymentFilterParams, paymentWorkspaceUrl } from "@/features/participation/utils/payment-filters";
 
 export default async function ActivityPaymentsPage({ params, searchParams }: ActivityPaymentsPageProps) {
   const { activityId } = await params;
@@ -35,12 +37,13 @@ export default async function ActivityPaymentsPage({ params, searchParams }: Act
     <ActivityPaymentFilters filters={filters} />
     <section className="space-y-4" aria-labelledby="participation-payments-heading">
       <div><h2 className="text-2xl font-bold text-cci-950" id="participation-payments-heading">Pagos de participación</h2><p className="text-sm text-slate-600">{activity.paymentPendingRequests} solicitudes · {activity.paymentPendingSeats} plazas pendientes en toda la actividad. {participation.total} solicitudes con estos filtros.</p></div>
-      <Link className="inline-flex min-h-11 items-center text-sm font-semibold text-cci-700 underline" href={`/admin/inscripciones/solicitudes/exportar?actividad=${activityId}`}>Exportar todos los grupos de esta actividad (CSV)</Link>
+      <FilterExportLink className="inline-flex min-h-11 items-center text-sm font-semibold text-cci-700 underline" href={`${getActivityPaymentsRoute(activityId)}/exportar?${new URLSearchParams(paymentFilterParams(filters))}`}>Exportar solicitudes de participación filtradas (CSV)</FilterExportLink>
       <p className="rounded-2xl bg-cci-50 p-4 text-sm">Saldo de participación: <strong>S/ {(totals?.pending_amount ?? 0).toFixed(2)}</strong> · Validado: <strong>S/ {(totals?.validated_amount ?? 0).toFixed(2)}</strong>{(totals?.legacy_amount ?? 0) > 0 ? ` · Confirmaciones anteriores sin referencia: S/ ${totals?.legacy_amount?.toFixed(2)}` : ""}</p>
+      {filters.requestId && !participation.items.some((item) => item.id === filters.requestId) ? <p className="rounded-xl bg-cci-50 p-3 text-sm">La solicitud abierta no aparece en esta página de resultados. Puedes seguir revisándola sin perder lo escrito.</p> : null}
       <PaymentRequestDetail activityId={activityId} filters={filters} />
-      <ActivityPaymentList activityId={activityId} filters={filters} items={participation.items} />
+      <FilterResults><ActivityPaymentList activityId={activityId} filters={filters} items={participation.items} /></FilterResults>
       <Pagination page={participation.page} pageCount={participation.pageCount} pathname={getActivityPaymentsRoute(activityId)} searchParams={paymentFilterParams(filters)} />
     </section>
-    <div className="border-t border-cci-200 pt-6"><p className="mb-3 text-sm text-slate-600">Certificados: {activity.certificatePendingCount} pagos pendientes · Saldo: <strong>S/ {(totals?.certificate_pending_amount ?? 0).toFixed(2)}</strong> (separado de la participación).</p><CertificatePayments activityId={activityId} activityStatus={activity.status} data={certificates} filters={filters} returnTo={returnTo} /></div>
+    <div className="border-t border-cci-200 pt-6"><p className="mb-3 text-sm text-slate-600">Certificados: {activity.certificatePendingCount} pagos pendientes · Saldo: <strong>S/ {(totals?.certificate_pending_amount ?? 0).toFixed(2)}</strong> (separado de la participación).</p><FilterResults><CertificatePayments activityId={activityId} activityStatus={activity.status} data={certificates} filters={filters} returnTo={returnTo} /></FilterResults></div>
   </div>;
 }
