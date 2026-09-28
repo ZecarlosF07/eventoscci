@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { billingSchema } from "@/features/billing/schemas/billing.schema";
+
 const attendeeSchema = z.object({
   document_type: z.enum(["dni", "ce"]),
   document_number: z.string().trim().toUpperCase(),
@@ -16,11 +18,6 @@ const attendeeSchema = z.object({
     : /^[A-Z0-9]{6,20}$/.test(attendee.document_number);
   if (!valid) context.addIssue({ code: "custom", message: "Revisa el número de documento.", path: ["document_number"] });
 });
-
-const billingSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("boleta"), document: z.string().regex(/^\d{8}$/), name: z.string().trim().min(2).max(250), address: z.string().optional() }),
-  z.object({ type: z.literal("factura"), document: z.string().regex(/^\d{11}$/), name: z.string().trim().min(2).max(250), address: z.string().trim().min(2).max(250) }),
-]);
 
 export const memberGroupInputSchema = z.object({
   attendees: z.array(attendeeSchema).min(1).max(500),

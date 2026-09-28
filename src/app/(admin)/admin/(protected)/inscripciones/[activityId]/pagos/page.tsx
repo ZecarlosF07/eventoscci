@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 
 import { OperationNotice } from "@/components/molecules/OperationNotice";
+import { BillingWorkspace } from "@/features/billing/components/BillingWorkspace";
+import { BillingWorkspaceTabs } from "@/features/billing/components/BillingWorkspaceTabs";
 import { Pagination } from "@/components/molecules/Pagination";
 import { FilterResults } from "@/features/admin-filters/components/FilterWorkspace";
 import { FilterExportLink } from "@/features/admin-filters/components/FilterWorkspace";
@@ -21,6 +23,7 @@ export default async function ActivityPaymentsPage({ params, searchParams }: Act
   const { activityId } = await params;
   if (!z.uuid().safeParse(activityId).success) notFound();
   const query = await searchParams;
+  if (firstPaymentValue(query.vista) === "comprobantes") return <BillingWorkspace activityId={activityId} query={query} />;
   let filters = parsePaymentFilters(query);
   const [activity, participation, certificates, totals] = await Promise.all([
     getParticipationActivitySummary(activityId), getActivityPayments(activityId, filters), getCertificatePayments(activityId, filters),
@@ -33,6 +36,7 @@ export default async function ActivityPaymentsPage({ params, searchParams }: Act
     <Link className="inline-flex min-h-11 items-center text-sm font-semibold text-cci-700" href="/admin/inscripciones">← Elegir otra actividad</Link>
     <header><p className="text-sm font-bold uppercase text-cci-700">Participación · Pagos</p><h1 className="text-3xl font-bold text-cci-950">{activity.title}</h1><p className="mt-2 text-slate-600">Valida los cobros de esta actividad. Cada grupo aparece como una sola solicitud.</p></header>
     <ParticipationActivityTabs activityId={activityId} current="payments" />
+    <BillingWorkspaceTabs activityId={activityId} current="payments" />
     <OperationNotice result={firstPaymentValue(query.resultado)} />
     <ActivityPaymentFilters filters={filters} />
     <section className="space-y-4" aria-labelledby="participation-payments-heading">

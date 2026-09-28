@@ -197,3 +197,27 @@ No hay despliegue del frontend productivo asociado a este registro. Las migracio
 | BA-17 | Inscripciones: despliegue por Enter, aplicar perfil profesional, cerrar conservando el valor y limpiar; ajustes en 390×844, 768×1024 y 1440×900 | APROBADO | Sesión local autenticada; controles de 44 px, sin desbordamiento del formulario. Buscador cerrado sin filtros activos: 122 px en escritorio; tableta: 174 px. No se guardaron operaciones |
 | BA-18 | Participación y Pagos: filtros juntos sin confundir participación y certificados | APROBADO | Revisión visual local a 1440×900; buscadores de 122 px y 142 px respectivamente, sin desbordamiento del formulario |
 | BA-19 | Recorrido visual completo de todos los módulos, lectores de pantalla y prueba móvil de cada variante | NO EJECUTADO | Layout compartido comprobado; no se considera realizada una auditoría completa a partir de las pantallas anteriores. BA-15 conserva su estado |
+
+## Datos para comprobantes — 28/09/2026
+
+Alcance y activación: [Datos para comprobantes de participación](../integraciones/comprobantes-participacion.md). Preparación para emisión externa dentro de Pagos; sin emisión de comprobantes, acciones monetarias adicionales ni cambios al header.
+
+| Caso | Verificación | Estado | Evidencia |
+|---|---|---|---|
+| CP-01 | Boleta/factura, documentos, dirección, destinatario distinto, CE, estudiante, copia explícita y limpieza de campos inactivos | APROBADO | Suite de 164 unitarias; 12 pruebas nuevas de esquema, utilidades y componentes de comprobantes |
+| CP-02 | Persistencia transaccional, rechazo de inscripciones pagadas sin datos con obligatoriedad activa, privacidad e históricos sin relleno | APROBADO | SQL 030: 62 aserciones, `finish(true)` y rollback en Supabase vinculado; activación ensayada solo dentro de la transacción |
+| CP-03 | Una fila por solicitud, cortesías, pagos parciales/completos, cancelaciones, 20 empresas por página y 20 solicitudes desplegadas | APROBADO | Fixtures SQL 030: 22 empresas y 22 solicitudes de una empresa; conteos y segundas páginas verificados antes del rollback |
+| CP-04 | Corrección de datos existentes con motivo, auditoría anterior/nueva y permisos; rechazo de carga administrativa de datos faltantes | APROBADO | SQL 030; controles de RLS, RPC central y guardas del editor grupal anterior |
+| CP-05 | CSV seguro, importes no multiplicados y filtros compartidos | APROBADO | Unitarias de fórmulas e importes; descarga real local: CSV completo con dos solicitudes y CSV filtrado por Factura con una, además de encabezados |
+| CP-06 | Regresión de pagos y pases gratuitos | APROBADO | SQL 028: 51 aserciones; SQL 027: 30 aserciones. Con SQL 030 suman 143; pruebas transaccionales con rollback |
+| CP-07 | Migraciones revisadas/aplicadas sin seeds y tipos regenerados | APROBADO | 202609280006 y 202609280007; dry-run final `upToDate: true`, sin migraciones ni seeds pendientes |
+| CP-08 | Lint, typecheck y build | APROBADO | Yarn y Next 16.2.10; build posterior a todos los cambios de código |
+| CP-09 | Navegación agrupada, separación de RUC asociado/facturación, filtros automáticos y conservación de borradores | APROBADO | Sesión local autenticada: una empresa, dos solicitudes independientes; alternar boleta/factura conserva valores; búsqueda sin coincidencias conserva detalle y motivo; limpieza restaura resultados. Sin guardar correcciones |
+| CP-10 | Copia accesible, teclado en selector y primer error inválido | APROBADO | Mensaje «Datos copiados»; cambio de opción mediante Espacio; motivo vacío muestra error y enfoca su campo sin enviar corrección. Contenido de copia verificado en unitarias, no mediante lectura del portapapeles |
+| CP-11 | Vista agrupada, filtros y editor a 390×844, 768×1024 y 1440×900 | APROBADO | Revisión visual y dimensiones DOM locales: formulario sin desbordamiento del viewport; controles de aproximadamente 44 px y tablas con desplazamiento propio |
+| CP-12 | Recorrido público integral de inscripción individual pagada en evento abierto y capacitación | NO EJECUTADO | No había una actividad publicada pagada individual apropiada; no se crearon actividades ni inscripciones reales para la prueba. Esquemas y reglas SQL sí comprobados |
+| CP-13 | Corrección persistida mediante navegador y recorrido administrativo integral en producción | NO EJECUTADO | Las mutaciones se probaron en SQL con rollback; no se modificaron destinatarios ni pagos reales desde la sesión de navegador |
+| CP-14 | Auditoría completa de lectores de pantalla, teclado y navegadores móviles | NO EJECUTADO | Las comprobaciones parciales de CP-10 y CP-11 no sustituyen una auditoría integral |
+| CP-15 | Frontend productivo y activación global de obligatoriedad | NO EJECUTADO | Pendiente publicar el formulario actualizado y ejecutar después `supabase/rollouts/enable_registration_billing.sql`; la ventana de compatibilidad sigue abierta |
+
+No se enviaron correos ni se registraron pagos durante estas pruebas. Las migraciones están aplicadas, pero el nuevo frontend no se ha desplegado a producción. La obligatoriedad global permanece pendiente deliberadamente para no romper el formulario actualmente publicado. Los resultados anteriores de otros hitos y módulos no se modifican.

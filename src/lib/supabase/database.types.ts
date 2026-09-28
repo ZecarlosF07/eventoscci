@@ -2251,6 +2251,58 @@ export type Database = {
           },
         ]
       }
+      registration_billing_details: {
+        Row: {
+          billing_address: string | null
+          billing_document: string
+          billing_name: string
+          billing_type: string
+          created_at: string
+          registration_id: string
+          updated_at: string
+        }
+        Insert: {
+          billing_address?: string | null
+          billing_document: string
+          billing_name: string
+          billing_type: string
+          created_at?: string
+          registration_id: string
+          updated_at?: string
+        }
+        Update: {
+          billing_address?: string | null
+          billing_document?: string
+          billing_name?: string
+          billing_type?: string
+          created_at?: string
+          registration_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registration_billing_details_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
+            referencedRelation: "admin_registration_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registration_billing_details_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
+            referencedRelation: "certificate_payment_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registration_billing_details_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       registrations: {
         Row: {
           academic_institution_snapshot: string | null
@@ -2784,6 +2836,63 @@ export type Database = {
           },
         ]
       }
+      participation_billing_requests: {
+        Row: {
+          activity_id: string | null
+          billing_address: string | null
+          billing_document: string | null
+          billing_name: string | null
+          billing_state: string | null
+          billing_type: string | null
+          code: string | null
+          company_key: string | null
+          company_name: string | null
+          company_ruc: string | null
+          complimentary_count: number | null
+          created_at: string | null
+          id: string | null
+          kind: string | null
+          legacy_amount: number | null
+          name: string | null
+          participation_amount: number | null
+          pending_amount: number | null
+          pending_count: number | null
+          search_text: string | null
+          seat_count: number | null
+          status: string | null
+          validated_amount: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_payment_totals"
+            referencedColumns: ["activity_id"]
+          },
+        ]
+      }
       participation_global_metrics: {
         Row: {
           active: number | null
@@ -2948,6 +3057,19 @@ export type Database = {
         Args: { p_billing: Json; p_reason: string; p_request_id: string }
         Returns: Json
       }
+      correct_member_group_billing_before_guard: {
+        Args: { p_billing: Json; p_reason: string; p_request_id: string }
+        Returns: Json
+      }
+      correct_participation_billing: {
+        Args: {
+          p_billing: Json
+          p_kind: string
+          p_reason: string
+          p_request_id: string
+        }
+        Returns: undefined
+      }
       current_course_enrollment: {
         Args: { p_course_id: string }
         Returns: string
@@ -3073,6 +3195,26 @@ export type Database = {
         Returns: Json
       }
       get_my_course_rating: { Args: { p_course_id: string }; Returns: Json }
+      get_participation_billing_companies: {
+        Args: {
+          p_activity_id: string
+          p_billing_type?: string
+          p_limit?: number
+          p_offset?: number
+          p_query?: string
+          p_state?: string
+        }
+        Returns: {
+          company_key: string
+          company_name: string
+          company_ruc: string
+          participation_amount: number
+          pending_amount: number
+          request_count: number
+          total_count: number
+          validated_amount: number
+        }[]
+      }
       get_public_certificate: {
         Args: { p_access_token: string }
         Returns: Json
@@ -3167,6 +3309,10 @@ export type Database = {
         Args: { p_registration_id: string }
         Returns: Json
       }
+      normalize_participation_billing: {
+        Args: { p_billing: Json }
+        Returns: Json
+      }
       prepare_activity_certificates: {
         Args: {
           p_condition?: string
@@ -3199,6 +3345,10 @@ export type Database = {
         Args: { p_activity_id: string; p_registration: Json }
         Returns: Json
       }
+      register_activity_internal_before_billing: {
+        Args: { p_activity_id: string; p_registration: Json }
+        Returns: Json
+      }
       register_member_group: {
         Args: {
           p_activity_id: string
@@ -3215,6 +3365,7 @@ export type Database = {
         }
         Returns: Json
       }
+      registration_billing_enforced: { Args: never; Returns: boolean }
       replace_certificate_document: {
         Args: {
           p_certificate_id: string

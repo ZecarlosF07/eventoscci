@@ -7,6 +7,9 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Text } from "@/components/atoms/Text";
+import { IndividualBillingFields } from "@/features/billing/components/IndividualBillingFields";
+import type { BillingInput } from "@/features/billing/types/billing.types";
+import { applicableBilling } from "@/features/billing/utils/billing-input";
 import { CertificateInterestField } from "@/features/registrations/components/CertificateInterestField";
 import { FutureTopicsField } from "@/features/registrations/components/FutureTopicsField";
 import { ProfessionalRegistrationFields } from "@/features/registrations/components/ProfessionalRegistrationFields";
@@ -25,6 +28,7 @@ import type {
 import { focusFirstInvalidField } from "@/features/registrations/utils/focus-first-invalid-field";
 import { parseRegistrationFormData } from "@/features/registrations/utils/registration-form-data";
 import { getRegistrationResultRoute } from "@/features/registrations/utils/registration-routes";
+import { validateRegistrationWithBilling } from "@/features/registrations/utils/registration-billing-validation";
 
 export function RegistrationForm({ activity }: RegistrationFormProps) {
   const router = useRouter();
@@ -35,6 +39,8 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [message, setMessage] = useState<string>();
   const [isPending, setIsPending] = useState(false);
+  const [billing, setBilling] = useState<BillingInput>({ type: "boleta", document: "", name: "" });
+  const requiresBilling = !activity.isFree && (registrationType === "member" ? activity.memberPrice : activity.generalPrice) > 0;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,7 +60,14 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
     });
 
     try {
-      const input = parseRegistrationFormData(new FormData(form));
+      const input = { ...parseRegistrationFormData(new FormData(form)), billing: requiresBilling ? applicableBilling(billing) : null };
+      const validated = validateRegistrationWithBilling(input, requiresBilling ? 1 : 0);
+      if (!validated.success) {
+        setErrors(Object.fromEntries(validated.error.issues.map((issue) => [issue.path.join("."), [issue.message]])));
+        setMessage("Revisa los campos indicados antes de continuar.");
+        focusFirstInvalidField(form);
+        return;
+      }
       const result = await registerActivity(activity.id, input);
       if (!result.success) {
         setErrors(result.fieldErrors ?? {});
@@ -87,7 +100,7 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
   }
 
   return (
-    <form className="space-y-7" onSubmit={handleSubmit}>
+    <form className="space-y-7" noValidate onSubmit={handleSubmit}>
       <RegistrationTypeSelector
         membersOnly={activity.membersOnly}
         onChange={setRegistrationType}
@@ -107,6 +120,7 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
         active={registrationType === "general" && generalProfile === "student"}
         errors={errors}
       />
+      {requiresBilling ? <IndividualBillingFields allowCompanyCopy={registrationType === "member" || generalProfile === "professional"} billing={billing} onChange={setBilling} errors={Object.fromEntries(Object.entries(errors).filter(([key]) => key.startsWith("billing.")).map(([key, value]) => [key.slice(8), value[0]]))} /> : null}
       {activity.certificateMode === "optional_paid" ? (
         <CertificateInterestField
           generalPrice={activity.certificateGeneralPrice}

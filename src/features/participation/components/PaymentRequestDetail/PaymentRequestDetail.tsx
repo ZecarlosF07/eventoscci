@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { billingUrl } from "@/features/billing/utils/billing-filters";
 
 import { MemberGroupPaymentForm } from "@/features/member-groups/components/MemberGroupPaymentForm/MemberGroupPaymentForm";
 import { getMemberGroupAdminDetail } from "@/features/member-groups/queries/get-member-group-admin-detail";
@@ -27,6 +28,7 @@ export async function PaymentRequestDetail({ activityId, filters }: PaymentReque
   return <section aria-labelledby="payment-detail-heading" className="space-y-4 rounded-3xl border-2 border-cci-200 bg-white p-5" id="detalle-pago">
     <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-sm text-cci-700">{request.code}</p><h2 className="text-xl font-bold text-cci-950" id="payment-detail-heading">{request.name}</h2></div><Link className="inline-flex min-h-11 items-center rounded-xl border px-4 font-semibold" href={paymentWorkspaceUrl(activityId, filters)}>Cerrar detalle</Link></div>
     <p className="text-sm">Saldo pendiente: <strong>S/ {(request.pending_amount ?? 0).toFixed(2)}</strong> · Importe validado: <strong>S/ {(request.validated_amount ?? 0).toFixed(2)}</strong></p>
+    <Link href={`${billingUrl(activityId)}&solicitud=${request.id}`} className="inline-flex min-h-11 items-center font-semibold text-cci-700 underline">Consultar o corregir datos para comprobantes →</Link>
     {group ? <>
       <div className="rounded-xl bg-cci-50 p-4 text-sm"><p>RUC asociado: <strong>{group.request.companyRuc}</strong></p><p>Comprobante solicitado: {group.request.billingType ?? "No requerido"}</p>{group.request.billingDocument ? <p>{group.request.billingType === "factura" ? "RUC de facturación" : "DNI"}: {group.request.billingDocument} · {group.request.billingName}</p> : null}{group.request.billingAddress ? <p>Dirección: {group.request.billingAddress}</p> : null}</div>
       {(request.pending_count ?? 0) > 0 ? <MemberGroupPaymentForm detail={group} /> : <p>Esta solicitud no tiene plazas pendientes de pago.</p>}

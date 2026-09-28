@@ -1,4 +1,5 @@
 import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
+import type { BillingInput } from "@/features/billing/types/billing.types";
 import type {
   ActivityModality,
   ActivityType,
@@ -18,6 +19,7 @@ export type CertificateRequestFilter =
   | "ready_to_issue";
 
 export interface RegistrationInput {
+  billing?: BillingInput | null;
   academic_institution: string;
   address: string;
   career: string;

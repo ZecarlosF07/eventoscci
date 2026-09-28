@@ -4,10 +4,8 @@ import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
 
 import { requireAdmin } from "@/features/auth/services/admin-session";
-import type { MemberBillingInput } from "@/features/member-groups/types/member-group.types";
 import { deliverNotificationImmediately } from "@/features/notifications/services/process-notifications";
 import { PUBLIC_CACHE_TAGS } from "@/features/seo/constants/public-cache.constants";
-import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const id = z.uuid();
@@ -17,11 +15,6 @@ const paymentSchema = z.object({
   receivedAmount: z.number().positive(),
   idempotencyKey: id,
 });
-const billingSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("boleta"), document: z.string().regex(/^\d{8}$/), name: z.string().trim().min(2).max(250), address: z.string().optional() }),
-  z.object({ type: z.literal("factura"), document: z.string().regex(/^\d{11}$/), name: z.string().trim().min(2).max(250), address: z.string().trim().min(2).max(250) }),
-]);
-
 function refreshGroup(requestId: string) {
   revalidatePath("/admin/inscripciones", "layout");
   revalidatePath("/admin/inscripciones/solicitudes");
@@ -97,19 +90,4 @@ export async function transferMemberPassAction(requestId: string, passId: string
   });
   refreshGroup(requestId);
   return { success: true, message: "Pase transferido. La nueva plaza quedó confirmada sin pago." };
-}
-
-export async function correctMemberGroupBillingAction(requestId: string, billing: MemberBillingInput, reason: string): Promise<{ success: boolean; message: string }> {
-  await requireAdmin();
-  const parsed = billingSchema.safeParse(billing);
-  if (!id.safeParse(requestId).success || !parsed.success || reason.trim().length < 2 || reason.length > 500) {
-    return { success: false, message: "Revisa los datos del comprobante y escribe el motivo de la corrección." };
-  }
-  const client = await createServerSupabaseClient();
-  const { error } = await client.rpc("correct_member_group_billing", {
-    p_request_id: requestId, p_billing: parsed.data as unknown as Json, p_reason: reason.trim(),
-  });
-  if (error) return { success: false, message: "No se pudo corregir el comprobante solicitado." };
-  refreshGroup(requestId);
-  return { success: true, message: "Datos corregidos y cambio registrado en auditoría." };
 }

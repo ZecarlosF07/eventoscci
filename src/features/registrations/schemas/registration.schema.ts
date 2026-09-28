@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
 import { REGISTRATION_NOTIFICATION_EVENT_TYPES } from "@/features/notifications/constants/notification.constants";
+import { billingSchema } from "@/features/billing/schemas/billing.schema";
 
 const optionalText = z.string().trim().max(250, "Usa como máximo 250 caracteres.");
 const optionalAcademicText = z.string().trim().max(
@@ -11,6 +12,7 @@ const optionalAcademicText = z.string().trim().max(
 
 export const registrationFormSchema = z
   .object({
+    billing: billingSchema.nullable().optional(),
     academic_institution: optionalAcademicText,
     address: optionalText,
     career: optionalAcademicText,

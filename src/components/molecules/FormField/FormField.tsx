@@ -20,7 +20,7 @@ export function FormField({
       {children}
       {hint && !error ? <Text className={tone === "dark" ? "text-slate-400" : undefined} size="sm">{hint}</Text> : null}
       {error ? (
-        <p className="text-sm font-medium text-rose-700" role="alert">
+        <p className="text-sm font-medium text-rose-700" id={`${name}-error`} role="alert">
           {error}
         </p>
       ) : null}
