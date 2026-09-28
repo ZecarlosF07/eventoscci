@@ -51,7 +51,7 @@ values (
 
 insert into public.activities (
   id, contact_id, venue_id, type, title, slug, description, modality, is_free,
-  general_price, member_price, status, published_at
+  general_price, member_price, status, published_at, payment_note
 ) values
   (
     '7f000000-0000-4000-8000-000000000001',
@@ -59,7 +59,7 @@ insert into public.activities (
     null,
     'event', 'Evento virtual seguro', 'evento-virtual-seguro',
     'Actividad gratuita para validar acceso virtual seguro.', 'virtual', true,
-    0, 0, 'published', now()
+    0, 0, 'published', now(), null
   ),
   (
     '7f000000-0000-4000-8000-000000000002',
@@ -67,7 +67,7 @@ insert into public.activities (
     'bf000000-0000-4000-8000-000000000001',
     'training', 'Capacitación híbrida segura', 'capacitacion-hibrida-segura',
     'Actividad pagada para validar confirmación híbrida.', 'hybrid', false,
-    100, 80, 'published', now()
+    100, 80, 'published', now(), 'Coordina el pago con la CCI.'
   );
 
 insert into public.activity_virtual_access (activity_id, virtual_url) values
@@ -184,7 +184,7 @@ select is(
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '8f000000-0000-4000-8000-000000000001', true);
 select set_config('request.jwt.claim.role', 'authenticated', true);
-select public.confirm_registration((select (payload->>'registration_id')::uuid from hito_virtual_results where kind = 'paid'));
+select public.verify_individual_registration_payment((select (payload->>'registration_id')::uuid from hito_virtual_results where kind = 'paid'),100,'VIRTUAL22',null,'8f000000-0000-4000-8000-000000000010');
 reset role;
 
 select is(

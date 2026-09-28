@@ -15,6 +15,8 @@ function didChange(data: unknown): boolean {
 }
 
 function revalidateCertificateAdminPaths(activityId: string, returnTo: string): void {
+  revalidatePath(`${ROUTES.adminRegistrations}/${activityId}/pagos`);
+  revalidatePath("/admin/inscripciones", "layout");
   revalidatePath(ROUTES.adminRegistrations);
   revalidatePath("/admin/asistencia");
   revalidatePath(`${ROUTES.adminCertificatesActivities}/${activityId}`);
@@ -68,6 +70,7 @@ export async function cancelRegistrationAction(
   });
 
   if (error) redirect(withAdminResult(returnTo, ROUTES.adminRegistrations, "error-cancelar"));
+  revalidatePath("/admin/inscripciones", "layout");
   revalidatePath(ROUTES.adminRegistrations);
   revalidatePath(ROUTES.adminPendingPayments);
   revalidatePath(ROUTES.adminParticipants);

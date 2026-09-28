@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 
-import { ROUTES } from "@/constants/routes";
+import type { LegacyPaymentPageProps } from "@/features/participation/types/payment.types";
+import { legacyPaymentRoute } from "@/features/participation/utils/legacy-payment-route";
 
-export default function PendingRegistrationsPage() {
-  redirect(ROUTES.adminPendingPayments);
+export default async function PendingRegistrationsPage({ searchParams }: LegacyPaymentPageProps) {
+  redirect(legacyPaymentRoute(await searchParams));
 }

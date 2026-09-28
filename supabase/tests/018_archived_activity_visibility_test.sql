@@ -8,7 +8,8 @@ select ok(
 );
 
 select ok(
-  pg_get_viewdef('public.activity_participation_summary'::regclass) like '%status <> ''archived''%',
+  pg_get_viewdef('public.activity_participation_summary'::regclass) like '%activity_participation_base%'
+    and pg_get_viewdef('public.activity_participation_base'::regclass) like '%status <> ''archived''%',
   'participation summary excludes archived activities'
 );
 

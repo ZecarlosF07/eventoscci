@@ -6,7 +6,7 @@ interface ParticipationMetricsProps {
 
 const ITEMS: Array<{ key: keyof ParticipationGlobalMetrics; label: string; detail: string }> = [
   { detail: "Pendientes y confirmadas", key: "active", label: "Inscripciones activas" },
-  { detail: "Requieren validación", key: "pending", label: "Pagos por verificar" },
+  { detail: "Personas con participación por pagar", key: "pending", label: "Plazas pendientes de pago" },
   { detail: "Con cupo confirmado", key: "confirmed", label: "Confirmadas" },
   { detail: "Marcadas en asistencia", key: "attended", label: "Asistieron" },
 ];

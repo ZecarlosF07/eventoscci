@@ -13,6 +13,8 @@ import { escapePostgrestSearch } from "@/utils/postgrest-search";
 
 const REGISTRATION_ADMIN_SELECT = `
   id,
+  member_group_request_id,
+  is_complimentary,
   registration_code,
   registration_type,
   participant_profile,

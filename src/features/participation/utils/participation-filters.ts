@@ -14,7 +14,7 @@ export async function parseParticipationFilters(
   const params = await searchParams;
   const page = Number(firstValue(params.pagina));
   const periodValue = firstValue(params.periodo);
-  const period: ParticipationPeriod = periodValue === "past" || periodValue === "all"
+  const period: ParticipationPeriod = periodValue === "past" || periodValue === "all" || periodValue === "payments"
     ? periodValue
     : "upcoming";
   const type = firstValue(params.tipo);

@@ -13,14 +13,12 @@ export function ParticipationOverviewTemplate({ data, filters, metrics }: Partic
     <div className="space-y-7">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <SectionHeading
-          description="Elige una actividad para gestionar sus inscripciones y asistencia sin perder el contexto."
+          description="Elige una actividad para gestionar sus inscripciones, pagos y asistencia."
           eyebrow="Operación por actividad"
           title="Participación"
         />
         <div className="flex flex-wrap gap-3">
-          <Link className="inline-flex min-h-11 items-center justify-center rounded-xl border border-cci-200 bg-white px-5 text-sm font-bold text-cci-950 hover:bg-cci-50" href="/admin/inscripciones/solicitudes">Solicitudes grupales</Link>
           <Link className="inline-flex min-h-11 items-center justify-center rounded-xl border border-cci-200 bg-white px-5 text-sm font-bold text-cci-950 hover:bg-cci-50" href={ROUTES.adminRegistrationSuggestions}>Ver sugerencias</Link>
-          <Link className="inline-flex min-h-11 items-center justify-center rounded-xl bg-amber-100 px-5 text-sm font-bold text-amber-900 hover:bg-amber-200" href={ROUTES.adminPendingPayments}>Pagos por verificar · {metrics.pending}</Link>
         </div>
       </div>
       <ParticipationMetrics metrics={metrics} />

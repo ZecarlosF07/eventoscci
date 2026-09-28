@@ -23,6 +23,7 @@ const billingSchema = z.discriminatedUnion("type", [
 ]);
 
 function refreshGroup(requestId: string) {
+  revalidatePath("/admin/inscripciones", "layout");
   revalidatePath("/admin/inscripciones/solicitudes");
   revalidatePath(`/admin/inscripciones/solicitudes/${requestId}`);
   revalidatePath("/admin/inscripciones/pendientes");

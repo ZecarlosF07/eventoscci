@@ -7,6 +7,8 @@
 
 # 1. Descripción del hito
 
+> Actualización operativa del 28/09/2026: los cobros se gestionan desde Pagos de cada actividad; las cortesías se distinguen del saldo y no cuentan como plazas pendientes de cobro. Las reglas de asignación y transferencia permanecen intactas; consultar [Participación: pagos por actividad](../integraciones/participacion-pagos.md).
+
 Este hito amplía la inscripción grupal del Hito 15: un **evento exclusivo para asociados y pagado** podrá incluir una cantidad configurable de pases gratuitos **por RUC y por evento**. La empresa podrá presentar varias solicitudes para añadir asistentes, pero no volverá a recibir los pases ya utilizados. Cada asistente conservará su inscripción, cupo, estado, asistencia y eventual certificado individuales.
 
 ```text

@@ -305,7 +305,21 @@ export type Database = {
             foreignKeyName: "activity_dates_activity_id_fkey"
             columns: ["activity_id"]
             isOneToOne: false
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "activity_dates_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
             referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "activity_dates_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_payment_totals"
             referencedColumns: ["activity_id"]
           },
         ]
@@ -356,7 +370,21 @@ export type Database = {
             foreignKeyName: "activity_speakers_activity_id_fkey"
             columns: ["activity_id"]
             isOneToOne: false
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "activity_speakers_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
             referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "activity_speakers_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_payment_totals"
             referencedColumns: ["activity_id"]
           },
           {
@@ -402,7 +430,21 @@ export type Database = {
             foreignKeyName: "activity_virtual_access_activity_id_fkey"
             columns: ["activity_id"]
             isOneToOne: true
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "activity_virtual_access_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: true
             referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "activity_virtual_access_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: true
+            referencedRelation: "activity_payment_totals"
             referencedColumns: ["activity_id"]
           },
         ]
@@ -441,6 +483,13 @@ export type Database = {
             columns: ["activity_date_id"]
             isOneToOne: false
             referencedRelation: "activity_dates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_virtual_reminders_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "certificate_payment_requests"
             referencedColumns: ["id"]
           },
           {
@@ -490,6 +539,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "attendance_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "certificate_payment_requests"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "attendance_registration_id_fkey"
             columns: ["registration_id"]
@@ -761,6 +817,13 @@ export type Database = {
             columns: ["person_id"]
             isOneToOne: false
             referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificates_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "certificate_payment_requests"
             referencedColumns: ["id"]
           },
           {
@@ -1147,6 +1210,57 @@ export type Database = {
         }
         Relationships: []
       }
+      individual_registration_payments: {
+        Row: {
+          amount: number
+          id: string
+          idempotency_key: string
+          note: string | null
+          payment_reference: string
+          registration_id: string
+          request_hash: string
+          verified_at: string
+          verified_by: string
+        }
+        Insert: {
+          amount: number
+          id?: string
+          idempotency_key: string
+          note?: string | null
+          payment_reference: string
+          registration_id: string
+          request_hash: string
+          verified_at?: string
+          verified_by: string
+        }
+        Update: {
+          amount?: number
+          id?: string
+          idempotency_key?: string
+          note?: string | null
+          payment_reference?: string
+          registration_id?: string
+          request_hash?: string
+          verified_at?: string
+          verified_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "individual_registration_payments_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
+            referencedRelation: "certificate_payment_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "individual_registration_payments_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lesson_progress: {
         Row: {
           completed_at: string | null
@@ -1350,7 +1464,21 @@ export type Database = {
             foreignKeyName: "member_complimentary_passes_activity_id_fkey"
             columns: ["activity_id"]
             isOneToOne: false
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "member_complimentary_passes_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
             referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "member_complimentary_passes_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_payment_totals"
             referencedColumns: ["activity_id"]
           },
           {
@@ -1359,6 +1487,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "member_companies"
             referencedColumns: ["ruc"]
+          },
+          {
+            foreignKeyName: "member_complimentary_passes_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
+            referencedRelation: "certificate_payment_requests"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "member_complimentary_passes_registration_id_fkey"
@@ -1391,6 +1526,13 @@ export type Database = {
             columns: ["payment_id"]
             isOneToOne: false
             referencedRelation: "member_group_payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_group_payment_allocations_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
+            referencedRelation: "certificate_payment_requests"
             referencedColumns: ["id"]
           },
           {
@@ -1519,7 +1661,21 @@ export type Database = {
             foreignKeyName: "member_group_requests_activity_id_fkey"
             columns: ["activity_id"]
             isOneToOne: false
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "member_group_requests_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
             referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "member_group_requests_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_payment_totals"
             referencedColumns: ["activity_id"]
           },
           {
@@ -2177,7 +2333,21 @@ export type Database = {
             foreignKeyName: "registrations_activity_id_fkey"
             columns: ["activity_id"]
             isOneToOne: false
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
             referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_payment_totals"
             referencedColumns: ["activity_id"]
           },
           {
@@ -2367,7 +2537,7 @@ export type Database = {
       }
     }
     Views: {
-      activity_participation_summary: {
+      activity_participation_base: {
         Row: {
           absent_count: number | null
           active_count: number | null
@@ -2388,6 +2558,155 @@ export type Database = {
           type: Database["public"]["Enums"]["activity_type"] | null
         }
         Relationships: []
+      }
+      activity_participation_summary: {
+        Row: {
+          absent_count: number | null
+          active_count: number | null
+          activity_id: string | null
+          attendance_pending_count: number | null
+          attended_count: number | null
+          cancelled_count: number | null
+          capacity: number | null
+          certificate_pending_amount: number | null
+          certificate_pending_count: number | null
+          confirmed_count: number | null
+          is_free: boolean | null
+          is_operational_upcoming: boolean | null
+          last_date: string | null
+          next_date: string | null
+          operational_ends_at: string | null
+          payment_pending_requests: number | null
+          payment_pending_seats: number | null
+          pending_count: number | null
+          slug: string | null
+          status: Database["public"]["Enums"]["activity_status"] | null
+          title: string | null
+          total_count: number | null
+          type: Database["public"]["Enums"]["activity_type"] | null
+        }
+        Relationships: []
+      }
+      activity_payment_totals: {
+        Row: {
+          activity_id: string | null
+          certificate_pending_amount: number | null
+          certificate_pending_requests: number | null
+          legacy_amount: number | null
+          pending_amount: number | null
+          pending_requests: number | null
+          validated_amount: number | null
+        }
+        Relationships: []
+      }
+      certificate_payment_requests: {
+        Row: {
+          activity_id: string | null
+          code: string | null
+          created_at: string | null
+          email: string | null
+          id: string | null
+          issued: boolean | null
+          name: string | null
+          pending_amount: number | null
+          phone: string | null
+          price: number | null
+          registration_status:
+            | Database["public"]["Enums"]["registration_status"]
+            | null
+          search_text: string | null
+          status: string | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_payment_totals"
+            referencedColumns: ["activity_id"]
+          },
+        ]
+      }
+      participation_global_metrics: {
+        Row: {
+          active: number | null
+          attended: number | null
+          confirmed: number | null
+          pending: number | null
+        }
+        Relationships: []
+      }
+      participation_payment_requests: {
+        Row: {
+          activity_id: string | null
+          code: string | null
+          company_ruc: string | null
+          complimentary_count: number | null
+          created_at: string | null
+          id: string | null
+          kind: string | null
+          legacy_amount: number | null
+          name: string | null
+          pending_amount: number | null
+          pending_count: number | null
+          search_text: string | null
+          seat_count: number | null
+          status: string | null
+          validated_amount: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_payment_totals"
+            referencedColumns: ["activity_id"]
+          },
+        ]
       }
     }
     Functions: {
@@ -2863,6 +3182,16 @@ export type Database = {
       }
       verify_activity_certificate_payment: {
         Args: { p_registration_id: string }
+        Returns: Json
+      }
+      verify_individual_registration_payment: {
+        Args: {
+          p_idempotency_key: string
+          p_note: string
+          p_payment_reference: string
+          p_received_amount: number
+          p_registration_id: string
+        }
         Returns: Json
       }
       verify_member_group_payment: {

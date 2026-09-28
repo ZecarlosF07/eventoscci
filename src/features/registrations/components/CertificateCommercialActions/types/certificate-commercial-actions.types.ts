@@ -1,6 +1,7 @@
 export type CertificatePaymentDialogMode = "revert" | "verify";
 
 export interface CertificateCommercialActionsProps {
+  paymentWorkspace?: boolean;
   activityId: string;
   certificateIssued: boolean;
   certificatePaymentVerified: boolean;

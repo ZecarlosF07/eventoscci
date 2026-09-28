@@ -56,7 +56,8 @@ select is((select price_snapshot from public.registrations
   order by registration_code offset 1 limit 1), 40::numeric,
   'second seat keeps the associated price');
 select is((select count(*) from public.audit_logs
-  where action = 'member_group.complimentary_pass_assigned'), 1::bigint,
+  where action = 'member_group.complimentary_pass_assigned'
+    and metadata->>'activity_id' = '27000000-0000-4000-8000-000000000001'), 1::bigint,
   'initial pass assignment is audited');
 select is((select count(*) from public.notification_outbox
   where event_type = 'activity_free_registration_confirmed'

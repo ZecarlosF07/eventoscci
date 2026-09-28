@@ -4,3 +4,7 @@ export interface RegistrationRowActionsProps {
   registration: RegistrationAdminItem;
   returnTo: string;
 }
+
+export interface RegistrationCancelDialogProps extends RegistrationRowActionsProps {
+  onClose: () => void;
+}

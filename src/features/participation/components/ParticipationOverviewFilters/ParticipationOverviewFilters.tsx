@@ -15,7 +15,8 @@ export function ParticipationOverviewFilters({ filters }: { filters: Filters }) 
         <option value="training">Capacitaciones</option>
       </Select>
       <Select aria-label="Periodo" defaultValue={filters.period} name="periodo">
-        <option value="upcoming">Próximas</option>
+        <option value="upcoming">Próximas y en curso</option>
+        <option value="payments">Todas con pagos pendientes</option>
         <option value="past">Anteriores</option>
         <option value="all">Todas</option>
       </Select>

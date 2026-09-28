@@ -1,13 +1,17 @@
 import Link from "next/link";
 
+import type { ParticipationActivityTabsProps } from "@/features/participation/types/participation.types";
+
 import {
   getActivityAttendanceRoute,
   getActivityParticipationRoute,
+  getActivityPaymentsRoute,
 } from "@/features/participation/utils/participation-routes";
 
-export function ParticipationActivityTabs({ activityId, current }: { activityId: string; current: "attendance" | "registrations" }) {
+export function ParticipationActivityTabs({ activityId, current }: ParticipationActivityTabsProps) {
   const items = [
     { href: getActivityParticipationRoute(activityId), id: "registrations", label: "Inscripciones" },
+    { href: getActivityPaymentsRoute(activityId), id: "payments", label: "Pagos" },
     { href: getActivityAttendanceRoute(activityId), id: "attendance", label: "Asistencia" },
   ] as const;
   return (

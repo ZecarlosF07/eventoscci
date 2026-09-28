@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import Link from "next/link";
 
 import { Button } from "@/components/atoms/Button";
 import { CertificatePaymentDialog } from "@/features/registrations/components/CertificateCommercialActions/CertificatePaymentDialog";
@@ -9,6 +10,7 @@ import type {
   CertificatePaymentDialogMode,
 } from "@/features/registrations/components/CertificateCommercialActions/types/certificate-commercial-actions.types";
 import { registerCertificateRequestAdminAction } from "@/features/registrations/mutations/registration-admin.actions";
+import { getActivityPaymentsRoute } from "@/features/participation/utils/participation-routes";
 
 export function CertificateCommercialActions({
   activityId,
@@ -21,6 +23,7 @@ export function CertificateCommercialActions({
   registrationConfirmed,
   registrationId,
   returnTo,
+  paymentWorkspace = false,
 }: CertificateCommercialActionsProps) {
   const [mode, setMode] = useState<CertificatePaymentDialogMode | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -39,6 +42,8 @@ export function CertificateCommercialActions({
     return <form action={action}><Button className="min-h-9 px-3 py-1 text-xs" type="submit" variant="secondary">Registrar solicitud</Button></form>;
   }
 
+  if (!paymentWorkspace) return <Link className="inline-flex min-h-11 items-center text-sm font-semibold text-cci-700 underline" href={getActivityPaymentsRoute(activityId, undefined, registrationId)}>Ver pago del certificado →</Link>;
+
   return (
     <>
       {certificatePaymentVerified ? (
@@ -46,7 +51,7 @@ export function CertificateCommercialActions({
       ) : registrationConfirmed ? (
         <Button className="min-h-9 px-3 py-1 text-xs" onClick={(event) => open("verify", event.currentTarget)}>Confirmar pago</Button>
       ) : (
-        <p className="text-xs text-slate-500">Confirma primero la inscripción.</p>
+        <p className="text-sm text-slate-600">Requiere confirmar participación</p>
       )}
       {mode ? (
         <CertificatePaymentDialog

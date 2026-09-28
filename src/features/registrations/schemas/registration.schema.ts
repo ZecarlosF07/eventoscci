@@ -170,6 +170,8 @@ export const certificateRequestRpcResultSchema = z.object({
 });
 
 export const registrationAdminItemSchema = z.object({
+  member_group_request_id: z.uuid().nullable(),
+  is_complimentary: z.boolean(),
   academic_institution_snapshot: z.string().nullable(),
   activity: z.object({
     certificate_mode: z.enum(["none", "included", "optional_paid"]),

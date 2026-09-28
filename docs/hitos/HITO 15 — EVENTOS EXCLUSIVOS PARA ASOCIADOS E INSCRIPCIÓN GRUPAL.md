@@ -7,6 +7,8 @@
 
 # 1. Descripción del hito
 
+> Actualización operativa del 28/09/2026: las solicitudes grupales se cobran desde la pestaña Pagos de su actividad, junto a las individuales. El detalle grupal conserva asistentes, comprobante, historial y operaciones no monetarias. No cambian las reglas de este hito; consultar [Participación: pagos por actividad](../integraciones/participacion-pagos.md).
+
 Este hito amplía el MVP con eventos publicados pero no listados, un padrón administrable de empresas asociadas y una solicitud que permite registrar a varios asistentes de una misma empresa. La participación mantiene el cobro manual y cada asistente conserva una inscripción, un cupo, una asistencia y, cuando corresponda, un certificado propios.
 
 ```text

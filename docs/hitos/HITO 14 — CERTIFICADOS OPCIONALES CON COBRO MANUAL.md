@@ -7,6 +7,8 @@
 
 # 1. Descripción del hito
 
+> Actualización operativa del 28/09/2026: la validación y reversión del pago de certificados se centraliza en la pestaña Pagos de cada actividad. Inscripciones conserva el registro de interés. Las reglas comerciales y de emisión de este hito no cambian; consultar [Participación: pagos por actividad](../integraciones/participacion-pagos.md).
+
 El Hito 14 incorpora una configuración explícita de certificación para eventos y capacitaciones. Cada actividad podrá no ofrecer certificado, incluirlo en la participación u ofrecerlo opcionalmente con tarifa general y tarifa para asociados. El cobro manual aplica únicamente a la tercera modalidad, sin incorporar una pasarela de pago ni convertir el módulo de certificados en un sistema contable.
 
 La inscripción y el certificado continuarán siendo procesos independientes. La plataforma conservará la solicitud y la verificación manual del pago para que el responsable pueda completar el seguimiento aunque el participante no termine el contacto por WhatsApp:

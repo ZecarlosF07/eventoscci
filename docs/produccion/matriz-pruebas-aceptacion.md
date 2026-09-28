@@ -26,6 +26,7 @@ No se libera una versión con defectos críticos o altos abiertos. Los resultado
 | Perfiles de inscripción y sugerencias | `024_registration_participant_profiles_test.sql` | Profesional, estudiante y asociado; tarifa general estudiantil, snapshots, preservación de datos y sugerencia opcional |
 | Eventos exclusivos y padrón | `025_member_group_events_test.sql`, `026_member_roster_version_test.sql` | Inscripción grupal, pagos y reemplazo del padrón |
 | Pases gratuitos por empresa | `027_member_company_complimentary_passes_test.sql` | Cuota por RUC, grupo mixto, importe cero, reintentos, cancelación, transferencia y auditoría |
+| Pagos por actividad | `028_activity_payments_workspace_test.sql`, `tests/unit/payment-workspace*.test.ts` | Conteos grupales/individuales, saldos separados, idempotencia, fechas operativas, historial, permisos, paginación y rutas compatibles |
 | SEO y rendimiento público | `tests/unit/seo.test.ts` | Metadata, JSON-LD, sesiones múltiples, slugs, búsquedas seguras y analítica sin PII |
 
 Los archivos usan transacciones con `rollback`; no conservan fixtures en la base vinculada.
@@ -84,7 +85,27 @@ El Hito 16 está implementado en el repositorio y la migración `202609250003` s
 
 Para cambiar un caso a **APROBADO** faltan las comprobaciones específicas de interfaz, concurrencia real, correos desde el workflow activo y vistas accesibles en 390, 768 y 1440 px que correspondan a ese caso.
 
-## Concurrencia e idempotencia
+## Participación — Pagos por actividad (28/09/2026)
+
+Base de trabajo `38b2198` más cambios locales sin commit. Aplicadas las migraciones `202609280001`, `202609280002` y `202609280003` a Supabase vinculada, con dry-run previo, sin seeds y tipos regenerados. Pasaron 51 casos SQL nuevos (028) y las regresiones 004 (58), 005 (73), 017 (7), 018 (18), 022 (39), 023 (34), 025 (34), 026 (9) y 027 (30). Se actualizaron las fixtures de pago individual para utilizar la nueva operación con referencia; el caso de auditoría de 027 ahora se limita a la actividad de prueba. No se atribuyen estos resultados a las pruebas integrales pendientes.
+
+| Caso | Evidencia real / pendiente | Estado |
+|---|---|---|
+| P-01 Conteo sin lista vacía | 028: solicitudes grupales e individuales en la misma actividad; una fila por solicitud y cortesías excluidas | APROBADO (SQL) |
+| P-02 Pagos individuales | 028: importe exacto, referencia, auditoría, responsable, segunda operación bloqueada e idempotencia | APROBADO (SQL) |
+| P-03 Pagos grupales y pases | 025, 027, 028: selección parcial por plazas completas; cortesías separadas y sin cobro; padrón y transferencias conservados | APROBADO (SQL) |
+| P-04 Certificados separados | 023 y 028: saldo separado, participación confirmada, reversión y bloqueo después de emisión | APROBADO (SQL) |
+| P-05 Fechas operativas | 028: evento en curso, varias sesiones, fin exacto, sesión sin fin en Lima, sin fechas y finalización; fechas originales conservadas | APROBADO (SQL) |
+| P-06 Escala y búsqueda | 028: tres actividades con más de 100 solicitudes, página final, búsqueda de documento y agregación de más de 1.000 actividades | APROBADO (SQL) |
+| P-07 Historial y exclusiones | 028 y 018: confirmaciones antiguas sin pagos ficticios; historial mixto operable; exclusión de eliminados, cancelados y archivados | APROBADO (SQL) |
+| P-08 Navegación y operación visual | Pestañas, filtros, detalle inline, conservación de páginas, CSV y rutas antiguas, con sesión administrativa real | NO EJECUTADO |
+| P-09 Accesibilidad y responsive | Teclado, foco, lector de pantalla y revisión visual 390×844, 768×1024, 1440×900 | NO EJECUTADO |
+| P-10 Concurrencia real | Dos operadores intentando confirmar la misma plaza al mismo tiempo | NO EJECUTADO |
+| P-11 Correo real | Entrega desde el workflow activo, sin duplicados por reintento; SQL solo verifica outbox | NO EJECUTADO |
+
+El navegador local está en el login administrativo: la revisión autenticada necesita que el usuario inicie sesión. No se extrajeron credenciales ni se omitió la autenticación para probar la interfaz. Pasaron 138 pruebas unitarias (incluye render estático de las pestañas, listas y filtros), `yarn lint`, `yarn typecheck` y `yarn build`. La compilación necesitó acceso de red para las fuentes existentes de Google Fonts. El dry-run final confirmó la base vinculada al día, sin migraciones ni seeds pendientes.
+
+## Concurrencia e idempotencia (protecciones)
 
 | Riesgo | Protección implementada | Prueba |
 |---|---|---|

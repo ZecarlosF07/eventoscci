@@ -156,6 +156,8 @@ export interface RegistrationAdminItem
     | "certificate_requested_by"
     | "created_at"
     | "id"
+    | "member_group_request_id"
+    | "is_complimentary"
     | "career_snapshot"
     | "future_topics_suggestion"
     | "job_title_snapshot"

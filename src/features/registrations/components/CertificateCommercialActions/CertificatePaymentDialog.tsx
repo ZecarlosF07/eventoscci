@@ -11,6 +11,7 @@ import {
   verifyCertificatePaymentAction,
 } from "@/features/registrations/mutations/registration-admin.actions";
 import { formatRegistrationPrice } from "@/features/registrations/utils/registration-formatters";
+import { handleDialogKeyboard } from "@/utils/dialog-keyboard";
 
 export function CertificatePaymentDialog({
   activityId,
@@ -27,7 +28,7 @@ export function CertificatePaymentDialog({
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     closeRef.current?.focus();
-    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
+    const closeOnEscape = (event: KeyboardEvent) => handleDialogKeyboard(event, closeRef.current?.closest("form") ?? null, onClose);
     document.addEventListener("keydown", closeOnEscape);
     return () => {
       document.body.style.overflow = previousOverflow;

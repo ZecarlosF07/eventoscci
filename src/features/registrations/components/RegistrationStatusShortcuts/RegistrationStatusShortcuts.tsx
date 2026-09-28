@@ -8,7 +8,7 @@ export function RegistrationStatusShortcuts({ activity, filters }: { activity: P
   const current = filters.status ?? filters.statusScope ?? "active";
   const items = [
     ["active", "Activas", activity.activeCount],
-    ["pending", "Por verificar", activity.pendingCount],
+    ["pending", "Pendientes", activity.pendingCount],
     ["confirmed", "Confirmadas", activity.confirmedCount],
     ["cancelled", "Canceladas", activity.cancelledCount],
     ["all", "Historial", activity.totalCount],

@@ -5,6 +5,8 @@ import type { RegistrationAdminItem } from "../../src/features/registrations/typ
 import { registrationsToCsv } from "../../src/features/registrations/utils/registrations-csv";
 
 const REGISTRATION: RegistrationAdminItem = {
+  member_group_request_id: null,
+  is_complimentary: false,
   academic_institution_snapshot: null,
   activity: {
     certificate_mode: "optional_paid",

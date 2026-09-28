@@ -30,6 +30,11 @@ function normalize(row: SummaryRow): ParticipationActivitySummary {
     lastDate: row.last_date,
     nextDate: row.next_date,
     pendingCount: row.pending_count ?? 0,
+    paymentPendingRequests: row.payment_pending_requests ?? 0,
+    paymentPendingSeats: row.payment_pending_seats ?? 0,
+    certificatePendingCount: row.certificate_pending_count ?? 0,
+    operationalEndsAt: row.operational_ends_at,
+    isOperationalUpcoming: row.is_operational_upcoming ?? false,
     slug: row.slug,
     status: row.status,
     title: row.title,
@@ -46,13 +51,14 @@ export async function getParticipationOverview(
   let query = client
     .from("activity_participation_summary")
     .select("*", { count: "exact" })
-    .order("pending_count", { ascending: false })
+    .order("payment_pending_requests", { ascending: false })
     .order("next_date", { ascending: true, nullsFirst: false })
     .order("last_date", { ascending: false, nullsFirst: false });
 
   if (filters.activityType) query = query.eq("type", filters.activityType);
-  if (filters.period === "upcoming") query = query.not("next_date", "is", null);
-  if (filters.period === "past") query = query.is("next_date", null).not("last_date", "is", null);
+  if (filters.period === "upcoming") query = query.eq("is_operational_upcoming", true);
+  if (filters.period === "past") query = query.eq("is_operational_upcoming", false).not("operational_ends_at", "is", null);
+  if (filters.period === "payments") query = query.or("payment_pending_requests.gt.0,certificate_pending_count.gt.0");
   const search = filters.query ? escapePostgrestSearch(filters.query) : "";
   if (search) query = query.ilike("title", `%${search}%`);
 
@@ -70,16 +76,11 @@ export async function getParticipationOverview(
 export async function getParticipationGlobalMetrics(): Promise<ParticipationGlobalMetrics> {
   const client = await createServerSupabaseClient();
   const { data, error } = await client
-    .from("activity_participation_summary")
-    .select("active_count, attended_count, confirmed_count, pending_count")
-    .limit(1000);
+    .from("participation_global_metrics")
+    .select("*").single();
   if (error) throw new Error("No fue posible calcular los indicadores de participación.", { cause: error });
-  return (data ?? []).reduce<ParticipationGlobalMetrics>((totals, row) => ({
-    active: totals.active + (row.active_count ?? 0),
-    attended: totals.attended + (row.attended_count ?? 0),
-    confirmed: totals.confirmed + (row.confirmed_count ?? 0),
-    pending: totals.pending + (row.pending_count ?? 0),
-  }), { active: 0, attended: 0, confirmed: 0, pending: 0 });
+  return { active: data.active ?? 0, attended: data.attended ?? 0,
+    confirmed: data.confirmed ?? 0, pending: data.pending ?? 0 };
 }
 
 export async function getParticipationActivitySummary(

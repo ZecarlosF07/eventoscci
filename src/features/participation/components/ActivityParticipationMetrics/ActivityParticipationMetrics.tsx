@@ -8,7 +8,7 @@ export function ActivityParticipationMetrics({ activity, mode = "registrations" 
     ["No asistieron", activity.absentCount],
   ] as const : [
     ["Activas", activity.activeCount],
-    ["Por verificar", activity.pendingCount],
+    ["Plazas pendientes", activity.pendingCount],
     ["Confirmadas", activity.confirmedCount],
     ["Canceladas", activity.cancelledCount],
   ] as const;

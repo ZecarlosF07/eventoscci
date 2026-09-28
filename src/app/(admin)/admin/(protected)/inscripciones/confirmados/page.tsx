@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 
-import { ROUTES } from "@/constants/routes";
+import type { LegacyPaymentPageProps } from "@/features/participation/types/payment.types";
+import { legacyConfirmedRoute } from "@/features/participation/utils/legacy-payment-route";
 
-export default function ConfirmedRegistrationsPage() {
-  redirect(ROUTES.adminRegistrations);
+export default async function ConfirmedRegistrationsPage({ searchParams }: LegacyPaymentPageProps) {
+  redirect(legacyConfirmedRoute(await searchParams));
 }

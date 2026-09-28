@@ -1,6 +1,11 @@
 import type { ActivityStatus, ActivityType } from "@/features/activities/types/activity.types";
 
-export type ParticipationPeriod = "all" | "past" | "upcoming";
+export type ParticipationPeriod = "all" | "past" | "upcoming" | "payments";
+
+export interface ParticipationActivityTabsProps {
+  activityId: string;
+  current: "attendance" | "registrations" | "payments";
+}
 
 export interface ParticipationActivitySummary {
   absentCount: number;
@@ -15,6 +20,11 @@ export interface ParticipationActivitySummary {
   lastDate: string | null;
   nextDate: string | null;
   pendingCount: number;
+  paymentPendingRequests: number;
+  paymentPendingSeats: number;
+  certificatePendingCount: number;
+  operationalEndsAt: string | null;
+  isOperationalUpcoming: boolean;
   slug: string;
   status: ActivityStatus;
   title: string;

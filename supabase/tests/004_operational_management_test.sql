@@ -44,14 +44,14 @@ insert into public.activities (
   id, type, title, slug, description, modality, is_free, general_price,
   member_price, capacity, registration_open_at, registration_close_at,
   maps_embed_url, contact_phone,
-  status, published_at
+  status, published_at, payment_note
 )
 values (
   '73000000-0000-4000-8000-000000000001', 'event', 'Operación Hito 4',
   'operacion-hito-4', 'Actividad temporal para pruebas operativas.', 'in_person',
   false, 150, 90, 10, now() - interval '1 day', now() + interval '1 day',
   'https://www.google.com/maps/embed?pb=hito4', '900000004',
-  'published', now()
+  'published', now(), 'Coordina el pago con la CCI.'
 );
 
 set local role anon;
@@ -93,7 +93,7 @@ set local role authenticated;
 select set_config('request.jwt.claim.sub', '82000000-0000-4000-8000-000000000002', true);
 
 select lives_ok(
-  $$select public.confirm_registration((select registration_id from hito4_refs where document_number = '13000003'))$$,
+  $$select public.verify_individual_registration_payment((select registration_id from hito4_refs where document_number = '13000003'),90,'HITO4',null,'82000000-0000-4000-8000-000000000010')$$,
   'administrator confirms a pending registration'
 );
 select is((select status from public.registrations where id = (select registration_id from hito4_refs where document_number = '13000003')), 'confirmed'::public.registration_status, 'confirmation persists confirmed status');

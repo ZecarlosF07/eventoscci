@@ -45,13 +45,13 @@ values
 insert into public.activities (
   id, type, title, slug, description, modality, academic_hours, is_free,
   general_price, member_price, capacity, registration_open_at,
-  registration_close_at, maps_embed_url, contact_phone, status, published_at
+  registration_close_at, maps_embed_url, contact_phone, status, published_at, payment_note
 ) values (
   '75000000-0000-4000-8000-000000000001', 'training', 'Capacitación Certificable',
   'capacitacion-certificable-hito-5', 'Actividad temporal para pruebas.', 'in_person',
   8, false, 120, 80, 20, now() - interval '1 day', now() + interval '1 day',
   'https://www.google.com/maps/embed?pb=hito5', '900000005',
-  'published', now()
+  'published', now(), 'Coordina el pago con la CCI.'
 );
 
 insert into public.activity_dates (id, activity_id, starts_at, ends_at)
@@ -102,8 +102,8 @@ select lives_ok(
 );
 select is((select count(*) from public.certificates where registration_id = (select registration_id from hito5_refs where document_number = '15000003')), 0::bigint, 'pending registration receives no certificate');
 
-select public.confirm_registration((select registration_id from hito5_refs where document_number = '15000003'));
-select public.confirm_registration((select registration_id from hito5_refs where document_number = '15000004'));
+select public.verify_individual_registration_payment((select registration_id from hito5_refs where document_number = '15000003'),120,'HITO5-A',null,'85000000-0000-4000-8000-000000000010');
+select public.verify_individual_registration_payment((select registration_id from hito5_refs where document_number = '15000004'),120,'HITO5-B',null,'85000000-0000-4000-8000-000000000011');
 select public.set_attendance_status(array[(select attendance_id from hito5_refs where document_number = '15000004')], 'absent', null);
 
 select lives_ok(
