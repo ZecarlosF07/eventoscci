@@ -25,9 +25,9 @@ export function CourseStudentsTable({
 }: CourseStudentsTableProps) {
   return (
     <div className="space-y-7">
-      <AutoFilterForm className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_auto]" defaults={{}}>
-        <FormField hint="Documento, nombre o correo." label="Buscar persona" name="q">
-          <Input defaultValue={query} id="q" name="q" />
+      <AutoFilterForm defaults={{}}>
+        <FormField label="Buscar persona" name="q">
+          <Input defaultValue={query} id="q" name="q" placeholder="Documento, nombre o correo" />
         </FormField>
       </AutoFilterForm>
 

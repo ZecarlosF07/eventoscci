@@ -24,7 +24,13 @@ No se modifican el header, las búsquedas públicas ni las reglas de participaci
 
 ## Actualización, errores y exportaciones
 
-«Actualizando resultados…» marca los anteriores como pendientes con `aria-busy` y menor opacidad; «Resultados actualizados» anuncia el conteo cuando está disponible. «Más filtros» indica cuántos secundarios están activos y se abre cuando corresponde. El resumen permite quitar filtros, y «Limpiar filtros» respeta valores predeterminados y contexto. Las fechas incompletas/inexistentes y rangos invertidos no se envían; se informa el problema y se marca el control para tecnologías de asistencia.
+### Presentación compacta
+
+Los buscadores comparten un contenedor de 12 px de padding y separaciones verticales de 8 px. «Más filtros», los criterios activos, el estado de búsqueda y «Limpiar filtros» comparten una barra, que se ajusta en móvil. Los filtros secundarios se despliegan debajo únicamente cuando se necesitan; cerrarlos no desmonta los controles ni elimina sus valores. Un enlace guardado con criterios secundarios activos los muestra inicialmente abiertos. Se conservan etiquetas, foco visible, anuncios accesibles y controles de al menos 44 px; no se compactan los formularios públicos ni el header.
+
+Participación coloca el criterio de cobros junto a los filtros principales; Pagos utiliza la misma fila para sus filtros de participación y certificado, manteniendo un separador visual entre ambos. Catálogos reúne búsqueda y estado en una barra adaptable. Se eliminan columnas vacías y ayudas redundantes en la búsqueda de personas para matrícula.
+
+«Actualizando…» marca los anteriores como pendientes con `aria-busy` y menor opacidad; «Resultados actualizados» anuncia el conteo cuando está disponible. «Más filtros» indica cuántos secundarios están activos y se abre cuando corresponde. El resumen permite quitar filtros, y «Limpiar filtros» respeta valores predeterminados y contexto. Las fechas incompletas/inexistentes y rangos invertidos no se envían; se informa el problema y se marca el control para tecnologías de asistencia.
 
 Next.js gestiona la sustitución de navegaciones concurrentes: no se introducen peticiones fetch paralelas independientes que puedan sobrescribir la última navegación. El hook evita enviar de nuevo una URL idéntica y captura todos los controles al ejecutar, no solamente el valor que inició el debounce. Ante un error de consulta, el error boundary administrativo no presenta datos antiguos como vigentes y ofrece «Reintentar».
 

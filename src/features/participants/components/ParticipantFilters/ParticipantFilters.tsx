@@ -5,7 +5,7 @@ import type { ParticipantFiltersProps } from "@/features/participants/components
 
 export function ParticipantFilters({ filters, total }: ParticipantFiltersProps) {
   return (
-    <AutoFilterForm total={total} className="grid gap-4 rounded-3xl border border-cci-100 bg-white p-5 md:grid-cols-[1fr_220px]" defaults={{ perfil: "" }}>
+    <AutoFilterForm total={total} className="md:grid-cols-[1fr_220px]" defaults={{ perfil: "" }}>
       <div className="flex-1">
         <FormField label="Buscar participante" name="q">
           <Input defaultValue={filters.query} id="q" name="q" placeholder="Nombre, documento, correo, empresa, RUC o institución" type="search" />

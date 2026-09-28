@@ -8,7 +8,7 @@ export interface SelectionCheckboxProps { item: WorkspaceSelectionItem; disabled
 export interface SelectionSummaryProps { visibleIds: string[] }
 export interface SelectedInputsProps { name: string }
 export interface ActiveFilterSummaryProps { defaults: Record<string, string>; remove: (name: string) => void; valueLabels?: Record<string, string> }
-export interface MoreFiltersProps { children: ReactNode; names: string[] }
+export interface MoreFiltersProps { children: ReactNode; names: string[]; toolbar?: ReactNode }
 export type WorkspaceDraftInputProps = InputProps & { draftKey: string };
 export type WorkspaceDraftSelectProps = SelectProps & { draftKey: string };
 
@@ -19,6 +19,7 @@ export interface AutoFilterFormProps {
   resetPages?: Record<string, string[]>;
   total?: number;
   valueLabels?: Record<string, string>;
+  moreFilters?: Omit<MoreFiltersProps, "toolbar">;
 }
 export interface FilterWorkspaceState {
   busy: boolean;

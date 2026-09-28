@@ -1,7 +1,6 @@
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
 import { AutoFilterForm } from "@/features/admin-filters/components/AutoFilterForm";
-import { MoreFilters } from "@/features/admin-filters/components/MoreFilters";
 import type { RegistrationAdminFilters, ActivityRegistrationFiltersProps } from "@/features/registrations/types/registration.types";
 
 function selectedStatus(filters: RegistrationAdminFilters): string {
@@ -10,7 +9,14 @@ function selectedStatus(filters: RegistrationAdminFilters): string {
 
 export function ActivityRegistrationFilters({ filters, total }: ActivityRegistrationFiltersProps) {
   return (
-    <AutoFilterForm total={total} className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_220px_200px]" defaults={{ estado: "active" }}>
+    <AutoFilterForm total={total} className="md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_220px_200px]" defaults={{ estado: "active" }} moreFilters={{ names: ["certificado", "perfil"], children: <>
+      <label className="text-sm font-semibold">Perfil<Select defaultValue={filters.profile ?? ""} name="perfil"><option value="">Todos</option><option value="professional">Profesional</option><option value="student">Estudiante</option></Select></label>
+      <label className="text-sm font-semibold">Certificado
+        <Select aria-label="Estado comercial del certificado" defaultValue={filters.certificateRequest ?? ""} name="certificado">
+          <option value="">Todas</option><option value="not_requested">Sin solicitar</option><option value="payment_pending">Pago pendiente</option><option value="payment_verified">Pago verificado</option><option value="ready_to_issue">Listos para emitir</option>
+        </Select>
+      </label>
+    </> }}>
       <Input defaultValue={filters.query} name="q" aria-label="Buscar inscripción" placeholder="Nombre, documento, correo, código o RUC" type="search" />
       <Select aria-label="Estado de inscripción" defaultValue={selectedStatus(filters)} name="estado">
         <option value="active">Activas</option>
@@ -24,17 +30,6 @@ export function ActivityRegistrationFilters({ filters, total }: ActivityRegistra
         <option value="general">Público general</option>
         <option value="member">Asociado CCI</option>
       </Select>
-      <MoreFilters names={["certificado", "perfil"]}>
-      <label className="text-sm font-semibold">Perfil<Select defaultValue={filters.profile ?? ""} name="perfil"><option value="">Todos</option><option value="professional">Profesional</option><option value="student">Estudiante</option></Select></label>
-      <label className="text-sm font-semibold">Certificado
-      <Select aria-label="Estado comercial del certificado" defaultValue={filters.certificateRequest ?? ""} name="certificado">
-        <option value="">Todas</option>
-        <option value="not_requested">Sin solicitar</option>
-        <option value="payment_pending">Pago pendiente</option>
-        <option value="payment_verified">Pago verificado</option>
-        <option value="ready_to_issue">Listos para emitir</option>
-      </Select></label>
-      </MoreFilters>
       {filters.profile === "student" && filters.registrationType === "member" ? <p className="col-span-full text-sm text-amber-800" role="status">El perfil estudiante utiliza público general. Cambia el tipo de inscripción o el perfil para consultar resultados.</p> : null}
       {filters.status && filters.status !== "confirmed" && filters.certificateRequest === "ready_to_issue" ? <p className="col-span-full text-sm text-amber-800" role="status">Para estar listo para emitir, el participante debe tener inscripción confirmada y asistencia registrada. Cambia el estado o el filtro de certificado.</p> : null}
     </AutoFilterForm>

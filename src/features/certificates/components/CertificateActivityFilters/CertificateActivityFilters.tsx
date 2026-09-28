@@ -6,7 +6,7 @@ import type { CertificateActivityFiltersProps } from "@/features/certificates/co
 
 export function CertificateActivityFilters({ filters, total }: CertificateActivityFiltersProps) {
   return (
-    <AutoFilterForm total={total} className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-5 shadow-sm md:grid-cols-[minmax(0,1fr)_220px_auto]" defaults={{}}>
+    <AutoFilterForm total={total} className="md:grid-cols-[minmax(0,1fr)_220px]" defaults={{}}>
       <FormField label="Buscar actividad" name="q">
         <Input defaultValue={filters.query} id="q" name="q" placeholder="Nombre del evento o capacitación" type="search" />
       </FormField>

@@ -27,8 +27,12 @@ export function CatalogAdminList({ items, kind }: CatalogAdminListProps) {
 
   return (
     <div className="space-y-4">
-      <div className="max-w-md"><label className="sr-only" htmlFor="catalog-search">Buscar en el catálogo</label><Input id="catalog-search" onChange={(event) => change({ q: event.target.value })} placeholder="Buscar por nombre o información" type="search" value={query} /></div>
-      <div className="flex flex-wrap items-center gap-3"><label className="text-sm font-semibold">Estado <select className="min-h-11 rounded-xl border border-cci-200 px-3" onChange={(event) => change({ estado: event.target.value })} value={status}><option value="all">Todos</option><option value="active">Activos</option><option value="inactive">Inactivos</option></select></label><button className="min-h-11 rounded-xl border px-4 text-sm" onClick={() => { change({ q: "", estado: "all" }); }} type="button">Limpiar filtros</button><p className="text-sm text-slate-600" role="status">{visibleItems.length} resultados · actualización automática</p></div>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-cci-100 bg-white p-3">
+        <div className="min-w-0 basis-full sm:min-w-64 sm:flex-1 sm:basis-auto"><label className="sr-only" htmlFor="catalog-search">Buscar en el catálogo</label><Input id="catalog-search" onChange={(event) => change({ q: event.target.value })} placeholder="Buscar por nombre o información" type="search" value={query} /></div>
+        <label className="text-sm font-semibold">Estado <select className="min-h-11 rounded-xl border border-cci-200 px-3" onChange={(event) => change({ estado: event.target.value })} value={status}><option value="all">Todos</option><option value="active">Activos</option><option value="inactive">Inactivos</option></select></label>
+        <button className="min-h-11 rounded-lg px-3 text-sm font-semibold text-cci-800 hover:bg-cci-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-600" onClick={() => { change({ q: "", estado: "all" }); }} type="button">Limpiar filtros</button>
+        <p className="text-sm text-slate-600" role="status">{visibleItems.length} resultados</p>
+      </div>
     <div className="overflow-hidden rounded-3xl border border-cci-100 bg-white shadow-sm">
       <div className="hidden grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_100px_140px] gap-4 border-b border-cci-100 bg-cci-50 px-5 py-3 text-xs font-bold uppercase tracking-wider text-cci-700 md:grid">
         <span>Registro</span><span>Información</span><span>Usos</span><span className="text-right">Acciones</span>

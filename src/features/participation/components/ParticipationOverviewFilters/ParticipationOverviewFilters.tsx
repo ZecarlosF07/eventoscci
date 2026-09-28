@@ -5,7 +5,7 @@ import type { ParticipationOverviewFiltersProps } from "@/features/participation
 
 export function ParticipationOverviewFilters({ filters, total }: ParticipationOverviewFiltersProps) {
   return (
-    <AutoFilterForm total={total} className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 lg:grid-cols-[minmax(0,1fr)_200px_220px]" defaults={{ periodo: "upcoming" }}>
+    <AutoFilterForm total={total} className="md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_200px_200px_250px]" defaults={{ periodo: "upcoming" }}>
       <Input defaultValue={filters.query} name="q" aria-label="Buscar actividad" placeholder="Buscar actividad" type="search" />
       <Select aria-label="Tipo de actividad" defaultValue={filters.activityType ?? ""} name="tipo">
         <option value="">Eventos y capacitaciones</option>
@@ -17,7 +17,7 @@ export function ParticipationOverviewFilters({ filters, total }: ParticipationOv
         <option value="past">Anteriores</option>
         <option value="all">Todas</option>
       </Select>
-      <label className="col-span-full flex min-h-11 items-center gap-3 rounded-xl bg-cci-50 p-3 text-sm font-semibold"><input defaultChecked={filters.paymentsOnly} name="pagos" type="checkbox" value="1" />Solo con pagos pendientes (participación o certificados)</label>
+      <label className="flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-semibold"><input defaultChecked={filters.paymentsOnly} name="pagos" type="checkbox" value="1" /><span>Solo con pagos pendientes<span className="block text-xs font-normal text-slate-600">Participación o certificados</span></span></label>
     </AutoFilterForm>
   );
 }

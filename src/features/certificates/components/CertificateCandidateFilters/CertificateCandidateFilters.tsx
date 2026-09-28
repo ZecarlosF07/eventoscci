@@ -5,7 +5,7 @@ import type { CertificateCandidateFiltersProps } from "@/features/certificates/c
 
 export function CertificateCandidateFilters({ filters, total }: CertificateCandidateFiltersProps) {
   return (
-    <AutoFilterForm total={total} className="grid gap-4 rounded-2xl border border-cci-100 bg-white p-5 shadow-sm md:grid-cols-[minmax(0,1fr)_240px]" defaults={{ emision: "all" }}>
+    <AutoFilterForm total={total} className="md:grid-cols-[minmax(0,1fr)_240px]" defaults={{ emision: "all" }}>
       <FormField label="Buscar participante" name="q">
         <Input
           defaultValue={filters.query}

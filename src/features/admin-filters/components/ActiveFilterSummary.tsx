@@ -13,5 +13,5 @@ export function ActiveFilterSummary({ defaults, remove, valueLabels = {} }: Acti
     && (value !== "all" || defaults[name] && defaults[name] !== "all")
     && (!/^[\da-f-]{36}$/i.test(value) || valueLabels[value]));
   if (!entries.length) return null;
-  return <div className="col-span-full flex flex-wrap gap-2" aria-label="Filtros activos">{entries.map(([name, value]) => <button className="min-h-11 max-w-full rounded-full bg-cci-50 px-4 text-left text-sm text-cci-950" key={name} onClick={() => remove(name)} type="button" aria-label={`Quitar filtro ${NAMES[name]}`}><span className="break-words">{NAMES[name]}: {valueLabels[value] ?? VALUES[value] ?? value}</span> ×</button>)}</div>;
+  return <div className="order-first flex max-w-full basis-full flex-wrap gap-1 sm:order-none sm:basis-auto" aria-label="Filtros activos">{entries.map(([name, value]) => <button className="min-h-11 max-w-full rounded-lg bg-cci-50 px-3 text-left text-sm text-cci-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-600" key={name} onClick={() => remove(name)} type="button" aria-label={`Quitar filtro ${NAMES[name]}`}><span className="break-words">{NAMES[name]}: {valueLabels[value] ?? VALUES[value] ?? value}</span> ×</button>)}</div>;
 }

@@ -5,7 +5,7 @@ import type { RegistrationSuggestionFiltersProps } from "@/features/registration
 
 export function RegistrationSuggestionFilters({ activities, filters, total }: RegistrationSuggestionFiltersProps) {
   return (
-    <AutoFilterForm total={total} valueLabels={Object.fromEntries(activities.map((activity) => [activity.id, activity.title]))} className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 lg:grid-cols-[minmax(200px,1fr)_minmax(220px,1fr)_170px_190px]" defaults={{ perfil: "all" }}>
+    <AutoFilterForm total={total} valueLabels={Object.fromEntries(activities.map((activity) => [activity.id, activity.title]))} className="lg:grid-cols-[minmax(200px,1fr)_minmax(220px,1fr)_170px_190px]" defaults={{ perfil: "all" }}>
       <Input defaultValue={filters.query} name="q" aria-label="Buscar en sugerencias" placeholder="Buscar en sugerencias" type="search" />
       <Select aria-label="Actividad" defaultValue={filters.activityId ?? ""} name="actividad">
         <option value="">Todas las actividades</option>

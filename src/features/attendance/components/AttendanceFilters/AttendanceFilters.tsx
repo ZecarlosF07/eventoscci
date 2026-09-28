@@ -6,7 +6,7 @@ import type { AttendanceFiltersProps } from "@/features/attendance/components/At
 
 export function AttendanceFilters({ filters, total }: AttendanceFiltersProps) {
   return (
-    <AutoFilterForm total={total} className="grid gap-4 rounded-3xl border border-cci-100 bg-white p-5 lg:grid-cols-5" defaults={{ estado: "confirmed" }}>
+    <AutoFilterForm total={total} className="lg:grid-cols-5" defaults={{ estado: "confirmed" }}>
       <div className="lg:col-span-2"><FormField label="Buscar participante" name="q"><Input defaultValue={filters.query} id="q" name="q" placeholder="Nombre, documento, correo, celular o código" type="search" /></FormField></div>
       <FormField label="Inscripción" name="estado"><Select defaultValue={filters.registrationStatus ?? "all"} id="estado" name="estado"><option value="confirmed">Confirmadas (operables)</option><option value="all">Todas (consulta)</option><option value="pending">Pendientes de confirmación</option><option value="cancelled">Canceladas</option></Select></FormField>
       <FormField label="Tipo" name="tipo"><Select defaultValue={filters.registrationType ?? ""} id="tipo" name="tipo"><option value="">Todos</option><option value="general">General</option><option value="member">Asociado</option></Select></FormField>

@@ -82,3 +82,23 @@ test("filter UI has accessible status and clear action without apply button", ()
   const markup = renderAdminFilters(createElement(AutoFilterForm, {}, createElement("input", { name: "q" })));
   assert.match(markup, /aria-live="polite"/); assert.match(markup, /Limpiar filtros/); assert.doesNotMatch(markup, /type="submit"/);
 });
+test("compact filters share one toolbar and retain secondary controls when collapsed", () => {
+  const markup = renderAdminFilters(createElement(AutoFilterForm, {
+    moreFilters: { names: ["perfil"], children: createElement("select", { name: "perfil", defaultValue: "" }, createElement("option", { value: "" }, "Todos")) },
+  }, createElement("input", { name: "q" })));
+  assert.match(markup, /gap-x-3 gap-y-2 rounded-2xl/);
+  assert.match(markup, /aria-expanded="false"/);
+  assert.match(markup, /aria-controls="[^"]+"/);
+  assert.match(markup, /name="perfil"/);
+  assert.match(markup, /class="hidden gap-3/);
+  assert.equal((markup.match(/Limpiar filtros/g) ?? []).length, 1);
+  assert.doesNotMatch(markup, /<details|border-t border-cci-100 pt-3/);
+});
+test("secondary filters are visible on saved links with active criteria", () => {
+  const markup = renderAdminFilters(createElement(AutoFilterForm, {
+    moreFilters: { names: ["perfil"], children: createElement("select", { name: "perfil" }) },
+  }), "perfil=student");
+  assert.match(markup, /aria-expanded="true"/);
+  assert.match(markup, /Más filtros · 1 activo/);
+  assert.match(markup, /Quitar filtro Perfil/);
+});

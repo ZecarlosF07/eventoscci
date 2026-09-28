@@ -11,7 +11,6 @@ import { ACTIVITY_STATUS_LABELS } from "@/features/activities/constants/activity
 import { getAdminActivityRoute, getNewActivityRoute } from "@/features/activities/utils/activity-routes";
 import { AutoFilterForm } from "@/features/admin-filters/components/AutoFilterForm";
 import { FilterResults } from "@/features/admin-filters/components/FilterWorkspace";
-import { MoreFilters } from "@/features/admin-filters/components/MoreFilters";
 
 export function ActivityAdminListTemplate({ data, filters, title, type }: ActivityAdminListTemplateProps) {
   const baseRoute = getAdminActivityRoute(type);
@@ -26,11 +25,10 @@ export function ActivityAdminListTemplate({ data, filters, title, type }: Activi
         <Link aria-current={!archived ? "page" : undefined} className={`inline-flex min-h-11 items-center rounded-xl px-4 text-sm font-bold ${!archived ? "bg-cci-950 text-white" : "text-slate-700 hover:bg-cci-50"}`} href={baseRoute}>Activos</Link>
         <Link aria-current={archived ? "page" : undefined} className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-bold ${archived ? "bg-cci-950 text-white" : "text-slate-700 hover:bg-cci-50"}`} href={`${baseRoute}?vista=archivados`}>Archivados <span className={`rounded-full px-2 py-0.5 text-xs ${archived ? "bg-white/15" : "bg-slate-100"}`}>{data.archivedTotal}</span></Link>
       </nav>
-      <AutoFilterForm total={data.total} className={`grid gap-4 rounded-2xl border border-cci-100 bg-white p-4 ${archived ? "lg:grid-cols-1" : "lg:grid-cols-[minmax(0,1fr)_240px]"}`} defaults={{}}>
+      <AutoFilterForm total={data.total} className={archived ? "lg:grid-cols-1" : "lg:grid-cols-[minmax(0,1fr)_240px]"} defaults={{}} moreFilters={{ names: ["visibilidad"], children: <FormField label="Visibilidad en el portal" name="visibilidad"><Select defaultValue={filters.visibility ?? ""} id="visibilidad" name="visibilidad"><option value="">Todas</option><option value="listed">Listadas</option><option value="unlisted">No listadas (enlace directo)</option></Select></FormField> }}>
         {archived ? <input name="vista" type="hidden" value="archivados" /> : null}
         <FormField label="Buscar por título" name="q"><Input defaultValue={filters.query} id="q" name="q" /></FormField>
         {!archived ? <FormField label="Estado" name="estado"><Select defaultValue={filters.status ?? ""} id="estado" name="estado"><option value="">Todos</option>{Object.entries(ACTIVITY_STATUS_LABELS).filter(([value]) => value !== "archived").map(([value, label]) => <option key={value} value={value}>{label}</option>)}</Select></FormField> : null}
-        <MoreFilters names={["visibilidad"]}><FormField label="Visibilidad en el portal" name="visibilidad"><Select defaultValue={filters.visibility ?? ""} id="visibilidad" name="visibilidad"><option value="">Todas</option><option value="listed">Listadas</option><option value="unlisted">No listadas (enlace directo)</option></Select></FormField></MoreFilters>
       </AutoFilterForm>
       <FilterResults><ActivityAdminTable activities={data.activities} /></FilterResults>
       <Pagination page={data.page} pageCount={data.pageCount} pathname={baseRoute} searchParams={{ visibilidad: filters.visibility, estado: filters.status, q: filters.query, vista: archived ? "archivados" : undefined }} />

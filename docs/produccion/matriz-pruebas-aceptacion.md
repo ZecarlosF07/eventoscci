@@ -188,3 +188,12 @@ Implementación y alcance: [Búsquedas administrativas](../integraciones/busqued
 | BA-15 | Vistas 390×844, 768×1024 y 1440×900; lectores de pantalla y teclado completo | NO EJECUTADO | Recorrido parcial por teclado realizado, pero no se aprueba el conjunto de tamaños/accesibilidad sin completarlo |
 
 No hay despliegue del frontend productivo asociado a este registro. Las migraciones sí están aplicadas en la base vinculada. Las pruebas SQL no dejan fixtures, pagos, notificaciones ni semillas.
+
+### Compactación de buscadores — 28/09/2026
+
+| Caso | Verificación | Estado | Evidencia |
+|---|---|---|---|
+| BA-16 | Contenedor compartido, barra única, controles secundarios conservados al cerrar y apertura inicial de filtros activos | APROBADO | 152 pruebas unitarias, lint, typecheck y build; sin cambios de base de datos, header o buscadores públicos |
+| BA-17 | Inscripciones: despliegue por Enter, aplicar perfil profesional, cerrar conservando el valor y limpiar; ajustes en 390×844, 768×1024 y 1440×900 | APROBADO | Sesión local autenticada; controles de 44 px, sin desbordamiento del formulario. Buscador cerrado sin filtros activos: 122 px en escritorio; tableta: 174 px. No se guardaron operaciones |
+| BA-18 | Participación y Pagos: filtros juntos sin confundir participación y certificados | APROBADO | Revisión visual local a 1440×900; buscadores de 122 px y 142 px respectivamente, sin desbordamiento del formulario |
+| BA-19 | Recorrido visual completo de todos los módulos, lectores de pantalla y prueba móvil de cada variante | NO EJECUTADO | Layout compartido comprobado; no se considera realizada una auditoría completa a partir de las pantallas anteriores. BA-15 conserva su estado |
