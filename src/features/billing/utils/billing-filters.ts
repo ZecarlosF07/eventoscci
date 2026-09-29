@@ -28,3 +28,7 @@ export function billingParams(filters: BillingFilters): Record<string, string> {
 export function billingUrl(activityId: string, filters?: BillingFilters): string {
   return `/admin/inscripciones/${activityId}/pagos?${new URLSearchParams(filters ? billingParams(filters) : { vista: "comprobantes" })}`;
 }
+/** List navigation must not reopen a detail from stale server-rendered filters. */
+export function billingListUrl(activityId: string, filters: BillingFilters): string {
+  return billingUrl(activityId, { ...filters, requestId: undefined });
+}

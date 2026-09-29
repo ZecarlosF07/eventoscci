@@ -7,7 +7,7 @@ import { billingSchema } from "@/features/billing/schemas/billing.schema";
 import type { BillingEditorProps, BillingInput } from "@/features/billing/types/billing.types";
 import { focusFirstInvalidField } from "@/features/registrations/utils/focus-first-invalid-field";
 
-export function BillingEditor({ item }: BillingEditorProps) {
+export function BillingEditor({ item, onSaved }: BillingEditorProps) {
   const router = useRouter();
   const form = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState(false);
@@ -29,7 +29,7 @@ export function BillingEditor({ item }: BillingEditorProps) {
       try {
         const result = await correctBilling({ kind, id, billing: parsed.data, reason });
         setMessage(result.message);
-        if (result.success) { setOpen(false); setReason(""); router.refresh(); }
+        if (result.success) { setOpen(false); setReason(""); onSaved?.(result.message); router.refresh(); }
       } catch { setMessage("No se pudo guardar. Reintenta o actualiza para comprobar el resultado."); }
     });
   }

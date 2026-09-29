@@ -5,11 +5,14 @@ import { useId, useState } from "react";
 
 import type { MoreFiltersProps } from "@/features/admin-filters/types/admin-filter.types";
 
-export function MoreFilters({ children, names, toolbar }: MoreFiltersProps) {
+export function MoreFilters({ children, names, toolbar, defaults = {} }: MoreFiltersProps) {
   const params = useSearchParams();
   const panelId = useId();
   const [expanded, setExpanded] = useState<boolean>();
-  const count = names.filter((name) => { const value = params.get(name); return value && value !== "all"; }).length;
+  const count = names.filter((name) => {
+    const value = params.get(name) ?? defaults[name];
+    return value && value !== defaults[name] && (value !== "all" || Boolean(defaults[name] && defaults[name] !== "all"));
+  }).length;
   const isExpanded = expanded ?? count > 0;
   return <div className="col-span-full">
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">

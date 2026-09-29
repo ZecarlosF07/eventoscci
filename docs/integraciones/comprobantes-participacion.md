@@ -12,11 +12,25 @@ Se muestran importes históricos de participación, dinero efectivamente validad
 
 ## Búsqueda, paginación y exportación
 
-Los filtros compactos utilizan el buscador automático compartido: 350 ms al escribir; selectores inmediatos; URL sin recarga completa. Buscar por código, participante/asistente, DNI o CE, empresa, RUC asociado o documento/nombre del destinatario. `%` y `_` se tratan como texto literal. El detalle abierto y su borrador se mantienen al filtrar, con una advertencia de que pueden quedar fuera de los resultados.
+Los filtros compactos utilizan el buscador automático compartido: 350 ms al escribir; selectores inmediatos; URL sin recarga completa. Buscar por código, participante/asistente, DNI o CE, empresa, RUC asociado o documento/nombre del destinatario. `%` y `_` se tratan como texto literal. La solicitud seleccionada se conserva en `solicitud`, independientemente de los filtros; abrir y cerrar su detalle no altera búsqueda, empresa ni páginas. Mientras el popup está abierto, el fondo no es interactivo.
 
 La paginación se resuelve antes de renderizar: 20 solicitudes individuales, o 20 empresas y 20 solicitudes dentro de la empresa desplegada. Los conteos de empresas son completos en PostgreSQL. La búsqueda y los filtros de comprobante/situación se comparten entre listado, agrupación y exportación.
 
 El CSV contiene **una fila por solicitud**, sin multiplicar importes por asistentes y con protección contra fórmulas mediante `csvCell`. Exporta todos los resultados filtrados, no solo la página o empresa desplegada; no utiliza la selección del detalle como filtro. Tiene un límite explícito de 5.000 solicitudes y requiere sesión interna activa. Durante una actualización de filtros se bloquea la exportación. «Copiar datos» copia exclusivamente el código y destinatario del comprobante, no el RUC asociado, y anuncia éxito o error de forma accesible.
+
+## Detalle en popup y carga independiente
+
+Cada solicitud ofrece un botón verde oscuro **Ver datos →**, junto a su código, con área mínima de 44 px, foco visible y nombre accesible que identifica la solicitud. Conserva un enlace directo para abrir en otra pestaña o acceder desde el detalle de pago.
+
+El diálogo se abre inmediatamente, antes de esperar la consulta. Muestra **Cargando detalle…** centrado con spinner, anuncio accesible y respeto de movimiento reducido. Reutiliza el diálogo y estado de carga de Pagos: fondo bloqueado, scroll propio, cierre siempre disponible, Escape y restauración del foco al disparador. La URL se actualiza con History API integrada en Next, sin una navegación RSC para abrir/cerrar; atrás y adelante sincronizan el popup.
+
+`GET /api/admin/activities/[activityId]/billing/[requestId]` consulta solo el detalle solicitado y sus importes, sin volver a cargar empresas ni el listado. Exige cuenta interna activa, valida ambos UUID, limita por actividad y solicitud, utiliza la sesión del usuario y RLS, y responde con `Cache-Control: private, no-store`. No añade datos a consultas públicas ni utiliza una cuenta de servicio. El contrato de respuesta omite campos de búsqueda y datos de asistencia, certificados o contacto.
+
+La carga comparte el hook cancelable de detalles administrativos: cerrar o cambiar de solicitud aborta la consulta, y una respuesta anterior no puede sustituir la actual. Los errores se muestran en el popup con **Reintentar**, sin habilitar copia ni edición con datos viejos. No se cachean destinatarios en el cliente entre aperturas.
+
+Los enlaces **Ver solicitudes / Cerrar** de cada empresa y la paginación utilizan `billingListUrl`: conservan sus filtros, pero eliminan siempre `solicitud`. Así no reabren un comprobante cerrado aunque los filtros renderizados inicialmente por el servidor conservaran su identificador. Solo **Ver datos** o un enlace directo explícito seleccionan un comprobante.
+
+La copia y la corrección permanecen dentro del popup. Tras una corrección exitosa, se anuncia el resultado, se recarga el detalle y se actualiza el listado; el motivo y la auditoría siguen siendo obligatorios. Los históricos sin datos conservan su mensaje y no reciben un editor de carga. Este cambio no requiere migración ni modifica operaciones monetarias, exportaciones, reglas comerciales o el header.
 
 ## Formulario individual y validación
 

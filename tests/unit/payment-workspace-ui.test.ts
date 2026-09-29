@@ -8,6 +8,7 @@ import { renderAdminFilters } from "./fixtures/admin-router";
 import { ActivityPaymentFilters } from "../../src/features/participation/components/ActivityPaymentFilters/ActivityPaymentFilters";
 import { ActivityPaymentList } from "../../src/features/participation/components/ActivityPaymentList/ActivityPaymentList";
 import { ParticipationActivityTabs } from "../../src/features/participation/components/ParticipationActivityTabs/ParticipationActivityTabs";
+import { PaymentRequestDialog } from "../../src/features/participation/components/PaymentRequestDialog/PaymentRequestDialog";
 import { parsePaymentFilters } from "../../src/features/participation/utils/payment-filters";
 
 const activityId = "28000000-0000-4000-8000-000000000001";
@@ -57,4 +58,42 @@ test("certificate controls default to links outside the payments workspace", () 
   const actions = readFileSync("src/features/registrations/components/CertificateCommercialActions/CertificateCommercialActions.tsx", "utf8");
   assert.match(actions, /paymentWorkspace = false/);
   assert.match(actions, /if \(!paymentWorkspace\) return <Link/);
+});
+
+test("payment detail keeps the associated RUC in its heading and links to billing without repeating recipient fields", () => {
+  const detail = readFileSync("src/features/participation/components/PaymentDetailContent/PaymentDetailContent.tsx", "utf8");
+  assert.match(detail, /payment-detail-heading[^\n]+RUC asociado:[^\n]+request\.companyRuc/);
+  assert.match(detail, /Ver datos para comprobantes →/);
+  assert.match(detail, /billingUrl\(activityId\)[^\n]+solicitud=\$\{request\.id\}/);
+  assert.doesNotMatch(detail, /Comprobante solicitado|RUC de facturación|billingDocument|billingName|billingAddress/);
+});
+
+test("payment popup has a named native dialog, persistent close control and scrollable content", () => {
+  const markup = renderAdminFilters(createElement(PaymentRequestDialog, {
+    onClose: () => {},
+    requestId: "request",
+  }, createElement("p", null, "Contenido de la solicitud")));
+  assert.match(markup, /<dialog/);
+  assert.match(markup, /aria-labelledby="payment-dialog-title"/);
+  assert.match(markup, /aria-modal="true"/);
+  assert.match(markup, /Cerrar detalle ×/);
+  assert.match(markup, /overflow-y-auto/);
+  assert.match(markup, /Contenido de la solicitud/);
+});
+
+test("payment detail is wrapped in the popup; native Escape, focus and context are retained", () => {
+  const dialog = readFileSync("src/features/participation/components/PaymentRequestDialog/PaymentRequestDialog.tsx", "utf8");
+  const detail = readFileSync("src/features/participation/components/PaymentRequestDetail/PaymentRequestDetail.tsx", "utf8");
+  assert.match(detail, /<PaymentRequestDialog/);
+  assert.match(detail, /window.history.replaceState/);
+  assert.match(detail, /paymentDialogUrl\(window.location.href\)/);
+  assert.match(dialog, /dialog.showModal\(\)/);
+  assert.match(dialog, /onCancel=/);
+  assert.match(dialog, /event.preventDefault\(\); onClose\(\)/);
+  assert.doesNotMatch(dialog, /router.replace|useRouter/);
+  assert.match(dialog, /restorePaymentDialogFocus/);
+  assert.match(dialog, /document.body.style.overflow = previousOverflow/);
+  const focus = readFileSync("src/features/participation/utils/payment-dialog-focus.ts", "utf8");
+  assert.match(focus, /previousFocus.getClientRects\(\).length > 0/);
+  assert.match(focus, /find\(\(trigger\) => trigger.getClientRects\(\).length > 0\)/);
 });

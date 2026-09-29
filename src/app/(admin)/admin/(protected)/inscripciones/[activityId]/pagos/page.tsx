@@ -44,7 +44,7 @@ export default async function ActivityPaymentsPage({ params, searchParams }: Act
       <FilterExportLink className="inline-flex min-h-11 items-center text-sm font-semibold text-cci-700 underline" href={`${getActivityPaymentsRoute(activityId)}/exportar?${new URLSearchParams(paymentFilterParams(filters))}`}>Exportar solicitudes de participación filtradas (CSV)</FilterExportLink>
       <p className="rounded-2xl bg-cci-50 p-4 text-sm">Saldo de participación: <strong>S/ {(totals?.pending_amount ?? 0).toFixed(2)}</strong> · Validado: <strong>S/ {(totals?.validated_amount ?? 0).toFixed(2)}</strong>{(totals?.legacy_amount ?? 0) > 0 ? ` · Confirmaciones anteriores sin referencia: S/ ${totals?.legacy_amount?.toFixed(2)}` : ""}</p>
       {filters.requestId && !participation.items.some((item) => item.id === filters.requestId) ? <p className="rounded-xl bg-cci-50 p-3 text-sm">La solicitud abierta no aparece en esta página de resultados. Puedes seguir revisándola sin perder lo escrito.</p> : null}
-      <PaymentRequestDetail activityId={activityId} filters={filters} />
+      <PaymentRequestDetail activityId={activityId} />
       <FilterResults><ActivityPaymentList activityId={activityId} filters={filters} items={participation.items} /></FilterResults>
       <Pagination page={participation.page} pageCount={participation.pageCount} pathname={getActivityPaymentsRoute(activityId)} searchParams={paymentFilterParams(filters)} />
     </section>

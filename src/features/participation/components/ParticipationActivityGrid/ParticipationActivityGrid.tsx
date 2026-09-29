@@ -2,8 +2,9 @@ import Link from "next/link";
 
 import { ACTIVITY_STATUS_LABELS, ACTIVITY_TYPE_LABELS } from "@/features/activities/constants/activity.constants";
 import { formatActivityDate } from "@/features/activities/utils/activity-formatters";
+import { ParticipationPaymentNotice } from "@/features/participation/components/ParticipationPaymentNotice/ParticipationPaymentNotice";
 import type { ParticipationActivitySummary } from "@/features/participation/types/participation.types";
-import { getActivityParticipationRoute, getActivityPaymentsRoute } from "@/features/participation/utils/participation-routes";
+import { getActivityParticipationRoute } from "@/features/participation/utils/participation-routes";
 
 function Capacity({ activity }: { activity: ParticipationActivitySummary }) {
   const percent = activity.capacity
@@ -35,10 +36,7 @@ export function ParticipationActivityGrid({ activities }: { activities: Particip
                   : activity.lastDate ? `Última sesión: ${formatActivityDate(activity.lastDate)}` : "Sin fechas programadas"}</p>
             </div>
           </div>
-          <Link className="mt-3 block rounded-xl bg-cci-50 p-3 text-sm font-semibold text-cci-950 hover:bg-cci-100" href={getActivityPaymentsRoute(activity.activityId)}>
-            {activity.paymentPendingRequests} solicitudes con pago pendiente · {activity.paymentPendingSeats} plazas pendientes
-            {activity.certificatePendingCount > 0 ? <span className="mt-1 block text-xs text-slate-600">Certificados: {activity.certificatePendingCount} pagos pendientes (separados)</span> : null}
-          </Link>
+          <ParticipationPaymentNotice activity={activity} />
           <div className="my-5 grid grid-cols-3 gap-2 text-center">
             <div className="rounded-xl bg-cci-50 p-3"><strong className="block text-xl text-cci-950">{activity.activeCount}</strong><span className="text-xs text-slate-600">Activas</span></div>
             <div className="rounded-xl bg-cci-50 p-3"><strong className="block text-xl text-cci-950">{activity.confirmedCount}</strong><span className="text-xs text-slate-600">Confirmadas</span></div>

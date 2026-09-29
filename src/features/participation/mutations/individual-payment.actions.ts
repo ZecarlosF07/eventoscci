@@ -13,14 +13,14 @@ const schema = z.object({ registrationId: z.uuid(), receivedAmount: z.number().f
 export async function verifyIndividualPaymentAction(input: IndividualPaymentInput): Promise<{ success: boolean; message: string }> {
   await requireAdmin();
   const parsed = schema.safeParse(input);
-  if (!parsed.success) return { success: false, message: "Completa el importe y una referencia del pago de al menos dos caracteres." };
+  if (!parsed.success) return { success: false, message: "Revisa la inscripción y completa una referencia del pago de al menos dos caracteres." };
   const client = await createServerSupabaseClient();
   const { data, error } = await client.rpc("verify_individual_registration_payment", {
     p_registration_id: parsed.data.registrationId, p_received_amount: parsed.data.receivedAmount,
     p_payment_reference: parsed.data.reference, p_note: parsed.data.note, p_idempotency_key: parsed.data.idempotencyKey,
   });
   if (error) return { success: false, message: error.message.includes("PAYMENT_AMOUNT_MISMATCH")
-    ? "El importe recibido debe coincidir exactamente con el precio de esta inscripción."
+    ? "El precio de la inscripción cambió. Actualiza el detalle y revisa el importe antes de confirmar."
     : error.message.includes("INVALID_PAYMENT_SELECTION") ? "Esta inscripción ya no está pendiente. Actualiza y revisa su estado."
     : "No se pudo validar el pago. Puedes reintentar sin duplicarlo." };
   const result = z.object({ replayed: z.boolean() }).safeParse(data);

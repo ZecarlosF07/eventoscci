@@ -1,7 +1,8 @@
 import "server-only";
 import { requireAdmin } from "@/features/auth/services/admin-session";
 import { applyBillingFilters } from "@/features/billing/queries/apply-billing-filters";
-import type { BillingCompany, BillingFilters, BillingPage, BillingRequest } from "@/features/billing/types/billing.types";
+import { billingDetailSchema } from "@/features/billing/schemas/billing-detail.schema";
+import type { BillingCompany, BillingDetailData, BillingFilters, BillingPage, BillingRequest } from "@/features/billing/types/billing.types";
 import { BILLING_PAGE_SIZE } from "@/features/billing/utils/billing-filters";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -31,11 +32,12 @@ export async function getBillingCompanies(activityId: string, filters: BillingFi
   const total = data?.[0]?.total_count ?? 0;
   return { items: data ?? [], total, page: filters.page, pageCount: Math.max(1, Math.ceil(total / BILLING_PAGE_SIZE)) };
 }
-export async function getBillingDetail(activityId: string, requestId?: string): Promise<BillingRequest | null> {
-  await requireAdmin();
-  if (!requestId) return null;
+/** Protected by the API's internal session guard and the caller's session/RLS. */
+export async function getBillingDetail(activityId: string, requestId: string): Promise<BillingDetailData | null> {
   const client = await createServerSupabaseClient();
-  const { data, error } = await client.from("participation_billing_requests").select("*").eq("activity_id", activityId).eq("id", requestId).maybeSingle();
+  const { data, error } = await client.from("participation_billing_requests")
+    .select("activity_id,id,kind,code,name,company_name,company_ruc,billing_type,billing_document,billing_name,billing_address,billing_state,status,participation_amount,validated_amount,pending_amount,legacy_amount,complimentary_count")
+    .eq("activity_id", activityId).eq("id", requestId).maybeSingle();
   if (error) throw new Error("No fue posible abrir los datos de esta solicitud.", { cause: error });
-  return data;
+  return data ? billingDetailSchema.parse(data) : null;
 }

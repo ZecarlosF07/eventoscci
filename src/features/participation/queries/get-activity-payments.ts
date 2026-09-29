@@ -48,10 +48,3 @@ export async function getActivityPaymentTotals(activityId: string) {
   if (error) throw new Error("No fue posible calcular los saldos de la actividad.", { cause: error });
   return data;
 }
-export async function getPaymentRequest(activityId: string, id: string): Promise<PaymentRequest | null> {
-  const client = await createServerSupabaseClient();
-  const { data, error } = await client.from("participation_payment_requests").select("*")
-    .eq("activity_id", activityId).eq("id", id).maybeSingle();
-  if (error) throw new Error("No fue posible abrir la solicitud de pago.", { cause: error });
-  return data;
-}

@@ -27,14 +27,14 @@ export function ActivityAttendanceTemplate({ data, filters, result, summary }: A
   const exportValues = new URLSearchParams(query);
   exportValues.set("actividad", data.activity.id);
   return (
-    <SelectionWorkspace key={data.activity.id}><div className="space-y-7">
+    <SelectionWorkspace key={data.activity.id}><div className="space-y-4">
       <Link className="text-sm font-semibold text-slate-700 hover:underline" href={ROUTES.adminRegistrations}>← Volver a actividades</Link>
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-        <SectionHeading description={`${data.total} participantes en la vista actual. Solo las inscripciones confirmadas pueden marcarse.`} eyebrow={data.activity.type === "event" ? "Evento" : "Capacitación"} title={data.activity.title} />
+        <SectionHeading description={`${data.total} ${data.total === 1 ? "participante" : "participantes"} · Solo puedes marcar inscripciones confirmadas.`} eyebrow={data.activity.type === "event" ? "Evento" : "Capacitación"} title={data.activity.title} />
         <FilterExportLink className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold hover:bg-cci-50" href={`${ROUTES.adminRegistrations}/exportar?${exportValues}`}>Exportar CSV</FilterExportLink>
       </div>
       <ParticipationActivityTabs activityId={data.activity.id} current="attendance" />
-      <ActivityParticipationMetrics activity={summary} mode="attendance" />
+      <ActivityParticipationMetrics activity={summary} mode="attendance" compact />
       <OperationNotice result={result} />
       <AttendanceFilters filters={filters} total={data.total} />
       <FilterResults><AttendanceTable activityId={data.activity.id} attendance={data.attendance} returnTo={returnTo} /></FilterResults>

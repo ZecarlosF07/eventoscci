@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { PaymentRequestLink } from "@/features/participation/components/PaymentRequestLink/PaymentRequestLink";
 import type { PaymentTableRowProps } from "@/features/participation/types/payment.types";
 import { paymentAgeDays, paymentWorkspaceUrl } from "@/features/participation/utils/payment-filters";
 
@@ -10,6 +9,6 @@ export function PaymentTableRow({ item, activityId, filters }: PaymentTableRowPr
     <td className="px-4 py-3 align-top font-bold">S/ {(item.pending_amount ?? 0).toFixed(2)}</td>
     <td className="px-4 py-3 align-top"><p>S/ {(item.validated_amount ?? 0).toFixed(2)}</p>{(item.legacy_amount ?? 0) > 0 ? <p className="max-w-40 text-xs text-slate-600">S/ {item.legacy_amount?.toFixed(2)} históricos sin referencia</p> : null}</td>
     <td className="whitespace-nowrap px-4 py-3 align-top">{paymentAgeDays(item.created_at)} días</td>
-    <td className="px-4 py-3 align-top"><Link aria-label={`Ver pago ${item.code}`} className="inline-flex min-h-11 items-center whitespace-nowrap rounded-xl bg-cci-950 px-4 text-sm font-bold text-white" href={paymentWorkspaceUrl(activityId, filters, item.id ?? undefined)}>Ver pago →</Link></td>
+    <td className="px-4 py-3 align-top"><PaymentRequestLink className="inline-flex min-h-11 items-center whitespace-nowrap rounded-xl bg-cci-950 px-4 text-sm font-bold text-white" href={paymentWorkspaceUrl(activityId, filters, item.id ?? undefined)} label={`Ver pago ${item.code}`} requestId={item.id} /></td>
   </tr>;
 }

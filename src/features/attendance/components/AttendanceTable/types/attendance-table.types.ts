@@ -5,3 +5,5 @@ export interface AttendanceTableProps {
   attendance: AttendanceItem[];
   returnTo: string;
 }
+export interface AttendanceParticipantProps { item: AttendanceItem }
+export interface AttendanceRowFormProps extends AttendanceParticipantProps { activityId: string; returnTo: string }

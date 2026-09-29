@@ -5,10 +5,10 @@ import type { SelectProps } from "@/components/atoms/Select/types/select.types";
 
 export interface WorkspaceProps { children: ReactNode }
 export interface SelectionCheckboxProps { item: WorkspaceSelectionItem; disabled?: boolean }
-export interface SelectionSummaryProps { visibleIds: string[] }
+export interface SelectionSummaryProps { visibleIds: string[]; compact?: boolean }
 export interface SelectedInputsProps { name: string }
 export interface ActiveFilterSummaryProps { defaults: Record<string, string>; remove: (name: string) => void; valueLabels?: Record<string, string> }
-export interface MoreFiltersProps { children: ReactNode; names: string[]; toolbar?: ReactNode }
+export interface MoreFiltersProps { children: ReactNode; names: string[]; toolbar?: ReactNode; defaults?: Record<string, string> }
 export type WorkspaceDraftInputProps = InputProps & { draftKey: string };
 export type WorkspaceDraftSelectProps = SelectProps & { draftKey: string };
 

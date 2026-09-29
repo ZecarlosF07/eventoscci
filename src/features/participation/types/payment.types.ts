@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type { ActivityStatus } from "@/features/activities/types/activity.types";
 import type { Database } from "@/lib/supabase/database.types";
 
@@ -24,9 +26,10 @@ export interface IndividualPaymentInput {
   note: string;
   idempotencyKey: string;
 }
-export interface IndividualPaymentFormProps { registrationId: string; price: number }
+export interface IndividualPaymentFormProps { registrationId: string; price: number; onVerified?: () => void }
 export interface PaymentFiltersProps { filters: PaymentFilters }
-export interface PaymentRequestDetailProps { activityId: string; filters: PaymentFilters }
+export interface PaymentRequestDetailProps { activityId: string }
+export interface PaymentRequestDialogProps { children?: ReactNode; onClose: () => void; requestId: string; title?: string; dialogId?: string; headingId?: string }
 export interface ActivityPaymentsPageProps {
   params: Promise<{ activityId: string }>;
   searchParams: Promise<PaymentSearchParams>;

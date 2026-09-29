@@ -17,7 +17,7 @@ export function AutoFilterForm(props: AutoFilterFormProps) {
     onCompositionStart={compositionStart} onCompositionEnd={compositionEnd}
     onSubmit={(event) => { event.preventDefault(); apply("q"); }}>
     {props.children}
-    {props.moreFilters ? <MoreFilters {...props.moreFilters} toolbar={toolbar} /> : <div className="col-span-full flex flex-wrap items-center gap-x-3 gap-y-1">{toolbar}</div>}
+    {props.moreFilters ? <MoreFilters {...props.moreFilters} defaults={props.defaults} toolbar={toolbar} /> : <div className="col-span-full flex flex-wrap items-center gap-x-3 gap-y-1">{toolbar}</div>}
     {error ? <p className="col-span-full text-sm text-red-700" id="admin-filter-date-error" role="alert">{error}</p> : null}
   </form>;
 }

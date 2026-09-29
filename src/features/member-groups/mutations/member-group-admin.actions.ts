@@ -39,7 +39,7 @@ export async function verifyMemberGroupPaymentAction(input: z.input<typeof payme
   });
   if (error) return { success: false, message: error.message.includes("INVALID_PAYMENT_SELECTION")
     ? "Una plaza ya fue confirmada o cancelada por otro operador. Actualiza la página y revisa la selección."
-    : error.message.includes("PAYMENT_AMOUNT_MISMATCH") ? "El importe recibido no coincide con la suma de las plazas seleccionadas. Revisa el pago antes de confirmar."
+    : error.message.includes("PAYMENT_AMOUNT_MISMATCH") ? "El importe de las plazas seleccionadas cambió. Actualiza el detalle y revisa el total antes de confirmar."
     : "No se pudo validar el pago. Puedes reintentar sin duplicarlo." };
   const result = z.object({ replayed: z.boolean() }).safeParse(data);
   if (!result.success) return { success: false, message: "La operación se guardó, pero no se pudo confirmar el resultado. Actualiza la página." };

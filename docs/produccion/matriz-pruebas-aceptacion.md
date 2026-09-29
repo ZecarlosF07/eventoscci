@@ -221,3 +221,71 @@ Alcance y activación: [Datos para comprobantes de participación](../integracio
 | CP-15 | Frontend productivo y activación global de obligatoriedad | NO EJECUTADO | Pendiente publicar el formulario actualizado y ejecutar después `supabase/rollouts/enable_registration_billing.sql`; la ventana de compatibilidad sigue abierta |
 
 No se enviaron correos ni se registraron pagos durante estas pruebas. Las migraciones están aplicadas, pero el nuevo frontend no se ha desplegado a producción. La obligatoriedad global permanece pendiente deliberadamente para no romper el formulario actualmente publicado. Los resultados anteriores de otros hitos y módulos no se modifican.
+
+## Indicadores de pagos pendientes — 29/09/2026
+
+| Caso | Verificación | Estado | Evidencia |
+|---|---|---|---|
+| IP-01 | Contraste solo con pendientes, conteos individuales/grupales conservados, certificados separados, singular y destino contextual | APROBADO | Tres pruebas nuevas de render dentro de 167 unitarias; sin cambios en consultas, header o base de datos |
+| IP-02 | Diseño de los avisos de participación y certificado, y contadores en cero | APROBADO | Sesión local autenticada en Chrome: evento con 2 solicitudes/2 plazas pendientes; capacitación con 0/0 y 6 certificados pendientes; revisión visual a 1440×900 y ajuste móvil a 390×844 sin desbordamiento de los avisos |
+| IP-03 | Lint, typecheck y build | APROBADO | Yarn y Next 16.2.10; sin migraciones necesarias |
+| IP-04 | Auditoría integral de lectores de pantalla y todos los tamaños/navegadores | NO EJECUTADO | Icono decorativo y foco visible implementados; las pruebas visuales y estáticas no equivalen a una auditoría integral |
+
+### Importe automático al validar participación — 29/09/2026
+
+| Caso | Verificación | Estado | Evidencia |
+|---|---|---|---|
+| IA-01 | Total por selección, exclusión de plazas no elegibles, suma en céntimos y ausencia del campo editable en ambos formularios | APROBADO | Cuatro pruebas nuevas dentro de 171 unitarias: cambios de selección, IDs duplicados/desconocidos, cortesías, canceladas/confirmadas y decimales; comprobación estática del envío del total y conservación de referencia, nota, diálogo e idempotencia |
+| IA-02 | Formulario grupal real calcula importe sin digitación | APROBADO | Chrome local autenticado: seleccionar una plaza actualiza S/ 0.00 a S/ 300.00; desmarcar vuelve a cero y deshabilita confirmar. Referencia y nota visibles; no se confirmó ni registró un pago |
+| IA-03 | Lint, typecheck y build | APROBADO | Yarn y Next 16.2.10; RPC y reglas SQL sin cambios, sin migración necesaria |
+| IA-04 | Recorrido individual y envío real de pago desde navegador | NO EJECUTADO | Cambio individual cubierto estáticamente; no se crearon inscripciones ni cobros reales para la prueba |
+| IA-05 | Detalle de pago sin datos de facturación duplicados; RUC asociado debajo del nombre y botón contextual | APROBADO | Prueba estática añadida dentro de 172 unitarias; Chrome local: el botón abre «Datos para comprobantes» con CCI-GR-000038, la misma solicitud. No se guardaron correcciones ni pagos; lint, typecheck y build posteriores correctos |
+
+### Detalle de pago en popup — 29/09/2026
+
+| Caso | Verificación | Estado | Evidencia |
+|---|---|---|---|
+| PP-01 | Diálogo modal compartido para el detalle individual y grupal, con cierre contextual y controles accesibles | APROBADO | Dos pruebas de render y estructura añadidas; 174 unitarias, lint, typecheck y build correctos. No se modifican RPC ni reglas de pago |
+| PP-02 | Apertura grupal, foco inicial, fondo bloqueado, Escape y regreso al listado con filtros y foco restaurados | APROBADO | Chrome local autenticado con CCI-GR-000040: diálogo nativo modal, foco inicial en «Cerrar detalle», búsqueda AGRICOLA y tipo grupal conservados; Escape elimina `solicitud`, restaura el scroll del documento y el foco del enlace original |
+| PP-03 | Popup adaptable y contenido desplazable sin perder el cierre | APROBADO | Revisión visual en escritorio y 390×844: popup de 358×812, contenido con scroll propio y encabezado visible al desplazar. Comprobación a 768×1024: 736×948; cierre mediante botón probado. No se validaron pagos reales |
+| PP-04 | Recorrido individual real, lectores de pantalla, navegación atrás/adelante y todos los navegadores | NO EJECUTADO | El mismo wrapper cubre ambos tipos; las pruebas estructurales y el recorrido grupal no sustituyen una auditoría integral |
+
+### Carga independiente del popup de pago — 29/09/2026
+
+| Caso | Verificación | Estado | Evidencia |
+|---|---|---|---|
+| PC-01 | Apertura/cierre locales, consulta mínima, carga, errores, contrato, filtros y cancelación | APROBADO | Ocho pruebas añadidas; URL contextual, enlace accesible, payload sin campos extra, endpoint/signal/no-store, errores 403/404 y respuesta ajena, aislamiento de cargas, permisos/contexto, actualización solo tras éxito. La suite final incluye 183 unitarias, incluida PC-06; lint, typecheck y build correctos |
+| PC-02 | Apertura sin esperar Supabase, carga grupal e importe por plaza | APROBADO | Chrome local autenticado: primer snapshot de CCI-GR-000040 muestra «Cargando detalle…», cierre enfocado y fondo modal a ~525 ms desde el clic, incluyendo automatización. Luego aparecen los datos y seleccionar una plaza actualiza S/ 0.00 a S/ 300.00; no se registró ningún pago. No es una medición productiva ni del tiempo total del backend |
+| PC-03 | Escape, atrás/adelante y cierre durante la carga, sin perder filtros | APROBADO | Chrome local: Escape conserva `estado=pending`, `tipo=group`, `q=AGRICOLA` y restaura foco. CCI-GR-000038 se cierra con atrás mientras carga y vuelve a abrirse con adelante; posteriormente muestra únicamente la plaza pagada elegible, no el pase gratuito |
+| PC-04 | Presentación móvil tras la carga independiente | APROBADO | Chrome 390×844: diálogo modal de 358 px de ancho, encabezado/cierre visibles y contenido desplazable; sin desbordamiento horizontal del popup |
+| PC-05 | Historial pagado e individual real, permisos con otras sesiones, fallos de red reales, lectores de pantalla y medición productiva | NO EJECUTADO | Contrato, ramas individuales, permisos y fallos cubiertos por pruebas estáticas/unitarias; no se crearon cobros ni se cambiaron sesiones. No hay migración ni despliegue productivo en este cambio |
+| PC-06 | Texto de carga centrado con spinner discreto | APROBADO | Prueba de render del estado de carga: centrado, etiqueta accesible, spinner y movimiento reducido. Chrome 390×844: revisión visual del estado «Cargando detalle…» centrado con el indicador circular, sin bloquear el cierre |
+
+### Popup optimizado de datos para comprobantes — 29/09/2026
+
+| Caso | Verificación | Estado | Evidencia |
+|---|---|---|---|
+| DC-01 | Contrato mínimo, endpoint independiente, errores, contexto, acción accesible y reutilización del diálogo/carga | APROBADO | Ocho pruebas nuevas: contrato sin datos extra, históricos/gratuidad, no-store/signal, respuesta ajena, 403/404, botón «Ver datos», título propio, ausencia de consulta de detalle en el listado, permisos y corrección con motivo. Hook compartido conserva cancelación y aislamiento de respuestas comprobados en PC-01 |
+| DC-02 | Apertura inmediata y carga centrada antes de obtener los datos | APROBADO | Chrome local autenticado: primer snapshot de CCI-GR-000038 y CCI-GR-000040 muestra «Cargando detalle…» con el cierre enfocado; revisión visual del spinner centrado a 390×844. No se midió latencia productiva |
+| DC-03 | Datos de factura/boleta, RUC diferenciados, importes y editor central | APROBADO | CCI-GR-000038 conserva RUC asociado y RUC de facturación distintos, corte de cortesía y saldo; CCI-GR-000040 muestra boleta. Editor abierto para comprobar campos y motivo obligatorio, sin guardar correcciones ni pagos |
+| DC-04 | Cierre, Escape, foco y atrás/adelante sin perder contexto | APROBADO | Escape y botón cierran, eliminan solo `solicitud` y restauran foco en «Ver datos»; `vista=comprobantes` y empresa permanecen. Atrás/adelante cierran/reabren CCI-GR-000040 y muestran la solicitud correcta |
+| DC-05 | Acción visible y popup adaptable a 390, 768 y 1440 px | APROBADO | Botón verde oscuro de 44 px en primera columna; popup móvil de 358 px, sin desbordamiento horizontal. Editor con scroll propio y cierre visible; revisión visual a 768×1024 y listado a 1440×900 |
+| DC-06 | Suite, lint, typecheck y build | APROBADO | 191 unitarias; Yarn y Next 16.2.10. Build con acceso autorizado a Google Fonts existentes. No requiere migración ni cambia SQL, exportaciones o header |
+| DC-07 | Guardado real de corrección, recorrido individual real, otras sesiones, fallos de red reales y auditoría integral de accesibilidad | NO EJECUTADO | Se conserva RPC auditada y editor existentes; contratos/errores cubiertos en unitarias. No se modificaron destinatarios ni cobros reales, no se cambiaron sesiones y no se desplegó frontend productivo |
+| DC-08 | «Ver solicitudes» no reabre el comprobante cerrado desde un enlace directo | APROBADO | Fallo reproducido en Chrome: el enlace de empresa arrastraba `solicitud` tras el cierre local. Corregido con `billingListUrl`; repetido el recorrido directo CCI-GR-000038 → cerrar → Ver solicitudes: tabla con dos solicitudes, cero diálogos y URL sin `solicitud`. «Ver datos» de CCI-GR-000040 sigue abriendo su popup con loading |
+| DC-09 | Enlaces de empresa y paginación independientes del detalle; regresión técnica | APROBADO | Tres pruebas nuevas para filtros inicialmente con `requestId`, expandir/contraer y ambos niveles de paginación. 194 unitarias, lint, typecheck y build correctos; sin migraciones ni cambios de datos |
+
+### Asistencia simplificada — 29/09/2026
+
+| Caso | Verificación | Estado | Evidencia |
+|---|---|---|---|
+| AS-01 | Dos filtros principales, secundarios plegados y valores iniciales/históricos correctamente identificados | APROBADO | Render unitario de búsqueda/asistencia; `estado=confirmed` no activa ni abre «Más filtros», mientras Todas/Pendientes/Canceladas y tipo asociado sí cuentan y conservan controles/criterios visibles en enlaces guardados |
+| AS-02 | Resumen compacto y acciones masivas solo al seleccionar | APROBADO | Chrome local 1440×900: resumen de 46 px, filtros de 122 px, tabla comienza aproximadamente a 475 px sin selección. Al seleccionar aparece un único bloque de unos 122 px con total/visibles/ocultos, revisión, limpieza, estado, nota desplegable y aplicación |
+| AS-03 | Seleccionado fuera de resultados y nota temporal conservados | APROBADO | Seleccionar Bolo FIJO, escribir nota temporal y buscar sin coincidencias: 1 seleccionado, 0 visibles, 1 fuera de vista; nota conservada. Limpiar filtros restaura la persona/nota y limpiar selección retira el bloque. Sin aplicar asistencia |
+| AS-04 | Consulta histórica y bloqueo de personas no confirmadas | APROBADO | Más filtros → Todas muestra tres inscripciones; dos pendientes conservan selección deshabilitada y mensaje de confirmación previa. Limpieza retorna a una confirmada; motivo, elegibilidad, límites y confirmación de ocultos permanecen sin cambios |
+| AS-05 | Tabla de cinco columnas y nota individual desplegable sin perder operaciones | APROBADO | Render/estructura y Chrome 1440×900: Guardar accesible sin desplazamiento horizontal; inscripción/certificado agrupados, estado/fecha en una celda. Notas siguen usando borradores, nombre de campo y acción individual existentes |
+| AS-06 | Móvil/tablet y controles accesibles | APROBADO | Revisión visual a 390×844 y 768×1024: sin desbordamiento del documento; tarjetas antes de `lg`, filtros secundarios cerrados y notas opcionales plegadas. Se conservan etiquetas y controles de 44 px |
+| AS-07 | Unitarias, lint, typecheck y build | APROBADO | Seis pruebas nuevas, 200 unitarias correctas; Yarn y Next 16.2.10, build con acceso a Google Fonts existentes. No se modifican consultas, RPC, SQL ni header; sin migración necesaria |
+| AS-08 | Guardado real, confirmación masiva con ocultos, auditoría integral de teclado/lectores de pantalla y volumen de participantes | NO EJECUTADO | Las guardas y borradores se comprobaron sin mutaciones; no se guardó asistencia ni se enviaron correos, y esta revisión visual no repite pruebas SQL ni despliega frontend productivo |
+| AS-09 | Distribución laptop con revisión expandida y nota abierta | APROBADO | Chrome local 1366×768: contador y acciones en una misma fila; lista revisada en una fila independiente de ancho completo, sin desplazar limpieza ni encabezado. Estado/nota/aplicación distribuidos y contadores equidistantes. Revisión visual también a 390×844 y 768×1024; sin guardar asistencia |
+| AS-10 | Regresión tras ajustar distribución y desplegable | APROBADO | 201 unitarias, `yarn lint`, `yarn typecheck`, `yarn build` y `git diff --check` correctos. Prueba estructural exige revisión accesible con `aria-expanded`/`aria-controls` y listado independiente, sin depender de `display: contents` en un desplegable nativo. Sin migración ni despliegue productivo |

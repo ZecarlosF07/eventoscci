@@ -40,6 +40,10 @@ export interface ParticipationOverviewFilters {
   query?: string;
 }
 
+export interface ParticipationPaymentNoticeProps {
+  activity: Pick<ParticipationActivitySummary, "activityId" | "paymentPendingRequests" | "paymentPendingSeats" | "certificatePendingCount">;
+}
+
 export interface ParticipationOverviewFiltersProps { filters: ParticipationOverviewFilters; total?: number }
 
 export interface ParticipationOverviewPage {
