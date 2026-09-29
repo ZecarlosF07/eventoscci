@@ -1,6 +1,7 @@
 export const CERTIFICATE_BUCKET = "certificates";
 export const CERTIFICATE_ACTIVITY_PAGE_SIZE = 12;
 export const CERTIFICATE_CANDIDATE_PAGE_SIZE = 20;
+export const CERTIFICATE_AUTO_ISSUE_BATCH_SIZE = 20;
 export const CERTIFICATE_ACCESS_LOG_PAGE_SIZE = 30;
 export const CERTIFICATE_QUERY_LOG_PAGE_SIZE = 30;
 export const CERTIFICATE_BACKGROUND_TYPES = ["image/jpeg", "image/png", "image/webp"];

@@ -5,5 +5,6 @@ export interface CertificateCandidatesTableProps {
   activityId: string;
   certificateMode: ActivityCertificateMode;
   candidates: CertificateCandidate[];
+  readyCount: number;
   templates: CertificateTemplate[];
 }

@@ -85,6 +85,7 @@ export interface CertificateCandidatePage {
 export interface ActivityCertificateData {
   activity: { certificate_mode: ActivityCertificateMode; id: string; title: string; type: ActivityType };
   candidatePage: CertificateCandidatePage;
+  readyCount: number;
   templates: CertificateTemplate[];
 }
 

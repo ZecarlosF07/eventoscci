@@ -43,13 +43,13 @@ values
   ('85000000-0000-4000-8000-000000000002', '35000000-0000-4000-8000-000000000002', 'administrator');
 
 insert into public.activities (
-  id, type, title, slug, description, modality, academic_hours, is_free,
+  id, type, title, slug, description, modality, academic_hours, is_free, certificate_mode,
   general_price, member_price, capacity, registration_open_at,
   registration_close_at, maps_embed_url, contact_phone, status, published_at, payment_note
 ) values (
   '75000000-0000-4000-8000-000000000001', 'training', 'Capacitación Certificable',
   'capacitacion-certificable-hito-5', 'Actividad temporal para pruebas.', 'in_person',
-  8, false, 120, 80, 20, now() - interval '1 day', now() + interval '1 day',
+  8, false, 'included', 120, 80, 20, now() - interval '1 day', now() + interval '1 day',
   'https://www.google.com/maps/embed?pb=hito5', '900000005',
   'published', now(), 'Coordina el pago con la CCI.'
 );

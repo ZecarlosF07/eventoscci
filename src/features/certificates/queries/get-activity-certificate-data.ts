@@ -15,7 +15,7 @@ export async function getActivityCertificateData(
   filters: CertificateCandidateFilters,
 ): Promise<ActivityCertificateData | null> {
   const client = await createServerSupabaseClient();
-  const [activityResult, candidateResult, templates] = await Promise.all([
+  const [activityResult, candidateResult, readyResult, templates] = await Promise.all([
     client.from("activities").select("id, title, type, certificate_mode").eq("id", activityId).neq("status", "archived").is("deleted_at", null).maybeSingle(),
     client.rpc("get_activity_certificate_candidates_filtered", {
       p_activity_id: activityId,
@@ -24,9 +24,15 @@ export async function getActivityCertificateData(
       p_query: filters.query,
       p_emission_state: filters.emissionState ?? "all",
     }),
+    client.rpc("get_activity_certificate_candidates_filtered", {
+      p_activity_id: activityId,
+      p_limit: 1,
+      p_offset: 0,
+      p_emission_state: "ready",
+    }),
     getCertificateTemplates(true),
   ]);
-  const error = activityResult.error ?? (candidateResult.error?.code === "PGRST202" ? null : candidateResult.error);
+  const error = activityResult.error ?? (candidateResult.error?.code === "PGRST202" ? null : candidateResult.error) ?? (readyResult.error?.code === "PGRST202" ? null : readyResult.error);
   if (error) throw new Error("No fue posible consultar los candidatos a certificado.", { cause: error });
   if (!activityResult.data) return null;
 
@@ -35,6 +41,7 @@ export async function getActivityCertificateData(
     return {
       activity: activityResult.data,
       candidatePage: await getLegacyActivityCertificateCandidates(activityId, filters),
+      readyCount: 0,
       templates: templates.filter((template) => template.scope === "activity"),
     };
   }
@@ -74,6 +81,7 @@ export async function getActivityCertificateData(
       pageCount: Math.max(1, Math.ceil(total / CERTIFICATE_CANDIDATE_PAGE_SIZE)),
       total,
     },
+    readyCount: Number(readyResult.data?.[0]?.total_count ?? 0),
     templates: templates.filter((template) => template.scope === "activity"),
   };
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useTransition } from "react";
 
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
@@ -13,6 +14,7 @@ import { SelectedInputs, SelectionCheckbox, SelectionSummary, useSelectionWorksp
 import { WorkspaceDraftInput, WorkspaceDraftSelect } from "@/features/admin-filters/components/WorkspaceDraftControls";
 import { AttendanceStatusBadge } from "@/features/attendance/components/AttendanceStatusBadge";
 import type { CertificateCandidatesTableProps } from "@/features/certificates/components/CertificateCandidatesTable/types/certificate-candidates-table.types";
+import { CERTIFICATE_AUTO_ISSUE_BATCH_SIZE } from "@/features/certificates/constants/certificate.constants";
 import { CertificateStatusBadge } from "@/features/certificates/components/CertificateStatusBadge";
 import { issueCertificatesAction } from "@/features/certificates/mutations/certificate.actions";
 import type { CertificateIssueState } from "@/features/certificates/types/certificate.types";
@@ -37,10 +39,13 @@ export function CertificateCandidatesTable({
   activityId,
   candidates,
   certificateMode,
+  readyCount,
   templates,
 }: CertificateCandidatesTableProps) {
   const { selected, clear } = useSelectionWorkspace();
   const { busy } = useFilterWorkspace();
+  const [autoPending, startAutoTransition] = useTransition();
+  const [autoState, setAutoState] = useState<CertificateIssueState | null>(null);
   const visibleIds = candidates.map((item) => item.id);
   const issueAction = async (previous: CertificateIssueState, data: FormData) => {
     try {
@@ -52,24 +57,38 @@ export function CertificateCandidatesTable({
     }
   };
   const { onSubmit, pending, state } = usePersistentAction(issueAction, INITIAL_STATE);
+  const autoBatchCount = Math.min(readyCount, CERTIFICATE_AUTO_ISSUE_BATCH_SIZE);
   return (
     <form className="space-y-4" method="post" onSubmit={(event) => {
+      setAutoState(null);
       const hidden = selected.filter((item) => !visibleIds.includes(item.id)).length;
       if (hidden && !window.confirm(`Se emitirán certificados para ${selected.length} seleccionados, incluidos ${hidden} fuera de esta vista. ¿Confirmar?`)) { event.preventDefault(); return; }
       onSubmit(event);
     }}>
       <SelectionSummary visibleIds={visibleIds} />
       <SelectedInputs name="registration_ids" />
-      <div className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
-        <WorkspaceDraftSelect draftKey="certificate-template" aria-label="Plantilla" defaultValue={templates.find((template) => template.is_default)?.id ?? templates[0]?.id} name="template_id" required>
+      <div className="grid gap-3 rounded-2xl border border-cci-100 bg-white p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
+        <label className="text-sm font-semibold">Plantilla<WorkspaceDraftSelect draftKey="certificate-template" aria-label="Plantilla" className="mt-1" defaultValue={templates.find((template) => template.is_default)?.id ?? templates[0]?.id} name="template_id" required>
           <option disabled value="">Selecciona plantilla</option>
           {templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}
-        </WorkspaceDraftSelect>
-        <WorkspaceDraftInput draftKey="certificate-condition" aria-label="Condición" defaultValue="Participó" maxLength={120} name="condition" placeholder="Participó, culminó o aprobó" required />
-        <Button className="w-full lg:w-auto" disabled={pending || busy || !templates.length || !selected.length} type="submit">{pending ? "Generando PDF…" : "Emitir seleccionados"}</Button>
+        </WorkspaceDraftSelect></label>
+        <label className="text-sm font-semibold">Condición<WorkspaceDraftInput draftKey="certificate-condition" aria-label="Condición" className="mt-1" defaultValue="Participó" maxLength={120} name="condition" placeholder="Participó, culminó o aprobó" required /></label>
+        <Button className="w-full lg:w-auto" disabled={pending || autoPending || busy || !templates.length || !selected.length} type="submit" variant="secondary">{pending ? "Generando PDF…" : "Emitir seleccionados"}</Button>
       </div>
-      <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">La selección continúa siendo manual. En certificados con costo, verifica el estado comercial antes de emitir.</p>
-      <FormActionNotice message={state.message} success={state.success} />
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-cci-200 bg-cci-50 p-4">
+        <div><p className="font-semibold">Emisión rápida</p><p className="text-sm text-slate-600">{readyCount ? `${readyCount} ${readyCount === 1 ? "persona lista" : "personas listas"} en esta actividad. Se procesan hasta ${CERTIFICATE_AUTO_ISSUE_BATCH_SIZE} por vez, sin depender de la página o los filtros.` : "No hay certificados pendientes que cumplan todos los requisitos."}</p></div>
+        <Button disabled={autoPending || pending || busy || !templates.length || !readyCount} onClick={(event) => {
+          const form = event.currentTarget.form;
+          if (!form || !form.reportValidity()) return;
+          if (!window.confirm(`Se emitirán hasta ${autoBatchCount} certificados de personas elegibles en esta actividad y se les enviará la notificación correspondiente. ¿Continuar?`)) return;
+          const values = new FormData(form);
+          values.set("issue_mode", "ready");
+          setAutoState(null);
+          startAutoTransition(async () => setAutoState(await issueAction(INITIAL_STATE, values)));
+        }} type="button">{autoPending ? "Emitiendo…" : readyCount > CERTIFICATE_AUTO_ISSUE_BATCH_SIZE ? `Emitir próximos ${autoBatchCount} listos` : `Emitir ${autoBatchCount} listos`}</Button>
+      </div>
+      <p className="text-sm text-slate-600">Ambas acciones usan la plantilla y condición elegidas. La emisión rápida verifica inscripción, asistencia y pago del certificado opcional; para casos puntuales, selecciona participantes en la tabla.</p>
+      <FormActionNotice message={autoState?.message ?? state.message} success={autoState?.success ?? state.success} />
       {state.failedRegistrationIds?.length ? <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm" role="status">Sin procesar: {state.failedRegistrationIds.map((id) => selected.find((item) => item.id === id)?.name ?? id).join(", ")}. Permanecen seleccionados para revisarlos.</p> : null}
       {!candidates.length ? <p className="rounded-xl border border-dashed p-6">No hay participantes con estos filtros. La selección anterior se conserva.</p> : null}
       <ResponsiveTableFrame className="rounded-3xl" label="Candidatos a certificados">
