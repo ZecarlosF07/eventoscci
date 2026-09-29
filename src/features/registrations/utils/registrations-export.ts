@@ -3,12 +3,12 @@ import {
   CERTIFICATE_COMMERCIAL_STATUS_LABELS,
   getCertificateCommercialStatus,
 } from "@/features/registrations/utils/certificate-commercial-status";
-import { csvCell } from "@/utils/csv-cell";
+import type { ExportTable } from "@/utils/xlsx-export";
 
 const REGISTRATION_LABELS = { cancelled: "Cancelado", confirmed: "Confirmado", pending: "Pendiente de verificación" } as const;
 const ATTENDANCE_LABELS = { absent: "No asistió", attended: "Asistió", pending: "Pendiente" } as const;
 
-export function registrationsToCsv(registrations: RegistrationAdminItem[]): string {
+export function registrationsToTable(registrations: RegistrationAdminItem[]): ExportTable {
   const headers = [
     "Actividad", "Tipo de documento", "Documento", "Nombres", "Apellidos",
     "Correo", "Celular", "Cargo", "Empresa", "RUC", "Tipo de inscripción",
@@ -55,5 +55,5 @@ export function registrationsToCsv(registrations: RegistrationAdminItem[]): stri
     item.certificate_payment_verified_at,
     item.certificatePaymentVerifiedByName,
   ]);
-  return `\uFEFF${[headers, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
+  return { headers, rows };
 }

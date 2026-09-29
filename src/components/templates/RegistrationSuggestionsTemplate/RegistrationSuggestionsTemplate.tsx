@@ -21,7 +21,7 @@ export function RegistrationSuggestionsTemplate({ activities, data, filters }: R
     <div className="space-y-7">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div className="space-y-3"><Link className="text-sm font-semibold text-slate-700 hover:underline" href={ROUTES.adminRegistrations}>← Volver a Participación</Link><SectionHeading description={`${data.total} respuestas abiertas para orientar la programación de nuevas actividades.`} eyebrow="Escucha a tus participantes" title="Sugerencias" /></div>
-        <FilterExportLink className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-5 text-sm font-semibold hover:bg-cci-50" href={`${ROUTES.adminRegistrationSuggestions}/exportar?${query.toString()}`}>Exportar CSV</FilterExportLink>
+        <FilterExportLink className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-5 text-sm font-semibold hover:bg-cci-50" href={`${ROUTES.adminRegistrationSuggestions}/exportar?${query.toString()}`}>Exportar Excel</FilterExportLink>
       </div>
       <RegistrationSuggestionFilters activities={activities} filters={filters} total={data.total} />
       <FilterResults><RegistrationSuggestionsTable items={data.items} /></FilterResults>

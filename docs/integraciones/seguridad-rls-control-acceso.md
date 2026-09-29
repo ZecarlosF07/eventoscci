@@ -64,7 +64,7 @@ descargas públicas de certificados. El token público no concede listado ni acc
 
 ## Route Handlers revisados
 
-- La exportación CSV verifica una cuenta interna activa.
+- La exportación Excel verifica una cuenta interna activa.
 - La generación de certificados de curso valida UUID, sesión y ownership antes de usar
   `service_role`.
 - La entrega de notificaciones usa `N8N_WEBHOOK_SECRET` exclusivamente en el servidor.

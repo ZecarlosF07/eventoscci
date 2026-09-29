@@ -31,7 +31,7 @@ export function ActivityAttendanceTemplate({ data, filters, result, summary }: A
       <Link className="text-sm font-semibold text-slate-700 hover:underline" href={ROUTES.adminRegistrations}>← Volver a actividades</Link>
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <SectionHeading description={`${data.total} ${data.total === 1 ? "participante" : "participantes"} · Solo puedes marcar inscripciones confirmadas.`} eyebrow={data.activity.type === "event" ? "Evento" : "Capacitación"} title={data.activity.title} />
-        <FilterExportLink className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold hover:bg-cci-50" href={`${ROUTES.adminRegistrations}/exportar?${exportValues}`}>Exportar CSV</FilterExportLink>
+        <FilterExportLink className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold hover:bg-cci-50" href={`${ROUTES.adminRegistrations}/exportar?${exportValues}`}>Exportar Excel</FilterExportLink>
       </div>
       <ParticipationActivityTabs activityId={data.activity.id} current="attendance" />
       <ActivityParticipationMetrics activity={summary} mode="attendance" compact />

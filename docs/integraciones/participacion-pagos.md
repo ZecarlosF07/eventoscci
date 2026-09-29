@@ -27,7 +27,7 @@ Cada tarjeta diferencia **solicitudes con pago pendiente** de **plazas pendiente
 
 Desde el 29/09/2026, los indicadores con pendientes usan un fondo ámbar suave, borde lateral, icono de espera y cantidades destacadas. Participación y certificados conservan líneas separadas; los contadores en cero se muestran discretos, sin alarma ni animación. El bloque sigue enlazando a Pagos de la misma actividad y no cambia consultas, saldos o reglas comerciales.
 
-La mejora de buscadores del 28/09/2026 separa el periodo del checkbox «Solo con pagos pendientes»: pueden combinarse. Los enlaces antiguos `periodo=payments` siguen siendo compatibles. La pestaña Pagos exporta solicitudes de participación filtradas, individuales y grupales, sin mezclar cobros de certificados. El CSV grupal original conserva su ruta por compatibilidad. Consultar [Búsquedas administrativas](busquedas-administrativas.md) para filtros, selección y evidencia actualizada.
+La mejora de buscadores del 28/09/2026 separa el periodo del checkbox «Solo con pagos pendientes»: pueden combinarse. Los enlaces antiguos `periodo=payments` siguen siendo compatibles. La pestaña Pagos exporta a Excel solicitudes de participación filtradas, individuales y grupales, sin mezclar cobros de certificados. La exportación grupal anterior conserva su ruta por compatibilidad, pero también descarga Excel. Consultar [Búsquedas administrativas](busquedas-administrativas.md) para filtros, selección y evidencia actualizada.
 
 ## Fechas operativas
 
@@ -51,7 +51,7 @@ Todas las tablas nuevas tienen RLS, lectura interna y ninguna escritura directa 
 
 Ruta canónica: `/admin/inscripciones/[activityId]/pagos`. Selección de solicitud mediante `solicitud`; selección de certificado mediante `certificado`. Los parámetros mantienen ambos filtros/páginas independientes.
 
-`pendientes`, `preinscritos` y `solicitudes` redirigen a Pagos cuando incluyen una actividad válida. Sin actividad vuelven al selector con «Todas con pagos pendientes». `confirmados` conserva el contexto de inscripciones si hay actividad, o lleva al selector completo. Se mantienen los filtros compatibles; no se aplica una búsqueda de documentos a títulos de actividades. El detalle `/solicitudes/[id]` permanece para comprobante, asistentes, cancelaciones, transferencias e historial, sin formulario de pago. Las exportaciones existentes permanecen disponibles: Inscripciones conserva el CSV de participantes y Pagos enlaza al CSV de todos los grupos de la actividad, identificado como exportación completa (no de los filtros de pagos).
+`pendientes`, `preinscritos` y `solicitudes` redirigen a Pagos cuando incluyen una actividad válida. Sin actividad vuelven al selector con «Todas con pagos pendientes». `confirmados` conserva el contexto de inscripciones si hay actividad, o lleva al selector completo. Se mantienen los filtros compatibles; no se aplica una búsqueda de documentos a títulos de actividades. El detalle `/solicitudes/[id]` permanece para comprobante, asistentes, cancelaciones, transferencias e historial, sin formulario de pago. Las exportaciones existentes permanecen disponibles en Excel: Inscripciones conserva la de participantes y Pagos enlaza a la de todos los grupos de la actividad, identificada como exportación completa (no de los filtros de pagos).
 
 ## Migraciones y verificación
 

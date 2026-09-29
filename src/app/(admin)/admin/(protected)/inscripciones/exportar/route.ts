@@ -1,7 +1,8 @@
 import { getAdminSession } from "@/features/auth/services/admin-session";
 import { getRegistrationsForExport } from "@/features/registrations/queries/get-activity-registrations";
 import { parseAdminRegistrationFilters } from "@/features/registrations/utils/admin-registration-filters";
-import { registrationsToCsv } from "@/features/registrations/utils/registrations-csv";
+import { registrationsToTable } from "@/features/registrations/utils/registrations-export";
+import { createXlsxResponse } from "@/utils/xlsx-export";
 
 export async function GET(request: Request): Promise<Response> {
   const session = await getAdminSession();
@@ -13,6 +14,7 @@ export async function GET(request: Request): Promise<Response> {
     asistencia: params.get("asistencia") ?? undefined,
     certificado: params.get("certificado") ?? undefined,
     estado: params.get("estado") ?? undefined,
+    perfil: params.get("perfil") ?? undefined,
     q: params.get("q") ?? undefined,
     tipo: params.get("tipo") ?? undefined,
     tipo_actividad: params.get("tipo_actividad") ?? undefined,
@@ -23,18 +25,12 @@ export async function GET(request: Request): Promise<Response> {
     attendanceStatus: parsed.attendanceStatus,
     certificateRequest: parsed.certificateRequest,
     query: parsed.query,
+    profile: parsed.profile,
     registrationType: parsed.registrationType,
     status: parsed.status,
     statusScope: params.get("estado") === "active" ? "active" as const : undefined,
   };
   const registrations = await getRegistrationsForExport(filters);
-  const csv = registrationsToCsv(registrations);
   const date = new Date().toISOString().slice(0, 10);
-  return new Response(csv, {
-    headers: {
-      "Cache-Control": "private, no-store",
-      "Content-Disposition": `attachment; filename="inscripciones-${date}.csv"`,
-      "Content-Type": "text/csv; charset=utf-8",
-    },
-  });
+  return createXlsxResponse(registrationsToTable(registrations), `inscripciones-${date}`, "Inscripciones");
 }

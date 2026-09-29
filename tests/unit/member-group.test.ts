@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { memberGroupInputSchema } from "@/features/member-groups/schemas/member-group.schema";
 import type { MemberGroupAdminListItem } from "@/features/member-groups/types/member-group.types";
-import { memberGroupsToCsv } from "@/features/member-groups/utils/member-group-csv";
+import { memberGroupsToTable } from "@/features/member-groups/utils/member-group-export";
 import { getMemberPassPricing } from "@/features/member-groups/utils/member-pass-pricing";
 
 const attendee = {
@@ -35,17 +35,18 @@ test("los pases se descuentan del saldo por RUC, en orden y sin reducir el cupo"
   });
 });
 
-test("CSV agrupa ingresos una sola vez y neutraliza fórmulas", () => {
+test("Excel agrupa ingresos una sola vez", () => {
   const group = {
     id: "group", request_code: "CCI-GR-000001", activity_title: "Evento", company_ruc: "20123456789",
     company_name_snapshot: "=SUM(A1:A2)", billing_type: "factura", billing_document: "20987654321",
     total: 80, confirmed_amount: 40, pending_amount: 40, created_at: "2026-09-24T00:00:00Z",
   } as MemberGroupAdminListItem;
-  const csv = memberGroupsToCsv([group], [
+  const table = memberGroupsToTable([group], [
     { requestId: "group", code: "A", firstNames: "Ana", lastNames: "Pérez", document: "DNI 12345678", email: "ana@example.test", status: "confirmed", price: 40, isComplimentary: false },
     { requestId: "group", code: "B", firstNames: "Bea", lastNames: "Pérez", document: "DNI 87654321", email: "bea@example.test", status: "pending", price: 40, isComplimentary: false },
   ]);
-  assert.match(csv, /"'=SUM\(A1:A2\)"/);
-  assert.equal(csv.split("\r\n").length, 3);
-  assert.equal(csv.match(/"80"/g)?.length, 1);
+  assert.equal(table.rows.length, 2);
+  assert.equal(table.rows[0][3], "=SUM(A1:A2)");
+  assert.equal(table.rows[0][14], 80);
+  assert.equal(table.rows[1][14], null);
 });

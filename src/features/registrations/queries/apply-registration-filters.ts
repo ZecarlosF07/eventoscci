@@ -2,7 +2,7 @@ import type { RegistrationFilterQuery } from "@/features/registrations/types/reg
 import type { RegistrationAdminFilters } from "@/features/registrations/types/registration.types";
 import { escapePostgrestSearch } from "@/utils/postgrest-search";
 
-/** One definition for the paginated list and the complete CSV. */
+/** One definition for the paginated list and the complete Excel export. */
 export function applyRegistrationFilters<T extends RegistrationFilterQuery<T>>(
   source: T, filters: Omit<RegistrationAdminFilters, "page">, excludeGroups = false,
 ): T {

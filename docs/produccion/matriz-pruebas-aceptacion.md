@@ -27,7 +27,8 @@ No se libera una versión con defectos críticos o altos abiertos. Los resultado
 | Eventos exclusivos y padrón | `025_member_group_events_test.sql`, `026_member_roster_version_test.sql` | Inscripción grupal, pagos y reemplazo del padrón |
 | Pases gratuitos por empresa | `027_member_company_complimentary_passes_test.sql` | Cuota por RUC, grupo mixto, importe cero, reintentos, cancelación, transferencia y auditoría |
 | Pagos por actividad | `028_activity_payments_workspace_test.sql`, `tests/unit/payment-workspace*.test.ts` | Conteos grupales/individuales, saldos separados, idempotencia, fechas operativas, historial, permisos, paginación y rutas compatibles |
-| Filtros administrativos | `029_admin_dynamic_filters_test.sql`, `tests/unit/admin-dynamic-filters.test.ts` | Búsqueda literal y por nombre completo, perfiles, elegibilidad antes de paginar, conteos, permisos, URL, selección conservada y CSV seguro |
+| Filtros administrativos | `029_admin_dynamic_filters_test.sql`, `tests/unit/admin-dynamic-filters.test.ts` | Búsqueda literal y por nombre completo, perfiles, elegibilidad antes de paginar, conteos, permisos, URL y selección conservada |
+| Exportaciones administrativas | `tests/unit/xlsx-export.test.ts`, pruebas de tablas de inscripción, sugerencias, grupos y comprobantes | Archivo Excel válido, identificadores conservados como texto, contenido de usuario inerte y una fila por solicitud cuando corresponde |
 | SEO y rendimiento público | `tests/unit/seo.test.ts` | Metadata, JSON-LD, sesiones múltiples, slugs, búsquedas seguras y analítica sin PII |
 
 Los archivos usan transacciones con `rollback`; no conservan fixtures en la base vinculada.
@@ -182,7 +183,7 @@ Implementación y alcance: [Búsquedas administrativas](../integraciones/busqued
 | BA-09 | Confirmación de operación masiva con seleccionados ocultos | BLOQUEADO | El navegador de automatización quedó bloqueado al abrir el diálogo. Se pidió pulsar Cancelar; no se confirmó ni guardó la operación |
 | BA-10 | Escritura rápida, medición exacta del debounce, consultas lentas, errores y respuestas fuera de orden | NO EJECUTADO | Pendiente de prueba integral de red; no basta la cobertura de utilidades ni el manejo de navegación de Next |
 | BA-11 | Atrás/adelante y enlaces guardados de todos los módulos | NO EJECUTADO | Parsers y compatibilidad cubiertos en unitarias; recorrido integral pendiente |
-| BA-12 | Nuevos filtros y CSV real fuera de primera página en todos los módulos | NO EJECUTADO | Criterios compartidos y seguridad CSV comprobados en unitarias; falta revisión integral con volumen real |
+| BA-12 | Nuevos filtros y exportación real fuera de primera página en todos los módulos | NO EJECUTADO | Criterios compartidos comprobados en unitarias; falta revisión integral con volumen real en el formato Excel actual |
 | BA-13 | Selección/páginas de certificados, emisión parcial, límite, permisos y elegibilidad cambiada durante una operación | NO EJECUTADO | Revalidación implementada; no se emitieron certificados ni se enviaron correos reales para esta prueba |
 | BA-14 | Pagos abiertos conservan borradores al filtrar, ambas páginas y certificados separados | NO EJECUTADO | URL y separación cubiertas en unitarias; comprobación integral pendiente |
 | BA-15 | Vistas 390×844, 768×1024 y 1440×900; lectores de pantalla y teclado completo | NO EJECUTADO | Recorrido parcial por teclado realizado, pero no se aprueba el conjunto de tamaños/accesibilidad sin completarlo |
@@ -299,3 +300,20 @@ No se enviaron correos ni se registraron pagos durante estas pruebas. Las migrac
 | ER-03 | Suite y comprobaciones frontend | APROBADO | 203 unitarias, `yarn lint`, `yarn typecheck`, `yarn build` y `git diff --check` correctos con Next 16.2.10 |
 | ER-04 | Prueba SQL y migración vinculada | APROBADO | `supabase db push --linked --dry-run` identificó únicamente `202609290001_certificate_bulk_eligibility.sql`; `supabase db push --linked` la aplicó el 29/09/2026 sin seeds ni roles. La prueba transaccional 031 terminó correctamente con seis aserciones verificadas y `ROLLBACK`; el dry-run posterior devolvió `upToDate: true`, sin pendientes. La firma de la RPC no cambió, por lo que no se requirió regenerar tipos |
 | ER-05 | Emisión real, correo y reintentos en un entorno de prueba | NO EJECUTADO | La actividad visible contiene personas reales elegibles: no se pulsó «Emitir» ni se enviaron PDF o correos. Pendiente prueba operativa controlada; aplicar la migración no desplegó el frontend |
+
+### Recuperación de tandas interrumpidas — 29/09/2026
+
+| Caso | Verificación | Estado | Evidencia |
+|---|---|---|---|
+| ER-06 | Tanda persistente de hasta 20, recuperación de certificados previos sin PDF, inicio repetido sin segunda tanda | APROBADO (SQL) | Migración 202609290002; prueba SQL 032 transaccional con 17 aserciones y `ROLLBACK` |
+| ER-07 | Bloqueo por intento, vencimiento, rechazo de token antiguo, elegibilidad revisada y un solo registro de correo | APROBADO (SQL) | SQL 032: reclamo concurrente denegado, bloqueo vencido recuperado y finalización rechazada tras cambiar asistencia; 202609290003 reconcilia PDF terminado por otra ruta |
+| ER-08 | Progreso visible, reanudar sin proceso de fondo y conservar plantilla/condición | APROBADO (código) | Componente de progreso y acciones por certificado; 204 unitarias, lint, typecheck y build correctos. Vista administrativa local revisada sin emitir; falta probar cierre real durante una emisión controlada |
+| ER-09 | Cierre real durante generación, PDF y webhook; dos administradores; móviles y correo real | NO EJECUTADO | No se interrumpieron emisiones de participantes reales ni se enviaron correos de prueba. Requiere entorno y destinatarios controlados; no se desplegó frontend productivo |
+
+### Exportaciones administrativas en Excel — 29/09/2026
+
+| Caso | Verificación | Estado | Evidencia |
+|---|---|---|---|
+| EX-01 | Las cinco rutas de inscripción, sugerencias, solicitudes grupales, pagos y datos para comprobantes descargan `.xlsx` con permisos, filtros y límites conservados | APROBADO (código) | Inspección de rutas; todas comparten `createXlsxResponse` y ninguna responde `text/csv`. El enlace de Asistencia reutiliza la exportación de inscripciones |
+| EX-02 | Archivo legible por Excel; RUC/DNI como texto, importes numéricos y cadenas que comienzan con `=` sin ejecución | APROBADO (unitarias) | Archivo generado y leído con ExcelJS; encabezados, tipos de celda, contenido, nombre y MIME comprobados. 204 unitarias, lint, typecheck y build correctos |
+| EX-03 | Descarga real autenticada con filtros, datos fuera de primera página y apertura en Excel de escritorio/móvil | NO EJECUTADO | No se descargaron datos de participantes reales en esta revisión; BA-12 conserva su estado. No requiere migración de base de datos ni cambia datos persistidos |

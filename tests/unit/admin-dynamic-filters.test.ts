@@ -10,7 +10,6 @@ import { parseActivityRegistrationFilters } from "../../src/features/registratio
 import { parseCertificateCandidateFilters } from "../../src/features/certificates/utils/certificate-admin-filters";
 import { parseNotificationFilters } from "../../src/features/notifications/utils/notification-filters";
 import { escapePostgrestSearch } from "../../src/utils/postgrest-search";
-import { csvCell } from "../../src/utils/csv-cell";
 import { removeProcessedSelections, toggleWorkspaceSelection } from "../../src/features/admin-filters/utils/workspace-selection";
 import { applyRegistrationFilters } from "../../src/features/registrations/queries/apply-registration-filters";
 import { renderAdminFilters } from "./fixtures/admin-router";
@@ -40,10 +39,6 @@ test("selection is deduplicated, unaffected by visibility, and only successful I
   assert.deepEqual(removeProcessedSelections(selected, ["one"]), [second]);
   assert.deepEqual(selected, [first, second]);
   assert.deepEqual(removeProcessedSelections(selected), []);
-});
-test("CSV cells cannot execute formulas, even after whitespace", () => {
-  assert.equal(csvCell(" =SUM(A1:A2)"), '"\' =SUM(A1:A2)"');
-  assert.equal(csvCell("CCI-123"), '"CCI-123"');
 });
 test("registration list and export share profile and full-name literal criteria", () => {
   const calls: unknown[][] = [];

@@ -2,6 +2,7 @@ import type { ActivityCertificateMode } from "@/features/activities/types/activi
 import type { ActivityListItem, ActivityType } from "@/features/activities/types/activity.types";
 import type { AttendanceStatus } from "@/features/attendance/types/attendance.types";
 import type { RegistrationStatus } from "@/features/registrations/types/registration.types";
+import type { CertificateBatchStatus } from "@/features/certificates/types/certificate-batch.types";
 import type { Enums, Json, Tables } from "@/lib/supabase/database.types";
 
 export type CertificateStatus = Enums<"certificate_status">;
@@ -84,7 +85,9 @@ export interface CertificateCandidatePage {
 
 export interface ActivityCertificateData {
   activity: { certificate_mode: ActivityCertificateMode; id: string; title: string; type: ActivityType };
+  batch: CertificateBatchStatus | null;
   candidatePage: CertificateCandidatePage;
+  recoverableCount: number;
   readyCount: number;
   templates: CertificateTemplate[];
 }

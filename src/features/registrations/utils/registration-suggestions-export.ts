@@ -1,7 +1,7 @@
 import type { RegistrationSuggestionItem } from "@/features/registrations/types/registration-suggestion.types";
-import { csvCell } from "@/utils/csv-cell";
+import type { ExportTable } from "@/utils/xlsx-export";
 
-export function registrationSuggestionsToCsv(items: RegistrationSuggestionItem[]): string {
+export function registrationSuggestionsToTable(items: RegistrationSuggestionItem[]): ExportTable {
   const headers = ["Fecha", "Actividad", "Tipo", "Participante", "Documento", "Perfil", "Contexto", "Sugerencia"];
   const rows = items.map((item) => [
     item.created_at,
@@ -13,5 +13,5 @@ export function registrationSuggestionsToCsv(items: RegistrationSuggestionItem[]
     item.participant_profile === "student" ? `${item.academic_institution_snapshot ?? ""} · ${item.career_snapshot ?? ""}` : `${item.job_title_snapshot ?? ""} · ${item.company_snapshot ?? ""}`,
     item.future_topics_suggestion,
   ]);
-  return `\uFEFF${[headers, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
+  return { headers, rows };
 }

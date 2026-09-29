@@ -16,7 +16,7 @@ Los filtros compactos utilizan el buscador automático compartido: 350 ms al esc
 
 La paginación se resuelve antes de renderizar: 20 solicitudes individuales, o 20 empresas y 20 solicitudes dentro de la empresa desplegada. Los conteos de empresas son completos en PostgreSQL. La búsqueda y los filtros de comprobante/situación se comparten entre listado, agrupación y exportación.
 
-El CSV contiene **una fila por solicitud**, sin multiplicar importes por asistentes y con protección contra fórmulas mediante `csvCell`. Exporta todos los resultados filtrados, no solo la página o empresa desplegada; no utiliza la selección del detalle como filtro. Tiene un límite explícito de 5.000 solicitudes y requiere sesión interna activa. Durante una actualización de filtros se bloquea la exportación. «Copiar datos» copia exclusivamente el código y destinatario del comprobante, no el RUC asociado, y anuncia éxito o error de forma accesible.
+El Excel (`.xlsx`) contiene **una fila por solicitud**, sin multiplicar importes por asistentes. Los documentos se guardan como texto para conservar ceros iniciales; el contenido ingresado por usuarios también se guarda como texto, sin ejecutar fórmulas. Exporta todos los resultados filtrados, no solo la página o empresa desplegada; no utiliza la selección del detalle como filtro. Tiene un límite explícito de 5.000 solicitudes y requiere sesión interna activa. Durante una actualización de filtros se bloquea la exportación. «Copiar datos» copia exclusivamente el código y destinatario del comprobante, no el RUC asociado, y anuncia éxito o error de forma accesible.
 
 ## Detalle en popup y carga independiente
 

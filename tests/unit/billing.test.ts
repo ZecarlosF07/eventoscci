@@ -10,7 +10,7 @@ import { BillingWorkspaceTabs } from "@/features/billing/components/BillingWorks
 import { BillingToolbar } from "@/features/billing/components/BillingToolbar";
 import { billingSchema } from "@/features/billing/schemas/billing.schema";
 import type { BillingRequest, BillingInput } from "@/features/billing/types/billing.types";
-import { billingRequestsToCsv } from "@/features/billing/utils/billing-csv";
+import { billingRequestsToTable } from "@/features/billing/utils/billing-export";
 import { billingCopyText, billingLabel } from "@/features/billing/utils/billing-display";
 import { billingUrl, parseBillingFilters } from "@/features/billing/utils/billing-filters";
 import { applicableBilling, copyBillingSource } from "@/features/billing/utils/billing-input";
@@ -57,11 +57,14 @@ test("filtros iniciales incluyen todo y paginaciones son independientes", () => 
   assert.equal(params.get("pagina"), "2"); assert.equal(params.get("pagina_solicitudes"), "3"); assert.equal(params.get("vista"), "comprobantes");
   assert.equal(parseBillingFilters({ pagina: "1.5", comprobante: "unknown", empresa: "other" }).page, 1);
 });
-test("CSV tiene una fila por solicitud sin duplicar total por asistentes y protege fórmulas", () => {
-  const csv = billingRequestsToCsv([{ ...item, billing_name: "=WEBSERVICE()" }]);
-  assert.equal(csv.split("\r\n").length, 2); assert.match(csv, /'\=WEBSERVICE/);
-  assert.match(csv, /20111111111/); assert.match(csv, /20123456789/);
-  assert.match(csv, /,"80","40","40",/);
+test("Excel tiene una fila por solicitud sin duplicar total por asistentes", () => {
+  const table = billingRequestsToTable([{ ...item, billing_name: "=WEBSERVICE()" }]);
+  assert.equal(table.rows.length, 1);
+  assert.ok(table.rows[0].includes("=WEBSERVICE()"));
+  assert.ok(table.rows[0].includes("20111111111"));
+  assert.ok(table.rows[0].includes("20123456789"));
+  assert.ok(table.rows[0].includes(80));
+  assert.ok(table.rows[0].includes(40));
 });
 test("copiar y mostrar destinatario no confunde RUC asociado con RUC de facturación", () => {
   const copy = billingCopyText(item);

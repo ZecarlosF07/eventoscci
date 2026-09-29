@@ -1,6 +1,7 @@
 import "server-only";
 
 import { CERTIFICATE_CANDIDATE_PAGE_SIZE } from "@/features/certificates/constants/certificate.constants";
+import { getCertificateBatchStatus } from "@/features/certificates/queries/get-certificate-batch-status";
 import { getCertificateTemplates } from "@/features/certificates/queries/get-certificate-templates";
 import { getLegacyActivityCertificateCandidates } from "@/features/certificates/queries/get-legacy-activity-certificate-candidates";
 import type {
@@ -15,7 +16,7 @@ export async function getActivityCertificateData(
   filters: CertificateCandidateFilters,
 ): Promise<ActivityCertificateData | null> {
   const client = await createServerSupabaseClient();
-  const [activityResult, candidateResult, readyResult, templates] = await Promise.all([
+  const [activityResult, candidateResult, readyResult, recoverableResult, batch, templates] = await Promise.all([
     client.from("activities").select("id, title, type, certificate_mode").eq("id", activityId).neq("status", "archived").is("deleted_at", null).maybeSingle(),
     client.rpc("get_activity_certificate_candidates_filtered", {
       p_activity_id: activityId,
@@ -30,9 +31,11 @@ export async function getActivityCertificateData(
       p_offset: 0,
       p_emission_state: "ready",
     }),
+    client.rpc("count_recoverable_activity_certificates", { p_activity_id: activityId }),
+    getCertificateBatchStatus(activityId),
     getCertificateTemplates(true),
   ]);
-  const error = activityResult.error ?? (candidateResult.error?.code === "PGRST202" ? null : candidateResult.error) ?? (readyResult.error?.code === "PGRST202" ? null : readyResult.error);
+  const error = activityResult.error ?? candidateResult.error ?? readyResult.error ?? recoverableResult.error;
   if (error) throw new Error("No fue posible consultar los candidatos a certificado.", { cause: error });
   if (!activityResult.data) return null;
 
@@ -40,8 +43,10 @@ export async function getActivityCertificateData(
     if (filters.emissionState && filters.emissionState !== "all") throw new Error("Actualiza la base de datos para aplicar filtros de emisión.");
     return {
       activity: activityResult.data,
+      batch,
       candidatePage: await getLegacyActivityCertificateCandidates(activityId, filters),
       readyCount: 0,
+      recoverableCount: recoverableResult.data ?? 0,
       templates: templates.filter((template) => template.scope === "activity"),
     };
   }
@@ -75,6 +80,7 @@ export async function getActivityCertificateData(
   const total = Number(candidateResult.data?.[0]?.total_count ?? 0);
   return {
     activity: activityResult.data,
+    batch,
     candidatePage: {
       candidates,
       page: filters.page,
@@ -82,6 +88,7 @@ export async function getActivityCertificateData(
       total,
     },
     readyCount: Number(readyResult.data?.[0]?.total_count ?? 0),
+    recoverableCount: recoverableResult.data ?? 0,
     templates: templates.filter((template) => template.scope === "activity"),
   };
 }

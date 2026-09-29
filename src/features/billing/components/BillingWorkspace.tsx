@@ -35,7 +35,7 @@ export async function BillingWorkspace({ activityId, query }: BillingPageProps) 
     <ParticipationActivityTabs activityId={activityId} current="payments" /><BillingWorkspaceTabs activityId={activityId} current="billing" />
     <div><h2 className="text-2xl font-bold text-cci-950">Datos para comprobantes</h2><p className="mt-1 text-sm text-slate-600">Consulta, copia o corrige datos para emitir en otro sistema. No se emiten comprobantes ni se validan pagos aquí.</p></div>
     <BillingToolbar filters={filters} total={total} />
-    <FilterExportLink href={`/admin/inscripciones/${activityId}/pagos/comprobantes/exportar?${new URLSearchParams(billingParams(filters))}`} className="inline-flex min-h-11 items-center font-semibold text-cci-700 underline">Exportar datos filtrados (CSV)</FilterExportLink>
+    <FilterExportLink href={`/admin/inscripciones/${activityId}/pagos/comprobantes/exportar?${new URLSearchParams(billingParams(filters))}`} className="inline-flex min-h-11 items-center font-semibold text-cci-700 underline">Exportar datos filtrados (Excel)</FilterExportLink>
     <BillingDialog activityId={activityId} />
     <FilterResults><p className="mb-3 text-sm text-slate-600">{total} {grouped ? total === 1 ? "empresa" : "empresas" : total === 1 ? "solicitud" : "solicitudes"} con estos filtros · Incluye historial cancelado.</p>
       {companies ? <><BillingCompanies companies={companies.items} activityId={activityId} filters={filters}>{list}</BillingCompanies><BillingPagination activityId={activityId} filters={filters} page={companies.page} pageCount={companies.pageCount} /></> : list}

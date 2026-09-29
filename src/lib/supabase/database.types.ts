@@ -650,6 +650,134 @@ export type Database = {
         }
         Relationships: []
       }
+      certificate_issue_batch_items: {
+        Row: {
+          attempts: number
+          batch_id: string
+          id: string
+          last_error: string | null
+          lease_token: string | null
+          lease_until: string | null
+          registration_id: string
+          state: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          batch_id: string
+          id?: string
+          last_error?: string | null
+          lease_token?: string | null
+          lease_until?: string | null
+          registration_id: string
+          state?: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          batch_id?: string
+          id?: string
+          last_error?: string | null
+          lease_token?: string | null
+          lease_until?: string | null
+          registration_id?: string
+          state?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificate_issue_batch_items_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "certificate_issue_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificate_issue_batch_items_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "admin_registration_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificate_issue_batch_items_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "certificate_payment_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificate_issue_batch_items_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      certificate_issue_batches: {
+        Row: {
+          activity_id: string
+          condition: string
+          created_at: string
+          created_by: string
+          id: string
+          template_id: string
+        }
+        Insert: {
+          activity_id: string
+          condition: string
+          created_at?: string
+          created_by: string
+          id?: string
+          template_id: string
+        }
+        Update: {
+          activity_id?: string
+          condition?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificate_issue_batches_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificate_issue_batches_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "certificate_issue_batches_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "certificate_issue_batches_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_payment_totals"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "certificate_issue_batches_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "certificate_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       certificate_template_signers: {
         Row: {
           created_at: string
@@ -2957,6 +3085,10 @@ export type Database = {
         Args: { p_certificate_id: string }
         Returns: boolean
       }
+      activity_certificate_batch_eligible: {
+        Args: { p_registration_id: string }
+        Returns: boolean
+      }
       admin_literal_pattern: { Args: { p_query: string }; Returns: string }
       apply_member_roster_import: {
         Args: { p_import_id: string }
@@ -2982,6 +3114,10 @@ export type Database = {
       check_course_completion: {
         Args: { p_enrollment_id: string }
         Returns: boolean
+      }
+      claim_activity_certificate_batch_item: {
+        Args: { p_batch_id: string }
+        Returns: Json
       }
       claim_due_virtual_reminders: {
         Args: { p_limit?: number }
@@ -3070,6 +3206,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      count_recoverable_activity_certificates: {
+        Args: { p_activity_id: string }
+        Returns: number
+      }
       current_course_enrollment: {
         Args: { p_course_id: string }
         Returns: string
@@ -3089,12 +3229,35 @@ export type Database = {
         }
         Returns: Json
       }
+      finalize_activity_certificate_batch_item: {
+        Args: {
+          p_certificate_id: string
+          p_file_path: string
+          p_item_id: string
+          p_lease_token: string
+          p_public_base_url: string
+        }
+        Returns: boolean
+      }
       finalize_course_certificate: {
         Args: {
           p_certificate_id: string
           p_file_path: string
           p_public_base_url: string
         }
+        Returns: Json
+      }
+      finish_activity_certificate_batch_item: {
+        Args: {
+          p_error?: string
+          p_item_id: string
+          p_lease_token: string
+          p_state: string
+        }
+        Returns: boolean
+      }
+      get_activity_certificate_batch: {
+        Args: { p_activity_id: string }
         Returns: Json
       }
       get_activity_certificate_candidates: {
@@ -3466,6 +3629,14 @@ export type Database = {
       soft_delete_activity: { Args: { p_activity_id: string }; Returns: string }
       soft_delete_certificate_template: {
         Args: { p_template_id: string }
+        Returns: string
+      }
+      start_activity_certificate_batch: {
+        Args: {
+          p_activity_id: string
+          p_condition: string
+          p_template_id: string
+        }
         Returns: string
       }
       submit_quiz_attempt: {

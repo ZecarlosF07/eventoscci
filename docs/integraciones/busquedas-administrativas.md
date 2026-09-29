@@ -44,7 +44,7 @@ En laptop, revisión y limpieza se alinean a la derecha del contador; al despleg
 
 Next.js gestiona la sustitución de navegaciones concurrentes: no se introducen peticiones fetch paralelas independientes que puedan sobrescribir la última navegación. El hook evita enviar de nuevo una URL idéntica y captura todos los controles al ejecutar, no solamente el valor que inició el debounce. Ante un error de consulta, el error boundary administrativo no presenta datos antiguos como vigentes y ofrece «Reintentar».
 
-Las exportaciones se bloquean mientras hay filtros pendientes o inválidos. Inscripciones y Sugerencias usan los mismos criterios que sus listados. Pagos añade `/admin/inscripciones/[activityId]/pagos/exportar`: una fila por solicitud individual/grupal con filtros aplicados, importes validados, saldo, cortesías e historial separados. Se exportan lotes de 100 hasta 5.000; superar el límite genera un error, no una truncación silenciosa. La antigua ruta de CSV grupal se conserva para compatibilidad. Las celdas CSV neutralizan fórmulas, incluidas las precedidas por espacios.
+Las exportaciones se bloquean mientras hay filtros pendientes o inválidos. Inscripciones y Sugerencias usan los mismos criterios que sus listados. Pagos añade `/admin/inscripciones/[activityId]/pagos/exportar`: una fila por solicitud individual/grupal con filtros aplicados, importes validados, saldo, cortesías e historial separados. Se exportan lotes de 100 hasta 5.000; superar el límite genera un error, no una truncación silenciosa. La antigua ruta grupal se conserva para compatibilidad. Todas estas rutas descargan Excel (`.xlsx`): los identificadores permanecen como texto y las celdas de texto no se interpretan como fórmulas.
 
 ## Selecciones y borradores
 

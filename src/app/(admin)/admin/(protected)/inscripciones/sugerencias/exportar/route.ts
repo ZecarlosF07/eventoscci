@@ -1,7 +1,8 @@
 import { getAdminSession } from "@/features/auth/services/admin-session";
 import { getRegistrationSuggestionsForExport } from "@/features/registrations/queries/get-registration-suggestions";
-import { registrationSuggestionsToCsv } from "@/features/registrations/utils/registration-suggestions-csv";
+import { registrationSuggestionsToTable } from "@/features/registrations/utils/registration-suggestions-export";
 import { parseRegistrationSuggestionFilters } from "@/features/registrations/utils/registration-suggestion-filters";
+import { createXlsxResponse } from "@/utils/xlsx-export";
 
 export async function GET(request: Request): Promise<Response> {
   const session = await getAdminSession();
@@ -21,11 +22,5 @@ export async function GET(request: Request): Promise<Response> {
     query: parsed.query,
   });
   const date = new Date().toISOString().slice(0, 10);
-  return new Response(registrationSuggestionsToCsv(items), {
-    headers: {
-      "Cache-Control": "private, no-store",
-      "Content-Disposition": `attachment; filename="sugerencias-${date}.csv"`,
-      "Content-Type": "text/csv; charset=utf-8",
-    },
-  });
+  return createXlsxResponse(registrationSuggestionsToTable(items), `sugerencias-${date}`, "Sugerencias");
 }

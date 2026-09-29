@@ -1,5 +1,5 @@
 import type { MemberGroupAdminListItem } from "@/features/member-groups/types/member-group.types";
-import { csvCell } from "@/utils/csv-cell";
+import type { ExportTable } from "@/utils/xlsx-export";
 
 export interface MemberGroupExportSeat {
   requestId: string;
@@ -13,7 +13,7 @@ export interface MemberGroupExportSeat {
   isComplimentary: boolean;
 }
 
-export function memberGroupsToCsv(groups: MemberGroupAdminListItem[], seats: MemberGroupExportSeat[]): string {
+export function memberGroupsToTable(groups: MemberGroupAdminListItem[], seats: MemberGroupExportSeat[]): ExportTable {
   const seatMap = new Map<string, MemberGroupExportSeat[]>();
   seats.forEach((seat) => seatMap.set(seat.requestId, [...(seatMap.get(seat.requestId) ?? []), seat]));
   const headers = ["Código solicitud", "Actividad", "RUC asociado", "Empresa asociada", "Comprobante", "Documento facturación", "Código asistente", "Documento asistente", "Nombres", "Apellidos", "Correo", "Estado", "Pase gratuito", "Precio individual", "Total solicitud (una vez)", "Importe confirmado (una vez)", "Saldo pendiente (una vez)", "Fecha solicitud"];
@@ -26,5 +26,5 @@ export function memberGroupsToCsv(groups: MemberGroupAdminListItem[], seats: Mem
     index === 0 ? group.pending_amount : null,
     group.created_at,
   ]));
-  return `\uFEFF${[headers, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
+  return { headers, rows };
 }

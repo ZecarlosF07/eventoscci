@@ -2,8 +2,9 @@ import { z } from "zod";
 
 import { getAdminSession } from "@/features/auth/services/admin-session";
 import { getMemberGroupAdminList } from "@/features/member-groups/queries/get-member-group-admin-list";
-import { memberGroupsToCsv, type MemberGroupExportSeat } from "@/features/member-groups/utils/member-group-csv";
+import { memberGroupsToTable, type MemberGroupExportSeat } from "@/features/member-groups/utils/member-group-export";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createXlsxResponse } from "@/utils/xlsx-export";
 
 export async function GET(request: Request): Promise<Response> {
   if (!await getAdminSession()) return new Response("No autorizado", { status: 401 });
@@ -36,11 +37,5 @@ export async function GET(request: Request): Promise<Response> {
       isComplimentary: item.is_complimentary,
     })));
   }
-  return new Response(memberGroupsToCsv(groups, seats), {
-    headers: {
-      "Cache-Control": "private, no-store",
-      "Content-Disposition": `attachment; filename="solicitudes-asociados-${new Date().toISOString().slice(0, 10)}.csv"`,
-      "Content-Type": "text/csv; charset=utf-8",
-    },
-  });
+  return createXlsxResponse(memberGroupsToTable(groups, seats), `solicitudes-asociados-${new Date().toISOString().slice(0, 10)}`, "Solicitudes");
 }

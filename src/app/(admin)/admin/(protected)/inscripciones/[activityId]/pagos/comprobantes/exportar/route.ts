@@ -2,10 +2,11 @@ import { z } from "zod";
 import { getAdminSession } from "@/features/auth/services/admin-session";
 import { applyBillingFilters } from "@/features/billing/queries/apply-billing-filters";
 import type { BillingRequest } from "@/features/billing/types/billing.types";
-import { billingRequestsToCsv } from "@/features/billing/utils/billing-csv";
+import { billingRequestsToTable } from "@/features/billing/utils/billing-export";
 import { parseBillingFilters } from "@/features/billing/utils/billing-filters";
 import type { ActivityPaymentsPageProps } from "@/features/participation/types/payment.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createXlsxResponse } from "@/utils/xlsx-export";
 
 const EXPORT_BATCH_SIZE = 100;
 const EXPORT_LIMIT = 5000;
@@ -27,5 +28,5 @@ export async function GET(request: Request, { params }: Pick<ActivityPaymentsPag
     if (!data?.length) break;
     items.push(...data);
   } while (items.length < total);
-  return new Response(billingRequestsToCsv(items), { headers: { "Cache-Control": "private, no-store", "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": 'attachment; filename="datos-comprobantes.csv"' } });
+  return createXlsxResponse(billingRequestsToTable(items), "datos-comprobantes", "Comprobantes");
 }

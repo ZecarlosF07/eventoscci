@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import type { RegistrationAdminItem } from "../../src/features/registrations/types/registration.types";
-import { registrationsToCsv } from "../../src/features/registrations/utils/registrations-csv";
+import { registrationsToTable } from "../../src/features/registrations/utils/registrations-export";
 
 const REGISTRATION: RegistrationAdminItem = {
   member_group_request_id: null,
@@ -55,13 +55,12 @@ const REGISTRATION: RegistrationAdminItem = {
 };
 
 test("exporta el estado comercial y sus responsables", () => {
-  const csv = registrationsToCsv([REGISTRATION]);
-
-  assert.match(csv, /"Estado comercial"/);
-  assert.match(csv, /"Listo para emitir"/);
-  assert.match(csv, /"Solicitud registrada por"/);
-  assert.match(csv, /"Pago verificado por"/);
-  assert.match(csv, /"Administradora CCI"/);
-  assert.match(csv, /"Sugerencia de próximos temas"/);
-  assert.match(csv, /"Gestión comercial con inteligencia artificial"/);
+  const table = registrationsToTable([REGISTRATION]);
+  assert.ok(table.headers.includes("Estado comercial"));
+  assert.ok(table.headers.includes("Solicitud registrada por"));
+  assert.ok(table.headers.includes("Pago verificado por"));
+  assert.ok(table.headers.includes("Sugerencia de próximos temas"));
+  assert.ok(table.rows[0].includes("Listo para emitir"));
+  assert.ok(table.rows[0].includes("Administradora CCI"));
+  assert.ok(table.rows[0].includes("Gestión comercial con inteligencia artificial"));
 });

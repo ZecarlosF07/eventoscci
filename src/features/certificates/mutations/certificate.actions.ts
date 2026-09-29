@@ -5,7 +5,6 @@ import { z } from "zod";
 
 import { ROUTES } from "@/constants/routes";
 import { requireAdmin } from "@/features/auth/services/admin-session";
-import { CERTIFICATE_AUTO_ISSUE_BATCH_SIZE } from "@/features/certificates/constants/certificate.constants";
 import { issueActivityCertificates } from "@/features/certificates/services/issue-certificates";
 import { regenerateParticipantCertificates } from "@/features/certificates/services/regenerate-participant-certificates";
 import type {
@@ -22,24 +21,14 @@ export async function issueCertificatesAction(
   await requireAdmin();
   if (!z.uuid().safeParse(activityId).success) return { message: "La actividad no es válida." };
   const client = await createServerSupabaseClient();
-  const autoIssue = formData.get("issue_mode") === "ready";
-  const readyResult = autoIssue ? await client.rpc("get_activity_certificate_candidates_filtered", {
-    p_activity_id: activityId,
-    p_limit: CERTIFICATE_AUTO_ISSUE_BATCH_SIZE,
-    p_offset: 0,
-    p_emission_state: "ready",
-  }) : null;
-  if (readyResult?.error) return { message: "No se pudo verificar quiénes están listos para emitir. No se emitió ningún certificado." };
-  const registrationIds = autoIssue
-    ? (readyResult?.data ?? []).map((item) => item.registration_id)
-    : [...new Set(formData.getAll("registration_ids").filter((value): value is string => typeof value === "string"))];
+  const registrationIds = [...new Set(formData.getAll("registration_ids").filter((value): value is string => typeof value === "string"))];
   if (registrationIds.length > 100 || registrationIds.some((id) => !z.uuid().safeParse(id).success)) return { message: "Selecciona hasta 100 participantes de esta actividad; no se ha emitido ningún certificado." };
   const scope = registrationIds.length ? await client.from("registrations").select("id").in("id", registrationIds).eq("activity_id", activityId).is("deleted_at", null) : { data: [], error: null };
   if (scope.error || scope.data.length !== registrationIds.length) return { message: "La selección contiene registros de otra actividad o eliminados. Revisa los seleccionados." };
   const templateId = formData.get("template_id");
   const condition = formData.get("condition");
   if (!registrationIds.length || typeof templateId !== "string" || typeof condition !== "string" || !condition.trim()) {
-    return { message: autoIssue ? "Ya no hay personas listas para emitir. Actualiza la página." : "Selecciona participantes, plantilla y condición." };
+    return { message: "Selecciona participantes, plantilla y condición." };
   }
   const result = await issueActivityCertificates(registrationIds, templateId, condition.trim().slice(0, 120));
   revalidatePath(`${ROUTES.adminCertificatesActivities}/${activityId}`);

@@ -3,9 +3,10 @@ import { z } from "zod";
 import { getAdminSession } from "@/features/auth/services/admin-session";
 import { applyPaymentFilters } from "@/features/participation/queries/apply-payment-filters";
 import type { ActivityPaymentsPageProps, PaymentRequest } from "@/features/participation/types/payment.types";
-import { paymentRequestsToCsv } from "@/features/participation/utils/payment-csv";
+import { paymentRequestsToTable } from "@/features/participation/utils/payment-export";
 import { parsePaymentFilters } from "@/features/participation/utils/payment-filters";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createXlsxResponse } from "@/utils/xlsx-export";
 
 const EXPORT_BATCH_SIZE = 100;
 const EXPORT_LIMIT = 5000;
@@ -28,8 +29,5 @@ export async function GET(request: Request, { params }: Pick<ActivityPaymentsPag
     if (!data?.length) break;
     items.push(...data);
   } while (items.length < total);
-  return new Response(paymentRequestsToCsv(items), { headers: {
-    "Cache-Control": "private, no-store", "Content-Type": "text/csv; charset=utf-8",
-    "Content-Disposition": 'attachment; filename="pagos-participacion.csv"',
-  } });
+  return createXlsxResponse(paymentRequestsToTable(items), "pagos-participacion", "Pagos");
 }

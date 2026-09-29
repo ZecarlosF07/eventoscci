@@ -2,15 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { parseRegistrationSuggestionFilters } from "@/features/registrations/utils/registration-suggestion-filters";
-import { registrationSuggestionsToCsv } from "@/features/registrations/utils/registration-suggestions-csv";
+import { registrationSuggestionsToTable } from "@/features/registrations/utils/registration-suggestions-export";
 
 test("normaliza filtros del reporte de sugerencias", async () => {
   const filters = await parseRegistrationSuggestionFilters(Promise.resolve({ pagina: "2", perfil: "student", q: "  ventas  ", tipo: "training" }));
   assert.deepEqual(filters, { activityId: undefined, activityType: "training", audience: "student", page: 2, query: "ventas" });
 });
 
-test("protege el CSV de sugerencias contra fórmulas", () => {
-  const csv = registrationSuggestionsToCsv([{
+test("conserva la sugerencia como texto para Excel", () => {
+  const table = registrationSuggestionsToTable([{
     academic_institution_snapshot: "Universidad de Ica",
     activity: { id: "10000000-0000-4000-8000-000000000001", title: "Evento", type: "event" },
     career_snapshot: "Administración",
@@ -24,5 +24,5 @@ test("protege el CSV de sugerencias contra fórmulas", () => {
     registration_type: "general",
     status: "confirmed",
   }]);
-  assert.match(csv, /"'=IMPORTXML/);
+  assert.equal(table.rows[0][7], "=IMPORTXML(\"https://example.test\")");
 });
