@@ -68,3 +68,8 @@ La activación **no se ha ejecutado** en esta entrega porque el frontend product
 ## Verificación
 
 Consultar la sección «Datos para comprobantes» en la [matriz de aceptación](../produccion/matriz-pruebas-aceptacion.md). Las suites SQL no dejan inscripciones, cobros ni correos reales; no sustituyen una prueba de entrega desde n8n ni el recorrido integral del formulario publicado.
+
+
+## Provincia en la inscripción — 30/09/2026
+
+La información profesional reutiliza `address` con etiqueta Provincia. La copia explícita para factura ahora copia únicamente Empresa / Organización y RUC, conservando la dirección fiscal que ya se escribió. Una dirección fiscal vacía debe completarse manualmente; Provincia y los valores personales históricos nunca se copian como dirección fiscal. El destinatario y las exportaciones de comprobantes mantienen sus datos fiscales independientes.

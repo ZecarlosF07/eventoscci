@@ -41,7 +41,7 @@ test("copiar CE no lo convierte en DNI ni asume RUC", () => {
 });
 test("validación contextual requiere comprobante solo con precio positivo", () => {
   const form = new FormData();
-  for (const [key, value] of Object.entries({ document_type: "dni", document_number: "12345678", first_names: "Ana", last_names: "Pérez", email: "ana@example.test", phone: "900000001", registration_type: "general", job_title: "Gerente" })) form.set(key, value);
+  for (const [key, value] of Object.entries({ document_type: "dni", document_number: "12345678", first_names: "Ana", last_names: "Pérez", email: "ana@example.test", phone: "900000001", registration_type: "general", job_title: "Gerente", company: "Organización de prueba" })) form.set(key, value);
   const input = parseRegistrationFormData(form);
   assert.equal(validateRegistrationWithBilling(input, 40).success, false);
   assert.equal(validateRegistrationWithBilling({ ...input, billing: boleta }, 40).success, true);
@@ -87,9 +87,9 @@ test("formulario reutilizable tiene controles etiquetados y errores específicos
 });
 test("la copia en el formulario individual es explícita y estudiantes no ofrecen datos laborales", () => {
   const professional = renderToStaticMarkup(createElement(IndividualBillingFields, { allowCompanyCopy: true, billing: factura, onChange() {} }));
-  assert.match(professional, /Copiar los datos de empresa ingresados/);
+  assert.match(professional, /Copiar empresa \/ organización y RUC/);
   const student = renderToStaticMarkup(createElement(IndividualBillingFields, { allowCompanyCopy: false, billing: factura, onChange() {} }));
-  assert.doesNotMatch(student, /Copiar los datos de empresa/);
+  assert.doesNotMatch(student, /Copiar empresa \/ organización/);
   const receipt = renderToStaticMarkup(createElement(IndividualBillingFields, { allowCompanyCopy: false, billing: boleta, onChange() {} }));
   assert.match(receipt, /Copiar los datos del participante/);
 });

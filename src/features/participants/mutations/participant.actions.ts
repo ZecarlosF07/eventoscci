@@ -18,7 +18,7 @@ export async function updateParticipantAction(
   await requireAdmin();
   const parsed = participantFormSchema.safeParse({
     academic_institution: formData.get("academic_institution") ?? "",
-    address: formData.get("address") ?? "",
+    address: formData.has("address") ? formData.get("address") : undefined,
     career: formData.get("career") ?? "",
     company: formData.get("company") ?? "",
     email: formData.get("email"),

@@ -120,14 +120,14 @@ insert into hito_virtual_results values (
   'free',
   public.register_activity(
     '7f000000-0000-4000-8000-000000000001',
-    '{"document_type":"dni","document_number":"22000011","first_names":"Participante","last_names":"Gratuito","email":"free22@example.test","phone":"922000011","job_title":"Analista","registration_type":"general"}'::jsonb
+    '{"document_type":"dni","document_number":"22000011","first_names":"Participante","last_names":"Gratuito","email":"free22@example.test","phone":"922000011","job_title":"Analista","registration_type":"general","company":"Organización de prueba"}'::jsonb
   )
 );
 insert into hito_virtual_results values (
   'paid',
   public.register_activity(
     '7f000000-0000-4000-8000-000000000002',
-    '{"document_type":"dni","document_number":"22000012","first_names":"Participante","last_names":"Pagado","email":"paid22@example.test","phone":"922000012","job_title":"Gerente","registration_type":"general"}'::jsonb
+    '{"document_type":"dni","document_number":"22000012","first_names":"Participante","last_names":"Pagado","email":"paid22@example.test","phone":"922000012","job_title":"Gerente","registration_type":"general","company":"Organización de prueba"}'::jsonb
   )
 );
 reset role;

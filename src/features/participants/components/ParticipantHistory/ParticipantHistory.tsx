@@ -22,7 +22,7 @@ export function ParticipantHistory({ history }: ParticipantHistoryProps) {
               <td className="px-5 py-4 font-mono">{item.registration_code}</td>
               <td className="px-5 py-4 text-slate-700"><p>{REGISTRATION_TYPE_LABELS[item.registration_type]}</p><p>{formatRegistrationDate(item.created_at)}</p></td>
               <td className="px-5 py-4 text-slate-700">
-                {item.participant_profile === "student" ? <><p className="font-semibold">Estudiante</p><p>{item.academic_institution_snapshot}</p><p>{item.career_snapshot}</p></> : <><p>{item.job_title_snapshot}</p><p>{item.company_snapshot ?? "Sin empresa"}</p><p>{item.ruc_snapshot ?? "Sin RUC"}</p></>}
+                {item.participant_profile === "student" ? <><p className="font-semibold">Estudiante</p><p>{item.academic_institution_snapshot}</p><p>{item.career_snapshot}</p></> : <><p>{item.job_title_snapshot}</p><p>{item.company_snapshot ?? "Sin empresa / organización"}</p><p>{item.ruc_snapshot ?? "Sin RUC"}</p><p>Provincia: {item.province_snapshot ?? "Sin datos"}</p></>}
                 <p>{formatRegistrationPrice(item.price_snapshot)}</p>
               </td>
               <td className="px-5 py-4"><RegistrationStatusBadge status={item.status} /></td>

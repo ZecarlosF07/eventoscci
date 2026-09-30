@@ -31,7 +31,7 @@ select is((select is_operational_upcoming from public.activity_participation_sum
 
 set local role anon;
 select public.register_activity('28000000-0000-4000-8000-000000000001',
- '{"document_type":"dni","document_number":"28100001","first_names":"Ana","last_names":"Pagos","email":"ana28@example.test","phone":"928000001","job_title":"Gerente","registration_type":"general","request_certificate":true}'::jsonb);
+ '{"document_type":"dni","document_number":"28100001","first_names":"Ana","last_names":"Pagos","email":"ana28@example.test","phone":"928000001","job_title":"Gerente","registration_type":"general","request_certificate":true,"company":"Organización de prueba"}'::jsonb);
 reset role;
 create temporary table payment28_refs as select id from public.registrations where activity_id='28000000-0000-4000-8000-000000000001';
 grant select on payment28_refs to authenticated;

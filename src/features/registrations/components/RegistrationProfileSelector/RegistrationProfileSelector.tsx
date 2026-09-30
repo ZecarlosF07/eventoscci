@@ -1,10 +1,11 @@
 import { Text } from "@/components/atoms/Text";
 import type { RegistrationProfileSelectorProps } from "@/features/registrations/components/RegistrationProfileSelector/types/registration-profile-selector.types";
+import { PARTICIPANT_PROFILE_LABELS } from "@/features/registrations/constants/registration.constants";
 
 const PROFILES = [
   {
-    description: "Trabajo, emprendimiento o actividad independiente.",
-    label: "Profesional o independiente",
+    description: "Trabajo, emprendimiento o actividad empresarial.",
+    label: PARTICIPANT_PROFILE_LABELS.professional,
     value: "professional",
   },
   {

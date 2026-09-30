@@ -10,7 +10,7 @@ const PARTICIPANT_DETAIL_SELECT = `
   registrations(
     id, registration_code, registration_type, participant_profile, status,
     job_title_snapshot, academic_institution_snapshot, career_snapshot,
-    company_snapshot, ruc_snapshot, price_snapshot, created_at,
+    company_snapshot, ruc_snapshot, province_snapshot, price_snapshot, created_at,
     activity:activities!inner(id, title, slug, type, status),
     attendance(status)
   )

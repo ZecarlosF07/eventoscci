@@ -936,6 +936,28 @@ Una empresa podrá registrar asistentes en distintos momentos sin recibir pases 
 
 ---
 
+# Hito 17 — Usuarios internos y actividades a cargo
+
+## Objetivo
+
+Permitir que el administrador completo gestione cuentas internas y que cada responsable cree y opere únicamente los eventos y capacitaciones vinculados a sus contactos de atención, con permisos efectivos más allá del menú.
+
+## Actividades
+
+- Crear el módulo Usuarios para altas internas, cambio entre roles internos, contactos vinculados, restablecimiento administrativo de contraseña, activación y desactivación auditadas.
+- Vincular cada contacto público a una cuenta como máximo; asignar por correo exacto y único cuando sea seguro y dejar los casos ambiguos para revisión manual.
+- Permitir al responsable crear y gestionar actividades propias, y crear lugares, expositores o categorías desde su formulario, sin acceso a módulos globales.
+- Exigir reasignación de actividades vigentes antes de desactivar a un responsable y proteger al último administrador completo.
+- Aplicar el alcance por actividad en interfaz, consultas, RPC, RLS, vistas, exportaciones Excel y Storage; conservar el acceso completo del administrador y el comportamiento público y del Campus.
+
+## Resultado esperado
+
+Dos responsables podrán trabajar simultáneamente sin ver ni operar datos de las actividades del otro; el administrador completo podrá revisar todo y transferir encargos con auditoría. La matriz de permisos, el tratamiento de contraseñas, las pruebas y la Definition of Done se detallan en:
+
+`docs/hitos/HITO 17 — USUARIOS INTERNOS Y ACTIVIDADES A CARGO.md`
+
+---
+
 # Orden resumido del desarrollo
 
 ## Etapa A — Eventos y capacitaciones
@@ -1005,6 +1027,16 @@ Resultado:
 Resultado:
 
 **Cuota gratuita por RUC → Solicitudes sucesivas → Plazas gratuitas confirmadas y pagadas pendientes → Transferencia auditada**
+
+---
+
+## Etapa H — Usuarios internos y responsabilidad por actividad
+
+**Hito 17**
+
+Resultado:
+
+**Cuenta interna → Contacto vinculado → Actividad a cargo → Operación acotada → Reasignación auditada**
 
 ---
 

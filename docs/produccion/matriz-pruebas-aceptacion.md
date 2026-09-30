@@ -87,6 +87,28 @@ El Hito 16 está implementado en el repositorio y la migración `202609250003` s
 
 Para cambiar un caso a **APROBADO** faltan las comprobaciones específicas de interfaz, concurrencia real, correos desde el workflow activo y vistas accesibles en 390, 768 y 1440 px que correspondan a ese caso.
 
+## Hito 17 — Usuarios internos y actividades a cargo
+
+Hito documental posterior al Hito 16. **No se han implementado permisos nuevos ni creado usuarios mediante este hito.** Las cuentas `operator` conservan el alcance vigente hasta la futura migración; no interpretar el diseño de la interfaz como una barrera de seguridad. Cada escenario parte de una instalación con al menos un `administrator` activo, dos responsables y contactos diferenciados.
+
+| Caso | Recorrido y resultado exigido | Evidencia prevista | Estado |
+|---|---|---|---|
+| H17-01 — Alta interna | administrador crea usuario con documento, identidad, correo, celular, cargo, rol y contraseña confirmada; la cuenta Auth y la identidad institucional quedan vinculadas sin convertir estudiantes | Formulario, Auth y SQL | NO EJECUTADO |
+| H17-02 — Alta parcial y duplicados | fallo después de crear Auth no deja acceso parcial; reintento o recuperación explícita; documento/correo existentes y cuenta `student` producen mensajes sin duplicar personas | SQL, unitarias e integración Auth | NO EJECUTADO |
+| H17-03 — Contraseñas | solo el administrador completo crea o restablece contraseñas desde Usuarios; no puede consultar la anterior ni aparecen secretos en correo, URL, logs o auditoría; se comunica el límite propio de Supabase Auth | Formulario, integración Auth y revisión de logs | NO EJECUTADO |
+| H17-04 — Roles y último administrador | alternar únicamente `administrator`/`operator` con auditoría; bloquear autorreducción, autodesactivación y pérdida concurrente del último administrador completo | SQL concurrente, acciones y panel | NO EJECUTADO |
+| H17-05 — Contactos | crear o vincular contacto público a una cuenta; un contacto no puede tener dos responsables y una cuenta puede tener varios; vínculo privado no aparece en datos públicos | SQL, panel, RLS y consulta pública | NO EJECUTADO |
+| H17-06 — Vinculación automática | correo exacto y único vincula contacto existente; falta de correo, ambigüedad o vínculo previo no asignan acceso por nombre, teléfono ni coincidencia aproximada | SQL de migración y panel de revisión | NO EJECUTADO |
+| H17-07 — Actividad propia | responsable crea evento y capacitación usando solo sus contactos y gestiona edición, publicación, inscripción, pagos, asistencia y certificados; otro responsable no los ve | SQL, unitarias y recorrido administrativo | NO EJECUTADO |
+| H17-08 — Catálogos acotados | responsable crea lugar, expositor y categoría desde formulario propio, pero no edita, desactiva ni borra catálogos globales ni entra a su módulo | SQL, formulario y rutas directas | NO EJECUTADO |
+| H17-09 — Reasignación | administrador cambia el contacto responsable; nuevo usuario obtiene acceso y anterior lo pierde de inmediato; `operator` no puede cambiar contacto desde formulario ni RPC | SQL, auditoría y dos sesiones | NO EJECUTADO |
+| H17-10 — Desactivación | borradores, actividades sin fecha y demás actividades vigentes deben reasignarse antes de desactivar; históricas conservan atribución y cuenta inactiva pierde acceso con sesión aún abierta | SQL, panel y dos sesiones | NO EJECUTADO |
+| H17-11 — Acceso indirecto | modificar IDs en URL, Route Handler, RPC, vistas o enlaces guardados no revela ni modifica actividades, personas, grupos, cobros o certificados ajenos | SQL/RLS y pruebas HTTP con dos roles | NO EJECUTADO |
+| H17-12 — Listados y Excel | menús, contadores, búsqueda, filtros, paginación, sugerencias y exportaciones reflejan solo actividades autorizadas; no filtran únicamente la página descargada | SQL, unitarias y descargas reales | NO EJECUTADO |
+| H17-13 — Storage y servicio | carga temporal y archivo definitivo no pueden moverse, sobrescribirse o borrarse desde otra cuenta; operaciones `service_role` verifican actor y actividad antes de usar privilegios | Políticas Storage, rutas y pruebas de abuso | NO EJECUTADO |
+| H17-14 — Módulos excluidos y regresión | responsable no accede a Cursos, Directorio global, Usuarios, Notificaciones globales ni plantillas; administrador conserva todo; público, Campus y Hitos 15/16 mantienen su comportamiento | SQL, rutas y regresión integral | NO EJECUTADO |
+| H17-15 — Calidad y despliegue | teclado, foco, contraste y vistas 390×844, 768×1024 y 1440×900; unitarias y SQL, lint, typecheck, build, dry-run, migración sin seeds y tipos regenerados | Evidencia fechada de pruebas, CLI y revisión accesible | NO EJECUTADO |
+
 ## Participación — Pagos por actividad (28/09/2026)
 
 Base de trabajo `38b2198` más cambios locales sin commit. Aplicadas las migraciones `202609280001`, `202609280002` y `202609280003` a Supabase vinculada, con dry-run previo, sin seeds y tipos regenerados. Pasaron 51 casos SQL nuevos (028) y las regresiones 004 (58), 005 (73), 017 (7), 018 (18), 022 (39), 023 (34), 025 (34), 026 (9) y 027 (30). Se actualizaron las fixtures de pago individual para utilizar la nueva operación con referencia; el caso de auditoría de 027 ahora se limita a la actividad de prueba. No se atribuyen estos resultados a las pruebas integrales pendientes.
@@ -317,3 +339,30 @@ No se enviaron correos ni se registraron pagos durante estas pruebas. Las migrac
 | EX-01 | Las cinco rutas de inscripción, sugerencias, solicitudes grupales, pagos y datos para comprobantes descargan `.xlsx` con permisos, filtros y límites conservados | APROBADO (código) | Inspección de rutas; todas comparten `createXlsxResponse` y ninguna responde `text/csv`. El enlace de Asistencia reutiliza la exportación de inscripciones |
 | EX-02 | Archivo legible por Excel; RUC/DNI como texto, importes numéricos y cadenas que comienzan con `=` sin ejecución | APROBADO (unitarias) | Archivo generado y leído con ExcelJS; encabezados, tipos de celda, contenido, nombre y MIME comprobados. 204 unitarias, lint, typecheck y build correctos |
 | EX-03 | Descarga real autenticada con filtros, datos fuera de primera página y apertura en Excel de escritorio/móvil | NO EJECUTADO | No se descargaron datos de participantes reales en esta revisión; BA-12 conserva su estado. No requiere migración de base de datos ni cambia datos persistidos |
+
+
+## Información profesional y Provincia — 30/09/2026
+
+| Caso | Resultado esperado | Estado |
+|---|---|---|
+| Escritorio y móvil | Empresa / Organización, RUC, Cargo, Provincia; dos columnas o una, respectivamente | APROBADO (navegador local) |
+| Profesional general | Empresa y Cargo obligatorios; RUC y Provincia opcionales | APROBADO (unitarias y pgTAP vinculado) |
+| Asociado individual | Empresa, RUC y Cargo obligatorios; Provincia opcional | APROBADO (navegador y pgTAP vinculado) |
+| Alternar perfiles | Conserva borradores y excluye información profesional del estudiante | APROBADO (navegador y unitarias) |
+| Persistencia | Reutiliza address; guarda province_snapshot; posteriores ediciones no cambian snapshots | APROBADO (pgTAP vinculado) |
+| Históricos | No convierte direcciones ni completa provincias; permite editar empresa vacía | APROBADO (pgTAP vinculado) |
+| Factura | Copia empresa/RUC y conserva dirección fiscal; Provincia no se copia | APROBADO (unitarias y pgTAP vinculado) |
+| Excel | Empresa / Organización, RUC, Cargo, Provincia; históricos sin snapshot quedan vacíos | APROBADO (unitarias) |
+| Seguridad y cobro | Vista interna, núcleo privado y validación transaccional de comprobantes conservados | APROBADO (pgTAP vinculado) |
+
+Evidencia automatizada: `registration-professional-province.test.ts`, `registrations-export.test.ts` y `033_registration_professional_province_test.sql`. Registrar ambiente y resultados reales antes de publicar; las pruebas aisladas no sustituyen aceptación en Supabase ni envío por n8n.
+
+Verificación del 30/09/2026, árbol de trabajo actual: `yarn lint`, `yarn typecheck`, `yarn build` y 211 pruebas unitarias aprobados. Revisión visual del formulario individual a 1280×900 y 390×844; se comprobó orden, obligatoriedad del RUC de asociados y conservación de borradores al alternar perfiles, sin enviar inscripciones reales.
+
+Se aplicaron las 64 migraciones en PostgreSQL embebido PGlite, con esquemas mínimos de Auth/Storage y funciones de aserción equivalentes para ejecutar las suites 003, 024, 025, 027 (pases), 030 y 033: 230 comprobaciones aprobadas. La fixture antigua de la suite 003 se ajustó a la regla vigente de precio general cero en eventos exclusivos; mantiene el rechazo del recorrido individual. Estas pruebas validan PostgreSQL y las operaciones del repositorio, pero no constituyen ejecución del CLI/pgTAP contra Supabase alojado.
+
+Actualización del 30/09/2026 tras iniciar sesión en Supabase: `supabase db push --linked --dry-run` identificó exclusivamente `202609300001_registration_professional_province.sql`; `supabase db push --linked --yes` la aplicó sin seeds. Se regeneraron los tipos del esquema vinculado en un archivo temporal, se aplicaron las mismas refinaciones de `scripts/refine-supabase-types.mjs` y se verificó `yarn typecheck`.
+
+Las seis suites 003, 024, 025, 027 (pases), 030 y 033 se ejecutaron con pgTAP en la base vinculada: 230 comprobaciones aprobadas. Se usó `finish(true)` en cada suite para que cualquier aserción fallida causara un error del comando; todas terminaron correctamente y revirtieron sus transacciones. La suite 033 queda configurada con ese mismo cierre y su consulta de dirección fiscal restringe el resultado a la actividad de prueba, sin depender de la cantidad de comprobantes reales.
+
+La migración quedó registrada y la vista administrativa dispone de `province_snapshot`. La consulta posterior confirmó cero actividades de la suite 033. El esquema y los tipos de Supabase están actualizados. No se publicó un deployment; continúa pendiente la publicación del frontend en producción.

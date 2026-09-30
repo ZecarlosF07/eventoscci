@@ -2,6 +2,7 @@ import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
 import { AutoFilterForm } from "@/features/admin-filters/components/AutoFilterForm";
 import type { ParticipantFiltersProps } from "@/features/participants/components/ParticipantFilters/types/participant-filters.types";
+import { PARTICIPANT_PROFILE_LABELS } from "@/features/registrations/constants/registration.constants";
 
 export function ParticipantFilters({ filters, total }: ParticipantFiltersProps) {
   return (
@@ -11,7 +12,7 @@ export function ParticipantFilters({ filters, total }: ParticipantFiltersProps) 
           <Input defaultValue={filters.query} id="q" name="q" placeholder="Nombre, documento, correo, empresa, RUC o institución" type="search" />
         </FormField>
       </div>
-      <label className="text-sm font-semibold">Perfil<select className="mt-1 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3" defaultValue={filters.profile ?? ""} name="perfil"><option value="">Todos</option><option value="professional">Profesional</option><option value="student">Estudiante</option></select></label>
+      <label className="text-sm font-semibold">Perfil<select className="mt-1 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3" defaultValue={filters.profile ?? ""} name="perfil"><option value="">Todos</option><option value="professional">{PARTICIPANT_PROFILE_LABELS.professional}</option><option value="student">Estudiante</option></select></label>
     </AutoFilterForm>
   );
 }

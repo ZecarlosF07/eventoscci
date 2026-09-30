@@ -2,6 +2,7 @@ import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
 import { AutoFilterForm } from "@/features/admin-filters/components/AutoFilterForm";
 import type { RegistrationSuggestionFiltersProps } from "@/features/registrations/components/RegistrationSuggestionFilters/types/registration-suggestion-filters.types";
+import { PARTICIPANT_PROFILE_LABELS } from "@/features/registrations/constants/registration.constants";
 
 export function RegistrationSuggestionFilters({ activities, filters, total }: RegistrationSuggestionFiltersProps) {
   return (
@@ -18,7 +19,7 @@ export function RegistrationSuggestionFilters({ activities, filters, total }: Re
       </Select>
       <Select aria-label="Perfil" defaultValue={filters.audience} name="perfil">
         <option value="all">Todos los perfiles</option>
-        <option value="professional">Profesionales</option>
+        <option value="professional">{PARTICIPANT_PROFILE_LABELS.professional}</option>
         <option value="student">Estudiantes</option>
         <option value="member">Asociados CCI</option>
       </Select>

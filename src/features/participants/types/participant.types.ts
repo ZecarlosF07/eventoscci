@@ -24,6 +24,7 @@ export interface ParticipantHistoryItem {
   id: string;
   job_title_snapshot: string | null;
   participant_profile: ParticipantProfile;
+  province_snapshot: string | null;
   price_snapshot: number;
   registration_code: string;
   registration_type: RegistrationType;

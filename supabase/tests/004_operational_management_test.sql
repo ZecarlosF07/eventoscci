@@ -61,7 +61,7 @@ select public.register_activity(
 );
 select public.register_activity(
   '73000000-0000-4000-8000-000000000001',
-  '{"document_type":"dni","document_number":"13000004","first_names":"Participante","last_names":"Operativo Dos","email":"operativo2@example.test","phone":"913000004","job_title":"Analista","registration_type":"general"}'::jsonb
+  '{"document_type":"dni","document_number":"13000004","first_names":"Participante","last_names":"Operativo Dos","email":"operativo2@example.test","phone":"913000004","job_title":"Analista","registration_type":"general","company":"Organización de prueba"}'::jsonb
 );
 reset role;
 

@@ -47,6 +47,7 @@ const REGISTRATION: RegistrationAdminItem = {
     last_names: "Confirmada",
     phone: "923000001",
   },
+  province_snapshot: "Ica",
   price_snapshot: 0,
   registration_code: "CCI-23-000001",
   registration_type: "general",
@@ -63,4 +64,12 @@ test("exporta el estado comercial y sus responsables", () => {
   assert.ok(table.rows[0].includes("Listo para emitir"));
   assert.ok(table.rows[0].includes("Administradora CCI"));
   assert.ok(table.rows[0].includes("Gestión comercial con inteligencia artificial"));
+});
+
+test("exporta el bloque profesional en orden y usa la provincia histórica", () => {
+  const table = registrationsToTable([REGISTRATION, { ...REGISTRATION, province_snapshot: null }]);
+  const start = table.headers.indexOf("Empresa / Organización");
+  assert.deepEqual(table.headers.slice(start, start + 4), ["Empresa / Organización", "RUC", "Cargo", "Provincia"]);
+  assert.deepEqual(table.rows[0].slice(start, start + 4), ["Empresa de prueba", "20123456789", "Analista", "Ica"]);
+  assert.equal(table.rows[1][start + 3], null);
 });

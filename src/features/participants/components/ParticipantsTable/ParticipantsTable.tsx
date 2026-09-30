@@ -4,6 +4,7 @@ import { Text } from "@/components/atoms/Text";
 import { ResponsiveTableFrame } from "@/components/molecules/ResponsiveTableFrame";
 import { ROUTES } from "@/constants/routes";
 import type { ParticipantsTableProps } from "@/features/participants/components/ParticipantsTable/types/participants-table.types";
+import { PARTICIPANT_PROFILE_LABELS } from "@/features/registrations/constants/registration.constants";
 
 export function ParticipantsTable({ participants }: ParticipantsTableProps) {
   if (!participants.length) {
@@ -22,8 +23,8 @@ export function ParticipantsTable({ participants }: ParticipantsTableProps) {
               <td className="px-5 py-4 font-semibold text-cci-950">{participant.first_names} {participant.last_names}</td>
               <td className="px-5 py-4 text-slate-700"><p>{participant.email}</p><p>{participant.phone}</p></td>
               <td className="px-5 py-4 text-slate-700">
-                <p className="font-semibold">{participant.participant_profile === "student" ? "Estudiante" : "Profesional o independiente"}</p>
-                {participant.participant_profile === "student" ? <><p>{participant.academic_institution}</p><p>{participant.career}</p></> : <><p>{participant.job_title}</p><p>{participant.company ?? "Sin empresa"}</p><p>{participant.ruc ?? ""}</p></>}
+                <p className="font-semibold">{PARTICIPANT_PROFILE_LABELS[participant.participant_profile]}</p>
+                {participant.participant_profile === "student" ? <><p>{participant.academic_institution}</p><p>{participant.career}</p></> : <><p>{participant.job_title}</p><p>{participant.company ?? "Sin empresa / organización"}</p><p>{participant.ruc ?? ""}</p></>}
               </td>
               <td className="px-5 py-4 text-slate-700">{participant.registrations.length}</td>
               <td className="px-5 py-4"><Link className="font-semibold text-slate-900 underline-offset-4 hover:underline" href={`${ROUTES.adminParticipants}/${participant.id}`}>Ver ficha</Link></td>

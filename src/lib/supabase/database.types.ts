@@ -2464,6 +2464,7 @@ export type Database = {
           participant_profile: Database["public"]["Enums"]["participant_profile"]
           person_id: string
           price_snapshot: number
+          province_snapshot: string | null
           registration_code: string
           registration_type: Database["public"]["Enums"]["registration_type"]
           ruc_snapshot: string | null
@@ -2502,6 +2503,7 @@ export type Database = {
           participant_profile?: Database["public"]["Enums"]["participant_profile"]
           person_id: string
           price_snapshot?: number
+          province_snapshot?: string | null
           registration_code: string
           registration_type?: Database["public"]["Enums"]["registration_type"]
           ruc_snapshot?: string | null
@@ -2540,6 +2542,7 @@ export type Database = {
           participant_profile?: Database["public"]["Enums"]["participant_profile"]
           person_id?: string
           price_snapshot?: number
+          province_snapshot?: string | null
           registration_code?: string
           registration_type?: Database["public"]["Enums"]["registration_type"]
           ruc_snapshot?: string | null
@@ -2859,6 +2862,7 @@ export type Database = {
             | null
           person_id: string | null
           price_snapshot: number | null
+          province_snapshot: string | null
           registration_code: string | null
           registration_type:
             | Database["public"]["Enums"]["registration_type"]

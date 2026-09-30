@@ -9,7 +9,7 @@ function validRegistration() {
     academic_institution: "",
     address: "Ica",
     career: "",
-    company: "",
+    company: "Organización de prueba",
     document_number: "12345678",
     document_type: "dni" as const,
     email: "persona@example.test",

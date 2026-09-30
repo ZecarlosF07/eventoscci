@@ -64,6 +64,7 @@ test("limita la sugerencia a quinientos caracteres", () => {
   const formData = commonFormData();
   formData.set("participant_profile", "professional");
   formData.set("job_title", "Analista");
+  formData.set("company", "Organización de prueba");
   formData.set("future_topics_suggestion", "x".repeat(501));
 
   const result = registrationFormSchema.safeParse(parseRegistrationFormData(formData));

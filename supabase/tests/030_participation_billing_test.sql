@@ -22,7 +22,7 @@ values
 insert into public.activity_dates(activity_id,starts_at,ends_at)
 select id,now()+interval '2 days',now()+interval '2 days 2 hours' from public.activities where slug like 'comprobantes-30-%';
 update public.activities set member_free_passes_per_company=1 where id='30000000-0000-4000-8000-000000000002';
-create temporary table input30 as select '{"document_type":"dni","document_number":"30100001","first_names":"Ana","last_names":"Pérez","email":"ana30@example.test","phone":"930000001","job_title":"Gerente","registration_type":"general"}'::jsonb as payload;
+create temporary table input30 as select '{"document_type":"dni","document_number":"30100001","first_names":"Ana","last_names":"Pérez","email":"ana30@example.test","phone":"930000001","job_title":"Gerente","registration_type":"general","company":"Organización de prueba"}'::jsonb as payload;
 grant select on input30 to anon,authenticated;
 -- Legacy client compatibility is temporary, without inventing historical billing.
 set local role anon;

@@ -1,3 +1,4 @@
+import { PARTICIPANT_PROFILE_LABELS } from "@/features/registrations/constants/registration.constants";
 import type { RegistrationAdminItem } from "@/features/registrations/types/registration.types";
 import {
   CERTIFICATE_COMMERCIAL_STATUS_LABELS,
@@ -11,7 +12,7 @@ const ATTENDANCE_LABELS = { absent: "No asistió", attended: "Asistió", pending
 export function registrationsToTable(registrations: RegistrationAdminItem[]): ExportTable {
   const headers = [
     "Actividad", "Tipo de documento", "Documento", "Nombres", "Apellidos",
-    "Correo", "Celular", "Cargo", "Empresa", "RUC", "Tipo de inscripción",
+    "Correo", "Celular", "Empresa / Organización", "RUC", "Cargo", "Provincia", "Tipo de inscripción",
     "Perfil", "Universidad o instituto", "Carrera o especialidad", "Sugerencia de próximos temas",
     "Estado", "Asistencia", "Código", "Precio registrado", "Certificado",
     "Precio del certificado", "Estado comercial", "Certificado solicitado",
@@ -25,11 +26,12 @@ export function registrationsToTable(registrations: RegistrationAdminItem[]): Ex
     item.person.last_names,
     item.person.email,
     item.person.phone,
-    item.job_title_snapshot,
     item.company_snapshot,
     item.ruc_snapshot,
+    item.job_title_snapshot,
+    item.province_snapshot,
     item.registration_type === "member" ? "Asociado" : "General",
-    item.participant_profile === "student" ? "Estudiante" : "Profesional o independiente",
+    PARTICIPANT_PROFILE_LABELS[item.participant_profile],
     item.academic_institution_snapshot,
     item.career_snapshot,
     item.future_topics_suggestion,

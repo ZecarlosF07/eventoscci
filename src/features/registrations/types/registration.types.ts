@@ -164,6 +164,7 @@ export interface RegistrationAdminItem
     | "future_topics_suggestion"
     | "job_title_snapshot"
     | "participant_profile"
+    | "province_snapshot"
     | "price_snapshot"
     | "registration_code"
     | "registration_type"

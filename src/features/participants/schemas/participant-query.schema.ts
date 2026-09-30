@@ -51,6 +51,7 @@ export const participantDetailSchema = participantListItemSchema.omit({ registra
     id: z.uuid(),
     job_title_snapshot: z.string().nullable(),
     participant_profile: participantProfile,
+    province_snapshot: z.string().nullable(),
     price_snapshot: z.number(),
     registration_code: z.string(),
     registration_type: registrationType,

@@ -35,6 +35,7 @@ const REGISTRATION_ADMIN_SELECT = `
   academic_institution_snapshot,
   career_snapshot,
   future_topics_suggestion,
+  province_snapshot,
   price_snapshot,
   created_at,
   activity:activities!inner(id, title, slug, type, status, certificate_mode),

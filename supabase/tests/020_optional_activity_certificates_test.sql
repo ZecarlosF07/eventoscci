@@ -168,7 +168,7 @@ select throws_ok(
 set local role anon;
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000001',
-  '{"document_type":"dni","document_number":"14000003","first_names":"Participante","last_names":"Opcional General","email":"opcional.general@example.test","phone":"914000003","job_title":"Analista","registration_type":"general"}'::jsonb
+  '{"document_type":"dni","document_number":"14000003","first_names":"Participante","last_names":"Opcional General","email":"opcional.general@example.test","phone":"914000003","job_title":"Analista","registration_type":"general","company":"Organización de prueba"}'::jsonb
 );
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000001',
@@ -176,11 +176,11 @@ select public.register_activity(
 );
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000002',
-  '{"document_type":"dni","document_number":"14000005","first_names":"Participante","last_names":"Certificado Incluido","email":"incluido@example.test","phone":"914000005","job_title":"Contador","registration_type":"general"}'::jsonb
+  '{"document_type":"dni","document_number":"14000005","first_names":"Participante","last_names":"Certificado Incluido","email":"incluido@example.test","phone":"914000005","job_title":"Contador","registration_type":"general","company":"Organización de prueba"}'::jsonb
 );
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000003',
-  '{"document_type":"dni","document_number":"14000006","first_names":"Participante","last_names":"Sin Certificado","email":"sin.certificado@example.test","phone":"914000006","job_title":"Abogado","registration_type":"general"}'::jsonb
+  '{"document_type":"dni","document_number":"14000006","first_names":"Participante","last_names":"Sin Certificado","email":"sin.certificado@example.test","phone":"914000006","job_title":"Abogado","registration_type":"general","company":"Organización de prueba"}'::jsonb
 );
 reset role;
 

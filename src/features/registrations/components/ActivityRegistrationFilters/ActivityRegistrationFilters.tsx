@@ -1,6 +1,7 @@
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
 import { AutoFilterForm } from "@/features/admin-filters/components/AutoFilterForm";
+import { PARTICIPANT_PROFILE_LABELS } from "@/features/registrations/constants/registration.constants";
 import type { RegistrationAdminFilters, ActivityRegistrationFiltersProps } from "@/features/registrations/types/registration.types";
 
 function selectedStatus(filters: RegistrationAdminFilters): string {
@@ -10,7 +11,7 @@ function selectedStatus(filters: RegistrationAdminFilters): string {
 export function ActivityRegistrationFilters({ filters, total }: ActivityRegistrationFiltersProps) {
   return (
     <AutoFilterForm total={total} className="md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_220px_200px]" defaults={{ estado: "active" }} moreFilters={{ names: ["certificado", "perfil"], children: <>
-      <label className="text-sm font-semibold">Perfil<Select defaultValue={filters.profile ?? ""} name="perfil"><option value="">Todos</option><option value="professional">Profesional</option><option value="student">Estudiante</option></Select></label>
+      <label className="text-sm font-semibold">Perfil<Select defaultValue={filters.profile ?? ""} name="perfil"><option value="">Todos</option><option value="professional">{PARTICIPANT_PROFILE_LABELS.professional}</option><option value="student">Estudiante</option></Select></label>
       <label className="text-sm font-semibold">Certificado
         <Select aria-label="Estado comercial del certificado" defaultValue={filters.certificateRequest ?? ""} name="certificado">
           <option value="">Todas</option><option value="not_requested">Sin solicitar</option><option value="payment_pending">Pago pendiente</option><option value="payment_verified">Pago verificado</option><option value="ready_to_issue">Listos para emitir</option>

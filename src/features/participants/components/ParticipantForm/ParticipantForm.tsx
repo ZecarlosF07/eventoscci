@@ -1,5 +1,6 @@
 "use client";
 
+import { PARTICIPANT_PROFILE_LABELS } from "@/features/registrations/constants/registration.constants";
 import { useState } from "react";
 
 import { Button } from "@/components/atoms/Button";
@@ -32,16 +33,16 @@ export function ParticipantForm({ participant }: ParticipantFormProps) {
       <div className="md:col-span-2">
         <FormField error={state.errors?.participant_profile?.[0]} label="Perfil actual" name="participant_profile" required>
           <Select id="participant_profile" name="participant_profile" onChange={(event) => setProfile(event.target.value === "student" ? "student" : "professional")} value={profile}>
-            <option value="professional">Profesional o independiente</option>
+            <option value="professional">{PARTICIPANT_PROFILE_LABELS.professional}</option>
             <option value="student">Estudiante</option>
           </Select>
         </FormField>
       </div>
       <fieldset className="contents" disabled={isStudent} hidden={isStudent}>
         <FormField error={state.errors?.job_title?.[0]} label="Cargo" name="job_title" required><Input defaultValue={participant.job_title ?? ""} id="job_title" name="job_title" required={!isStudent} /></FormField>
-        <FormField error={state.errors?.company?.[0]} label="Empresa" name="company"><Input defaultValue={participant.company ?? ""} id="company" name="company" /></FormField>
+        <FormField error={state.errors?.company?.[0]} label="Empresa / Organización" name="company"><Input defaultValue={participant.company ?? ""} id="company" name="company" /></FormField>
         <FormField error={state.errors?.ruc?.[0]} label="RUC" name="ruc"><Input defaultValue={participant.ruc ?? ""} id="ruc" inputMode="numeric" name="ruc" /></FormField>
-        <FormField error={state.errors?.address?.[0]} label="Dirección" name="address"><Input defaultValue={participant.address ?? ""} id="address" name="address" /></FormField>
+        <FormField error={state.errors?.address?.[0]} label="Provincia" name="address"><Input defaultValue={participant.address ?? ""} id="address" maxLength={250} name="address" /></FormField>
       </fieldset>
       <fieldset className="contents" disabled={!isStudent} hidden={!isStudent}>
         <FormField error={state.errors?.academic_institution?.[0]} label="Universidad o instituto" name="academic_institution" required><Input defaultValue={participant.academic_institution ?? ""} id="academic_institution" maxLength={180} name="academic_institution" required={isStudent} /></FormField>

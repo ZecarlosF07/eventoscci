@@ -92,10 +92,10 @@ export const registrationFormSchema = z
       });
     }
 
-    if (data.registration_type === "member" && !data.company) {
+    if (data.participant_profile === "professional" && data.company.length < 2) {
       context.addIssue({
         code: "custom",
-        message: "Indica la empresa asociada.",
+        message: "Indica tu empresa u organización.",
         path: ["company"],
       });
     }
@@ -217,6 +217,7 @@ export const registrationAdminItemSchema = z.object({
     last_names: z.string(),
     phone: z.string(),
   }),
+  province_snapshot: z.string().nullable(),
   price_snapshot: z.number(),
   participant_profile: z.enum(["professional", "student"]),
   registration_code: z.string(),

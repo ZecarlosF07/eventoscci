@@ -65,11 +65,11 @@ values (
 set local role anon;
 select public.register_activity(
   '75000000-0000-4000-8000-000000000001',
-  '{"document_type":"dni","document_number":"15000003","first_names":"Asistente","last_names":"Certificable Uno","email":"certificable1@example.test","phone":"915000003","job_title":"Gerente","registration_type":"general"}'::jsonb
+  '{"document_type":"dni","document_number":"15000003","first_names":"Asistente","last_names":"Certificable Uno","email":"certificable1@example.test","phone":"915000003","job_title":"Gerente","registration_type":"general","company":"Organización de prueba"}'::jsonb
 );
 select public.register_activity(
   '75000000-0000-4000-8000-000000000001',
-  '{"document_type":"dni","document_number":"15000004","first_names":"Ausente","last_names":"Certificable Dos","email":"certificable2@example.test","phone":"915000004","job_title":"Analista","registration_type":"general"}'::jsonb
+  '{"document_type":"dni","document_number":"15000004","first_names":"Ausente","last_names":"Certificable Dos","email":"certificable2@example.test","phone":"915000004","job_title":"Analista","registration_type":"general","company":"Organización de prueba"}'::jsonb
 );
 reset role;
 

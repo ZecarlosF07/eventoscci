@@ -4,11 +4,12 @@ import { Text } from "@/components/atoms/Text";
 import { ResponsiveTableFrame } from "@/components/molecules/ResponsiveTableFrame";
 import { ROUTES } from "@/constants/routes";
 import type { RegistrationSuggestionsTableProps } from "@/features/registrations/components/RegistrationSuggestionsTable/types/registration-suggestions-table.types";
+import { PARTICIPANT_PROFILE_LABELS } from "@/features/registrations/constants/registration.constants";
 import { formatRegistrationDate } from "@/features/registrations/utils/registration-formatters";
 
 function profileLabel(item: RegistrationSuggestionsTableProps["items"][number]): string {
   if (item.registration_type === "member") return "Asociado CCI";
-  return item.participant_profile === "student" ? "Estudiante" : "Profesional o independiente";
+  return PARTICIPANT_PROFILE_LABELS[item.participant_profile];
 }
 
 function contextLabel(item: RegistrationSuggestionsTableProps["items"][number]): string {

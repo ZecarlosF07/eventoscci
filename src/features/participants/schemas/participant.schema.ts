@@ -4,7 +4,7 @@ const optionalText = z.string().trim().max(250, "Usa como máximo 250 caracteres
 
 export const participantFormSchema = z.object({
   academic_institution: z.string().trim().max(180),
-  address: optionalText,
+  address: optionalText.optional(),
   career: z.string().trim().max(180),
   company: optionalText,
   email: z.email("Ingresa un correo válido.").trim().toLowerCase(),
