@@ -24,6 +24,7 @@ No se libera una versión con defectos críticos o altos abiertos. Los resultado
 | Certificados opcionales | `020_optional_activity_certificates_test.sql` | Modalidad y tarifa capturadas, solicitud segura e idempotente, auditoría y oferta posterior a la asistencia |
 | Solicitud y pago manual del certificado | `023_activity_certificate_payment_tracking_test.sql` | Solicitud administrativa, pago externo verificado, reversión con motivo, permisos, idempotencia y estados comerciales para emisión |
 | Perfiles de inscripción y sugerencias | `024_registration_participant_profiles_test.sql` | Profesional, estudiante y asociado; tarifa general estudiantil, snapshots, preservación de datos y sugerencia opcional |
+| Inscripción estudiantil por actividad | `035_activity_student_registration_policy_test.sql`, `tests/unit/activity-student-registration.test.ts` | Configuración por evento/capacitación, compatibilidad con clientes antiguos y rechazo atómico del perfil estudiante |
 | Eventos exclusivos y padrón | `025_member_group_events_test.sql`, `026_member_roster_version_test.sql` | Inscripción grupal, pagos y reemplazo del padrón |
 | Pases gratuitos por empresa | `027_member_company_complimentary_passes_test.sql` | Cuota por RUC, grupo mixto, importe cero, reintentos, cancelación, transferencia y auditoría |
 | Pagos por actividad | `028_activity_payments_workspace_test.sql`, `tests/unit/payment-workspace*.test.ts` | Conteos grupales/individuales, saldos separados, idempotencia, fechas operativas, historial, permisos, paginación y rutas compatibles |
@@ -390,3 +391,20 @@ Actualización de progreso del 30/09/2026: barra accesible con conteo, porcentaj
 Validación del progreso: 218 pruebas unitarias aprobadas y `yarn lint`, `yarn typecheck`, `yarn build` correctos. El cambio utiliza consultas existentes del esquema y no requiere migración. El avance se actualiza tras cada lote confirmado y el contador de tiempo se actualiza durante la espera.
 
 Revisión del conteo parcial: consulta de solo lectura en Supabase para «A Otro Nivel» confirmó 143 certificados con PDF, 120 con las 3 horas actuales y 23 pendientes; la auditoría registra 120 correcciones. El contador de la ejecución no representa el acumulado histórico. Cada lote consulta ahora los pendientes restantes; solo anuncia finalización con cero pendientes y refresca el panel también después de una interrupción. La causa concreta de la interrupción del navegador no quedó verificada. No se inició una nueva regeneración durante esta revisión. Validación: 219 unitarias y `yarn lint`, `yarn typecheck`, `yarn build` aprobados.
+
+
+## Inscripción estudiantil configurable — 30/09/2026
+
+| Caso | Resultado | Evidencia |
+|---|---|---|
+| Configuración para eventos y capacitaciones | APROBADO | Booleano obligatorio, predeterminado true; guardado explícito y edición antigua sin campo conservados |
+| Rechazo SQL del perfil estudiante | APROBADO | RPC pública bloquea eventos gratuitos, pagados y capacitaciones antes de modificar personas, asistencia, cupos, comprobantes o notificaciones |
+| Profesionales y asociados | APROBADO | Empresa/RUC/cargo obligatorios; organización universitaria permitida para profesional; confirmación gratuita conservada |
+| Históricos y cambios de política | APROBADO | Restringir no modifica la inscripción estudiantil anterior; una pestaña antigua se rechaza y reabrir permite nuevas inscripciones |
+| Grupos, pases, facturación y tarifas | APROBADO | Regresiones SQL 025, 027 de pases, 030, 033 y 028 de tarifas; rollback de datos de prueba |
+| Escritorio y móvil | APROBADO | Formulario de prueba local a 1280×900 y 390×844: aviso, solo perfil profesional, campos académicos excluidos, requisitos profesionales y sin desbordamiento horizontal; ruta temporal retirada antes del build |
+| Opción administrativa y exclusividad | APROBADO | Páginas locales autenticadas de nuevo evento y nueva capacitación: viene activada; ocultar por exclusividad y volver conserva la selección. Sin guardar actividades reales |
+| Migración y tipos | APROBADO | Migración 202609300004 aplicada sin seeds; tipos regenerados desde Supabase. Consulta posterior: 11 actividades, ninguna restringida automáticamente |
+| Publicación del frontend | A CARGO DEL USUARIO | El usuario indicó que revisará/publicará por su cuenta; no se realizó despliegue de Vercel |
+
+Validación: 224 pruebas unitarias y 2 pruebas de caché pública, `yarn lint`, `yarn typecheck` y `yarn build` aprobados. SQL con finalización estricta y rollback: 035 (36), 033 (34), 030 (62), 025 (34), 027 de pases (30), 028 de tarifas (6): 202 aserciones. La restricción controla el perfil declarado; no acredita vínculo laboral ni requiere aprobación manual.

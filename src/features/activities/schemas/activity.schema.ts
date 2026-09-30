@@ -31,6 +31,7 @@ const activityDateSchema = z
 export const activityFormSchema = z
   .object({
     academic_hours: nonnegativeNumber,
+    allows_student_registration: z.boolean().optional(),
     additional_info: optionalText,
     banner_path: optionalText,
     capacity: z

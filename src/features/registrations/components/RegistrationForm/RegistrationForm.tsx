@@ -18,6 +18,7 @@ import { RegistrationIdentityFields } from "@/features/registrations/components/
 import { RegistrationProfileSelector } from "@/features/registrations/components/RegistrationProfileSelector";
 import { RegistrationTypeSelector } from "@/features/registrations/components/RegistrationTypeSelector";
 import { StudentRegistrationFields } from "@/features/registrations/components/StudentRegistrationFields";
+import { PROFESSIONAL_ACTIVITY_NOTICE } from "@/features/registrations/constants/registration.constants";
 import { trackAnalyticsEvent } from "@/features/analytics/services/track-analytics-event.client";
 import { registerActivity } from "@/features/registrations/mutations/register-activity";
 import type {
@@ -36,6 +37,7 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
     activity.membersOnly ? "member" : "general",
   );
   const [generalProfile, setGeneralProfile] = useState<ParticipantProfile>("professional");
+  const activeProfile = registrationType === "member" || !activity.allowsStudentRegistration ? "professional" : generalProfile;
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [message, setMessage] = useState<string>();
   const [isPending, setIsPending] = useState(false);
@@ -50,7 +52,7 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
     setErrors({});
     setMessage(undefined);
     setIsPending(true);
-    const participantProfile = registrationType === "member" ? "professional" : generalProfile;
+    const participantProfile = activeProfile;
     trackAnalyticsEvent("registration_started", {
       activity_id: activity.id,
       activity_type: activity.type,
@@ -101,25 +103,26 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
 
   return (
     <form className="space-y-7" noValidate onSubmit={handleSubmit}>
+      {!activity.membersOnly && !activity.allowsStudentRegistration ? <Text className="font-semibold" size="sm">{PROFESSIONAL_ACTIVITY_NOTICE}</Text> : null}
       <RegistrationTypeSelector
         membersOnly={activity.membersOnly}
         onChange={setRegistrationType}
         value={registrationType}
       />
       {registrationType === "general" ? (
-        <RegistrationProfileSelector onChange={setGeneralProfile} value={generalProfile} />
+        <RegistrationProfileSelector allowsStudentRegistration={activity.allowsStudentRegistration} onChange={setGeneralProfile} value={activeProfile} />
       ) : null}
       <RegistrationIdentityFields errors={errors} />
       <RegistrationContactFields errors={errors} />
       <ProfessionalRegistrationFields
-        active={registrationType === "member" || generalProfile === "professional"}
+        active={activeProfile === "professional"}
         errors={errors}
       />
-      <StudentRegistrationFields
-        active={registrationType === "general" && generalProfile === "student"}
+      {activity.allowsStudentRegistration && !activity.membersOnly ? <StudentRegistrationFields
+        active={activeProfile === "student"}
         errors={errors}
-      />
-      {requiresBilling ? <IndividualBillingFields allowCompanyCopy={registrationType === "member" || generalProfile === "professional"} billing={billing} onChange={setBilling} errors={Object.fromEntries(Object.entries(errors).filter(([key]) => key.startsWith("billing.")).map(([key, value]) => [key.slice(8), value[0]]))} /> : null}
+      /> : null}
+      {requiresBilling ? <IndividualBillingFields allowCompanyCopy={activeProfile === "professional"} billing={billing} onChange={setBilling} errors={Object.fromEntries(Object.entries(errors).filter(([key]) => key.startsWith("billing.")).map(([key, value]) => [key.slice(8), value[0]]))} /> : null}
       {activity.certificateMode === "optional_paid" ? (
         <CertificateInterestField
           generalPrice={activity.certificateGeneralPrice}

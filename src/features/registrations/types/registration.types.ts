@@ -123,9 +123,11 @@ export type RegistrationErrorCode =
   | "INVALID_MEMBER_DATA"
   | "NO_AVAILABLE_CAPACITY"
   | "REGISTRATION_CLOSED"
+  | "STUDENT_REGISTRATION_NOT_ALLOWED"
   | "VALIDATION_ERROR";
 
 export interface ActivityRegistrationContext {
+  allowsStudentRegistration: boolean;
   certificateGeneralPrice: number;
   certificateMemberPrice: number;
   certificateMode: ActivityCertificateMode;

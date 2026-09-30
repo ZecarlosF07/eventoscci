@@ -444,22 +444,30 @@ El formulario solicitará:
 - nombres;
 - apellidos;
 - correo electrónico;
-- teléfono o celular;
-- cargo.
+- teléfono o celular.
 
 El tipo de documento será DNI por defecto.
 
 También deberá admitirse Carné de Extranjería.
 
-El cargo será un campo de texto libre.
+## Perfil de inscripción
+
+En público general, el participante podrá elegir **Profesional o empresario** o **Estudiante**, cuando la actividad admita estudiantes. Los asociados utilizarán el perfil profesional.
+
+El perfil profesional solicitará obligatoriamente **Empresa / Organización**, **RUC** de 11 dígitos y **Cargo** como texto libre. **Provincia** será opcional. El perfil estudiante solicitará institución académica y carrera, sin campos profesionales.
 
 ## Opcionales
 
-- dirección;
-- empresa;
-- RUC.
+- provincia, para profesionales;
+- sugerencias de próximos temas.
 
-Cuando la persona seleccione una inscripción como asociado, empresa y RUC pasarán a ser obligatorios.
+## Actividades que no admiten estudiantes
+
+Cada evento o capacitación tendrá la opción **Permitir inscripciones de estudiantes**, activada por defecto. Si se desactiva, el formulario ofrecerá únicamente **Profesional o empresario** y mostrará **Actividad dirigida a profesionales y empresarios** en el detalle y la inscripción. El servidor y Supabase rechazarán envíos con perfil estudiante antes de modificar participantes o crear inscripciones.
+
+La restricción corresponde al perfil declarado: no acredita vínculo laboral ni impide declarar una universidad como organización. No incorpora revisión manual, listas de invitados ni cambios en la confirmación o los precios actuales.
+
+La opción se ocultará en actividades exclusivas para asociados, conservando su valor independiente para una futura reapertura. Cambiarla no cancelará ni modificará inscripciones anteriores. Los clientes antiguos que omitan el campo al editar conservarán el valor guardado.
 
 ---
 
@@ -476,8 +484,10 @@ El participante seleccionará:
 
 Cuando seleccione Asociado CCI, el sistema solicitará obligatoriamente:
 
-- empresa;
+- Empresa / Organización;
 - RUC.
+
+Estos campos también serán obligatorios para profesionales de público general.
 
 El sistema no realizará dentro del MVP una validación automática del padrón de asociados.
 

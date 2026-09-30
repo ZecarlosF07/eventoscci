@@ -18,6 +18,7 @@ import type {
 } from "@/features/registrations/types/registration.types";
 import { getRegistrationErrorCode } from "@/features/registrations/utils/registration-errors";
 import { validateRegistrationWithBilling } from "@/features/registrations/utils/registration-billing-validation";
+import { isStudentRegistrationRestricted } from "@/features/registrations/utils/student-registration-policy";
 import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -27,9 +28,12 @@ export async function registerActivity(
 ): Promise<RegistrationMutationResult> {
   if (!z.uuid().safeParse(activityId).success) return { code: "ACTIVITY_NOT_FOUND", message: REGISTRATION_ERROR_MESSAGES.ACTIVITY_NOT_FOUND, success: false };
   const client = await createServerSupabaseClient();
-  const { data: activity, error: activityError } = await client.from("activities").select("is_free,general_price,member_price").eq("id", activityId).maybeSingle();
+  const { data: activity, error: activityError } = await client.from("activities").select("allows_student_registration,is_free,general_price,member_price").eq("id", activityId).maybeSingle();
   if (activityError) return { code: "DATABASE_ERROR", message: REGISTRATION_ERROR_MESSAGES.DATABASE_ERROR, success: false };
   if (!activity) return { code: "ACTIVITY_NOT_FOUND", message: REGISTRATION_ERROR_MESSAGES.ACTIVITY_NOT_FOUND, success: false };
+  if (isStudentRegistrationRestricted(activity.allows_student_registration, input.participant_profile)) {
+    return { code: "STUDENT_REGISTRATION_NOT_ALLOWED", message: REGISTRATION_ERROR_MESSAGES.STUDENT_REGISTRATION_NOT_ALLOWED, success: false };
+  }
   const price = activity.is_free ? 0 : input.registration_type === "member" ? activity.member_price : activity.general_price;
   const parsed = validateRegistrationWithBilling(input, price);
 

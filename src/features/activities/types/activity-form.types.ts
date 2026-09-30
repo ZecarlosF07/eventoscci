@@ -26,6 +26,7 @@ export interface ActivitySpeakerInput {
 
 export interface ActivityFormInput {
   academic_hours: string;
+  allows_student_registration?: boolean;
   additional_info: string;
   banner_path: string;
   capacity: string;

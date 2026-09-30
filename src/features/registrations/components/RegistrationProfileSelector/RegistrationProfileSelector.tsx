@@ -15,12 +15,12 @@ const PROFILES = [
   },
 ] as const;
 
-export function RegistrationProfileSelector({ onChange, value }: RegistrationProfileSelectorProps) {
+export function RegistrationProfileSelector({ allowsStudentRegistration = true, onChange, value }: RegistrationProfileSelectorProps) {
   return (
     <fieldset className="space-y-3 rounded-2xl border border-cci-100 bg-cci-50/70 p-4 sm:p-5">
       <legend className="px-1 text-sm font-semibold text-slate-900">¿Cuál es tu perfil?</legend>
       <div className="grid gap-3 sm:grid-cols-2">
-        {PROFILES.map((profile) => (
+        {PROFILES.filter((profile) => allowsStudentRegistration || profile.value === "professional").map((profile) => (
           <label
             className="flex min-h-20 cursor-pointer items-start gap-3 rounded-xl border border-slate-300 bg-white p-4 transition hover:border-cci-500 has-[:checked]:border-cci-700 has-[:checked]:ring-2 has-[:checked]:ring-cci-100"
             key={profile.value}

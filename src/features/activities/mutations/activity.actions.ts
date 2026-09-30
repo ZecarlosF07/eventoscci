@@ -70,6 +70,9 @@ export async function saveActivityAction(
 
   if (error) {
     logSupabaseError("activity_save_failed", error, { activityType: parsed.data.type });
+    if (matchesSupabaseError(error, "INVALID_STUDENT_REGISTRATION_POLICY")) {
+      return { errors: { allows_student_registration: ["Indica si la actividad permite inscripciones de estudiantes."] }, savedId };
+    }
     if (matchesSupabaseError(error, "ACADEMIC_HOURS_REQUIRED")) {
       return { errors: { academic_hours: ["Indica horas académicas mayores que cero para entregar certificados."] }, savedId };
     }

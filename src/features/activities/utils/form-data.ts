@@ -35,6 +35,8 @@ function parseSpeakers(formData: FormData): ActivitySpeakerInput[] {
 export function parseActivityFormData(formData: FormData): ActivityFormInput {
   return {
     academic_hours: stringValue(formData, "academic_hours"),
+    allows_student_registration: formData.has("allows_student_registration")
+      ? formData.get("allows_student_registration") === "true" : undefined,
     additional_info: stringValue(formData, "additional_info"),
     banner_path: stringValue(formData, "banner_path"),
     capacity: stringValue(formData, "capacity"),

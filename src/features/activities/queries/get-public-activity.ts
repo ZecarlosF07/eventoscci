@@ -16,7 +16,7 @@ import {
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 
 const ACTIVITY_DETAIL_SELECT = `
-  academic_hours, additional_info, address, banner_path, capacity, category_id,
+  academic_hours, additional_info, address, allows_student_registration, banner_path, capacity, category_id,
   certificate_general_price, certificate_member_price, certificate_mode,
   contact_email, contact_id, contact_name, contact_phone, created_at, created_by,
   deleted_at, deleted_by, description, duration_text, general_price, id, is_free, is_listed,

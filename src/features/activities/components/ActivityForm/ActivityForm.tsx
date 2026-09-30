@@ -16,6 +16,7 @@ import { ActivityFormSection } from "@/features/activities/components/ActivityFo
 import { ActivityPricingFields } from "@/features/activities/components/ActivityPricingFields";
 import { ActivityRegistrationPauseField } from "@/features/activities/components/ActivityRegistrationPauseField";
 import { ActivitySpeakerFields } from "@/features/activities/components/ActivitySpeakerFields";
+import { ActivityStudentRegistrationField } from "@/features/activities/components/ActivityStudentRegistrationField/ActivityStudentRegistrationField";
 import { ActivityVirtualAccessFields } from "@/features/activities/components/ActivityVirtualAccessFields";
 import { CatalogSelect } from "@/features/catalogs/components/CatalogSelect";
 import { ACTIVITY_STATUS_LABELS } from "@/features/activities/constants/activity.constants";
@@ -42,6 +43,7 @@ export function ActivityForm({
   const isArchived = activity?.status === "archived";
   const [isFree, setIsFree] = useState(activity?.is_free ?? false);
   const [membersOnly, setMembersOnly] = useState(activity?.members_only ?? false);
+  const [allowsStudents, setAllowsStudents] = useState(activity?.allows_student_registration ?? true);
   const [registrationsPaused, setRegistrationsPaused] = useState(activity?.registrations_closed_manually ?? false);
   const error = (name: string) => state.errors?.[name]?.[0];
   const selectedSpeakers = activity?.speakers.map((speaker) => ({
@@ -113,6 +115,7 @@ export function ActivityForm({
 
       <ActivityFormSection description="Define quién puede participar, si tiene costo y cuántas plazas hay." title="Participación y cupos">
         <ActivityPricingFields activity={activity} errors={state.errors} isFree={isFree} membersOnly={membersOnly} onFreeChange={setIsFree} onMembersOnlyChange={setMembersOnly} status={status} type={type} />
+        <ActivityStudentRegistrationField allowed={allowsStudents} error={error("allows_student_registration")} onChange={setAllowsStudents} visible={!membersOnly} />
         <ActivityCertificateFields
           defaultAcademicHours={activity?.academic_hours}
           defaultGeneralPrice={activity?.certificate_general_price}

@@ -44,6 +44,7 @@ export type Database = {
           academic_hours: number | null
           additional_info: string | null
           address: string | null
+          allows_student_registration: boolean
           banner_path: string | null
           capacity: number | null
           category_id: string | null
@@ -94,6 +95,7 @@ export type Database = {
           academic_hours?: number | null
           additional_info?: string | null
           address?: string | null
+          allows_student_registration?: boolean
           banner_path?: string | null
           capacity?: number | null
           category_id?: string | null
@@ -144,6 +146,7 @@ export type Database = {
           academic_hours?: number | null
           additional_info?: string | null
           address?: string | null
+          allows_student_registration?: boolean
           banner_path?: string | null
           capacity?: number | null
           category_id?: string | null
@@ -3586,6 +3589,10 @@ export type Database = {
         Returns: string
       }
       save_activity_without_passes: {
+        Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
+        Returns: string
+      }
+      save_activity_without_student_policy: {
         Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
         Returns: string
       }
