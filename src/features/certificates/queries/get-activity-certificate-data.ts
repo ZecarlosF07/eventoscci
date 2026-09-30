@@ -1,6 +1,7 @@
 import "server-only";
 
 import { CERTIFICATE_CANDIDATE_PAGE_SIZE } from "@/features/certificates/constants/certificate.constants";
+import { countOutdatedActivityCertificateHours } from "@/features/certificates/queries/get-outdated-activity-certificate-hours";
 import { getCertificateBatchStatus } from "@/features/certificates/queries/get-certificate-batch-status";
 import { getCertificateTemplates } from "@/features/certificates/queries/get-certificate-templates";
 import { getLegacyActivityCertificateCandidates } from "@/features/certificates/queries/get-legacy-activity-certificate-candidates";
@@ -38,6 +39,7 @@ export async function getActivityCertificateData(
   const error = activityResult.error ?? candidateResult.error ?? readyResult.error ?? recoverableResult.error;
   if (error) throw new Error("No fue posible consultar los candidatos a certificado.", { cause: error });
   if (!activityResult.data) return null;
+  const outdatedHoursCount = await countOutdatedActivityCertificateHours(client, activityId, activityResult.data.academic_hours);
 
   if (candidateResult.error?.code === "PGRST202") {
     if (filters.emissionState && filters.emissionState !== "all") throw new Error("Actualiza la base de datos para aplicar filtros de emisión.");
@@ -46,6 +48,7 @@ export async function getActivityCertificateData(
       batch,
       candidatePage: await getLegacyActivityCertificateCandidates(activityId, filters),
       readyCount: 0,
+      outdatedHoursCount,
       recoverableCount: recoverableResult.data ?? 0,
       templates: templates.filter((template) => template.scope === "activity"),
     };
@@ -88,6 +91,7 @@ export async function getActivityCertificateData(
       total,
     },
     readyCount: Number(readyResult.data?.[0]?.total_count ?? 0),
+    outdatedHoursCount,
     recoverableCount: recoverableResult.data ?? 0,
     templates: templates.filter((template) => template.scope === "activity"),
   };

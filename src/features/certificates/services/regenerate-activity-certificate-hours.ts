@@ -1,6 +1,7 @@
 import "server-only";
 
 import { CERTIFICATE_HOURS_REGENERATION_BATCH_SIZE } from "@/features/certificates/constants/certificate.constants";
+import { countOutdatedActivityCertificateHours, getOutdatedActivityCertificateHoursQuery } from "@/features/certificates/queries/get-outdated-activity-certificate-hours";
 import { getCertificateTemplatesWithClient } from "@/features/certificates/queries/get-certificate-templates";
 import { certificateGenerationSchema } from "@/features/certificates/schemas/certificate-query.schema";
 import { loadCertificateDocumentAssets } from "@/features/certificates/services/certificate-assets";
@@ -18,14 +19,7 @@ export async function regenerateActivityCertificateHours(activityId: string, exp
   if (activity.error || activity.data?.academic_hours !== expectedHours) {
     return { message: "Las horas de la actividad cambiaron o no están disponibles. Actualiza la página.", success: false };
   }
-  const result = await client.from("certificates").select(`
-    id, access_token, academic_hours_snapshot, certificate_code, certificate_type,
-    condition_snapshot, date_text_snapshot, file_path, participant_name_snapshot,
-    status, template_id, title_snapshot,
-    registration:registrations!certificates_registration_id_fkey!inner(activity_id, deleted_at)
-  `, { count: "exact" }).eq("registration.activity_id", activityId).is("registration.deleted_at", null)
-    .eq("certificate_type", "activity").eq("status", "issued").is("deleted_at", null)
-    .not("file_path", "is", null).or(`academic_hours_snapshot.is.null,academic_hours_snapshot.neq.${expectedHours}`)
+  const result = await getOutdatedActivityCertificateHoursQuery(client, activityId, expectedHours)
     .order("id").limit(CERTIFICATE_HOURS_REGENERATION_BATCH_SIZE);
   if (result.error) return { message: "No fue posible consultar los certificados por corregir.", success: false };
   const templates = await getCertificateTemplatesWithClient(client);
@@ -64,9 +58,17 @@ export async function regenerateActivityCertificateHours(activityId: string, exp
     }
   }
   const errorCount = failedCertificateCodes.length;
+  let remainingCount: number;
+  try {
+    remainingCount = await countOutdatedActivityCertificateHours(client, activityId, expectedHours);
+  } catch (error) {
+    logSupabaseError("certificate_hours_remaining_count_failed", error instanceof Error ? error : { message: "Unknown count error" }, { activityId });
+    return { cleanupWarningCount, errorCount, failedCertificateCodes, regeneratedCount, totalCount: result.count ?? 0, success: false,
+      message: "Los cambios confirmados quedaron guardados, pero no se pudo consultar el total pendiente." };
+  }
   return {
-    cleanupWarningCount, errorCount, failedCertificateCodes, regeneratedCount,
-    hasMore: !errorCount && (result.count ?? 0) > regeneratedCount,
+    cleanupWarningCount, errorCount, failedCertificateCodes, regeneratedCount, remainingCount, totalCount: result.count ?? 0,
+    hasMore: !errorCount && remainingCount > 0,
     message: errorCount ? `No pudieron corregirse: ${failedCertificateCodes.join(", ")}. Puedes reintentar los pendientes.` : "Certificados actualizados.",
     success: errorCount === 0, warning: cleanupWarningCount > 0,
   };

@@ -87,6 +87,7 @@ export interface ActivityCertificateData {
   activity: { academic_hours: number | null; certificate_mode: ActivityCertificateMode; id: string; title: string; type: ActivityType };
   batch: CertificateBatchStatus | null;
   candidatePage: CertificateCandidatePage;
+  outdatedHoursCount: number;
   recoverableCount: number;
   readyCount: number;
   templates: CertificateTemplate[];

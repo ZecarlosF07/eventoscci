@@ -22,7 +22,7 @@ export default async function ActivityCertificatesPage({ params, searchParams }:
     <SelectionWorkspace key={activityId}><div className="space-y-7">
       <Link className="text-sm font-semibold hover:underline" href={ROUTES.adminCertificatesActivities}>← Elegir otra actividad</Link>
       <SectionHeading description={`${data.candidatePage.total} participantes. La base de datos vuelve a validar confirmación y asistencia al emitir.`} eyebrow={data.activity.type === "event" ? "Evento" : "Capacitación"} title={data.activity.title} />
-      <CertificateHoursRegeneration academicHours={data.activity.academic_hours} activityId={activityId} />
+      <CertificateHoursRegeneration academicHours={data.activity.academic_hours} activityId={activityId} outdatedCount={data.outdatedHoursCount} />
       <CertificateCandidateFilters filters={filters} total={data.candidatePage.total} />
       <FilterResults><CertificateCandidatesTable activityId={data.activity.id} batch={data.batch} candidates={data.candidatePage.candidates} certificateMode={data.activity.certificate_mode} readyCount={data.readyCount} recoverableCount={data.recoverableCount} templates={data.templates} /></FilterResults>
       <Pagination page={data.candidatePage.page} pageCount={data.candidatePage.pageCount} pathname={`${ROUTES.adminCertificatesActivities}/${activityId}`} searchParams={{ q: filters.query, emision: filters.emissionState }} />
