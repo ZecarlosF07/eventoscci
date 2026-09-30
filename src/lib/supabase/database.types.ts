@@ -3533,6 +3533,16 @@ export type Database = {
         Returns: Json
       }
       registration_billing_enforced: { Args: never; Returns: boolean }
+      replace_activity_certificate_hours: {
+        Args: {
+          p_activity_id: string
+          p_certificate_id: string
+          p_expected_file_path: string
+          p_new_file_path: string
+          p_new_hours: number
+        }
+        Returns: Json
+      }
       replace_certificate_document: {
         Args: {
           p_certificate_id: string

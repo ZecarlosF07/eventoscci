@@ -114,7 +114,6 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
       <ProfessionalRegistrationFields
         active={registrationType === "member" || generalProfile === "professional"}
         errors={errors}
-        isMember={registrationType === "member"}
       />
       <StudentRegistrationFields
         active={registrationType === "general" && generalProfile === "student"}

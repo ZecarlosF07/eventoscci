@@ -47,6 +47,9 @@ async function drawSigner(
 }
 
 export async function generateCertificatePdf(input: CertificateDocumentInput): Promise<Uint8Array> {
+  if (input.certificateType === "activity" && (input.academicHours === null || !Number.isFinite(input.academicHours) || input.academicHours <= 0)) {
+    throw new Error("ACADEMIC_HOURS_REQUIRED");
+  }
   const pdf = await PDFDocument.create();
   const page = pdf.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
   const regular = await pdf.embedFont(StandardFonts.Helvetica);

@@ -16,10 +16,9 @@ insert into public.user_accounts (user_id, person_id, role) values
 insert into public.activities (
   id, type, title, slug, description, modality, is_free, general_price, member_price,
   certificate_mode, certificate_general_price, certificate_member_price,
-  maps_embed_url, contact_phone, status, published_at
-) values
-  ('7b310000-0000-4000-8000-000000000001', 'training', 'Certificación opcional 31', 'cert-opcional-31', 'Prueba de elegibilidad.', 'in_person', true, 0, 0, 'optional_paid', 40, 30, 'https://www.google.com/maps/embed?pb=test', '999999999', 'published', now()),
-  ('7b310000-0000-4000-8000-000000000002', 'training', 'Certificación incluida 31', 'cert-incluida-31', 'Prueba de elegibilidad.', 'in_person', true, 0, 0, 'included', 0, 0, 'https://www.google.com/maps/embed?pb=test', '999999999', 'published', now());
+  maps_embed_url, contact_phone, status, published_at, academic_hours) values
+('7b310000-0000-4000-8000-000000000001', 'training', 'Certificación opcional 31', 'cert-opcional-31', 'Prueba de elegibilidad.', 'in_person', true, 0, 0, 'optional_paid', 40, 30, 'https://www.google.com/maps/embed?pb=test', '999999999', 'published', now(),3),
+  ('7b310000-0000-4000-8000-000000000002', 'training', 'Certificación incluida 31', 'cert-incluida-31', 'Prueba de elegibilidad.', 'in_person', true, 0, 0, 'included', 0, 0, 'https://www.google.com/maps/embed?pb=test', '999999999', 'published', now(),3);
 
 insert into public.registrations (id, activity_id, person_id, registration_code, status, confirmed_at, job_title_snapshot) values
   ('6b310000-0000-4000-8000-000000000002', '7b310000-0000-4000-8000-000000000001', '3b310000-0000-4000-8000-000000000002', 'CCI-31-000002', 'confirmed', now(), 'Participante'),

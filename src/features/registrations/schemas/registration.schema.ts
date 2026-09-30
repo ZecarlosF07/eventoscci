@@ -100,10 +100,10 @@ export const registrationFormSchema = z
       });
     }
 
-    if (data.registration_type === "member" && !data.ruc) {
+    if (data.participant_profile === "professional" && !data.ruc) {
       context.addIssue({
         code: "custom",
-        message: "Indica el RUC de la empresa asociada.",
+        message: "Indica el RUC de tu empresa u organización.",
         path: ["ruc"],
       });
     }

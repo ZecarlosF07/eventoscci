@@ -22,7 +22,7 @@ insert into public.activity_dates(activity_id,starts_at,ends_at)
 select id,now()+interval '2 days',now()+interval '2 days 2 hours' from public.activities where slug like 'provincia-33-%';
 insert into public.people(id,document_type,document_number,first_names,last_names,email,phone,job_title,address)
 values ('33000000-0000-4000-8000-000000000010','dni','33100001','Ana','Provincia','ana33@example.test','933000001','Analista','Av. Histórica 123');
-create temporary table input33 as select '{"document_type":"dni","document_number":"33100001","first_names":"Ana","last_names":"Provincia","email":"ana33@example.test","phone":"933000001","job_title":"Analista","registration_type":"general","company":" Organización de prueba "}'::jsonb as payload;
+create temporary table input33 as select '{"document_type":"dni","document_number":"33100001","first_names":"Ana","last_names":"Provincia","email":"ana33@example.test","phone":"933000001","job_title":"Analista","registration_type":"general","company":" Organización de prueba ","ruc":" 20123456789 "}'::jsonb as payload;
 grant select on input33 to anon,authenticated;
 
 set local role anon;
@@ -30,12 +30,16 @@ select throws_ok($$select public.register_activity('33000000-0000-4000-8000-0000
 select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload||'{"company":"   "}'::jsonb from input33))$$,'22023','VALIDATION_ERROR','blank company is rejected');
 select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload||'{"company":"x"}'::jsonb from input33))$$,'22023','VALIDATION_ERROR','one-character company is rejected');
 select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload||jsonb_build_object('address',repeat('x',251)) from input33))$$,'22023','VALIDATION_ERROR','province cannot exceed 250 characters');
-select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload||'{"registration_type":"member"}'::jsonb from input33))$$,'22023','INVALID_MEMBER_DATA','member RUC remains required');
-select lives_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload from input33))$$,'general professional may omit RUC and province');
+select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select (payload-'ruc')||'{"registration_type":"member"}'::jsonb from input33))$$,'22023','INVALID_MEMBER_DATA','member RUC remains required');
+select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload-'ruc' from input33))$$,'22023','VALIDATION_ERROR','general professional requires RUC');
+select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload||'{"ruc":"   "}'::jsonb from input33))$$,'22023','VALIDATION_ERROR','blank professional RUC is rejected');
+select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload||'{"ruc":"123"}'::jsonb from input33))$$,'22023','INVALID_MEMBER_DATA','professional RUC needs 11 digits');
+select lives_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload from input33))$$,'general professional with RUC may omit province');
 reset role;
 select is((select address from public.people where document_number='33100001'),'Av. Histórica 123','omitted province preserves historical value');
 select is((select province_snapshot from public.registrations where activity_id='33000000-0000-4000-8000-000000000001'),null::text,'omitted province has null snapshot');
 select is((select company_snapshot from public.registrations where activity_id='33000000-0000-4000-8000-000000000001'),'Organización de prueba','organization is trimmed');
+select is((select ruc_snapshot from public.registrations where activity_id='33000000-0000-4000-8000-000000000001'),'20123456789','required RUC is trimmed and snapshotted');
 
 set local role anon;
 select lives_ok($$select public.register_activity('33000000-0000-4000-8000-000000000002',(select payload||'{"address":" Pisco "}'::jsonb from input33))$$,'province registers for a training');

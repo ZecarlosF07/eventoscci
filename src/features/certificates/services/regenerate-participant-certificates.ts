@@ -1,6 +1,6 @@
 import "server-only";
 
-import { CERTIFICATE_BUCKET } from "@/features/certificates/constants/certificate.constants";
+import { removeCertificateFile } from "@/features/certificates/services/remove-certificate-file";
 import { getCertificateGenerationDataWithClient } from "@/features/certificates/queries/get-certificate-generation-data";
 import { storeCertificatePdf } from "@/features/certificates/services/store-certificate-pdf";
 import type {
@@ -10,13 +10,6 @@ import type {
 import { getSiteUrl } from "@/lib/env/server-env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { logSupabaseError } from "@/lib/supabase/supabase-error";
-
-async function removeFile(filePath: string): Promise<boolean> {
-  const client = await createServerSupabaseClient();
-  const { error } = await client.storage.from(CERTIFICATE_BUCKET).remove([filePath]);
-  if (error) logSupabaseError("certificate_regeneration_cleanup_failed", error, { filePath });
-  return !error;
-}
 
 async function regenerateCertificate(
   certificateId: string,
@@ -42,11 +35,11 @@ async function regenerateCertificate(
     p_new_file_path: newFilePath,
   });
   if (replaced.error) {
-    await removeFile(newFilePath);
+    await removeCertificateFile(client, newFilePath);
     throw new Error("CERTIFICATE_REPLACEMENT_FAILED", { cause: replaced.error });
   }
 
-  const cleanupSucceeded = !oldFilePath || oldFilePath === newFilePath || await removeFile(oldFilePath);
+  const cleanupSucceeded = !oldFilePath || oldFilePath === newFilePath || await removeCertificateFile(client, oldFilePath);
   return { cleanupWarning: !cleanupSucceeded };
 }
 

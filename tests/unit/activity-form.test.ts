@@ -91,7 +91,7 @@ test("una actividad abierta pagada requiere ambos precios positivos al publicar"
 test("un certificado opcional exclusivo usa el mismo precio solo para asociados", () => {
   const exclusive = {
     ...validActivity(), certificate_general_price: "25", certificate_member_price: "25",
-    certificate_mode: "optional_paid" as const, members_only: true,
+    certificate_mode: "optional_paid" as const, academic_hours: "3", members_only: true,
   };
   assert.equal(activityFormSchema.safeParse(exclusive).success, true);
   assert.equal(activityFormSchema.safeParse({ ...exclusive, certificate_general_price: "40" }).success, false);
@@ -141,7 +141,7 @@ test("identifica títulos de actividades que superan los 300 caracteres", () => 
 });
 
 test("acepta un certificado incluido sin precios adicionales", () => {
-  const result = activityFormSchema.safeParse({ ...validActivity(), certificate_mode: "included" });
+  const result = activityFormSchema.safeParse({ ...validActivity(), certificate_mode: "included", academic_hours: "3" });
   assert.equal(result.success, true);
 });
 
@@ -151,12 +151,14 @@ test("valida los precios de un certificado opcional", () => {
     certificate_general_price: "50",
     certificate_member_price: "35",
     certificate_mode: "optional_paid",
+    academic_hours: "3",
   });
   const invalid = activityFormSchema.safeParse({
     ...validActivity(),
     certificate_general_price: "35",
     certificate_member_price: "50",
     certificate_mode: "optional_paid",
+    academic_hours: "3",
   });
   assert.equal(valid.success, true);
   assert.equal(invalid.success, false);
@@ -219,4 +221,18 @@ test("exige indicaciones de pago al publicar eventos y capacitaciones pagados", 
 test("limita las indicaciones a 600 caracteres sin exigirlas en actividades gratuitas", () => {
   assert.equal(activityFormSchema.safeParse({ ...validActivity(), payment_note: "x".repeat(601) }).success, false);
   assert.equal(activityFormSchema.safeParse({ ...validActivity(), payment_note: "" }).success, true);
+});
+
+
+test("al ofrecer certificados exige horas finitas mayores que cero", () => {
+  for (const certificate_mode of ["included", "optional_paid"] as const) {
+    const input = { ...validActivity(), certificate_mode, certificate_general_price: certificate_mode === "optional_paid" ? "10" : "0", certificate_member_price: certificate_mode === "optional_paid" ? "10" : "0" };
+    for (const academic_hours of ["", " ", "0", "-1", "NaN", "Infinity", "10000"]) {
+      const parsed = activityFormSchema.safeParse({ ...input, academic_hours });
+      assert.equal(parsed.success, false);
+      if (!parsed.success) assert.ok(parsed.error.flatten().fieldErrors.academic_hours?.length);
+    }
+    assert.equal(activityFormSchema.safeParse({ ...input, academic_hours: "3" }).success, true);
+  }
+  assert.equal(activityFormSchema.safeParse(validActivity()).success, true);
 });

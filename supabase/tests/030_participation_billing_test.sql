@@ -12,17 +12,16 @@ insert into public.people(id,document_type,document_number,first_names,last_name
 values ('30000000-0000-4000-8000-000000000041','dni','30100041','Admin','Comprobantes','admin30@example.test','930000041','Administradora');
 insert into public.user_accounts(user_id,person_id,role)
 values ('30000000-0000-4000-8000-000000000040','30000000-0000-4000-8000-000000000041','administrator');
-insert into public.activities(id,type,title,slug,description,modality,is_free,general_price,member_price,members_only,
- status,published_at,payment_note,contact_phone,maps_embed_url,certificate_mode,certificate_general_price,certificate_member_price)
-values
- ('30000000-0000-4000-8000-000000000001','event','Comprobantes abierto','comprobantes-30-abierto','Prueba','in_person',false,60,40,false,'published',now(),'Coordina el pago','900000001','https://www.google.com/maps/embed?pb=30','optional_paid',20,10),
- ('30000000-0000-4000-8000-000000000002','event','Comprobantes grupos','comprobantes-30-grupos','Prueba','in_person',false,0,40,true,'published',now(),'Coordina el pago','900000001','https://www.google.com/maps/embed?pb=30','none',0,0),
- ('30000000-0000-4000-8000-000000000003','training','Comprobantes capacitación','comprobantes-30-capacitacion','Prueba','in_person',false,0,40,true,'published',now(),'Coordina el pago','900000001','https://www.google.com/maps/embed?pb=30','none',0,0),
- ('30000000-0000-4000-8000-000000000004','event','Gratis certificado opcional','comprobantes-30-gratis','Prueba','in_person',true,0,0,false,'published',now(),null,'900000001','https://www.google.com/maps/embed?pb=30','optional_paid',20,10);
+insert into public.activities (id,type,title,slug,description,modality,is_free,general_price,member_price,members_only,
+ status,published_at,payment_note,contact_phone,maps_embed_url,certificate_mode,certificate_general_price,certificate_member_price, academic_hours) values
+('30000000-0000-4000-8000-000000000001','event','Comprobantes abierto','comprobantes-30-abierto','Prueba','in_person',false,60,40,false,'published',now(),'Coordina el pago','900000001','https://www.google.com/maps/embed?pb=30','optional_paid',20,10,3),
+ ('30000000-0000-4000-8000-000000000002','event','Comprobantes grupos','comprobantes-30-grupos','Prueba','in_person',false,0,40,true,'published',now(),'Coordina el pago','900000001','https://www.google.com/maps/embed?pb=30','none',0,0,3),
+ ('30000000-0000-4000-8000-000000000003','training','Comprobantes capacitación','comprobantes-30-capacitacion','Prueba','in_person',false,0,40,true,'published',now(),'Coordina el pago','900000001','https://www.google.com/maps/embed?pb=30','none',0,0,3),
+ ('30000000-0000-4000-8000-000000000004','event','Gratis certificado opcional','comprobantes-30-gratis','Prueba','in_person',true,0,0,false,'published',now(),null,'900000001','https://www.google.com/maps/embed?pb=30','optional_paid',20,10,3);
 insert into public.activity_dates(activity_id,starts_at,ends_at)
 select id,now()+interval '2 days',now()+interval '2 days 2 hours' from public.activities where slug like 'comprobantes-30-%';
 update public.activities set member_free_passes_per_company=1 where id='30000000-0000-4000-8000-000000000002';
-create temporary table input30 as select '{"document_type":"dni","document_number":"30100001","first_names":"Ana","last_names":"Pérez","email":"ana30@example.test","phone":"930000001","job_title":"Gerente","registration_type":"general","company":"Organización de prueba"}'::jsonb as payload;
+create temporary table input30 as select '{"document_type":"dni","document_number":"30100001","first_names":"Ana","last_names":"Pérez","email":"ana30@example.test","phone":"930000001","job_title":"Gerente","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb as payload;
 grant select on input30 to anon,authenticated;
 -- Legacy client compatibility is temporary, without inventing historical billing.
 set local role anon;

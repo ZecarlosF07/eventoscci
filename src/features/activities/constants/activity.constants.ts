@@ -1,3 +1,5 @@
+export const ACTIVITY_MAX_ACADEMIC_HOURS = 9999.99;
+export const ACTIVITY_ACADEMIC_HOURS_STEP = 0.01;
 import type {
   ActivityModality,
   ActivityStatus,

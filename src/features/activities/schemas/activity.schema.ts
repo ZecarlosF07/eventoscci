@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { ACTIVITY_MAX_ACADEMIC_HOURS } from "@/features/activities/constants/activity.constants";
 import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
 
 const optionalText = z.string().trim();
@@ -82,6 +83,10 @@ export const activityFormSchema = z
     virtual_url: optionalSecureUrl,
   })
   .superRefine((data, context) => {
+    const hours = Number(data.academic_hours);
+    if (data.certificate_mode !== "none" && (!Number.isFinite(hours) || hours <= 0 || hours > ACTIVITY_MAX_ACADEMIC_HOURS)) {
+      context.addIssue({ code: "custom", message: "Indica horas académicas mayores que cero (máximo 9999.99).", path: ["academic_hours"] });
+    }
     const certificateGeneralPrice = Number(data.certificate_general_price);
     const certificateMemberPrice = Number(data.certificate_member_price);
     if (

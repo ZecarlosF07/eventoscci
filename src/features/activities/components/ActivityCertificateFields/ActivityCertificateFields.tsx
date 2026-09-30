@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
-import { ACTIVITY_CERTIFICATE_MODE_LABELS } from "@/features/activities/constants/activity.constants";
+import { ACTIVITY_ACADEMIC_HOURS_STEP, ACTIVITY_CERTIFICATE_MODE_LABELS, ACTIVITY_MAX_ACADEMIC_HOURS } from "@/features/activities/constants/activity.constants";
 import type { ActivityCertificateFieldsProps } from "@/features/activities/components/ActivityCertificateFields/types/activity-certificate-fields.types";
 import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 import { classNames } from "@/utils/class-names";
@@ -72,8 +72,8 @@ export function ActivityCertificateFields({
         <p className="text-sm font-medium text-rose-700">{errors.certificate_mode[0]}</p>
       ) : null}
       {mode !== "none" ? <div className="rounded-2xl border border-cci-100 bg-slate-50 p-4 sm:p-5">
-        <FormField error={errors?.academic_hours?.[0]} hint="Cantidad oficial que aparecerá en el certificado. Déjala vacía si no corresponde." label="Horas académicas certificables" name="academic_hours">
-          <Input id="academic_hours" min="0" name="academic_hours" onChange={(event) => setAcademicHours(event.target.value)} step="0.5" type="number" value={academicHours} />
+        <FormField error={errors?.academic_hours?.[0]} hint="Cantidad oficial que aparecerá en el certificado. Debe ser mayor que cero." label="Horas académicas certificables" name="academic_hours" required>
+          <Input id="academic_hours" max={ACTIVITY_MAX_ACADEMIC_HOURS} min={ACTIVITY_ACADEMIC_HOURS_STEP} name="academic_hours" onChange={(event) => setAcademicHours(event.target.value)} required step={ACTIVITY_ACADEMIC_HOURS_STEP} type="number" value={academicHours} />
         </FormField>
       </div> : <input name="academic_hours" type="hidden" value={preserveHistoricalHours ? academicHours : ""} />}
       {hasAdditionalCost ? (

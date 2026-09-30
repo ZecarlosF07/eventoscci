@@ -15,19 +15,25 @@ function professionalData() {
   for (const [key, value] of Object.entries({ document_type: "dni", document_number: "12345678",
     first_names: "Ana", last_names: "Pérez", email: "ana@example.test", phone: "900000001",
     registration_type: "general", participant_profile: "professional", job_title: "Analista",
-    company: " Organización de prueba ", address: " Ica " })) {
+    company: " Organización de prueba ", ruc: " 20123456789 ", address: " Ica " })) {
     data.set(key, value);
   }
   return data;
 }
 
-test("profesionales requieren organización y permiten RUC y provincia vacíos", () => {
+test("profesionales requieren organización y RUC y permiten provincia vacía", () => {
   const input = parseRegistrationFormData(professionalData());
   const parsed = registrationFormSchema.parse(input);
   assert.equal(parsed.company, "Organización de prueba");
   assert.equal(parsed.address, "Ica");
   assert.equal("province" in parsed, false);
-  assert.equal(registrationFormSchema.safeParse({ ...input, address: "", ruc: "" }).success, true);
+  assert.equal(parsed.ruc, "20123456789");
+  assert.equal(registrationFormSchema.safeParse({ ...input, address: "" }).success, true);
+  for (const ruc of ["", "   ", "123", "201234567890", "2012345678a"]) {
+    const result = registrationFormSchema.safeParse({ ...input, ruc });
+    assert.equal(result.success, false);
+    if (!result.success) assert.ok(result.error.issues.some((issue) => issue.path[0] === "ruc"));
+  }
   for (const company of ["", "   ", "x", "x".repeat(251)]) {
     const result = registrationFormSchema.safeParse({ ...input, company });
     assert.equal(result.success, false);
@@ -39,7 +45,7 @@ test("profesionales requieren organización y permiten RUC y provincia vacíos",
 
 test("asociados conservan RUC obligatorio y provincia opcional", () => {
   const input = { ...parseRegistrationFormData(professionalData()), registration_type: "member", address: "" };
-  assert.equal(registrationFormSchema.safeParse(input).success, false);
+  assert.equal(registrationFormSchema.safeParse({ ...input, ruc: "" }).success, false);
   assert.equal(registrationFormSchema.safeParse({ ...input, ruc: "20123456789" }).success, true);
 });
 
@@ -51,23 +57,25 @@ test("alternar a estudiante excluye datos profesionales sin modificar el borrado
   const student = parseRegistrationFormData(data);
   assert.equal(student.company, "");
   assert.equal(student.address, "");
+  assert.equal(student.ruc, "");
   assert.equal(registrationFormSchema.safeParse(student).success, true);
   data.set("participant_profile", "professional");
   const professional = registrationFormSchema.parse(parseRegistrationFormData(data));
   assert.equal(professional.company, "Organización de prueba");
   assert.equal(professional.address, "Ica");
+  assert.equal(professional.ruc, "20123456789");
 });
 
 test("el formulario conserva orden accesible y requisitos según tipo de inscripción", () => {
-  for (const isMember of [false, true]) {
-    const html = renderToStaticMarkup(createElement(ProfessionalRegistrationFields, { active: true, errors: {}, isMember }));
+  for (const active of [false, true]) {
+    const html = renderToStaticMarkup(createElement(ProfessionalRegistrationFields, { active, errors: {} }));
     const positions = ["company", "ruc", "job_title", "address"].map((name) => html.indexOf(`id="${name}"`));
     assert.ok(positions.every((position, index) => position >= 0 && (!index || position > positions[index - 1])));
     assert.match(html, /Empresa \/ Organización/);
-    assert.match(html, /id="company"[^>]*required/);
-    assert.match(html, /id="job_title"[^>]*required/);
+    assert.equal(/id="company"[^>]*required/.test(html), active);
+    assert.equal(/id="job_title"[^>]*required/.test(html), active);
     assert.doesNotMatch(html, /id="address"[^>]*required/);
-    assert.equal(/id="ruc"[^>]*required/.test(html), isMember);
+    assert.equal(/id="ruc"[^>]*required/.test(html), active);
   }
 });
 

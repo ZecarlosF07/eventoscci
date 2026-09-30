@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { CERTIFICATE_BUCKET } from "@/features/certificates/constants/certificate.constants";
 import { loadCertificateDocumentAssets } from "@/features/certificates/services/certificate-assets";
 import { generateCertificatePdf } from "@/features/certificates/services/generate-certificate-pdf";
-import type { CertificateGenerationData } from "@/features/certificates/types/certificate.types";
+import type { CertificateDocumentAssets, CertificateGenerationData } from "@/features/certificates/types/certificate.types";
 import { certificateTemplateShowsDate } from "@/features/certificates/utils/certificate-template-config";
 import type { Database } from "@/lib/supabase/database.types";
 
@@ -14,8 +14,9 @@ export async function storeCertificatePdf(
   certificate: CertificateGenerationData,
   siteUrl: string,
   targetPath?: string,
+  documentAssets?: CertificateDocumentAssets,
 ): Promise<string> {
-  const assets = await loadCertificateDocumentAssets(client, certificate);
+  const assets = documentAssets ?? await loadCertificateDocumentAssets(client, certificate);
   const pdf = await generateCertificatePdf({
     academicHours: certificate.academic_hours_snapshot,
     accessUrl: `${siteUrl}/certificados/${certificate.access_token}`,

@@ -44,12 +44,12 @@ insert into public.user_accounts (user_id, person_id, role) values (
 );
 insert into public.activities (
   id, type, title, slug, description, modality, is_free, certificate_mode,
-  contact_phone, status, published_at
-) values (
+  contact_phone, status, published_at, academic_hours) values
+(
   '4c000000-0000-4000-8000-000000000001', 'training', 'Capacitación H12',
   'capacitacion-h12', 'Validación integral', 'virtual', true, 'included',
   '900000012', 'published', now()
-);
+,3);
 insert into public.people (
   id, document_type, document_number, first_names, last_names, email, phone, job_title
 ) values (

@@ -41,7 +41,7 @@ test("copiar CE no lo convierte en DNI ni asume RUC", () => {
 });
 test("validación contextual requiere comprobante solo con precio positivo", () => {
   const form = new FormData();
-  for (const [key, value] of Object.entries({ document_type: "dni", document_number: "12345678", first_names: "Ana", last_names: "Pérez", email: "ana@example.test", phone: "900000001", registration_type: "general", job_title: "Gerente", company: "Organización de prueba" })) form.set(key, value);
+  for (const [key, value] of Object.entries({ document_type: "dni", document_number: "12345678", first_names: "Ana", last_names: "Pérez", email: "ana@example.test", phone: "900000001", registration_type: "general", job_title: "Gerente", company: "Organización de prueba", ruc: "20123456789" })) form.set(key, value);
   const input = parseRegistrationFormData(form);
   assert.equal(validateRegistrationWithBilling(input, 40).success, false);
   assert.equal(validateRegistrationWithBilling({ ...input, billing: boleta }, 40).success, true);

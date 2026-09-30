@@ -90,7 +90,7 @@ set local role anon;
 select lives_ok(
   $$select public.register_activity(
     '71000000-0000-4000-8000-000000000001',
-    '{"document_type":"dni","document_number":"10000001","first_names":"Ana","last_names":"Prueba","email":"ana@example.test","phone":"900100001","job_title":"Empresaria","registration_type":"general","company":"Organización de prueba"}'::jsonb
+    '{"document_type":"dni","document_number":"10000001","first_names":"Ana","last_names":"Prueba","email":"ana@example.test","phone":"900100001","job_title":"Empresaria","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb
   )$$,
   'anonymous visitor registers in a free activity'
 );
@@ -106,7 +106,7 @@ set local role anon;
 select throws_ok(
   $$select public.register_activity(
     '71000000-0000-4000-8000-000000000001',
-    '{"document_type":"dni","document_number":"10000001","first_names":"Ana","last_names":"Prueba","email":"ana@example.test","phone":"900100001","job_title":"Empresaria","registration_type":"general","company":"Organización de prueba"}'::jsonb
+    '{"document_type":"dni","document_number":"10000001","first_names":"Ana","last_names":"Prueba","email":"ana@example.test","phone":"900100001","job_title":"Empresaria","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb
   )$$,
   '23505',
   'DUPLICATE_REGISTRATION',
@@ -130,7 +130,7 @@ set local role anon;
 select lives_ok(
   $$select public.register_activity(
     '71000000-0000-4000-8000-000000000002',
-    '{"document_type":"dni","document_number":"10000001","first_names":"Ana","last_names":"Prueba","email":"ana.actualizada@example.test","phone":"900100009","job_title":"Directora","registration_type":"general","company":"Organización de prueba"}'::jsonb
+    '{"document_type":"dni","document_number":"10000001","first_names":"Ana","last_names":"Prueba","email":"ana.actualizada@example.test","phone":"900100009","job_title":"Directora","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb
   )$$,
   'existing person registers in a different activity'
 );
@@ -153,7 +153,7 @@ select throws_ok(
 select throws_ok(
   $$select public.register_activity(
     '71000000-0000-4000-8000-000000000005',
-    '{"document_type":"dni","document_number":"10000004","first_names":"Diego","last_names":"General","email":"diego@example.test","phone":"900100004","job_title":"Analista","registration_type":"general","company":"Organización de prueba"}'::jsonb
+    '{"document_type":"dni","document_number":"10000004","first_names":"Diego","last_names":"General","email":"diego@example.test","phone":"900100004","job_title":"Analista","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb
   )$$,
   'P0001',
   'EXCLUSIVE_EVENT_REQUIRES_GROUP',
@@ -162,7 +162,7 @@ select throws_ok(
 select throws_ok(
   $$select public.register_activity(
     '71000000-0000-4000-8000-000000000003',
-    '{"document_type":"dni","document_number":"10000005","first_names":"Elena","last_names":"Tarde","email":"elena@example.test","phone":"900100005","job_title":"Contadora","registration_type":"general","company":"Organización de prueba"}'::jsonb
+    '{"document_type":"dni","document_number":"10000005","first_names":"Elena","last_names":"Tarde","email":"elena@example.test","phone":"900100005","job_title":"Contadora","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb
   )$$,
   'P0001',
   'REGISTRATION_CLOSED',
@@ -176,14 +176,14 @@ set local role anon;
 select lives_ok(
   $$select public.register_activity(
     '71000000-0000-4000-8000-000000000004',
-    '{"document_type":"dni","document_number":"10000006","first_names":"Fabio","last_names":"Primero","email":"fabio@example.test","phone":"900100006","job_title":"Abogado","registration_type":"general","company":"Organización de prueba"}'::jsonb
+    '{"document_type":"dni","document_number":"10000006","first_names":"Fabio","last_names":"Primero","email":"fabio@example.test","phone":"900100006","job_title":"Abogado","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb
   )$$,
   'last available capacity can be taken'
 );
 select throws_ok(
   $$select public.register_activity(
     '71000000-0000-4000-8000-000000000004',
-    '{"document_type":"dni","document_number":"10000007","first_names":"Gloria","last_names":"Segunda","email":"gloria@example.test","phone":"900100007","job_title":"Administradora","registration_type":"general","company":"Organización de prueba"}'::jsonb
+    '{"document_type":"dni","document_number":"10000007","first_names":"Gloria","last_names":"Segunda","email":"gloria@example.test","phone":"900100007","job_title":"Administradora","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb
   )$$,
   'P0001',
   'NO_AVAILABLE_CAPACITY',
@@ -192,7 +192,7 @@ select throws_ok(
 select throws_ok(
   $$select public.register_activity(
     '71000000-0000-4000-8000-000000000004',
-    '{"document_type":"dni","document_number":"10000006","first_names":"Fabio","last_names":"Primero","email":"fabio@example.test","phone":"900100006","job_title":"Abogado","registration_type":"general","company":"Organización de prueba"}'::jsonb
+    '{"document_type":"dni","document_number":"10000006","first_names":"Fabio","last_names":"Primero","email":"fabio@example.test","phone":"900100006","job_title":"Abogado","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb
   )$$,
   '23505',
   'DUPLICATE_REGISTRATION',

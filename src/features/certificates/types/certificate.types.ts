@@ -84,7 +84,7 @@ export interface CertificateCandidatePage {
 }
 
 export interface ActivityCertificateData {
-  activity: { certificate_mode: ActivityCertificateMode; id: string; title: string; type: ActivityType };
+  activity: { academic_hours: number | null; certificate_mode: ActivityCertificateMode; id: string; title: string; type: ActivityType };
   batch: CertificateBatchStatus | null;
   candidatePage: CertificateCandidatePage;
   recoverableCount: number;
@@ -208,6 +208,11 @@ export interface CertificateDocumentInput {
   participantName: string;
   signers: CertificateDocumentSigner[];
   title: string;
+}
+
+export interface CertificateDocumentAssets {
+  backgroundBytes?: Uint8Array;
+  signers: CertificateDocumentSigner[];
 }
 
 export interface CertificateDocumentSigner extends Omit<CertificateSigner, "id"> {

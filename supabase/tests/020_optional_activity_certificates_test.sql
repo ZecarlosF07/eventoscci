@@ -53,12 +53,12 @@ select is(
 );
 select throws_ok(
   $$insert into public.activities (
-    id, type, title, slug, description, modality, is_free, certificate_mode, status
-  ) values (
+    id, type, title, slug, description, modality, is_free, certificate_mode, status, academic_hours) values
+(
     '7e000000-0000-4000-8000-000000000098', 'event', 'Modalidad inválida',
     'modalidad-invalida-hito-14', 'Modalidad inválida para la prueba.', 'virtual', true,
     'automatic', 'draft'
-  )$$,
+  ,3)$$,
   '23514',
   null,
   'unknown certificate modes are rejected'
@@ -66,12 +66,12 @@ select throws_ok(
 select throws_ok(
   $$insert into public.activities (
     id, type, title, slug, description, modality, is_free,
-    certificate_mode, certificate_general_price, certificate_member_price, status
-  ) values (
+    certificate_mode, certificate_general_price, certificate_member_price, status, academic_hours) values
+(
     '7e000000-0000-4000-8000-000000000097', 'event', 'Tarifa opcional inválida',
     'tarifa-opcional-invalida-hito-14', 'Tarifa opcional inválida para la prueba.',
     'virtual', true, 'optional_paid', 0, 0, 'draft'
-  )$$,
+  ,3)$$,
   '23514',
   null,
   'optional certificate prices must be greater than zero'
@@ -79,12 +79,12 @@ select throws_ok(
 select throws_ok(
   $$insert into public.activities (
     id, type, title, slug, description, modality, is_free,
-    certificate_mode, certificate_general_price, certificate_member_price, status
-  ) values (
+    certificate_mode, certificate_general_price, certificate_member_price, status, academic_hours) values
+(
     '7e000000-0000-4000-8000-000000000096', 'event', 'Tarifa de asociado inválida',
     'tarifa-asociado-invalida-hito-14', 'Tarifa de asociado inválida para la prueba.',
     'virtual', true, 'optional_paid', 30, 40, 'draft'
-  )$$,
+  ,3)$$,
   '23514',
   null,
   'member certificate price cannot exceed the general price'
@@ -127,23 +127,21 @@ where id = '7e000000-0000-4000-8000-000000000003';
 insert into public.activities (
   id, contact_id, type, title, slug, description, modality, is_free,
   certificate_mode, certificate_general_price, certificate_member_price,
-  status, published_at
-)
-values
-  (
+  status, published_at, academic_hours) values
+(
     '7e000000-0000-4000-8000-000000000001',
     'ae000000-0000-4000-8000-000000000001',
     'event', 'Certificado opcional Hito 14', 'certificado-opcional-hito-14',
     'Actividad temporal con certificado opcional.', 'virtual', true,
     'optional_paid', 50, 35, 'published', now()
-  ),
+  ,3),
   (
     '7e000000-0000-4000-8000-000000000002',
     'ae000000-0000-4000-8000-000000000001',
     'training', 'Certificado incluido Hito 14', 'certificado-incluido-hito-14',
     'Actividad temporal con certificado incluido.', 'virtual', true,
     'included', 0, 0, 'published', now()
-  );
+  ,3);
 
 insert into public.activity_dates (activity_id, starts_at, ends_at, sort_order)
 values
@@ -154,12 +152,12 @@ values
 select throws_ok(
   $$insert into public.activities (
     id, type, title, slug, description, modality, is_free,
-    certificate_mode, certificate_general_price, certificate_member_price, status
-  ) values (
+    certificate_mode, certificate_general_price, certificate_member_price, status, academic_hours) values
+(
     '7e000000-0000-4000-8000-000000000099', 'event', 'Configuración inválida',
     'configuracion-invalida-hito-14', 'Configuración inválida para la prueba.',
     'virtual', true, 'included', 20, 0, 'draft'
-  )$$,
+  ,3)$$,
   '23514',
   null,
   'included certificates reject additional prices'
@@ -168,7 +166,7 @@ select throws_ok(
 set local role anon;
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000001',
-  '{"document_type":"dni","document_number":"14000003","first_names":"Participante","last_names":"Opcional General","email":"opcional.general@example.test","phone":"914000003","job_title":"Analista","registration_type":"general","company":"Organización de prueba"}'::jsonb
+  '{"document_type":"dni","document_number":"14000003","first_names":"Participante","last_names":"Opcional General","email":"opcional.general@example.test","phone":"914000003","job_title":"Analista","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb
 );
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000001',
@@ -176,11 +174,11 @@ select public.register_activity(
 );
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000002',
-  '{"document_type":"dni","document_number":"14000005","first_names":"Participante","last_names":"Certificado Incluido","email":"incluido@example.test","phone":"914000005","job_title":"Contador","registration_type":"general","company":"Organización de prueba"}'::jsonb
+  '{"document_type":"dni","document_number":"14000005","first_names":"Participante","last_names":"Certificado Incluido","email":"incluido@example.test","phone":"914000005","job_title":"Contador","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb
 );
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000003',
-  '{"document_type":"dni","document_number":"14000006","first_names":"Participante","last_names":"Sin Certificado","email":"sin.certificado@example.test","phone":"914000006","job_title":"Abogado","registration_type":"general","company":"Organización de prueba"}'::jsonb
+  '{"document_type":"dni","document_number":"14000006","first_names":"Participante","last_names":"Sin Certificado","email":"sin.certificado@example.test","phone":"914000006","job_title":"Abogado","registration_type":"general","company":"Organización de prueba","ruc":"20123456789"}'::jsonb
 );
 reset role;
 
@@ -256,7 +254,7 @@ select is(
 );
 
 update public.activities
-set certificate_mode = 'optional_paid', certificate_general_price = 40, certificate_member_price = 30
+set certificate_mode = 'optional_paid', academic_hours = 3, certificate_general_price = 40, certificate_member_price = 30
 where id = '7e000000-0000-4000-8000-000000000003';
 
 select is(

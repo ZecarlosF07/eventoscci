@@ -21,7 +21,7 @@ function validRegistration() {
     participant_profile: "professional" as const,
     registration_type: "general" as const,
     request_certificate: true,
-    ruc: "",
+    ruc: "20123456789",
   };
 }
 

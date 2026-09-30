@@ -11,13 +11,12 @@ insert into public.people(id,document_type,document_number,first_names,last_name
 values ('28000000-0000-4000-8000-000000000041','dni','28100041','Admin','Pagos','admin28@example.test','928000041','Administradora');
 insert into public.user_accounts(user_id,person_id,role)
 values ('28000000-0000-4000-8000-000000000040','28000000-0000-4000-8000-000000000041','administrator');
-insert into public.activities(id,type,title,slug,description,modality,is_free,general_price,member_price,members_only,
-  status,published_at,payment_note,contact_phone,maps_embed_url,certificate_mode,certificate_general_price,certificate_member_price)
-values
- ('28000000-0000-4000-8000-000000000001','event','Pagos prueba','pagos-prueba-28','Prueba','in_person',false,60,40,false,'published',now(),'Coordina el pago','900000001','https://www.google.com/maps/embed?pb=28','optional_paid',20,10),
- ('28000000-0000-4000-8000-000000000002','event','Grupos prueba','grupos-prueba-28','Prueba','in_person',false,40,40,false,'published',now(),'Coordina el pago','900000002','https://www.google.com/maps/embed?pb=28','none',0,0),
- ('28000000-0000-4000-8000-000000000003','training','Sesiones prueba','sesiones-prueba-28','Prueba','in_person',true,0,0,false,'published',now(),null,'900000003','https://www.google.com/maps/embed?pb=28','none',0,0),
- ('28000000-0000-4000-8000-000000000004','event','Carga prueba','carga-prueba-28','Prueba','in_person',false,40,40,false,'published',now(),'Coordina el pago','900000004','https://www.google.com/maps/embed?pb=28','none',0,0);
+insert into public.activities (id,type,title,slug,description,modality,is_free,general_price,member_price,members_only,
+  status,published_at,payment_note,contact_phone,maps_embed_url,certificate_mode,certificate_general_price,certificate_member_price, academic_hours) values
+('28000000-0000-4000-8000-000000000001','event','Pagos prueba','pagos-prueba-28','Prueba','in_person',false,60,40,false,'published',now(),'Coordina el pago','900000001','https://www.google.com/maps/embed?pb=28','optional_paid',20,10,3),
+ ('28000000-0000-4000-8000-000000000002','event','Grupos prueba','grupos-prueba-28','Prueba','in_person',false,40,40,false,'published',now(),'Coordina el pago','900000002','https://www.google.com/maps/embed?pb=28','none',0,0,3),
+ ('28000000-0000-4000-8000-000000000003','training','Sesiones prueba','sesiones-prueba-28','Prueba','in_person',true,0,0,false,'published',now(),null,'900000003','https://www.google.com/maps/embed?pb=28','none',0,0,3),
+ ('28000000-0000-4000-8000-000000000004','event','Carga prueba','carga-prueba-28','Prueba','in_person',false,40,40,false,'published',now(),'Coordina el pago','900000004','https://www.google.com/maps/embed?pb=28','none',0,0,3);
 
 insert into public.activity_dates(activity_id,starts_at,ends_at) values
  ('28000000-0000-4000-8000-000000000001',now()-interval '1 hour',now()+interval '1 hour'),
@@ -31,7 +30,7 @@ select is((select is_operational_upcoming from public.activity_participation_sum
 
 set local role anon;
 select public.register_activity('28000000-0000-4000-8000-000000000001',
- '{"document_type":"dni","document_number":"28100001","first_names":"Ana","last_names":"Pagos","email":"ana28@example.test","phone":"928000001","job_title":"Gerente","registration_type":"general","request_certificate":true,"company":"Organización de prueba"}'::jsonb);
+ '{"document_type":"dni","document_number":"28100001","first_names":"Ana","last_names":"Pagos","email":"ana28@example.test","phone":"928000001","job_title":"Gerente","registration_type":"general","request_certificate":true,"company":"Organización de prueba","ruc":"20123456789"}'::jsonb);
 reset role;
 create temporary table payment28_refs as select id from public.registrations where activity_id='28000000-0000-4000-8000-000000000001';
 grant select on payment28_refs to authenticated;

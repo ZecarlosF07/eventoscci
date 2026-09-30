@@ -70,6 +70,9 @@ export async function saveActivityAction(
 
   if (error) {
     logSupabaseError("activity_save_failed", error, { activityType: parsed.data.type });
+    if (matchesSupabaseError(error, "ACADEMIC_HOURS_REQUIRED")) {
+      return { errors: { academic_hours: ["Indica horas académicas mayores que cero para entregar certificados."] }, savedId };
+    }
     if (matchesSupabaseError(error, "MEMBER_FREE_PASSES_LOCKED")) {
       return { errors: { member_free_passes_per_company: ["Ya existen inscripciones. Puedes aumentar los pases, pero no reducirlos ni cambiar la exclusividad o gratuidad del evento."] }, savedId };
     }

@@ -3,9 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { ACTIVITY_MAX_ACADEMIC_HOURS } from "@/features/activities/constants/activity.constants";
 import { ROUTES } from "@/constants/routes";
 import { requireAdmin } from "@/features/auth/services/admin-session";
 import { issueActivityCertificates } from "@/features/certificates/services/issue-certificates";
+import { regenerateActivityCertificateHours } from "@/features/certificates/services/regenerate-activity-certificate-hours";
+import type { CertificateHoursRegenerationState } from "@/features/certificates/types/certificate-hours.types";
 import { regenerateParticipantCertificates } from "@/features/certificates/services/regenerate-participant-certificates";
 import type {
   CertificateIssueState,
@@ -66,6 +69,19 @@ export async function regenerateParticipantCertificatesAction(
   const result = await regenerateParticipantCertificates(parsedId.data);
   revalidatePath(`${ROUTES.adminParticipants}/${parsedId.data}`);
   revalidatePath(ROUTES.adminCertificatesActivities, "layout");
+  revalidatePath(ROUTES.campusCertificates);
+  revalidatePath("/certificados/[token]", "page");
+  return result;
+}
+
+
+export async function regenerateActivityCertificateHoursAction(activityId: string, expectedHours: number): Promise<CertificateHoursRegenerationState> {
+  await requireAdmin();
+  if (!z.uuid().safeParse(activityId).success || !Number.isFinite(expectedHours) || expectedHours <= 0 || expectedHours > ACTIVITY_MAX_ACADEMIC_HOURS) {
+    return { message: "La actividad o sus horas académicas no son válidas.", success: false };
+  }
+  const result = await regenerateActivityCertificateHours(activityId, expectedHours);
+  revalidatePath(`${ROUTES.adminCertificatesActivities}/${activityId}`);
   revalidatePath(ROUTES.campusCertificates);
   revalidatePath("/certificados/[token]", "page");
   return result;

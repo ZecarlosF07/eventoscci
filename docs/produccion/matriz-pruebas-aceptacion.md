@@ -346,7 +346,7 @@ No se enviaron correos ni se registraron pagos durante estas pruebas. Las migrac
 | Caso | Resultado esperado | Estado |
 |---|---|---|
 | Escritorio y móvil | Empresa / Organización, RUC, Cargo, Provincia; dos columnas o una, respectivamente | APROBADO (navegador local) |
-| Profesional general | Empresa y Cargo obligatorios; RUC y Provincia opcionales | APROBADO (unitarias y pgTAP vinculado) |
+| Profesional general | Empresa, RUC y Cargo obligatorios; Provincia opcional | APROBADO (unitarias y pgTAP vinculado) |
 | Asociado individual | Empresa, RUC y Cargo obligatorios; Provincia opcional | APROBADO (navegador y pgTAP vinculado) |
 | Alternar perfiles | Conserva borradores y excluye información profesional del estudiante | APROBADO (navegador y unitarias) |
 | Persistencia | Reutiliza address; guarda province_snapshot; posteriores ediciones no cambian snapshots | APROBADO (pgTAP vinculado) |
@@ -366,3 +366,20 @@ Actualización del 30/09/2026 tras iniciar sesión en Supabase: `supabase db pus
 Las seis suites 003, 024, 025, 027 (pases), 030 y 033 se ejecutaron con pgTAP en la base vinculada: 230 comprobaciones aprobadas. Se usó `finish(true)` en cada suite para que cualquier aserción fallida causara un error del comando; todas terminaron correctamente y revirtieron sus transacciones. La suite 033 queda configurada con ese mismo cierre y su consulta de dirección fiscal restringe el resultado a la actividad de prueba, sin depender de la cantidad de comprobantes reales.
 
 La migración quedó registrada y la vista administrativa dispone de `province_snapshot`. La consulta posterior confirmó cero actividades de la suite 033. El esquema y los tipos de Supabase están actualizados. No se publicó un deployment; continúa pendiente la publicación del frontend en producción.
+
+
+Actualización adicional del 30/09/2026: RUC pasa a ser obligatorio para toda nueva inscripción individual profesional, tanto general como asociada. Se rechazan valores vacíos, espacios y formatos distintos de 11 dígitos. Los estudiantes siguen sin enviar RUC y la edición administrativa de históricos mantiene sus reglas existentes.
+
+Se aplicó exclusivamente `202609300002_registration_professional_ruc_required.sql` en Supabase vinculado, sin seeds. La migración amplía la validación del núcleo privado y conserva los envoltorios de certificados y comprobantes. Pasaron 211 pruebas unitarias, `yarn lint`, `yarn typecheck`, `yarn build` y seis suites pgTAP vinculadas (003, 024, 025, 027, 030 y 033; 234 comprobaciones con `finish(true)` y rollback). El navegador confirmó RUC marcado obligatorio, patrón de 11 dígitos y rechazo de valor vacío en el formulario general. La publicación del frontend en producción continúa pendiente.
+
+
+## Horas académicas y corrección de certificados — 30/09/2026
+
+- Certificado incluido y opcional: exige horas mayores que cero en formulario, servidor, PostgreSQL y motor PDF. Actividades sin certificado conservan horas opcionales.
+- Corrección explícita por actividad: carga un PDF versionado y actualiza sus horas bajo bloqueo; mantiene códigos, enlaces, fecha de emisión y los demás snapshots; no envía correos.
+- Procesamiento en lotes de 20 con progreso y reintento de pendientes; certificados revocados y actividades archivadas se excluyen.
+- Migración `202609300003_certificate_academic_hours_correction.sql` revisada con dry-run y aplicada a Supabase vinculado sin seeds ni backfill. Tipos vinculados regenerados y refinados.
+- Pasaron las suites pgTAP 016, 020, 030, 031, 032 y 034 con `finish(true)` y rollback: 168 comprobaciones de permisos, horas positivas, snapshots, concurrencia, auditoría, ausencia de correos, emisión y tandas existentes.
+- Evento real: II Encuentro Académico “A Otro Nivel”, id `c0a5e073-97d5-437c-a353-e6e5256edc2b`, actualizado por el operador a 3 horas; 143 certificados conservaban snapshot de 0. La consulta fue de lectura y no ejecutó su regeneración. La vista local solicita iniciar sesión en el panel administrativo para realizar la corrección explícita. El frontend en producción aún requiere publicación.
+
+Validación final: 215 unitarias aprobadas, `yarn lint`, `yarn typecheck` y `yarn build` correctos. La consulta posterior confirmó 143 certificados vigentes con PDF y snapshot 0, actividad en 3 horas y cero actividades de prueba 034. La corrección masiva real sigue pendiente de ejecución administrativa. La revisión visual del panel autenticado está pendiente: el navegador local presentó el login.

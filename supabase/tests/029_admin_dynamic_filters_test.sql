@@ -13,10 +13,9 @@ values ('29000000-0000-4000-8000-000000000041','dni','29100041','Ana María','Fi
 insert into public.people(id,document_type,document_number,first_names,last_names,email,phone,participant_profile,academic_institution,career)
 values ('29000000-0000-4000-8000-000000000042','dni','29100042','Estudiante','Filtros','student29@example.test','929000042','student','Universidad Prueba','Ingeniería');
 insert into public.user_accounts(user_id,person_id,role) values ('29000000-0000-4000-8000-000000000040','29000000-0000-4000-8000-000000000041','administrator');
-insert into public.activities(id,type,title,slug,description,modality,is_free,certificate_mode,certificate_general_price,certificate_member_price,status,published_at,maps_embed_url,contact_phone)
-values
- ('29000000-0000-4000-8000-000000000001','event','Incluido filtros','incluido-filtros-29','Prueba','in_person',true,'included',0,0,'published',now(),'https://www.google.com/maps/embed?pb=29','900000029'),
- ('29000000-0000-4000-8000-000000000002','training','Opcional filtros','opcional-filtros-29','Prueba','in_person',true,'optional_paid',20,10,'published',now(),'https://www.google.com/maps/embed?pb=29','900000029');
+insert into public.activities (id,type,title,slug,description,modality,is_free,certificate_mode,certificate_general_price,certificate_member_price,status,published_at,maps_embed_url,contact_phone, academic_hours) values
+('29000000-0000-4000-8000-000000000001','event','Incluido filtros','incluido-filtros-29','Prueba','in_person',true,'included',0,0,'published',now(),'https://www.google.com/maps/embed?pb=29','900000029',3),
+ ('29000000-0000-4000-8000-000000000002','training','Opcional filtros','opcional-filtros-29','Prueba','in_person',true,'optional_paid',20,10,'published',now(),'https://www.google.com/maps/embed?pb=29','900000029',3);
 insert into public.registrations(id,activity_id,person_id,registration_code,registration_type,status,confirmed_at,job_title_snapshot,participant_profile,academic_institution_snapshot,career_snapshot,company_snapshot,ruc_snapshot)
 values
  ('29000000-0000-4000-8000-000000000011','29000000-0000-4000-8000-000000000001','29000000-0000-4000-8000-000000000041','CCI-29-011','general','confirmed',now(),'Administradora','professional',null,null,'Empresa histórica','20999999992'),

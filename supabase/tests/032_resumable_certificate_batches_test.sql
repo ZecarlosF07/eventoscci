@@ -12,10 +12,10 @@ insert into public.people (id, document_type, document_number, first_names, last
 insert into public.user_accounts (user_id, person_id, role) values
  ('8b320000-0000-4000-8000-000000000001', '3b320000-0000-4000-8000-000000000001', 'administrator');
 insert into public.activities (id, type, title, slug, description, modality, is_free, general_price, member_price,
- certificate_mode, certificate_general_price, certificate_member_price, maps_embed_url, contact_phone, status, published_at)
-values ('7b320000-0000-4000-8000-000000000001', 'training', 'Certificación lote 32', 'cert-lote-32',
+ certificate_mode, certificate_general_price, certificate_member_price, maps_embed_url, contact_phone, status, published_at, academic_hours) values
+('7b320000-0000-4000-8000-000000000001', 'training', 'Certificación lote 32', 'cert-lote-32',
  'Prueba recuperable.', 'in_person', true, 0, 0, 'included', 0, 0,
- 'https://www.google.com/maps/embed?pb=test', '999999999', 'published', now());
+ 'https://www.google.com/maps/embed?pb=test', '999999999', 'published', now(),3);
 insert into public.registrations (id, activity_id, person_id, registration_code, status, confirmed_at, job_title_snapshot) values
  ('6b320000-0000-4000-8000-000000000002', '7b320000-0000-4000-8000-000000000001', '3b320000-0000-4000-8000-000000000002', 'CCI-32-000002', 'confirmed', now(), 'Participante'),
  ('6b320000-0000-4000-8000-000000000003', '7b320000-0000-4000-8000-000000000001', '3b320000-0000-4000-8000-000000000003', 'CCI-32-000003', 'confirmed', now(), 'Participante');

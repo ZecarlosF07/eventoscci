@@ -15,29 +15,28 @@ insert into public.activity_contacts (
 insert into public.activities (
   id, contact_id, type, title, slug, description, modality, is_free,
   general_price, member_price, certificate_mode,
-  certificate_general_price, certificate_member_price, status, published_at
-) values
-  (
+  certificate_general_price, certificate_member_price, status, published_at, academic_hours) values
+(
     '7e000000-0000-4000-8000-000000000021',
     'ae000000-0000-4000-8000-000000000021',
     'event', 'Interés gratuito Hito 14', 'interes-gratuito-hito-14',
     'Actividad gratuita para probar el interés por certificado.', 'virtual', true,
     0, 0, 'optional_paid', 50, 35, 'published', now()
-  ),
+  ,3),
   (
     '7e000000-0000-4000-8000-000000000022',
     'ae000000-0000-4000-8000-000000000021',
     'training', 'Interés pagado Hito 14', 'interes-pagado-hito-14',
     'Actividad pagada para probar el interés por certificado.', 'virtual', false,
     100, 80, 'optional_paid', 45, 30, 'published', now()
-  ),
+  ,3),
   (
     '7e000000-0000-4000-8000-000000000023',
     'ae000000-0000-4000-8000-000000000021',
     'event', 'Certificado incluido Hito 14', 'incluido-sin-interes-hito-14',
     'Actividad incluida para ignorar solicitudes comerciales.', 'virtual', true,
     0, 0, 'included', 0, 0, 'published', now()
-  );
+  ,3);
 
 insert into public.activity_dates (activity_id, starts_at, ends_at, sort_order)
 values
@@ -52,22 +51,22 @@ set local role anon;
 insert into hito14_interest_results
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000021',
-  '{"document_type":"dni","document_number":"14000021","first_names":"Interés","last_names":"Gratuito","email":"interes.gratuito@example.test","phone":"914000021","job_title":"Analista","registration_type":"general","request_certificate":true,"company":"Organización de prueba"}'::jsonb
+  '{"document_type":"dni","document_number":"14000021","first_names":"Interés","last_names":"Gratuito","email":"interes.gratuito@example.test","phone":"914000021","job_title":"Analista","registration_type":"general","request_certificate":true,"company":"Organización de prueba","ruc":"20123456789"}'::jsonb
 );
 insert into hito14_interest_results
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000022',
-  '{"document_type":"dni","document_number":"14000022","first_names":"Interés","last_names":"Pagado","email":"interes.pagado@example.test","phone":"914000022","job_title":"Gerente","registration_type":"general","request_certificate":true,"company":"Organización de prueba"}'::jsonb
+  '{"document_type":"dni","document_number":"14000022","first_names":"Interés","last_names":"Pagado","email":"interes.pagado@example.test","phone":"914000022","job_title":"Gerente","registration_type":"general","request_certificate":true,"company":"Organización de prueba","ruc":"20123456789"}'::jsonb
 );
 insert into hito14_interest_results
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000021',
-  '{"document_type":"dni","document_number":"14000023","first_names":"Sin","last_names":"Solicitud","email":"sin.solicitud@example.test","phone":"914000023","job_title":"Contador","registration_type":"general","request_certificate":false,"company":"Organización de prueba"}'::jsonb
+  '{"document_type":"dni","document_number":"14000023","first_names":"Sin","last_names":"Solicitud","email":"sin.solicitud@example.test","phone":"914000023","job_title":"Contador","registration_type":"general","request_certificate":false,"company":"Organización de prueba","ruc":"20123456789"}'::jsonb
 );
 insert into hito14_interest_results
 select public.register_activity(
   '7e000000-0000-4000-8000-000000000023',
-  '{"document_type":"dni","document_number":"14000024","first_names":"Certificado","last_names":"Incluido","email":"incluido.21@example.test","phone":"914000024","job_title":"Abogado","registration_type":"general","request_certificate":true,"company":"Organización de prueba"}'::jsonb
+  '{"document_type":"dni","document_number":"14000024","first_names":"Certificado","last_names":"Incluido","email":"incluido.21@example.test","phone":"914000024","job_title":"Abogado","registration_type":"general","request_certificate":true,"company":"Organización de prueba","ruc":"20123456789"}'::jsonb
 );
 reset role;
 
