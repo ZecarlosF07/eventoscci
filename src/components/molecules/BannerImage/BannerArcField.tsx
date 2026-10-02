@@ -4,10 +4,14 @@ import {
 } from "@/components/molecules/BannerImage/constants/banner-arcs.constants";
 import type { BannerArcFieldProps } from "@/components/molecules/BannerImage/types/banner-arc-field.types";
 
-export function BannerArcField({ illuminated = false, mirrored = false }: BannerArcFieldProps) {
-  const positionClassName = mirrored ? "right-0 translate-x-[88%]" : "left-0 -translate-x-[88%]";
+export function BannerArcField({ expanded = false, illuminated = false, mirrored = false }: BannerArcFieldProps) {
+  const positionClassName = mirrored
+    ? expanded ? "right-0 translate-x-[85%]" : "right-0 translate-x-[88%]"
+    : expanded ? "left-0 -translate-x-[85%]" : "left-0 -translate-x-[88%]";
   const reflectionClassName = mirrored ? "-scale-x-100" : "";
-  const colorClassName = illuminated ? "text-cci-lime" : "text-cci-lime/30";
+  const colorClassName = illuminated
+    ? expanded ? "text-cci-lime/60" : "text-cci-lime"
+    : "text-cci-lime/30";
 
   return (
     <div className={`absolute top-1/2 h-[180%] aspect-square -translate-y-1/2 ${positionClassName}`}>

@@ -62,3 +62,8 @@ Ruta canónica: `/admin/inscripciones/[activityId]/pagos`. Selección de solicit
 Antes de aplicar cada migración se revisó `supabase db push --linked --dry-run`; se aplicaron sin seeds y se regeneraron los tipos con `yarn types:db:linked`. Las pruebas SQL usan `rollback`; no dejan fixtures, cobros ni correos reales.
 
 Evidencia automatizada y pruebas integrales pendientes: consultar `docs/produccion/matriz-pruebas-aceptacion.md`. La revisión visual/accesible autenticada, concurrencia de sesiones reales y entrega real de correos no se sustituyen por las pruebas unitarias ni por la outbox SQL.
+
+
+## Preventa opcional de eventos
+
+Los pagos y sus exportaciones continúan usando snapshots; una inscripción realizada durante la preventa conserva ese importe aunque el pago se valide después del vencimiento. Las cortesías conservan importe cero y los certificados siguen separados. Consultar [Preventa de eventos](preventa-eventos.md).

@@ -1,20 +1,21 @@
 import type { ActivityListItem } from "@/features/activities/types/activity.types";
 import {
   formatActivityDate,
-  formatActivityPrice,
   getActivityBannerUrl,
   getModalityLabel,
   getUpcomingActivityDate,
 } from "@/features/activities/utils/activity-formatters";
+import { getActivityPricingConfig } from "@/features/activities/utils/activity-pricing";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
 import type { CatalogCarouselSlide } from "@/features/catalog/components/CatalogHeroCarousel/types/catalog-hero-carousel.types";
+import { getCatalogPriceLabel } from "@/features/catalog/utils/catalog-price-label";
 import type { CourseListItem } from "@/features/courses/types/course.types";
 import { formatCoursePrice, getCourseBannerUrl } from "@/features/courses/utils/course-formatters";
 import { getPublicCourseRoute } from "@/features/courses/utils/course-routes";
 
 const MAX_CAROUSEL_ITEMS = 5;
 
-export function createActivityCarouselSlides(activities: ActivityListItem[]): CatalogCarouselSlide[] {
+export function createActivityCarouselSlides(activities: ActivityListItem[], now = Date.now()): CatalogCarouselSlide[] {
   return activities
     .map((activity) => ({ activity, nextDate: getUpcomingActivityDate(activity.dates) }))
     .filter(({ activity, nextDate }) => activity.status === "published" && Boolean(nextDate))
@@ -24,11 +25,10 @@ export function createActivityCarouselSlides(activities: ActivityListItem[]): Ca
       badge: activity.category?.name ?? getModalityLabel(activity.modality),
       ctaLabel: activity.type === "event" ? "Conocer el evento" : "Ver la capacitación",
       kindLabel: activity.type === "event" ? "Evento destacado" : "Capacitación destacada",
-      priceLabel: activity.is_free
-        ? "Participación gratuita"
-        : activity.members_only
-          ? `Precio para asociados ${formatActivityPrice(activity.member_price)}`
-          : `Precio general ${formatActivityPrice(activity.general_price)}`,
+      activityPricing: getActivityPricingConfig(activity),
+      membersOnly: activity.members_only,
+      pricingInitialNow: now,
+      priceLabel: getCatalogPriceLabel(getActivityPricingConfig(activity), activity.members_only, now),
       bannerUrl: getActivityBannerUrl(activity.banner_path),
       description: activity.short_description,
       href: getPublicActivityRoute(activity.type, activity.slug),

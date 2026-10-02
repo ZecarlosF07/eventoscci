@@ -73,6 +73,9 @@ export type Database = {
           modality: Database["public"]["Enums"]["activity_modality"]
           objective: string | null
           payment_note: string | null
+          presale_ends_at: string | null
+          presale_general_price: number | null
+          presale_member_price: number | null
           program: string | null
           program_image_paths: string[]
           published_at: string | null
@@ -124,6 +127,9 @@ export type Database = {
           modality: Database["public"]["Enums"]["activity_modality"]
           objective?: string | null
           payment_note?: string | null
+          presale_ends_at?: string | null
+          presale_general_price?: number | null
+          presale_member_price?: number | null
           program?: string | null
           program_image_paths?: string[]
           published_at?: string | null
@@ -175,6 +181,9 @@ export type Database = {
           modality?: Database["public"]["Enums"]["activity_modality"]
           objective?: string | null
           payment_note?: string | null
+          presale_ends_at?: string | null
+          presale_general_price?: number | null
+          presale_member_price?: number | null
           program?: string | null
           program_image_paths?: string[]
           published_at?: string | null
@@ -3096,10 +3105,22 @@ export type Database = {
         Args: { p_registration_id: string }
         Returns: boolean
       }
+      activity_participation_price: {
+        Args: {
+          p_activity: Database["public"]["Tables"]["activities"]["Row"]
+          p_at: string
+          p_audience: string
+        }
+        Returns: number
+      }
       admin_literal_pattern: { Args: { p_query: string }; Returns: string }
       apply_member_roster_import: {
         Args: { p_import_id: string }
         Returns: Json
+      }
+      assert_activity_expected_price: {
+        Args: { p_has_presale: boolean; p_input: Json; p_price: number }
+        Returns: undefined
       }
       authorize_course_certificate_generation: {
         Args: { p_certificate_id: string }
@@ -3519,11 +3540,28 @@ export type Database = {
         Args: { p_activity_id: string; p_registration: Json }
         Returns: Json
       }
+      register_activity_priced: {
+        Args: {
+          p_activity_id: string
+          p_registration: Json
+          p_unit_price: number
+        }
+        Returns: Json
+      }
       register_member_group: {
         Args: {
           p_activity_id: string
           p_idempotency_key: string
           p_request: Json
+        }
+        Returns: Json
+      }
+      register_member_group_priced: {
+        Args: {
+          p_activity_id: string
+          p_idempotency_key: string
+          p_request: Json
+          p_unit_price: number
         }
         Returns: Json
       }
@@ -3589,6 +3627,10 @@ export type Database = {
         Returns: string
       }
       save_activity_without_passes: {
+        Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
+        Returns: string
+      }
+      save_activity_without_presale: {
         Args: { p_activity: Json; p_dates: Json; p_speakers: Json }
         Returns: string
       }

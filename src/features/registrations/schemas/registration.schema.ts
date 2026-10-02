@@ -13,6 +13,7 @@ const optionalAcademicText = z.string().trim().max(
 export const registrationFormSchema = z
   .object({
     billing: billingSchema.nullable().optional(),
+    expected_unit_price: z.number().finite().nonnegative().max(99_999_999.99).multipleOf(0.01).optional(),
     academic_institution: optionalAcademicText,
     address: optionalText,
     career: optionalAcademicText,

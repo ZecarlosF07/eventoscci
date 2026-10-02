@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CatalogHeroVisual } from "@/features/catalog/components/CatalogHeroCarousel/CatalogHeroVisual";
+import { CatalogPriceLabel } from "@/features/catalog/components/CatalogHeroCarousel/CatalogPriceLabel";
 import { HERO_PRIMARY_LINK, HERO_SECONDARY_LINK } from "@/features/catalog/components/CatalogHeroCarousel/constants/hero-styles";
 import type { CatalogHeroSlideProps } from "@/features/catalog/components/CatalogHeroCarousel/types/catalog-hero-slide.types";
 
@@ -32,7 +33,7 @@ export function CatalogHeroSlide({ browseLabel, slide }: CatalogHeroSlideProps) 
         {slide.description ? <p className="mt-4 line-clamp-3 max-w-xl text-base leading-7 text-cci-200">{slide.description}</p> : null}
         <div className="mt-5 flex flex-wrap items-center gap-2 text-xs font-semibold">
           <span className="rounded-md border border-white/15 bg-white/5 px-2.5 py-1.5 text-cci-100">{slide.badge}</span>
-          <span className="rounded-md bg-cci-lime/10 px-2.5 py-1.5 text-cci-lime">{slide.priceLabel}</span>
+          <span className="rounded-md bg-cci-lime/10 px-2.5 py-1.5 text-cci-lime"><CatalogPriceLabel {...slide} /></span>
         </div>
         {slide.meta ? <p className="mt-4 text-sm font-medium leading-6 text-cci-100">{slide.meta}</p> : null}
         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">

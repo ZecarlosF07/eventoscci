@@ -8,6 +8,8 @@ import {
   deliverNotificationImmediatelyById,
 } from "@/features/notifications/services/process-notifications";
 import { PUBLIC_CACHE_TAGS } from "@/features/seo/constants/public-cache.constants";
+import { getRegistrationPricing } from "@/features/activities/services/get-registration-pricing";
+import { getActivityPrice, getActivityPricingConfig, matchesExpectedPrice } from "@/features/activities/utils/activity-pricing";
 import { REGISTRATION_ERROR_MESSAGES } from "@/features/registrations/constants/registration.constants";
 import {
   registrationRpcResultSchema,
@@ -28,13 +30,17 @@ export async function registerActivity(
 ): Promise<RegistrationMutationResult> {
   if (!z.uuid().safeParse(activityId).success) return { code: "ACTIVITY_NOT_FOUND", message: REGISTRATION_ERROR_MESSAGES.ACTIVITY_NOT_FOUND, success: false };
   const client = await createServerSupabaseClient();
-  const { data: activity, error: activityError } = await client.from("activities").select("allows_student_registration,is_free,general_price,member_price").eq("id", activityId).maybeSingle();
+  const { data: activity, error: activityError } = await client.from("activities").select("allows_student_registration,type,is_free,general_price,member_price,presale_general_price,presale_member_price,presale_ends_at").eq("id", activityId).maybeSingle();
   if (activityError) return { code: "DATABASE_ERROR", message: REGISTRATION_ERROR_MESSAGES.DATABASE_ERROR, success: false };
   if (!activity) return { code: "ACTIVITY_NOT_FOUND", message: REGISTRATION_ERROR_MESSAGES.ACTIVITY_NOT_FOUND, success: false };
   if (isStudentRegistrationRestricted(activity.allows_student_registration, input.participant_profile)) {
     return { code: "STUDENT_REGISTRATION_NOT_ALLOWED", message: REGISTRATION_ERROR_MESSAGES.STUDENT_REGISTRATION_NOT_ALLOWED, success: false };
   }
-  const price = activity.is_free ? 0 : input.registration_type === "member" ? activity.member_price : activity.general_price;
+  const pricing = getActivityPricingConfig(activity);
+  const price = getActivityPrice(pricing, input.registration_type, Date.now()).amount;
+  if (!matchesExpectedPrice(input.expected_unit_price, price, pricing)) {
+    return { code: "PRICE_CHANGED", message: REGISTRATION_ERROR_MESSAGES.PRICE_CHANGED, pricing, success: false };
+  }
   const parsed = validateRegistrationWithBilling(input, price);
 
   if (!parsed.success) {
@@ -60,6 +66,7 @@ export async function registerActivity(
     const code = getRegistrationErrorCode(error.message);
     return {
       code,
+      pricing: code === "PRICE_CHANGED" ? await getRegistrationPricing(activityId) ?? undefined : undefined,
       message: REGISTRATION_ERROR_MESSAGES[code],
       success: false,
     };

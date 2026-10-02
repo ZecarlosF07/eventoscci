@@ -4,6 +4,9 @@ import { useState, type FormEvent } from "react";
 
 import { useRouter } from "next/navigation";
 
+import { useRegistrationPricing } from "@/features/activities/components/ActivityPricingProvider/ActivityPricingProvider";
+import { getActivityPrice } from "@/features/activities/utils/activity-pricing";
+import { formatActivityPrice } from "@/features/activities/utils/activity-formatters";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Text } from "@/components/atoms/Text";
@@ -33,6 +36,7 @@ import { validateRegistrationWithBilling } from "@/features/registrations/utils/
 
 export function RegistrationForm({ activity }: RegistrationFormProps) {
   const router = useRouter();
+  const { now, pricing, refreshPricing } = useRegistrationPricing();
   const [registrationType, setRegistrationType] = useState<RegistrationType>(
     activity.membersOnly ? "member" : "general",
   );
@@ -42,7 +46,8 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
   const [message, setMessage] = useState<string>();
   const [isPending, setIsPending] = useState(false);
   const [billing, setBilling] = useState<BillingInput>({ type: "boleta", document: "", name: "" });
-  const requiresBilling = !activity.isFree && (registrationType === "member" ? activity.memberPrice : activity.generalPrice) > 0;
+  const quote = getActivityPrice(pricing, registrationType, now);
+  const requiresBilling = quote.amount > 0;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,7 +67,7 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
     });
 
     try {
-      const input = { ...parseRegistrationFormData(new FormData(form)), billing: requiresBilling ? applicableBilling(billing) : null };
+      const input = { ...parseRegistrationFormData(new FormData(form)), expected_unit_price: quote.amount, billing: requiresBilling ? applicableBilling(billing) : null };
       const validated = validateRegistrationWithBilling(input, requiresBilling ? 1 : 0);
       if (!validated.success) {
         setErrors(Object.fromEntries(validated.error.issues.map((issue) => [issue.path.join("."), [issue.message]])));
@@ -72,6 +77,7 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
       }
       const result = await registerActivity(activity.id, input);
       if (!result.success) {
+        if (result.pricing) refreshPricing(result.pricing);
         setErrors(result.fieldErrors ?? {});
         setMessage(result.message);
         focusFirstInvalidField(form);
@@ -137,6 +143,7 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
         </div>
       ) : null}
       <div className="border-t border-cci-100 pt-5">
+        <p className="mb-4 text-lg font-semibold text-cci-950" aria-live="polite">Importe de inscripción: {formatActivityPrice(quote.amount)}{quote.isPresale ? " · Preventa" : ""}</p>
         <Button className="w-full sm:w-auto" disabled={isPending} type="submit">
           {isPending ? <><Spinner className="mr-2" /> Procesando inscripción…</> : activity.isFree ? "Confirmar inscripción" : "Registrar preinscripción"}
         </Button>

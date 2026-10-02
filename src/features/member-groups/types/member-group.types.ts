@@ -1,3 +1,4 @@
+import type { ActivityPricingConfig } from "@/features/activities/types/activity-pricing.types";
 import type { ActivityRegistrationContext } from "@/features/registrations/types/registration.types";
 
 export interface MemberAttendeeInput {
@@ -19,11 +20,32 @@ export interface MemberBillingInput {
 }
 
 export interface MemberGroupInput {
+  expected_unit_price?: number;
   attendees: MemberAttendeeInput[];
   billing: MemberBillingInput | null;
   expected_free_count: number;
   future_topics_suggestion: string;
   ruc: string;
+}
+
+export interface MemberGroupMutationResult {
+  code?: "PRICE_CHANGED" | "BENEFIT_AVAILABILITY_CHANGED";
+  data?: MemberGroupSubmissionResult;
+  message?: string;
+  pricing?: ActivityPricingConfig;
+  success: boolean;
+}
+
+export interface MemberGroupSummaryProps {
+  attendees: MemberAttendeeInput[];
+  certificateMode: string;
+  companyName: string;
+  complimentaryCount: number;
+  isFree: boolean;
+  isPresale?: boolean;
+  memberPrice: number;
+  ruc: string;
+  total: number;
 }
 
 export interface MemberGroupAttendeeResult {

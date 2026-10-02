@@ -1,9 +1,10 @@
 import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
-import type { BillingInput } from "@/features/billing/types/billing.types";
+import type { ActivityPricingConfig } from "@/features/activities/types/activity-pricing.types";
 import type {
   ActivityModality,
   ActivityType,
 } from "@/features/activities/types/activity.types";
+import type { BillingInput } from "@/features/billing/types/billing.types";
 import type { NotificationEventType } from "@/features/notifications/types/notification.types";
 import type { Enums, Tables } from "@/lib/supabase/database.types";
 
@@ -19,6 +20,7 @@ export type CertificateRequestFilter =
   | "ready_to_issue";
 
 export interface RegistrationInput {
+  expected_unit_price?: number;
   billing?: BillingInput | null;
   academic_institution: string;
   address: string;
@@ -103,6 +105,7 @@ export interface RegistrationAvailability {
 export interface RegistrationMutationError {
   code: RegistrationErrorCode;
   fieldErrors?: Record<string, string[]>;
+  pricing?: ActivityPricingConfig;
   message: string;
   success: false;
 }
@@ -123,18 +126,16 @@ export type RegistrationErrorCode =
   | "INVALID_MEMBER_DATA"
   | "NO_AVAILABLE_CAPACITY"
   | "REGISTRATION_CLOSED"
+  | "PRICE_CHANGED"
   | "STUDENT_REGISTRATION_NOT_ALLOWED"
   | "VALIDATION_ERROR";
 
-export interface ActivityRegistrationContext {
+export interface ActivityRegistrationContext extends ActivityPricingConfig {
   allowsStudentRegistration: boolean;
   certificateGeneralPrice: number;
   certificateMemberPrice: number;
   certificateMode: ActivityCertificateMode;
-  generalPrice: number;
   id: string;
-  isFree: boolean;
-  memberPrice: number;
   memberFreePassesPerCompany: number;
   membersOnly: boolean;
   paymentNote: string | null;
@@ -275,11 +276,13 @@ export interface RegistrationFormProps {
 }
 
 export interface RegistrationPageTemplateProps {
+  initialNow: number;
   activity: ActivityRegistrationContext;
   availability: RegistrationAvailability;
 }
 
 export interface RegistrationPageData {
+  initialNow: number;
   activity: ActivityRegistrationContext;
   availability: RegistrationAvailability;
 }

@@ -1,20 +1,10 @@
-import type { MemberAttendeeInput } from "@/features/member-groups/types/member-group.types";
+import type { MemberGroupSummaryProps } from "@/features/member-groups/types/member-group.types";
 
-interface MemberGroupSummaryProps {
-  attendees: MemberAttendeeInput[];
-  certificateMode: string;
-  companyName: string;
-  complimentaryCount: number;
-  isFree: boolean;
-  memberPrice: number;
-  ruc: string;
-  total: number;
-}
-
-export function MemberGroupSummary({ attendees, certificateMode, companyName, complimentaryCount, isFree, memberPrice, ruc, total }: MemberGroupSummaryProps) {
+export function MemberGroupSummary({ attendees, certificateMode, companyName, complimentaryCount, isFree, isPresale, memberPrice, ruc, total }: MemberGroupSummaryProps) {
   return <section className="space-y-3 rounded-2xl border border-cci-200 bg-cci-50 p-5" aria-label="Resumen de la solicitud">
     <h2 className="text-lg font-bold text-cci-950">Revisa tu solicitud</h2>
     <p><strong>Empresa:</strong> {companyName} · RUC {ruc}</p>
+    {isPresale ? <p className="font-semibold text-cci-950">Precio de preventa aplicado a las plazas pagadas.</p> : null}
     <p><strong>Asistentes:</strong> {attendees.length}</p>
     <ul className="divide-y divide-cci-100 rounded-xl border border-cci-100 bg-white text-sm">
       {attendees.map((person, index) => {

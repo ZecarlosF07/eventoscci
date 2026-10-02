@@ -1404,7 +1404,7 @@ Valoración.
 
 11. Para asociados, Empresa y RUC serán obligatorios.
 
-12. El precio MVP tendrá dos categorías: general y asociado.
+12. El precio tendrá dos categorías: general y asociado. Los eventos pagados pueden configurar una preventa opcional por categoría, con fecha límite en hora de Lima y tarifa congelada al completar la inscripción.
 
 13. Las actividades podrán tener varias fechas.
 
@@ -1608,3 +1608,8 @@ El MVP debe concentrarse en sustituir los procesos manuales más importantes y o
 Funciones como pagos electrónicos, integraciones avanzadas, mensajería masiva y otras automatizaciones deberán mantenerse fuera de la primera versión para evitar que el proyecto pierda su carácter de MVP.
 
 Con las decisiones actualmente establecidas, el proyecto cuenta con una definición funcional suficientemente sólida para pasar a la siguiente etapa: **especificación formal de requisitos funcionales, actores, casos de uso, reglas de negocio y criterios de aceptación**, manteniendo todavía fuera de discusión cualquier decisión tecnológica.
+
+
+## Actualización — preventa opcional de eventos (02/10/2026)
+
+Los eventos pagados pueden configurar precios de preventa opcionales para público general y asociados. Sin preventa se aplica el precio regular. La tarifa se determina al inscribirse y se conserva para pagos posteriores; los cambios previos al envío exigen nueva aceptación. Consultar [Preventa de eventos](integraciones/preventa-eventos.md). El banner del detalle reduce su altura un 20%, y los eventos exclusivos con cortesías destacan el beneficio por empresa y los pases adicionales.

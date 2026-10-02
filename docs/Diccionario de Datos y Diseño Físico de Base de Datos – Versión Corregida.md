@@ -545,6 +545,9 @@ type = training
 | `is_free` | `boolean` | No | `false` |
 | `general_price` | `numeric(10,2)` | No | `0` |
 | `member_price` | `numeric(10,2)` | No | `0` |
+| `presale_general_price` | `numeric` (importe positivo, máximo 2 decimales y menor que 100000000) | Sí | `NULL` |
+| `presale_member_price` | `numeric` (mismas restricciones) | Sí | `NULL` |
+| `presale_ends_at` | `timestamptz` (frontera exclusiva de preventa) | Sí | `NULL` |
 | `members_only` | `boolean` | No | `false` |
 | `capacity` | `integer` | Sí | `NULL` |
 | `registration_open_at` | `timestamptz` | Sí | `NULL` |
@@ -1918,3 +1921,8 @@ deleted_by
 y los estados funcionales continuarán utilizándose para preservar adecuadamente el historial institucional.
 
 Con estas correcciones, este modelo queda como la versión base recomendada para elaborar las primeras migraciones SQL de Supabase.
+
+
+### Preventa de eventos — actualización del 02/10/2026
+
+Las columnas de preventa son opcionales y solo corresponden a eventos pagados. Al publicar, una tarifa configurada requiere fecha límite y debe ser menor que su tarifa regular. `presale_ends_at` almacena la medianoche siguiente al último día de preventa en America/Lima. Las inscripciones reutilizan `price_snapshot`; los cambios no recalculan históricos. Consultar [contrato funcional y transaccional](integraciones/preventa-eventos.md).

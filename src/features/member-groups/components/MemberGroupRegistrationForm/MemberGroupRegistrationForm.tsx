@@ -4,6 +4,9 @@ import { useRef, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
+import { useRegistrationPricing } from "@/features/activities/components/ActivityPricingProvider/ActivityPricingProvider";
+import { getActivityPrice } from "@/features/activities/utils/activity-pricing";
+import { reuseSubmittedGroup } from "@/features/member-groups/utils/member-group-submission";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
@@ -13,13 +16,16 @@ import { MemberGroupSummary } from "@/features/member-groups/components/MemberGr
 import { PaymentInstructions } from "@/features/registrations/components/PaymentInstructions";
 import { lookupMemberCompany, registerMemberGroup } from "@/features/member-groups/mutations/member-group.actions";
 import { memberGroupInputSchema } from "@/features/member-groups/schemas/member-group.schema";
-import type { MemberAttendeeInput, MemberBillingInput, MemberGroupRegistrationFormProps, MemberPassAvailability } from "@/features/member-groups/types/member-group.types";
+import type { MemberAttendeeInput, MemberBillingInput, MemberGroupInput, MemberGroupRegistrationFormProps, MemberPassAvailability } from "@/features/member-groups/types/member-group.types";
 import { getMemberPassPricing } from "@/features/member-groups/utils/member-pass-pricing";
 
 const emptyAttendee = (): MemberAttendeeInput => ({ document_type: "dni", document_number: "", first_names: "", last_names: "", email: "", phone: "", job_title: "", request_certificate: false });
 
 export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistrationFormProps) {
   const router = useRouter();
+  const { now, pricing, refreshPricing } = useRegistrationPricing();
+  const quote = getActivityPrice(pricing, "member", now);
+  const submittedInput = useRef<MemberGroupInput | null>(null);
   const [step, setStep] = useState<1 | 2>(1);
   const [ruc, setRuc] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -32,7 +38,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [authorized, setAuthorized] = useState(false);
   const idempotencyKey = useRef<string>("");
-  const { complimentaryCount, total } = getMemberPassPricing(attendees.length, activity.memberPrice, activity.isFree, availability);
+  const { complimentaryCount, total } = getMemberPassPricing(attendees.length, quote.amount, activity.isFree, availability);
 
   function updateAttendee(index: number, attendee: MemberAttendeeInput) {
     setAttendees((current) => current.map((item, position) => position === index ? attendee : item));
@@ -58,7 +64,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
   }
 
   function proceed() {
-    const candidate = memberGroupInputSchema.safeParse({ ruc, attendees, expected_free_count: complimentaryCount, billing: total === 0 ? null : { type: "factura", document: ruc, name: companyName, address: "Pendiente" }, future_topics_suggestion: suggestion });
+    const candidate = memberGroupInputSchema.safeParse({ ruc, attendees, expected_free_count: complimentaryCount, expected_unit_price: quote.amount, billing: total === 0 ? null : { type: "factura", document: ruc, name: companyName, address: "Pendiente" }, future_topics_suggestion: suggestion });
     if (!companyName) { setMessage("Verifica primero el RUC de la empresa asociada."); return; }
     if (!candidate.success) {
       const issue = candidate.error.issues[0];
@@ -78,7 +84,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
 
   async function submit() {
     if (!authorized) { setMessage("Confirma que cuentas con autorización para registrar a las personas indicadas."); return; }
-    const input = { ruc, attendees, expected_free_count: complimentaryCount, billing: total === 0 ? null : billing, future_topics_suggestion: suggestion };
+    const input = { ruc, attendees, expected_free_count: complimentaryCount, expected_unit_price: quote.amount, billing: total === 0 ? null : billing, future_topics_suggestion: suggestion };
     const parsed = memberGroupInputSchema.safeParse(input);
     if (!parsed.success) {
       setFieldErrors(Object.fromEntries(parsed.error.issues.map((item) => [item.path.join("."), item.message])));
@@ -87,16 +93,19 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
       setMessage("Revisa los datos del comprobante y de los asistentes.");
       return;
     }
-    if (!idempotencyKey.current) idempotencyKey.current = crypto.randomUUID();
+    const submission = reuseSubmittedGroup(parsed.data, submittedInput.current);
+    if (submission !== submittedInput.current) { idempotencyKey.current = crypto.randomUUID(); submittedInput.current = submission; }
     setBusy(true);
     setMessage("");
     try {
-      const result = await registerMemberGroup(activity.id, parsed.data, idempotencyKey.current);
+      const result = await registerMemberGroup(activity.id, submission, idempotencyKey.current);
       if (!result.success || !result.data) {
-        if (result.message?.includes("pases gratuitos cambió")) {
+        if (result.pricing) refreshPricing(result.pricing);
+        if (result.code === "PRICE_CHANGED") { submittedInput.current = null; idempotencyKey.current = ""; }
+        if (result.code === "BENEFIT_AVAILABILITY_CHANGED") {
           const current = await lookupMemberCompany(ruc, activity.id);
           if (current.availability) setAvailability(current.availability);
-          idempotencyKey.current = "";
+          idempotencyKey.current = ""; submittedInput.current = null;
         }
         setMessage(result.message ?? "No se pudo enviar la solicitud.");
         return;
@@ -138,7 +147,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
       </form> : <>
         {total > 0 && activity.paymentNote ? <PaymentInstructions note={activity.paymentNote} /> : null}
         {total > 0 ? <MemberBillingFields billing={billing} companyName={companyName} companyRuc={ruc} errors={Object.fromEntries(Object.entries(fieldErrors).filter(([key]) => key.startsWith("billing.")).map(([key, value]) => [key.split(".")[1], value]))} onChange={(next) => { setBilling(next); setFieldErrors({}); }} /> : null}
-        <MemberGroupSummary attendees={attendees} certificateMode={activity.certificateMode} companyName={companyName} complimentaryCount={complimentaryCount} isFree={activity.isFree} memberPrice={activity.memberPrice} ruc={ruc} total={total} />
+        <MemberGroupSummary attendees={attendees} certificateMode={activity.certificateMode} companyName={companyName} complimentaryCount={complimentaryCount} isFree={activity.isFree} isPresale={quote.isPresale} memberPrice={quote.amount} ruc={ruc} total={total} />
         <label className="flex min-h-11 items-start gap-3 text-sm text-cci-950"><input className="mt-1" type="checkbox" checked={authorized} onChange={(event) => setAuthorized(event.target.checked)} />Confirmo que cuento con autorización para registrar los datos de las demás personas.</label>
         <div className="flex flex-wrap gap-3"><Button type="button" variant="secondary" disabled={busy} onClick={() => setStep(1)}>← Volver y editar</Button><Button type="button" disabled={busy} onClick={submit}>{busy ? "Enviando…" : total === 0 ? "Confirmar plazas" : "Enviar solicitud"}</Button></div>
       </>}

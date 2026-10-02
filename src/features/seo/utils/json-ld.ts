@@ -1,3 +1,4 @@
+import { getActivityPrice, getActivityPricingConfig } from "@/features/activities/utils/activity-pricing";
 import { SITE_CONFIG } from "@/config/site";
 import type {
   ActivityStructuredDataInput,
@@ -133,7 +134,7 @@ export function buildActivityJsonLd(input: ActivityStructuredDataInput): JsonLdO
       availability: activity.status === "published" && !activity.registrations_closed_manually
         ? "https://schema.org/InStock"
         : "https://schema.org/SoldOut",
-      price: activity.is_free ? 0 : activity.members_only ? activity.member_price : activity.general_price,
+      price: getActivityPrice(getActivityPricingConfig(activity), activity.members_only ? "member" : "general", Date.now()).amount,
       priceCurrency: "PEN",
       url: pageUrl,
       validFrom: toLimaDateTime(activity.registration_open_at || activity.published_at),

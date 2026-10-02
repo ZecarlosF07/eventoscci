@@ -23,6 +23,7 @@ export const memberGroupInputSchema = z.object({
   attendees: z.array(attendeeSchema).min(1).max(500),
   billing: billingSchema.nullable(),
   expected_free_count: z.number().int().min(0).max(500),
+  expected_unit_price: z.number().finite().nonnegative().max(99_999_999.99).multipleOf(0.01).optional(),
   future_topics_suggestion: z.string().trim().max(500),
   ruc: z.string().regex(/^\d{11}$/),
 }).superRefine((input, context) => {

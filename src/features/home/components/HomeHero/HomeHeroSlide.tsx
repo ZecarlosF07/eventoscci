@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { HERO_PRIMARY_LINK } from "@/features/catalog/components/CatalogHeroCarousel/constants/hero-styles";
+import { CatalogPriceLabel } from "@/features/catalog/components/CatalogHeroCarousel/CatalogPriceLabel";
 import { HomeHeroArtwork } from "@/features/home/components/HomeHero/HomeHeroArtwork";
 import type { HomeHeroSlideProps } from "@/features/home/components/HomeHero/types/home-hero.types";
 
@@ -78,7 +79,7 @@ export function HomeHeroSlide({ active, featured, index }: HomeHeroSlideProps) {
             <Link className={`${HERO_PRIMARY_LINK} w-full sm:w-auto`} href={featured?.href ?? "/eventos"}>
               {featured?.ctaLabel ?? "Explorar la agenda"}<span aria-hidden="true">↗</span>
             </Link>
-            {featured?.priceLabel ? <span className="text-xs font-medium text-cci-sage">{featured.priceLabel}</span> : null}
+            {featured?.priceLabel ? <span className="text-xs font-medium text-cci-sage"><CatalogPriceLabel {...featured} /></span> : null}
           </div>
         </div>
       </div>

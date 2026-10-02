@@ -1,7 +1,8 @@
 import "server-only";
 
-import type { ActivityType } from "@/features/activities/types/activity.types";
 import { getPublicActivityBySlug } from "@/features/activities/queries/get-public-activity";
+import type { ActivityType } from "@/features/activities/types/activity.types";
+import { getActivityPricingConfig } from "@/features/activities/utils/activity-pricing";
 import { getRegistrationAvailability } from "@/features/registrations/queries/get-registration-availability";
 import type { RegistrationPageData } from "@/features/registrations/types/registration.types";
 
@@ -17,14 +18,12 @@ export async function getRegistrationPageData(
 
   return {
     activity: {
+      ...getActivityPricingConfig(activity),
       allowsStudentRegistration: activity.allows_student_registration,
       certificateGeneralPrice: activity.certificate_general_price,
       certificateMemberPrice: activity.certificate_member_price,
       certificateMode: activity.certificate_mode,
-      generalPrice: activity.general_price,
       id: activity.id,
-      isFree: activity.is_free,
-      memberPrice: activity.member_price,
       memberFreePassesPerCompany: activity.member_free_passes_per_company,
       membersOnly: activity.members_only,
       paymentNote: activity.payment_note,
@@ -33,5 +32,6 @@ export async function getRegistrationPageData(
       type: activity.type,
     },
     availability,
+    initialNow: Date.now(),
   };
 }

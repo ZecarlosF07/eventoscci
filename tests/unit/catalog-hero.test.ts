@@ -4,12 +4,14 @@ import test from "node:test";
 import type { ActivityListItem } from "@/features/activities/types/activity.types";
 import { createActivityCarouselSlides, createCourseCarouselSlides } from "@/features/catalog/utils/catalog-carousel";
 import { createCatalogFallbackSlide } from "@/features/catalog/utils/catalog-hero";
+import { getCatalogPriceLabel } from "@/features/catalog/utils/catalog-price-label";
 import type { CourseListItem } from "@/features/courses/types/course.types";
 import { createHomeHeroSlides } from "@/features/home/utils/home-hero-slides";
 
 const FUTURE_DATE = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
 const activity: ActivityListItem = {
+  presale_general_price: null, presale_member_price: null, presale_ends_at: null,
   banner_path: null, capacity: null, category: null, general_price: 80,
   id: "event", is_free: false, is_listed: true, member_price: 50, member_free_passes_per_company: 0, members_only: false,
   modality: "virtual", published_at: FUTURE_DATE, registration_close_at: null,
@@ -43,6 +45,16 @@ test("el banner exclusivo muestra solo el precio para asociados", () => {
   const [slide] = createActivityCarouselSlides([{ ...activity, general_price: 0, members_only: true }]);
   assert.match(slide.priceLabel, /Precio para asociados/);
   assert.match(slide.priceLabel, /50[.,]00/);
+});
+
+test("el precio del carrusel respeta el público y cambia al vencer la preventa", () => {
+  const deadline = Date.now() + 60_000;
+  const [slide] = createActivityCarouselSlides([{ ...activity, members_only: true, presale_member_price: 40, presale_ends_at: new Date(deadline).toISOString() }], deadline - 1);
+  assert.match(slide.priceLabel, /40[.,]00.*Preventa/);
+  assert.ok(slide.activityPricing);
+  assert.match(getCatalogPriceLabel(slide.activityPricing, true, deadline), /50[.,]00/);
+  assert.doesNotMatch(getCatalogPriceLabel(slide.activityPricing, true, deadline), /Preventa/);
+  assert.match(getCatalogPriceLabel(slide.activityPricing, false, deadline - 1), /80[.,]00/);
 });
 
 test("las capacitaciones gratuitas tienen su propia acción y precio", () => {

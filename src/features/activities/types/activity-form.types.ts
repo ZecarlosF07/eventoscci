@@ -39,6 +39,9 @@ export interface ActivityFormInput {
   description: string;
   duration_text: string;
   general_price: string;
+  presale_general_price?: string;
+  presale_member_price?: string;
+  presale_ends_at?: string;
   id: string;
   is_free: boolean;
   is_listed: boolean;

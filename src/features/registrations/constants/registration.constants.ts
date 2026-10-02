@@ -44,6 +44,7 @@ export const REGISTRATION_ERROR_MESSAGES: Record<RegistrationErrorCode, string> 
     "Para inscribirte como asociado debes indicar una empresa u organización y un RUC válido.",
   NO_AVAILABLE_CAPACITY: "No quedan cupos disponibles para esta actividad.",
   REGISTRATION_CLOSED: "Las inscripciones para esta actividad están cerradas.",
+  PRICE_CHANGED: "El precio cambió mientras completabas el formulario. Revisa el importe actualizado y confirma nuevamente.",
   STUDENT_REGISTRATION_NOT_ALLOWED: "Esta actividad no admite inscripciones con perfil estudiante. Actualiza la página para revisar los requisitos",
   VALIDATION_ERROR: "Revisa los datos ingresados antes de continuar.",
 };

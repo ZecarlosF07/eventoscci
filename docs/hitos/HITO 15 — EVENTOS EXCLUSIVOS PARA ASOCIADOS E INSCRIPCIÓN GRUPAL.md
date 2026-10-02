@@ -3,6 +3,8 @@
 ## Plataforma Digital de Eventos, Capacitaciones y Cursos
 **Cámara de Comercio de Ica**
 
+> Actualización del 02/10/2026: los eventos pagados admiten preventa opcional por público, con vencimiento en hora de Lima y precio congelado al inscribirse. Consultar [Preventa de eventos](../integraciones/preventa-eventos.md) para configuración, compatibilidad y validación transaccional.
+
 ---
 
 # 1. Descripción del hito

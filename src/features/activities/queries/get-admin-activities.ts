@@ -9,7 +9,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { escapePostgrestSearch } from "@/utils/postgrest-search";
 
 const ADMIN_ACTIVITY_SELECT = `
-  id, banner_path, capacity, general_price, is_free, is_listed, member_price, member_free_passes_per_company, members_only,
+  id, banner_path, capacity, general_price, presale_general_price, presale_member_price, presale_ends_at, is_free, is_listed, member_price, member_free_passes_per_company, members_only,
   modality, published_at, registration_close_at, registration_open_at,
   registrations_closed_manually,
   short_description, slug, status, title, type,

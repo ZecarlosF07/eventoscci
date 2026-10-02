@@ -1,8 +1,9 @@
-import type { ActivityConversionPanelProps } from "@/features/activities/components/ActivityConversionPanel/types/activity-conversion-panel.types";
 import { ActivityCertificateBenefit } from "@/features/activities/components/ActivityCertificateBenefit";
+import type { ActivityConversionPanelProps } from "@/features/activities/components/ActivityConversionPanel/types/activity-conversion-panel.types";
+import { ActivityParticipationPrices } from "@/features/activities/components/ActivityParticipationPrices/ActivityParticipationPrices";
 import { getWhatsAppUrl } from "@/features/activities/utils/activity-contact";
-import { formatActivityPrice } from "@/features/activities/utils/activity-formatters";
 import { hasActivityEnded } from "@/features/activities/utils/activity-lifecycle";
+import { getActivityPricingConfig } from "@/features/activities/utils/activity-pricing";
 import { RegistrationCountdown } from "@/features/registrations/components/RegistrationCountdown";
 import { RegistrationCta } from "@/features/registrations/components/RegistrationCta";
 
@@ -28,11 +29,12 @@ export function ActivityConversionPanel({
     new Date(activity.registration_close_at).getTime() > initialNow,
   );
   const isUnavailable = activity.status === "cancelled" || isFinished;
+  const freePasses = activity.type === "event" && activity.members_only && !activity.is_free ? activity.member_free_passes_per_company : 0;
   const panelTitle = activity.status === "cancelled"
     ? "Actividad cancelada"
     : isFinished
       ? "Actividad finalizada"
-      : "Participa en esta actividad";
+      : freePasses > 0 ? `Su empresa cuenta con ${freePasses} ${freePasses === 1 ? "pase gratuito" : "pases gratuitos"}` : "Participa en esta actividad";
 
   return (
     <aside aria-label="Inscripción a la actividad" className="rounded-3xl border border-cci-200 bg-white p-5 shadow-xl shadow-cci-950/10 sm:p-6">
@@ -41,16 +43,8 @@ export function ActivityConversionPanel({
       </div>
       {!isUnavailable ? (
         <div className="mt-5 rounded-2xl bg-cci-50 p-4">
-          {activity.is_free ? (
-            <div><p className="text-base text-slate-600">Precio por persona</p><strong className="mt-1 block text-3xl text-cci-950">Gratis</strong></div>
-          ) : activity.members_only ? (
-            <div><p className="text-base text-slate-600">Precio para asociados</p><strong className="mt-1 block text-2xl text-cci-950">{formatActivityPrice(activity.member_price)}</strong>{activity.type === "event" && activity.member_free_passes_per_company > 0 ? <p className="mt-2 text-sm text-cci-950">Hasta {activity.member_free_passes_per_company} {activity.member_free_passes_per_company === 1 ? "pase gratuito" : "pases gratuitos"} por empresa asociada, según disponibilidad al inscribirse.</p> : null}</div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              <div><p className="text-sm text-slate-600">Público general</p><strong className="mt-1 block text-xl text-cci-950">{formatActivityPrice(activity.general_price)}</strong></div>
-              <div><p className="text-sm text-slate-600">Asociados</p><strong className="mt-1 block text-xl text-cci-950">{formatActivityPrice(activity.member_price)}</strong></div>
-            </div>
-          )}
+          <p className="mb-2 text-base text-slate-600">{freePasses > 0 ? "Adquiere pases adicionales" : activity.is_free ? "Precio por persona" : activity.members_only ? "Precio para asociados" : "Precio de inscripción"}</p>
+          <ActivityParticipationPrices initialNow={initialNow} membersOnly={activity.members_only} pricing={getActivityPricingConfig(activity)} />
         </div>
       ) : <p className="mt-5 rounded-2xl bg-slate-50 p-4 text-base text-slate-700">Ya no se aceptan inscripciones.</p>}
       {!isUnavailable ? <div className="mt-5">{availability ? <RegistrationCta activityId={activity.id} activitySlug={activity.slug} activityType={activity.type} availability={availability} /> : <p className="rounded-xl bg-slate-100 p-4 text-center text-base font-semibold text-slate-600">Disponibilidad no confirmada</p>}</div> : null}

@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/atoms/Checkbox";
 import { Input } from "@/components/atoms/Input";
 import { Label } from "@/components/atoms/Label";
 import { FormField } from "@/components/molecules/FormField";
+import { ActivityPresaleFields } from "@/features/activities/components/ActivityPresaleFields/ActivityPresaleFields";
 import { ActivityPaymentNoteField } from "@/features/activities/components/ActivityPaymentNoteField";
 import type { ActivityPricingFieldsProps } from "@/features/activities/components/ActivityPricingFields/types/activity-pricing-fields.types";
 import { classNames } from "@/utils/class-names";
@@ -36,10 +37,10 @@ export function ActivityPricingFields({
         <div className="space-y-5 rounded-2xl border border-cci-100 bg-slate-50 p-4 sm:p-5">
           <div><h4 className="font-semibold text-cci-950">Precio de inscripción</h4><p className="mt-1 text-sm text-slate-600">Indica el importe por persona para cada público habilitado.</p></div>
           <div className="grid gap-5 md:grid-cols-2">
-            {!membersOnly ? <FormField error={errors?.general_price?.[0]} hint="Importe para quienes no son asociados." label="Precio general" name="general_price" required={published}>
+            {!membersOnly ? <FormField error={errors?.general_price?.[0]} hint="Importe para quienes no son asociados." label="Precio general regular" name="general_price" required={published}>
               <Input id="general_price" min={published ? "0.01" : "0"} name="general_price" onChange={(event) => setGeneralPrice(event.target.value)} required={published} step="0.01" type="number" value={generalPrice} />
             </FormField> : <input name="general_price" type="hidden" value="0" />}
-            <FormField error={errors?.member_price?.[0]} hint="Importe por cada asociado." label="Precio para asociados" name="member_price" required={published}>
+            <FormField error={errors?.member_price?.[0]} hint="Importe por cada asociado." label="Precio para asociados regular" name="member_price" required={published}>
               <Input id="member_price" min={published ? "0.01" : "0"} name="member_price" onChange={(event) => setMemberPrice(event.target.value)} required={published} step="0.01" type="number" value={memberPrice} />
             </FormField>
           </div>
@@ -50,6 +51,7 @@ export function ActivityPricingFields({
         </div>
       ) : <><input name="general_price" type="hidden" value="0" /><input name="member_price" type="hidden" value="0" /><input name="member_free_passes_per_company" type="hidden" value="0" /></>}
 
+      <ActivityPresaleFields activity={activity} errors={errors} isFree={isFree} membersOnly={membersOnly} status={status} type={type} />
       <div className="rounded-2xl border border-cci-100 p-4 sm:p-5">
         <FormField error={errors?.capacity?.[0]} hint="Déjalo vacío si no hay límite. Cada asistente ocupa un cupo." label="Cupos disponibles" name="capacity">
           <Input defaultValue={activity?.capacity ?? ""} id="capacity" min="1" name="capacity" type="number" />

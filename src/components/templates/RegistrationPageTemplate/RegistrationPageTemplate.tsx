@@ -6,7 +6,8 @@ import { Text } from "@/components/atoms/Text";
 import type { RegistrationPageTemplateProps } from "@/components/templates/RegistrationPageTemplate/types/registration-page-template.types";
 import { ActivityCertificateBenefit } from "@/features/activities/components/ActivityCertificateBenefit";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
-import { formatActivityPrice } from "@/features/activities/utils/activity-formatters";
+import { ActivityPricingProvider } from "@/features/activities/components/ActivityPricingProvider/ActivityPricingProvider";
+import { RegistrationParticipationPrices } from "@/features/activities/components/ActivityParticipationPrices/RegistrationParticipationPrices";
 import { RegistrationForm } from "@/features/registrations/components/RegistrationForm";
 import { PaymentInstructions } from "@/features/registrations/components/PaymentInstructions";
 import { MemberGroupRegistrationForm } from "@/features/member-groups/components/MemberGroupRegistrationForm/MemberGroupRegistrationForm";
@@ -16,12 +17,13 @@ import { getRegistrationProcessMessage } from "@/features/registrations/utils/re
 export function RegistrationPageTemplate({
   activity,
   availability,
+  initialNow,
 }: RegistrationPageTemplateProps) {
   const detailRoute = getPublicActivityRoute(activity.type, activity.slug);
   const isExclusiveMemberEvent = activity.type === "event" && activity.membersOnly;
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-12 lg:px-8">
+    <ActivityPricingProvider initialNow={initialNow} pricing={activity}><section className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-12 lg:px-8">
       <Link className="text-sm font-bold text-cci-700 hover:text-cci-950" href={detailRoute}>
         ← Volver a la actividad
       </Link>
@@ -45,15 +47,7 @@ export function RegistrationPageTemplate({
         </div>
         <aside className="space-y-4 rounded-3xl border border-cci-100 bg-cci-100 p-6 lg:sticky lg:top-24">
           <Heading level={3}>Tu participación</Heading>
-          {activity.isFree ? <p className="text-lg font-bold text-cci-950">Sin costo de inscripción</p> : isExclusiveMemberEvent ? (
-            <p className="text-base text-cci-950">Precio por asistente: <strong>{formatActivityPrice(activity.memberPrice)}</strong></p>
-          ) : (
-            activity.membersOnly ? <p className="text-base text-cci-950">Precio para asociados: <strong>{formatActivityPrice(activity.memberPrice)}</strong></p>
-              : <div className="space-y-1 text-base text-cci-950">
-                <p>Precio general: <strong>{formatActivityPrice(activity.generalPrice)}</strong></p>
-                <p>Precio para asociados: <strong>{formatActivityPrice(activity.memberPrice)}</strong></p>
-              </div>
-          )}
+          <RegistrationParticipationPrices membersOnly={activity.membersOnly} />
           {!activity.isFree && activity.paymentNote ? <PaymentInstructions note={activity.paymentNote} /> : null}
           <ActivityCertificateBenefit
             generalPrice={activity.certificateGeneralPrice}
@@ -66,6 +60,6 @@ export function RegistrationPageTemplate({
           <Text size="sm">Puedes inscribirte sin crear una cuenta.</Text>
         </aside>
       </div>
-    </section>
+    </section></ActivityPricingProvider>
   );
 }

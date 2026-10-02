@@ -1,7 +1,13 @@
 import { z } from "zod";
 
-import { ACTIVITY_MAX_ACADEMIC_HOURS } from "@/features/activities/constants/activity.constants";
 import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
+import { ACTIVITY_MAX_ACADEMIC_HOURS } from "@/features/activities/constants/activity.constants";
+import { presaleDateToTimestamp } from "@/features/activities/utils/activity-pricing";
+
+const optionalPresalePrice = z.string().trim().refine(
+  (value) => !value || (/^\d+(\.\d{1,2})?$/.test(value) && Number(value) > 0 && Number(value) < 100_000_000),
+  "Indica un precio positivo con máximo dos decimales.",
+).optional();
 
 const optionalText = z.string().trim();
 const nonnegativeNumber = z
@@ -47,6 +53,9 @@ export const activityFormSchema = z
     description: z.string().trim().min(10, "La descripción debe tener al menos 10 caracteres."),
     duration_text: optionalText.max(FIELD_LIMITS.activityDuration, maximumCharactersMessage(FIELD_LIMITS.activityDuration)),
     general_price: nonnegativeNumber,
+    presale_general_price: optionalPresalePrice,
+    presale_member_price: optionalPresalePrice,
+    presale_ends_at: z.string().trim().optional(),
     id: z.union([z.uuid(), z.literal("")]),
     is_free: z.boolean(),
     is_listed: z.boolean(),
@@ -84,6 +93,23 @@ export const activityFormSchema = z
     virtual_url: optionalSecureUrl,
   })
   .superRefine((data, context) => {
+    const hasPresale = Boolean(data.presale_general_price || data.presale_member_price);
+    if (hasPresale && (data.type !== "event" || data.is_free)) {
+      context.addIssue({ code: "custom", message: "La preventa solo corresponde a eventos pagados.", path: ["presale_member_price"] });
+    }
+    if (data.members_only && data.presale_general_price) {
+      context.addIssue({ code: "custom", message: "Un evento exclusivo solo tiene preventa para asociados.", path: ["presale_general_price"] });
+    }
+    if ((data.presale_ends_at || (hasPresale && data.status === "published")) && !presaleDateToTimestamp(data.presale_ends_at ?? "")) {
+      context.addIssue({ code: "custom", message: "Indica una fecha válida para el último día de preventa.", path: ["presale_ends_at"] });
+    }
+    for (const audience of ["general", "member"] as const) {
+      const field = audience === "general" ? "presale_general_price" : "presale_member_price";
+      const regular = Number(audience === "general" ? data.general_price : data.member_price);
+      if (data[field] && (regular > 0 || data.status === "published") && Number(data[field]) >= regular) {
+        context.addIssue({ code: "custom", message: "La preventa debe ser menor que el precio regular.", path: [field] });
+      }
+    }
     const hours = Number(data.academic_hours);
     if (data.certificate_mode !== "none" && (!Number.isFinite(hours) || hours <= 0 || hours > ACTIVITY_MAX_ACADEMIC_HOURS)) {
       context.addIssue({ code: "custom", message: "Indica horas académicas mayores que cero (máximo 9999.99).", path: ["academic_hours"] });
