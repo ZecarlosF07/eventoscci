@@ -1,10 +1,12 @@
 import type { NextConfig } from "next";
 
+const IMAGE_CACHE_TTL_SECONDS = 30 * 24 * 60 * 60;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
   images: {
+    minimumCacheTTL: IMAGE_CACHE_TTL_SECONDS,
     remotePatterns: supabaseUrl
       ? [new URL(`${supabaseUrl}/storage/v1/object/public/**`)]
       : [],

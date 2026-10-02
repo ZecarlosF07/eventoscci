@@ -43,6 +43,7 @@ Los cambios de indexación pueden tardar varios días. Search Console debe revis
 - El cliente anónimo de Supabase usa `fetch` con `cache: "no-store"`; el único dueño de la caché es cada consulta etiquetada. `updateTag` expira sus resultados inmediatamente tras una escritura exitosa, incluso si la asociación de imágenes falla después.
 - La invalidación de layouts utiliza las rutas internas con el grupo `/(public)` e incluye ambos catálogos de actividades, detalles e inscripción, búsqueda y sitemap.
 - Al sustituir banners o quitar páginas del programa se conserva el archivo publicado anterior en Storage para no romper pestañas abiertas ni URLs de imágenes cacheadas. No hay borrado automático de estos archivos históricos; cualquier futura limpieza requiere una política de retención y comprobar referencias. Las cargas fallidas se siguen limpiando.
+- Las imágenes optimizadas con `next/image` usan `images.minimumCacheTTL` de 30 días (2.592.000 segundos). La vigencia efectiva considera también el encabezado del archivo original, tomando el mayor plazo. Sustituir un banner o una página del programa genera una URL nueva, por lo que la caché larga de la versión anterior no retrasa la actualización del contenido.
 
 ## Catálogos y URLs
 

@@ -87,3 +87,12 @@ Importar el workflow de notificaciones, conectar la cuenta institucional de Gmai
 - Conservar el commit y la última migración aplicada en cada liberación.
 
 Para revertir código, usar Instant Rollback de Vercel al deployment anterior. Las migraciones ya aplicadas no se revierten borrando archivos: se crea una migración correctiva compatible hacia adelante. Antes de cambios destructivos se toma backup y se ensaya la recuperación.
+
+### Caché de imágenes y medición de transformaciones
+
+- Desde el ajuste del 02/10/2026, `next.config.ts` establece `images.minimumCacheTTL` en 30 días (2.592.000 segundos). Se activa al desplegar esta versión del frontend. El plazo del archivo original puede ampliar esta vigencia.
+- Banners y programas se reemplazan con URLs nuevas. Conservar esta estrategia al actualizar medios; editar un archivo remoto en la misma URL puede mantener visible la copia cacheada durante su vigencia.
+- El cambio amplía la duración de las versiones optimizadas. Los tamaños, formatos, calidad y caché de datos públicos conservan su configuración, para observar el efecto de esta única medida.
+- Como referencia previa, la captura de Vercel aportada el 02/10/2026 muestra 1.926 transformaciones en los últimos 30 días, de 5.000 incluidas. Registrar el momento del despliegue y comparar las transformaciones diarias del proyecto durante los siete días siguientes, considerando visitas y nuevas imágenes publicadas.
+- Consultar Image Optimization → Transformations en Usage u Observability. El acumulado de los últimos 30 días sigue incluyendo consumo anterior; la medida a comparar es cuántas transformaciones nuevas se generan cada día. Las entradas existentes adoptan el nuevo plazo cuando vuelven a generarse.
+- Verificar el plazo en `.next/images-manifest.json` tras compilar y comprobar una respuesta de `/_next/image` en producción al generar una variante nueva. Fuente: [gestión de consumo de Image Optimization en Vercel](https://vercel.com/docs/image-optimization/managing-image-optimization-costs).
