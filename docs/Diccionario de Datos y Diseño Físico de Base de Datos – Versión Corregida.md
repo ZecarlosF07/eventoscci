@@ -1926,3 +1926,12 @@ Con estas correcciones, este modelo queda como la versión base recomendada para
 ### Preventa de eventos — actualización del 02/10/2026
 
 Las columnas de preventa son opcionales y solo corresponden a eventos pagados. Al publicar, una tarifa configurada requiere fecha límite y debe ser menor que su tarifa regular. `presale_ends_at` almacena la medianoche siguiente al último día de preventa en America/Lima. Las inscripciones reutilizan `price_snapshot`; los cambios no recalculan históricos. Consultar [contrato funcional y transaccional](integraciones/preventa-eventos.md).
+
+
+### Consulta pública de agenda e historial de eventos — 2026-10-05
+
+`get_public_event_page(p_view text = 'upcoming', p_page integer = 1, p_page_size integer = 12, p_category_id uuid = null, p_modality activity_modality = null, p_is_free boolean = null, p_date date = null, p_query text = null) → jsonb` devuelve `{ activity_ids: uuid[], total: integer }`.
+
+Consulta de lectura `STABLE SECURITY INVOKER`, disponible para `anon`, `authenticated` y `service_role`, con filtros públicos explícitos y RLS de las tablas existentes. Agrega la última fecha efectiva (`max(coalesce(ends_at, starts_at))`) de sesiones no eliminadas antes de filtrar y paginar. `past` admite únicamente eventos publicados/finalizados con fecha final vencida; `upcoming` mantiene eventos publicados/cancelados con sesiones pendientes o en curso. Admite páginas desde 1 y tamaños de 1 a 12; entradas inválidas generan `INVALID_EVENT_PAGE` (`22023`). Ordena historial por fecha final descendente y agenda por próxima sesión ascendente, desempata por ID. No devuelve participantes ni enlaces virtuales privados.
+
+La restricción `activities_event_reserved_slug` reserva `realizados` en eventos para la ruta del historial. No añade columnas ni modifica datos existentes. Migración: `202610050001_public_event_history.sql`; pruebas transaccionales: `039_public_event_history_test.sql`.

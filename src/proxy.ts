@@ -2,9 +2,11 @@ import type { NextRequest } from "next/server";
 
 import { ROUTES } from "@/constants/routes";
 import { redirectWithSupabaseCookies } from "@/features/auth/utils/proxy-redirect";
+import { getEventHistoryProxyResponse } from "@/features/seo/services/event-history-proxy";
 import { refreshSupabaseSession } from "@/lib/supabase/proxy";
 
 export async function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname === ROUTES.eventHistory) return getEventHistoryProxyResponse(request);
   const { accountAccess, authenticated, response } = await refreshSupabaseSession(request);
   const pathname = request.nextUrl.pathname;
   const isAdminLogin = pathname === ROUTES.adminLogin;
@@ -36,5 +38,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/campus/:path*"],
+  matcher: ["/admin/:path*", "/campus/:path*", "/eventos/realizados"],
 };

@@ -1613,3 +1613,13 @@ Con las decisiones actualmente establecidas, el proyecto cuenta con una definici
 ## Actualización — preventa opcional de eventos (02/10/2026)
 
 Los eventos pagados pueden configurar precios de preventa opcionales para público general y asociados. Sin preventa se aplica el precio regular. La tarifa se determina al inscribirse y se conserva para pagos posteriores; los cambios previos al envío exigen nueva aceptación. Consultar [Preventa de eventos](integraciones/preventa-eventos.md). El banner del detalle reduce su altura un 20%, y los eventos exclusivos con cortesías destacan el beneficio por empresa y los pases adicionales.
+
+## Actualización — inicio, agenda e historial de eventos (05/10/2026)
+
+Inicio presenta la oferta real de eventos, capacitaciones y cursos en Ica con un título permanente y accesos a los tres catálogos. La agenda de eventos explica cómo consultar fechas, requisitos e inscripción incluso cuando no hay próximas actividades.
+
+El catálogo separa próximos encuentros de hasta seis eventos realizados. El historial público `/eventos/realizados` conserva las fichas y URLs anteriores, muestra doce resultados por página y ordena por el término de la última sesión activa. Incluye eventos publicados o finalizados y visibles; excluye borradores, cancelados, archivados, eliminados y ocultos. Sus fichas ofrecen «Ver detalles» y mantienen cerrado el registro. Una sesión pendiente o en curso impide clasificar el evento como realizado.
+
+La administración de eventos permite publicar el programa en texto junto con sus imágenes. Fechas, descripción y ubicación siguen disponibles como contenido legible. Los ponentes vinculados se usan en los datos estructurados del evento y sus sesiones; no se completan nombres ficticios para eliminar advertencias de Google. Se conservan el catálogo y las URLs de capacitaciones, las inscripciones existentes y sus importes. La consulta del historial no modifica datos de actividades o participantes.
+
+Consultar [SEO e indexación](integraciones/seo-indexacion.md) para las reglas técnicas, enlaces externos preparados y seguimiento en Search Console después de la publicación.

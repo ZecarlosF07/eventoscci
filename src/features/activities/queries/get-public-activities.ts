@@ -2,6 +2,9 @@ import "server-only";
 
 import { unstable_cache } from "next/cache";
 
+import { ACTIVITY_LIST_SELECT } from "@/features/activities/constants/activity-query.constants";
+import { getPublicEventPage } from "@/features/activities/queries/get-public-event-page";
+
 import {
   PUBLIC_ACTIVITY_PAGE_SIZE,
   PUBLIC_ACTIVITY_STATUSES,
@@ -22,15 +25,7 @@ import {
 import { sanitizePostgrestSearchTerm } from "@/features/seo/utils/postgrest-search";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 
-export const ACTIVITY_LIST_SELECT = `
-  id, banner_path, capacity, general_price, presale_general_price, presale_member_price, presale_ends_at, is_free, is_listed, member_price, member_free_passes_per_company, members_only,
-  modality, published_at, registration_close_at, registration_open_at,
-  registrations_closed_manually,
-  short_description, slug, status, title, type,
-  category:categories!activities_category_id_fkey(id, name, slug),
-  dates:activity_dates!inner(id, activity_id, starts_at, ends_at, label, sort_order,
-    created_at, updated_at, deleted_at, deleted_by)
-`;
+export { ACTIVITY_LIST_SELECT } from "@/features/activities/constants/activity-query.constants";
 
 const getCachedPublicActivityPage = unstable_cache(
 async (type: ActivityType, filters: ActivityFilters): Promise<ActivityPublicPage> => {
@@ -87,9 +82,9 @@ export function getPublicActivityPage(
   type: ActivityType,
   filters: ActivityFilters,
 ): Promise<ActivityPublicPage> {
-  return getCachedPublicActivityPage(type, filters);
+  return type === "event" ? getPublicEventPage("upcoming", filters) : getCachedPublicActivityPage(type, filters);
 }
 
 export async function getFeaturedPublicActivities(type: ActivityType): Promise<ActivityListItem[]> {
-  return (await getCachedPublicActivityPage(type, { page: 1 })).activities;
+  return (await getPublicActivityPage(type, { page: 1 })).activities;
 }

@@ -17,7 +17,9 @@ La plataforma posiciona su agenda empresarial presencial en Ica, Perú, y su ofe
 
 - Inicio: `Organization` y `WebSite`.
 - Catálogos y detalles: `BreadcrumbList`.
-- Eventos y capacitaciones: `Event`, con fechas, modalidad, ubicación, estado, precio y organizador.
+- Eventos y capacitaciones: `Event`, con fechas, modalidad, ubicación real y organizador. Se omite `eventStatus` para el estado interno `finished`: no existe `EventCompleted` en Schema.org. Las fechas pasadas describen el evento realizado.
+- Las ofertas solo se publican dentro del período de inscripción de actividades vigentes. En eventos se consulta disponibilidad para distinguir cupos agotados de cierre administrativo; el precio y fin de preventa se calculan con el instante del servidor.
+- La experiencia enriquecida de eventos de Google requiere eventos abiertos al público y con componente presencial. El marcado semántico de eventos exclusivos o totalmente virtuales no implica elegibilidad para esa experiencia.
 - Cursos: `Course`; el catálogo añade `ItemList` desde tres cursos publicados.
 
 Los datos JSON-LD se generan desde la información pública existente. No deben incluir enlaces privados de videoconferencia, datos de participantes ni tokens de certificados.
@@ -76,3 +78,38 @@ Se miden vistas de página, vistas de contenido y el embudo `registration_cta_cl
 - ejecutar revisión manual en móvil, tableta, Chromium y Safari/WebKit.
 
 La especificación y Definition of Done se mantienen en `docs/hitos/HITO 13 — OPTIMIZACIÓN SEO, RENDIMIENTO Y ALCANCE ORGÁNICO.md`. Las dependencias externas no se consideran completadas por la implementación local.
+
+## Inicio, agenda e historial de eventos (2026-10-05)
+
+- Inicio tiene el H1 permanente «Eventos, capacitaciones y cursos en Ica, Perú», una introducción institucional y enlaces HTML a eventos, capacitaciones y cursos. «Próximos eventos» es H2. Los banners y la búsqueda conservan su recorrido visual.
+- `/eventos` responde a búsquedas de agenda local, con el título SEO «Eventos en Ica: agenda y próximos encuentros» y contenido explicativo visible incluso cuando la agenda está vacía.
+- La agenda de eventos muestra actividades publicadas o canceladas con alguna sesión pendiente o en curso. Los avisos de cancelación se conservan; sus detalles siguen siendo `noindex`.
+- El catálogo muestra hasta seis realizados y enlaza a `/eventos/realizados`. El historial muestra doce por página, del fin real más reciente al más antiguo, sin límite de antigüedad.
+- Solo entran al historial eventos publicados o finalizados, listados, no eliminados y cuya última sesión activa terminó. Borradores, cancelados, archivados, ocultos y capacitaciones quedan fuera. Un evento sin fechas activas no entra en ninguna lista.
+- `get_public_event_page` es una RPC de lectura `security invoker`: agrupa sesiones, aplica filtros y pagina bajo RLS. Devuelve IDs ordenados y total; la consulta pública carga únicamente las fichas de esa página. Las categorías, modalidad, precio, fecha desde y búsqueda conservan sus filtros. La fecha desde compara el día de inicio en Lima.
+- El slug `realizados` está reservado para eventos en la validación administrativa y en PostgreSQL. No se cambian slugs existentes ni se rellenan datos históricos.
+- Historial y su paginación sin filtros son indexables, con canonical propio y breadcrumbs. Filtros y búsquedas son `noindex, follow`, con canonical del historial. Una página fuera de rango responde 404. El sitemap añade la ruta principal del historial; la paginación se descubre mediante enlaces.
+- El proxy valida páginas posteriores a la primera con una lectura anónima antes de comenzar el streaming y reutiliza la pantalla 404 existente. Así se evita devolver HTTP 200 para páginas inexistentes. La ruta principal no añade esta consulta y las rutas privadas conservan su control de sesión.
+- Las nuevas consultas usan la caché de actividades de 15 minutos y su invalidación por etiquetas. Guardar cambios administrativos invalida también el historial. El paso de agenda a historial por fecha puede reflejarse tras hasta 15 minutos; el bloqueo de inscripción existente se valida independientemente en servidor y SQL.
+- En administración de eventos, «Programa en texto» complementa las imágenes. La ficha muestra programa y temario existentes también cuando tiene imágenes. No se deduce ni inventa texto a partir del banner.
+- Las fichas de eventos muestran la dirección del lugar aunque falte un mapa válido; el JSON-LD no sustituye una ubicación desconocida por la sede institucional. Las fechas finales consideran todas las sesiones activas.
+- El contenido, las rutas y el catálogo de capacitaciones se conservan. Las correcciones de vocabulario y fechas de JSON-LD se comparten para mantener datos estructurados válidos.
+- `performer` incluye exclusivamente los ponentes vinculados a la actividad, tanto en el evento como en sus sesiones. El aviso de Search Console «Falta el campo performer» corresponde a una propiedad recomendada; si no hay ponentes registrados, se omite y puede permanecer la advertencia. No se usa el organizador como sustituto ni se inventan nombres. La captura recibida el 5 de octubre muestra un aviso del 26 de septiembre y no permite identificar las URLs afectadas; revisarlas en el informe de Eventos y validar después de publicar.
+
+### Contenido editorial al publicar un evento
+
+Escribir una descripción propia que explique qué se abordará, completar objetivo y público cuando corresponda y publicar el programa en texto con los datos reales. Confirmar lugar, fechas y condiciones de inscripción. Evitar que toda la información quede únicamente en imágenes y evitar repetir palabras clave artificialmente. No cambiar URLs publicadas para añadir palabras clave.
+
+### Enlaces preparados para responsables de otros canales
+
+Incorporar en la web institucional un enlace rastreable `<a href="https://eventosycursos.camaraica.org.pe/eventos">Agenda de eventos en Ica</a>` y otro al portal `<a href="https://eventosycursos.camaraica.org.pe/">Eventos, capacitaciones y cursos de la Cámara de Comercio de Ica</a>`. En publicaciones de una actividad, enlazar a su ficha canónica. Propuesta para redes: «Consulta la agenda de eventos de la Cámara de Comercio de Ica: fechas, lugares y requisitos de participación», con el enlace al catálogo. Estos enlaces están preparados; su publicación corresponde a los responsables de esos canales.
+
+### Search Console y seguimiento después de publicar
+
+1. Antes del despliegue, seleccionar la propiedad que incluye `eventosycursos.camaraica.org.pe` y exportar Rendimiento (tipo Web), últimos 28 días frente a los 28 anteriores. Registrar las fechas exactas de cobertura y filtros; comparar datos consolidados, no el día parcial.
+2. Separar URL exacta de inicio, URL exacta `/eventos` y prefijo `/eventos/` para fichas. Tras publicar, excluir `/eventos/realizados` del grupo de fichas y medir el historial aparte. Registrar clics, impresiones, CTR, posición media, consultas y dispositivos; guardar capacitaciones como referencia de regresión.
+3. Inspeccionar inicio y catálogo para registrar indexación y canonical elegido por Google. Tras el despliegue, inspeccionar también el historial, comprobar sitemap y solicitar indexación de esas tres páginas.
+4. Validar una ficha de evento público presencial vigente en Rich Results Test. Los eventos exclusivos o totalmente virtuales no son candidatos a la experiencia enriquecida; no publicar ubicaciones ni disponibilidad falsas para volverlos elegibles.
+5. A los 28 y 56 días desde el despliegue, repetir los mismos filtros y revisar consultas como «eventos en Ica», «agenda de eventos en Ica» y búsquedas de la Cámara. Separar crecimiento de impresiones de mejora de CTR y posición, considerando la cantidad de eventos publicados y estacionalidad.
+
+La publicación del frontend, los cambios en canales externos y el seguimiento futuro no quedan completados por una validación local. No se crea una automatización de seguimiento mientras no se conozca la fecha de despliegue.

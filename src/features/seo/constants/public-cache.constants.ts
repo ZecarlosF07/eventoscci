@@ -1,7 +1,7 @@
 export const PUBLIC_CACHE_REVALIDATE_SECONDS = 900;
 export const PUBLIC_AVAILABILITY_REVALIDATE_SECONDS = 30;
 // Do not reuse entries generated before the public rendering/cache consistency fix.
-export const PUBLIC_CACHE_VERSION = "event-presale-v5";
+export const PUBLIC_CACHE_VERSION = "event-seo-history-v6";
 
 export const PUBLIC_CACHE_TAGS = {
   activities: "public-activities",

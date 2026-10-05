@@ -3418,6 +3418,19 @@ export type Database = {
         Args: { p_course_id: string }
         Returns: Json
       }
+      get_public_event_page: {
+        Args: {
+          p_category_id?: string
+          p_date?: string
+          p_is_free?: boolean
+          p_modality?: Database["public"]["Enums"]["activity_modality"]
+          p_page?: number
+          p_page_size?: number
+          p_query?: string
+          p_view?: string
+        }
+        Returns: Json
+      }
       get_public_registration_result: {
         Args: { p_registration_code: string }
         Returns: Json

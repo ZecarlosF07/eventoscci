@@ -17,3 +17,7 @@ export function createContentSlug(value: string, maxLength = 96): string {
     ? shortened.slice(0, lastSeparator)
     : shortened).replace(/-+$/g, "");
 }
+
+export function isReservedEventSlug(value: string): boolean {
+  return slugify(value) === "realizados";
+}

@@ -11,7 +11,7 @@ const GENERAL_INFO_FIELDS = [
 
 export function ActivityInformation({ activity }: ActivityInformationProps) {
   const legacyProgram = getLegacyActivityProgram(activity.program, activity.syllabus);
-  const showLegacyProgram = !activity.program_image_paths?.length && legacyProgram;
+  const showLegacyProgram = legacyProgram && (activity.type === "event" || !activity.program_image_paths?.length);
   return (
     <div className="space-y-8">
       {!activity.members_only && !activity.allows_student_registration ? <Text className="font-semibold">{PROFESSIONAL_ACTIVITY_NOTICE}</Text> : null}

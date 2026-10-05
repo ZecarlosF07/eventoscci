@@ -17,6 +17,7 @@ import {
 import {
   canActivityInviteRegistration,
   hasActivityEnded,
+  getActivityEndTimestamp,
 } from "@/features/activities/utils/activity-lifecycle";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
 
@@ -24,6 +25,8 @@ export function ActivityCard({ activity }: ActivityCardProps) {
   const now = new Date();
   const nextDate = getNextActivityDate(activity.dates);
   const endedByDate = hasActivityEnded(activity.dates, now);
+  const eventEnd = activity.type === "event" ? getActivityEndTimestamp(activity.dates) : null;
+  const endedDate = eventEnd !== null ? new Date(eventEnd).toISOString() : nextDate?.ends_at ?? nextDate?.starts_at;
   const isFinished = activity.status === "finished" || endedByDate;
   const canRegister = canActivityInviteRegistration(activity, now);
   const bannerUrl = getActivityBannerUrl(activity.banner_path);
@@ -60,7 +63,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
           {activity.short_description ? <Text size="sm">{activity.short_description}</Text> : null}
           {nextDate ? (
             <Text className="font-semibold text-cci-800" size="sm">
-              {endedByDate ? "Finalizó el " : ""}{formatActivityDate(endedByDate ? nextDate.ends_at ?? nextDate.starts_at : nextDate.starts_at)}
+              {endedByDate ? "Finalizó el " : ""}{formatActivityDate(endedByDate ? endedDate ?? nextDate.starts_at : nextDate.starts_at)}
             </Text>
           ) : null}
           <div className="mt-auto flex items-end justify-between gap-4 border-t border-cci-100 pt-4">

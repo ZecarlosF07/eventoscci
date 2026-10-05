@@ -3,6 +3,7 @@ import type { HomePageTemplateProps } from "@/components/templates/HomePageTempl
 import { HomeActivitySection } from "@/features/home/components/HomeActivitySection";
 import { HomeCourseSection } from "@/features/home/components/HomeCourseSection";
 import { HomeHero } from "@/features/home/components/HomeHero";
+import { HomeIntroduction } from "@/features/home/components/HomeIntroduction/HomeIntroduction";
 import { HomeSearch } from "@/features/home/components/HomeSearch";
 
 export function HomePageTemplate({ content }: HomePageTemplateProps) {
@@ -10,8 +11,9 @@ export function HomePageTemplate({ content }: HomePageTemplateProps) {
     <div>
       <HomeHero activities={[...content.events, ...content.trainings]} />
       <HomeSearch />
+      <HomeIntroduction />
       <div className="mx-auto max-w-[90rem] px-4 pb-16 pt-2 sm:px-6 sm:pb-20 sm:pt-4 lg:px-8">
-        <HomeActivitySection activities={content.events} description="Encuentros para conectar con oportunidades, conocimiento y la comunidad empresarial de Ica." headingLevel={1} href="/eventos" title="Próximos eventos en Ica, Perú" />
+        <HomeActivitySection activities={content.events} description="Encuentros para conectar con oportunidades, conocimiento y la comunidad empresarial de Ica." href="/eventos" title="Próximos eventos en Ica, Perú" />
         <HomeActivitySection activities={content.trainings} description="Capacitaciones presenciales en Ica y experiencias virtuales para fortalecer tus capacidades y las de tu empresa." href="/capacitaciones" title="Capacitaciones destacadas" />
         <HomeCourseSection />
         <section className="mt-12 overflow-hidden rounded-2xl border border-cci-100 bg-cci-100 px-5 py-8 sm:mt-16 sm:rounded-[2rem] sm:px-10 sm:py-10 lg:flex lg:items-center lg:justify-between lg:gap-12">

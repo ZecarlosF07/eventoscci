@@ -15,6 +15,7 @@ export function invalidatePublicActivityContent(): void {
   revalidatePath("/(public)/eventos", "layout");
   revalidatePath("/(public)/capacitaciones", "layout");
   revalidatePath(ROUTES.events);
+  revalidatePath(ROUTES.eventHistory);
   revalidatePath(ROUTES.trainings);
   revalidatePath("/buscar");
   revalidatePath("/(public)/certificados/[token]", "page");
@@ -43,6 +44,7 @@ export function invalidatePublicCatalogContent(): void {
   updateTag(PUBLIC_CACHE_TAGS.sitemap);
   revalidatePath(ROUTES.home);
   revalidatePath(ROUTES.events);
+  revalidatePath(ROUTES.eventHistory);
   revalidatePath(ROUTES.trainings);
   revalidatePath(ROUTES.courses);
   revalidatePath("/(public)/eventos", "layout");

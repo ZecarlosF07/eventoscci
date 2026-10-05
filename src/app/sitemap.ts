@@ -13,6 +13,7 @@ import { getSiteUrl } from "@/lib/env/server-env";
 const STATIC_ROUTES = [
   { changeFrequency: "daily", path: ROUTES.home, priority: 1 },
   { changeFrequency: "daily", path: ROUTES.events, priority: 0.9 },
+  { changeFrequency: "weekly", path: ROUTES.eventHistory, priority: 0.7 },
   { changeFrequency: "daily", path: ROUTES.trainings, priority: 0.9 },
   { changeFrequency: "weekly", path: ROUTES.courses, priority: 0.9 },
   { changeFrequency: "monthly", path: ROUTES.certificates, priority: 0.6 },

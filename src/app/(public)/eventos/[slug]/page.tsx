@@ -7,6 +7,8 @@ import { getPublicActivityBySlug } from "@/features/activities/queries/get-publi
 import type { ActivityDetailPageProps } from "@/features/activities/types/activity-page.types";
 import { getActivityBannerUrl } from "@/features/activities/utils/activity-formatters";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
+import { getRegistrationAvailability } from "@/features/registrations/queries/get-registration-availability";
+import { getServerTimestamp } from "@/utils/get-server-timestamp";
 import { JsonLd } from "@/features/seo/components/JsonLd";
 import { buildNoIndexMetadata, buildPageMetadata } from "@/features/seo/services/build-page-metadata";
 import { buildActivityJsonLd, buildBreadcrumbJsonLd } from "@/features/seo/utils/json-ld";
@@ -35,6 +37,8 @@ export async function generateMetadata({ params }: ActivityDetailPageProps): Pro
 export default async function EventDetailPage({ params }: ActivityDetailPageProps) {
   const activity = await getPublicActivityBySlug("event", (await params).slug);
   if (!activity) notFound();
+  const now = getServerTimestamp();
+  const availability = await getRegistrationAvailability(activity.id);
   const siteUrl = getSiteUrl();
   const path = getPublicActivityRoute(activity.type, activity.slug);
   const breadcrumbs = buildBreadcrumbJsonLd([
@@ -45,6 +49,8 @@ export default async function EventDetailPage({ params }: ActivityDetailPageProp
   const structuredData = activity.is_listed && activity.status !== "cancelled"
     ? [breadcrumbs, buildActivityJsonLd({
       activity,
+      availability,
+      now,
       image: getActivityBannerUrl(activity.banner_path),
       pageUrl: absoluteUrl(path, siteUrl),
     })]

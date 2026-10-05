@@ -1,4 +1,5 @@
-import { getActivityPrice, getActivityPricingConfig } from "@/features/activities/utils/activity-pricing";
+import { getActivityEndTimestamp } from "@/features/activities/utils/activity-lifecycle";
+import { getActivityLocation, getActivityOffer, getActivityStatus } from "@/features/seo/utils/activity-structured-data";
 import { SITE_CONFIG } from "@/config/site";
 import type {
   ActivityStructuredDataInput,
@@ -10,7 +11,7 @@ import type {
 import { getPublicCourseRoute } from "@/features/courses/utils/course-routes";
 import { toLimaDateTime } from "@/features/seo/utils/seo-date";
 import { absoluteUrl } from "@/features/seo/utils/seo-url";
-import { buildSeoDescription } from "@/features/seo/utils/seo-text";
+import { buildSeoDescription, normalizeSeoText } from "@/features/seo/utils/seo-text";
 
 const ORGANIZATION_ID_PATH = "/#organizacion";
 const WEBSITE_ID_PATH = "/#sitio-web";
@@ -70,40 +71,19 @@ export function buildBreadcrumbJsonLd(items: BreadcrumbItem[], siteUrl: string):
   };
 }
 
-function getActivityLocation(input: ActivityStructuredDataInput): JsonLdObject | JsonLdObject[] {
-  const { activity, pageUrl } = input;
-  const venueName = activity.venue?.name || activity.location_name || SITE_CONFIG.organization;
-  const streetAddress = activity.venue?.address || activity.address || SITE_CONFIG.address.street;
-  const place = {
-    "@type": "Place",
-    address: {
-      "@type": "PostalAddress",
-      addressCountry: SITE_CONFIG.address.countryCode,
-      addressLocality: SITE_CONFIG.address.locality,
-      addressRegion: SITE_CONFIG.address.region,
-      streetAddress,
-    },
-    name: venueName,
-  };
-  const virtualLocation = { "@type": "VirtualLocation", url: pageUrl };
-  if (activity.modality === "virtual") return virtualLocation;
-  if (activity.modality === "hybrid") return [place, virtualLocation];
-  return place;
-}
-
-function getActivityStatus(status: ActivityStructuredDataInput["activity"]["status"]): string {
-  if (status === "cancelled") return "https://schema.org/EventCancelled";
-  if (status === "finished") return "https://schema.org/EventCompleted";
-  return "https://schema.org/EventScheduled";
-}
-
 export function buildActivityJsonLd(input: ActivityStructuredDataInput): JsonLdObject {
   const { activity, image, pageUrl } = input;
   const dates = activity.dates.filter((date) => !date.deleted_at)
     .sort((first, second) => first.starts_at.localeCompare(second.starts_at));
   const firstDate = dates[0];
-  const lastDate = dates.at(-1);
-  const description = buildSeoDescription(
+  const endTimestamp = getActivityEndTimestamp(dates);
+  const performers = activity.speakers.length
+    ? activity.speakers.map((speaker) => ({
+      "@type": "Person",
+      name: `${speaker.first_names} ${speaker.last_names}`.trim(),
+    }))
+    : undefined;
+  const description = activity.type === "event" ? normalizeSeoText(activity.description || activity.short_description || activity.title) : buildSeoDescription(
     activity.short_description,
     activity.description,
     activity.modality === "virtual" ? undefined : "En Ica, Perú.",
@@ -113,7 +93,7 @@ export function buildActivityJsonLd(input: ActivityStructuredDataInput): JsonLdO
     "@context": "https://schema.org",
     "@type": "Event",
     description,
-    endDate: toLimaDateTime(lastDate?.ends_at || lastDate?.starts_at),
+    endDate: endTimestamp !== null ? toLimaDateTime(new Date(endTimestamp).toISOString()) : undefined,
     eventAttendanceMode: activity.modality === "virtual"
       ? "https://schema.org/OnlineEventAttendanceMode"
       : activity.modality === "hybrid"
@@ -129,28 +109,14 @@ export function buildActivityJsonLd(input: ActivityStructuredDataInput): JsonLdO
       "@type": "Audience",
       audienceType: "Asociados de la Cámara de Comercio de Ica",
     } : undefined,
-    offers: {
-      "@type": "Offer",
-      availability: activity.status === "published" && !activity.registrations_closed_manually
-        ? "https://schema.org/InStock"
-        : "https://schema.org/SoldOut",
-      price: getActivityPrice(getActivityPricingConfig(activity), activity.members_only ? "member" : "general", Date.now()).amount,
-      priceCurrency: "PEN",
-      url: pageUrl,
-      validFrom: toLimaDateTime(activity.registration_open_at || activity.published_at),
-    },
+    offers: getActivityOffer(input),
     organizer: {
       "@id": new URL(ORGANIZATION_ID_PATH, pageUrl).toString(),
       "@type": "Organization",
       name: SITE_CONFIG.organization,
       url: new URL("/", pageUrl).toString(),
     },
-    performer: activity.speakers.length
-      ? activity.speakers.map((speaker) => ({
-        "@type": "Person",
-        name: `${speaker.first_names} ${speaker.last_names}`.trim(),
-      }))
-      : undefined,
+    performer: performers,
     startDate: toLimaDateTime(firstDate?.starts_at),
     subEvent: dates.length > 1 ? dates.map((date, index) => ({
       "@type": "Event",
@@ -163,6 +129,7 @@ export function buildActivityJsonLd(input: ActivityStructuredDataInput): JsonLdO
       eventStatus: getActivityStatus(activity.status),
       location: getActivityLocation(input),
       name: `${activity.title} — ${date.label || `Sesión ${index + 1}`}`,
+      performer: performers,
       startDate: toLimaDateTime(date.starts_at),
       url: pageUrl,
     })) : undefined,

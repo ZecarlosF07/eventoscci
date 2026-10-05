@@ -1,5 +1,6 @@
 import type { ActivityDetail } from "@/features/activities/types/activity.types";
 import type { CourseDetail, CourseListItem } from "@/features/courses/types/course.types";
+import type { RegistrationAvailability } from "@/features/registrations/types/registration.types";
 
 export interface BreadcrumbItem {
   name: string;
@@ -23,7 +24,9 @@ export interface JsonLdProps {
 
 export interface ActivityStructuredDataInput {
   activity: ActivityDetail;
+  availability?: RegistrationAvailability | null;
   image: string | null;
+  now?: number;
   pageUrl: string;
 }
 

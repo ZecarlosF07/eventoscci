@@ -100,7 +100,7 @@ export function ActivityForm({
       </ActivityFormSection>
 
       <ActivityFormSection title="Contenido">
-        <ActivityContentFields activity={activity} bannerError={error("banner")} programError={error("program_images")} />
+        <ActivityContentFields showProgramText={type === "event"} activity={activity} bannerError={error("banner")} programError={error("program_images")} />
       </ActivityFormSection>
 
       <ActivityFormSection title="Fechas y horarios">

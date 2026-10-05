@@ -2,6 +2,8 @@ import { Text } from "@/components/atoms/Text";
 import { Pagination } from "@/components/molecules/Pagination";
 import type { ActivitiesListTemplateProps } from "@/components/templates/ActivitiesListTemplate/types/activities-list-template.types";
 import { ActivityCard } from "@/features/activities/components/ActivityCard";
+import { EventCatalogIntroduction } from "@/features/activities/components/EventCatalogIntroduction/EventCatalogIntroduction";
+import { EventHistorySection } from "@/features/activities/components/EventHistorySection/EventHistorySection";
 import { ActivityFilters } from "@/features/activities/components/ActivityFilters";
 import { CatalogHeroCarousel } from "@/features/catalog/components/CatalogHeroCarousel";
 import { createActivityCarouselSlides } from "@/features/catalog/utils/catalog-carousel";
@@ -16,6 +18,7 @@ export function ActivitiesListTemplate({
   filters,
   heroTitle,
   page,
+  pastEvents,
   pageCount,
   pathname,
   title,
@@ -30,10 +33,11 @@ export function ActivitiesListTemplate({
         <div className="relative z-30 px-2 pb-2 pt-3 sm:-mt-6 sm:px-5 sm:pt-0">
           <ActivityFilters categories={categories} filters={filters} />
         </div>
+        {pastEvents ? <EventCatalogIntroduction /> : null}
         {activities.length ? (
           <section className="mt-12">
             <div className="flex flex-wrap items-end justify-between gap-3">
-              <div className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-600">Agenda CCI</p><h2 className="mt-2 text-2xl font-bold tracking-tight text-cci-950 sm:text-3xl">Explora {title.toLocaleLowerCase("es-PE")}</h2><Text className="mt-3">{description}</Text></div>
+              <div className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-600">Agenda CCI</p><h2 className="mt-2 text-2xl font-bold tracking-tight text-cci-950 sm:text-3xl">{pastEvents ? "Próximos encuentros" : `Explora ${title.toLocaleLowerCase("es-PE")}`}</h2><Text className="mt-3">{description}</Text></div>
               <Text size="sm">{total} {total === 1 ? "actividad en la agenda" : "actividades en la agenda"}</Text>
             </div>
             <div className="mt-7 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -44,6 +48,7 @@ export function ActivitiesListTemplate({
         ) : (
           <div className="mt-10 rounded-3xl border border-dashed border-cci-200 bg-white px-6 py-16 text-center"><Text>{emptyMessage}</Text></div>
         )}
+        {pastEvents ? <EventHistorySection activities={pastEvents} /> : null}
       </div>
     </div>
   );

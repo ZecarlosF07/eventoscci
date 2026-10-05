@@ -440,3 +440,21 @@ Base de trabajo: `c88d067`, con cambios locales anteriores conservados. Validaci
 Cabecera fuera de las tarjetas, con etiquetas de tipo/modalidad/exclusividad, título y fecha con icono de calendario. El lugar se conserva en la tarjeta y en Cómo llegar; se retira de la cabecera. El banner mantiene la altura compacta de 25:8 y usa encuadre centrado con recorte del excedente para ocupar el ancho disponible. Las franjas animadas miden 8 px por lado en móvil y 12 px desde tablet, con arcos de menor presencia y brillo, esquinas menos redondeadas y sombra suave. La tarjeta queda a la derecha en escritorio y después del banner en móvil/tablet. Los banners del catálogo conservan su imagen completa y decoración.
 
 Verificación visual aprobada a 1440×900, 768×1024 y 390×844, sin desbordamiento horizontal. La animación está activa y la pausa global funciona también con teclado. El enlace Volver al catálogo conserva foco visible. Pasaron las 13 pruebas existentes de banners y conversión, además de `yarn lint`, `yarn typecheck` y `yarn build`. La revisión solo consultó actividades existentes; no guardó cambios administrativos ni inscripciones.
+
+
+## SEO de inicio y eventos — 2026-10-05
+
+| Caso | Escenario y resultado esperado | Verificación | Estado |
+|---|---|---|---|
+| SEO-E01 | Inicio conserva banners, presenta un único H1 permanente y enlaces a los tres catálogos; sección de próximos eventos H2 | Unitarias y HTML público | EJECUTADO |
+| SEO-E02 | Agenda vacía o filtrada mantiene la introducción y acceso al historial; capacitaciones conserva contenido y rutas | HTML y revisión responsive | EJECUTADO |
+| SEO-E03 | Historial sin límite de diez días; máximo seis en catálogo y doce por página, orden real descendente y total exacto | `039_public_event_history_test.sql` | EJECUTADO, 20 comprobaciones SQL |
+| SEO-E04 | Una sesión futura impide tratar el evento como realizado; sesiones eliminadas se ignoran; sin hora final se utiliza el inicio | SQL y unitarias | EJECUTADO |
+| SEO-E05 | Anónimo no obtiene borradores, ocultos, archivados, eliminados, cancelados ni capacitaciones en historial; slug reservado también en SQL | SQL bajo rol `anon` | EJECUTADO |
+| SEO-E06 | Canonical propio para paginación; filtros `noindex, follow`; fuera de rango 404; sitemap contiene historial | HTTP/HTML, SQL y revisión de metadatos | EJECUTADO |
+| SEO-E07 | Sin `EventCompleted` ni ofertas vencidas; preventa, frontera Lima y cupos coherentes; ubicación desconocida no se inventa | `tests/unit/event-seo.test.ts` | EJECUTADO |
+| SEO-E08 | Programa en texto visible junto a imágenes; dirección legible sin iframe; capacitaciones conserva su presentación | Unitarias de renderizado | EJECUTADO |
+| SEO-E09 | Móvil, tableta y escritorio sin desbordamiento; historial consultable con teclado | Navegador local, 375/768/1440 px | EJECUTADO |
+| SEO-E10 | Search Console antes/después, publicación frontend, Rich Results en producción y enlaces institucionales | Operación externa | PENDIENTE, requiere publicación y acceso a la propiedad |
+
+Cierre local: 243 unitarias, 24 comprobaciones SQL y cinco pruebas HTTP/HTML aprobadas; `yarn lint`, `yarn typecheck` y `yarn build` correctos. El marcado incluye los ponentes reales también en las sesiones; su ausencia sigue siendo una advertencia recomendada cuando no hay ponentes registrados. Evidencia, mediciones y límites en [Entrega SEO de inicio y eventos](seo-inicio-eventos-2026-10-05.md).

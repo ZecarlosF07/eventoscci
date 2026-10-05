@@ -86,6 +86,9 @@ export async function saveActivityAction(
       || matchesSupabaseError(error, "activities_member_free_passes_valid")) {
       return { errors: { member_free_passes_per_company: ["Indica un número válido de pases para un evento exclusivo pagado."] }, savedId };
     }
+    if (matchesSupabaseError(error, "activities_event_reserved_slug")) {
+      return { errors: { slug: ["Este slug está reservado para el historial de eventos. Elige otro."] }, savedId };
+    }
     if (error.code === "23505" && matchesSupabaseError(error, "slug")) {
       return { errors: { slug: ["Este slug ya pertenece a otra actividad. Modifícalo o déjalo vacío para generarlo nuevamente."] }, savedId };
     }

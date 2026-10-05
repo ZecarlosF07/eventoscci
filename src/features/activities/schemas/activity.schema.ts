@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
 import { ACTIVITY_MAX_ACADEMIC_HOURS } from "@/features/activities/constants/activity.constants";
+import { createContentSlug, isReservedEventSlug } from "@/features/activities/utils/slugify";
 import { presaleDateToTimestamp } from "@/features/activities/utils/activity-pricing";
 
 const optionalPresalePrice = z.string().trim().refine(
@@ -93,6 +94,9 @@ export const activityFormSchema = z
     virtual_url: optionalSecureUrl,
   })
   .superRefine((data, context) => {
+    if (data.type === "event" && isReservedEventSlug(data.slug || createContentSlug(data.title))) {
+      context.addIssue({ code: "custom", message: "Este slug está reservado para el historial de eventos. Elige otro.", path: ["slug"] });
+    }
     const hasPresale = Boolean(data.presale_general_price || data.presale_member_price);
     if (hasPresale && (data.type !== "event" || data.is_free)) {
       context.addIssue({ code: "custom", message: "La preventa solo corresponde a eventos pagados.", path: ["presale_member_price"] });

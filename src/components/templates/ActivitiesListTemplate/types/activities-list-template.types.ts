@@ -3,6 +3,7 @@ import type { ActivityListItem } from "@/features/activities/types/activity.type
 
 export interface ActivitiesListTemplateProps {
   activities: ActivityListItem[];
+  pastEvents?: ActivityListItem[];
   categories: Array<{ id: string; name: string }>;
   description: string;
   emptyMessage: string;

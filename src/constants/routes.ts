@@ -23,6 +23,7 @@ export const ROUTES = {
   campusCourses: "/campus/cursos",
   campusProfile: "/campus/perfil",
   events: "/eventos",
+  eventHistory: "/eventos/realizados",
   forgotPassword: "/recuperar-contrasena",
   home: "/",
   login: "/login",
