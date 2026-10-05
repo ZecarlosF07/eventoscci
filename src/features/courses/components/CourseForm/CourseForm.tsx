@@ -6,6 +6,7 @@ import { Input } from "@/components/atoms/Input";
 import { Label } from "@/components/atoms/Label";
 import { Select } from "@/components/atoms/Select";
 import { Textarea } from "@/components/atoms/Textarea";
+import { BANNER_DIMENSIONS_HINT } from "@/components/molecules/BannerImage/constants/banner-design.constants";
 import { FormField } from "@/components/molecules/FormField";
 import { FormActionNotice } from "@/components/molecules/FormActionNotice";
 import { FIELD_LIMITS } from "@/constants/field-limits";
@@ -48,7 +49,7 @@ export function CourseForm({ course, speakers }: CourseFormProps) {
         <FormField error={error("duration_text")} label="Duración" name="duration_text"><Input defaultValue={course?.duration_text ?? ""} id="duration_text" maxLength={FIELD_LIMITS.courseDuration} name="duration_text" placeholder="Ej. 8 semanas" /></FormField>
         <FormField error={error("academic_hours")} label="Horas académicas" name="academic_hours"><Input defaultValue={course?.academic_hours ?? ""} id="academic_hours" min="0" name="academic_hours" step="0.5" type="number" /></FormField>
       </div>
-      <FormField error={error("banner")} hint="JPG, PNG o WebP. Máximo 5 MB." label="Portada" name="banner"><Input accept="image/jpeg,image/png,image/webp" id="banner" name="banner" type="file" /></FormField>
+      <FormField error={error("banner")} hint={`${BANNER_DIMENSIONS_HINT}. JPG, PNG o WebP. Máximo 5 MB.`} label="Portada" name="banner"><Input accept="image/jpeg,image/png,image/webp" id="banner" name="banner" type="file" /></FormField>
     </ActivityFormSection>
     <ActivityFormSection title="Instructores"><CourseInstructorFields initialInstructors={initialInstructors} speakers={speakers} />{error("instructors") ? <p className="text-sm font-medium text-rose-700">{error("instructors")}</p> : null}</ActivityFormSection>
     <ActivityFormSection title="Precio y publicación">

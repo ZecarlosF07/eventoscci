@@ -58,7 +58,7 @@ Los cambios de indexación pueden tardar varios días. Search Console debe revis
 ## Rendimiento y accesibilidad
 
 - El hero rota automáticamente después del primer intervalo, conserva navegación manual anterior/siguiente, se detiene durante la interacción por puntero o teclado y desactiva la rotación cuando el dispositivo solicita movimiento reducido.
-- Únicamente el primer banner se precarga; las imágenes conservan una relación de aspecto estable y texto alternativo descriptivo.
+- Únicamente el primer banner del carrusel se precarga; las imágenes conservan una relación de aspecto estable de 5:2 y texto alternativo descriptivo. La medida de diseño recomendada es 2000 × 800 px. Los marcos reservan su altura antes de cargar y no se estiran según el texto vecino. Las imágenes usan encuadre completo centrado; el fondo institucional con halos lima queda detrás y respeta pausa global y movimiento reducido. No cambian el TTL, las URLs ni los archivos originales.
 - El video del Campus usa `preload="none"`, reproducción automática silenciada al entrar en el viewport y un poster WebP. El MP4 no debe descargarse durante la carga inicial.
 - Cada página indexable presenta un `h1` visible. Los títulos de tarjetas también están disponibles con teclado y en dispositivos sin hover.
 

@@ -1,21 +1,24 @@
 import Image from "next/image";
 
 import { BannerBackdrop } from "@/components/molecules/BannerImage/BannerBackdrop";
+import { BannerLedEdges } from "@/components/molecules/BannerImage/BannerLedEdges";
 import type { BannerImageProps } from "@/components/molecules/BannerImage/types/banner-image.types";
+import { MotionSurface } from "@/components/molecules/MotionSurface/MotionSurface";
 
 /** The backdrop remains visible around the image's configured framing. */
-export function BannerImage({ alt, backdropTone = "dark", className = "", fit = "contain", preload = false, sizes, src }: BannerImageProps) {
+export function BannerImage({ alt, backdropIntensity = "subtle", backdropTone = "dark", className = "", preload = false, sizes, src }: BannerImageProps) {
   return (
-    <div className="absolute inset-0 isolate overflow-hidden">
-      <BannerBackdrop tone={backdropTone} />
+    <MotionSurface className="absolute inset-0 isolate overflow-hidden" mode="banner">
+      <BannerBackdrop intensity={backdropIntensity} tone={backdropTone} />
       <Image
         alt={alt}
-        className={`${fit === "cover" ? "object-cover" : "object-contain"} ${className}`}
+        className={`object-contain object-center ${className}`}
         fill
         preload={preload}
         sizes={sizes}
         src={src}
       />
-    </div>
+      <BannerLedEdges intensity={backdropIntensity} />
+    </MotionSurface>
   );
 }

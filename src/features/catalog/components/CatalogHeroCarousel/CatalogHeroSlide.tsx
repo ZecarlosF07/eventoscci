@@ -11,7 +11,7 @@ export function CatalogHeroSlide({ browseLabel, slide }: CatalogHeroSlideProps) 
       <article aria-label={slide.title}>
         <Link
           aria-label={`${slide.ctaLabel}: ${slide.title}`}
-          className="block transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cci-lime"
+          className="block transition hover:brightness-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cci-lime"
           href={slide.href}
         >
           <CatalogHeroVisual bannerUrl={slide.bannerUrl} eager title={slide.title} wide />

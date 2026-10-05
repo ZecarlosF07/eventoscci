@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/atoms/Badge";
 import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
-import { BannerImage } from "@/components/molecules/BannerImage";
+import { BannerFrame, BannerImage } from "@/components/molecules/BannerImage";
 import type { CourseDetailTemplateProps } from "@/components/templates/CourseDetailTemplate/types/course-detail-template.types";
 import { CourseAccessPanels } from "@/features/courses/components/CourseAccessPanels";
 import { CourseCurriculumPreview } from "@/features/courses/components/CourseCurriculumPreview";
@@ -34,9 +34,11 @@ export function CourseDetailTemplate({ course, curriculum }: CourseDetailTemplat
             <div className="rounded-2xl bg-white/8 p-4"><dt className="text-xs font-bold uppercase tracking-wide text-cci-lime">Certificación</dt><dd className="mt-1 font-semibold">Al completar</dd></div>
           </dl>
           </div>
-          <div className="relative min-h-72 bg-cci-800 lg:min-h-full">
-            {bannerUrl ? <BannerImage alt={`Portada de ${course.title}`} preload sizes="(min-width: 1024px) 48vw, 100vw" src={bannerUrl} /> : <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_top_right,rgba(182,235,102,0.35),transparent_45%)] p-10 text-center"><span className="text-6xl font-black text-cci-lime/80">CCI</span></div>}
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-cci-950/90 to-transparent px-6 pb-6 pt-16"><p className="font-semibold">Aprende a tu ritmo desde el Campus Virtual</p></div>
+          <div className="min-w-0 self-center bg-cci-800">
+            <BannerFrame>
+              {bannerUrl ? <BannerImage alt={`Portada de ${course.title}`} backdropIntensity="prominent" preload sizes="(min-width: 1024px) 48vw, 100vw" src={bannerUrl} /> : <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_top_right,rgba(182,235,102,0.35),transparent_45%)] text-center"><span className="text-6xl font-black text-cci-lime/80">CCI</span></div>}
+            </BannerFrame>
+            <p className="px-5 py-3 text-sm font-semibold text-cci-100 sm:px-6">Aprende a tu ritmo desde el Campus Virtual</p>
           </div>
         </div>
       </header>

@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { BannerImage } from "@/components/molecules/BannerImage";
+import { BannerFrame, BannerImage } from "@/components/molecules/BannerImage";
 import type { HomeHeroArtworkProps } from "@/features/home/components/HomeHero/types/home-hero.types";
 
 export function HomeHeroArtwork({
@@ -12,13 +12,11 @@ export function HomeHeroArtwork({
   wide = false,
 }: HomeHeroArtworkProps) {
   return (
-    <div className={wide
-      ? "relative isolate aspect-[5/2] w-full overflow-hidden bg-cci-900 text-white"
-      : "relative isolate aspect-video min-w-0 overflow-hidden bg-cci-900 text-white lg:h-full lg:aspect-auto"}
-    >
+    <BannerFrame className="bg-cci-900 text-white">
       {bannerUrl ? (
         <BannerImage
           alt={`Banner de ${title}`}
+          backdropIntensity="prominent"
           preload={eager}
           sizes={wide ? "100vw" : "(min-width: 1024px) 53vw, 100vw"}
           src={bannerUrl}
@@ -72,6 +70,6 @@ export function HomeHeroArtwork({
           <span aria-hidden="true" className="absolute bottom-3 right-5 text-5xl font-black tracking-tighter text-white/5 sm:text-7xl lg:text-8xl">CCI</span>
         </div>
       )}
-    </div>
+    </BannerFrame>
   );
 }

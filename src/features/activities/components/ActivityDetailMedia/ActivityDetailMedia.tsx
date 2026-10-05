@@ -1,4 +1,4 @@
-import { BannerImage } from "@/components/molecules/BannerImage";
+import { BannerFrame, BannerImage } from "@/components/molecules/BannerImage";
 import type { ActivityDetailMediaProps } from "@/features/activities/components/ActivityDetailMedia/types/activity-detail-media.types";
 import { getActivityBannerUrl } from "@/features/activities/utils/activity-formatters";
 
@@ -6,13 +6,12 @@ export function ActivityDetailMedia({ activity }: ActivityDetailMediaProps) {
   const bannerUrl = getActivityBannerUrl(activity.banner_path);
 
   return (
-    <div className="relative aspect-[25/8] min-w-0 overflow-hidden rounded-xl border border-cci-100 bg-cci-800 shadow-sm shadow-cci-950/10 sm:rounded-2xl">
+    <BannerFrame className="rounded-xl border border-cci-100 bg-cci-800 shadow-sm shadow-cci-950/10 sm:rounded-2xl">
       {bannerUrl ? (
         <BannerImage
           alt={`Banner de ${activity.title}`}
+          backdropIntensity="prominent"
           backdropTone="green"
-          className="px-2 sm:px-3"
-          fit="cover"
           preload
           sizes="(min-width: 1280px) 960px, (min-width: 768px) 90vw, 100vw"
           src={bannerUrl}
@@ -25,6 +24,6 @@ export function ActivityDetailMedia({ activity }: ActivityDetailMediaProps) {
           <p className="relative text-lg font-semibold leading-tight sm:text-2xl md:text-3xl">Cámara de Comercio de Ica</p>
         </div>
       )}
-    </div>
+    </BannerFrame>
   );
 }

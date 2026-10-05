@@ -477,3 +477,45 @@ Inicio, eventos, capacitaciones, historial y cursos comparten tarjetas con image
 Inicio comienza con el hero. Se elimina el encabezado superior y sus botones duplicados; el H1 se integra en el buscador existente. Las actividades se exploran en filas con controles de navegación cuando hay varias opciones. No se añaden cursos a inicio y se mantiene el video original del Campus. Los títulos completos siguen en HTML, con navegación de teclado, encuadre íntegro, fondos animados, precios, preventa y acciones según disponibilidad. El campus privado conserva progreso e ingreso a sus cursos.
 
 Verificación local: 243 unitarias y lint aprobados tras retirar el encabezado duplicado. Inicio conserva un H1, el video original y cero tarjetas de cursos. En 375 px se verificaron inicio, eventos, cursos y capacitaciones sin desbordamientos, incluidos filtros desplegados; en 768 px, historial en dos columnas; en 1440 px, distribución horizontal del resultado único y navegación a inscripción exclusiva. Búsqueda GET y filtros activos conservados; imágenes cargadas y encuadre completo. Cierre aprobado: `yarn typecheck`, `yarn build`, cinco pruebas HTTP de SEO y ocho comprobaciones HTTP de páginas/contactos. La compilación inicial sin acceso de red no descargó las fuentes de Google; el reintento con acceso terminó correctamente. Vista previa compilada disponible en el puerto 3100; publicación externa a cargo del usuario.
+
+
+## Banners 5:2 y resplandor continuo — 05/10/2026
+
+Este ajuste sustituye el encuadre 25:8 y las franjas laterales descritos en la revisión del 02/10/2026. La medida recomendada es 2000 × 800 px y no constituye una restricción de carga.
+
+| Caso | Criterio de aceptación | Resultado |
+|---|---|---|
+| BAN-01 | Inicio, catálogos, historial y detalles usan marcos 5:2 en móvil, tableta y escritorio; el texto largo no estira las tarjetas destacadas | APROBADO |
+| BAN-02 | Imágenes 5:2 llenan el marco; panorámicas, cuadradas y verticales conservan toda la imagen, centrada y sin relleno interior | APROBADO |
+| BAN-03 | Fondo verde continuo y dos halos lima detrás de la imagen; ciclos de 2,5/3 s, intensidad discreta en tarjetas y más visible en hero/detalles | APROBADO |
+| BAN-04 | Pausa global mediante teclado y movimiento reducido dejan el fondo iluminado y estático; elementos decorativos no interceptan interacciones | APROBADO |
+| BAN-05 | Textos de actividades relacionadas y frase del Campus fuera del banner; sin desbordamiento, recortes de imagen ni saltos al cargar | APROBADO |
+| BAN-06 | Administración indica 2000 × 800, 5:2; se mantienen formatos, 5 MB y compatibilidad con originales históricos | APROBADO |
+| BAN-07 | Video del Campus, ausencia de tarjetas de cursos en inicio, rutas, caché y precarga única del carrusel se conservan | APROBADO |
+| BAN-08 | Unitarias, lint, typecheck y build completan sin errores | APROBADO |
+
+No se requieren migraciones, seeds, cambios de datos ni reemplazo de archivos. Publicación del frontend a cargo del usuario.
+
+Evidencia: 242 pruebas unitarias, 5 pruebas HTTP de SEO, `yarn lint`, `yarn typecheck` y `yarn build` aprobados. Revisión de ocho rutas públicas a 375×812, 768×1024 y 1440×900; 24 mediciones con proporción 2,5 (tolerancia de redondeo 0,005) y sin desbordamiento. Ficha de capacitación comprobada también a 812×375. Prueba visual temporal fuera del repositorio con imágenes SVG 5:2, panorámica, cuadrada y vertical, y tarjeta destacada de título largo: imagen completa y marco estable. Movimiento y pausa comprobados en navegador, incluyendo cambio con barra espaciadora y foco en la casilla nativa del portal. Movimiento reducido verificado en las reglas compiladas: ambas animaciones están dentro de `prefers-reduced-motion: no-preference`; el fondo y los halos permanecen visibles sin animación. Medida y compatibilidad de carga de actividades comprobadas mediante renderizado del componente; cursos reutilizan la misma indicación con formatos y límite intactos. No se efectuaron guardados administrativos.
+
+Ajuste de intensidad del 05/10/2026: el movimiento de los halos recorre ±18 % horizontal y ±15 % vertical, con mayor brillo. Dos líneas LED lima de 2 px recorren los bordes superior e inferior cada 3 y 3,8 segundos, para que el movimiento también se vea cuando la imagen llena el marco 5:2. No añaden relleno al marco ni alteran el encuadre. Ambas líneas respetan la pausa global y el movimiento reducido.
+
+Verificación del ajuste LED: 6 pruebas unitarias de banners, lint de los componentes modificados, `yarn typecheck` y `yarn build` aprobados. En inicio se comprobaron desplazamientos distintos entre lecturas, ciclos de 2,5/3 s y 3/3,8 s, líneas de 2 px, proporción 5:2 y ausencia de desbordamiento. La pausa con casilla y barra espaciadora detiene/reanuda tanto halos como líneas LED; las cuatro animaciones compiladas están condicionadas a movimiento no reducido.
+
+Refuerzo LED final: líneas de 8 px en hero/detalles y 6 px en tarjetas, con núcleo blanco, sombra lima y ciclos de 1,8/2,4 s; halos de 2,5/3 s y recorridos de ±25 %/±20 %. Sustituye los valores anteriores de intensidad y velocidad.
+
+Verificación del refuerzo final: 6 unitarias de banners, lint de los componentes modificados y compilación con TypeScript aprobados. El navegador confirmó líneas de 8/6 px, núcleo blanco, resplandor lima de 16 px, ciclos de 1,8/2,4 s y marcos 5:2 sin desbordamiento.
+
+Efecto al pasar el mouse: hero y tarjetas usan brillo al 90 %, sin aumentar luminosidad. Se verificó en navegador `brightness(0.9)` con hover activo y marco 5:2; las 6 unitarias de banners, lint de los archivos modificados y build con TypeScript pasaron.
+
+### Estilos con Tailwind y movimiento nativo
+
+Las luces y la entrada de tarjetas pasan a Web Animations, conservando recorridos e intensidad. Esta implementación sustituye las referencias anteriores a keyframes CSS compilados.
+
+| Caso | Criterio de aceptación | Resultado |
+|---|---|---|
+| EST-01 | `globals.css` contiene solo importación de Tailwind y tokens de colores/fuentes, sin selectores ni keyframes de componentes | APROBADO |
+| EST-02 | Las cuatro luces se pausan y reanudan sin reiniciar su progreso; movimiento reducido mantiene iluminación estática y los efectos se limpian al desmontar | APROBADO |
+| EST-03 | El botón de WhatsApp mantiene márgenes seguros y separación de la barra fija de cursos en móvil mediante Tailwind | APROBADO |
+
+Evidencia de la implementación sin CSS manual: 244 unitarias, `yarn lint`, `yarn typecheck` y `yarn build` aprobados. El navegador confirmó desplazamiento de luces, pausa estable entre lecturas y reanudación por teclado. Movimiento reducido y limpieza de efectos comprobados mediante pruebas del controlador. Inicio y curso mantienen 5:2, sin desbordamientos; WhatsApp conserva 16 px de margen en móvil, 88 px sobre la barra fija del curso y 24 px en escritorio. `globals.css` contiene exclusivamente la importación de Tailwind y tokens de colores/fuentes.
