@@ -46,13 +46,13 @@ export default async function EventHistoryPage({ searchParams }: PublicCatalogPa
       <header className="mb-8 mt-6 max-w-3xl">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-600">Cámara de Comercio de Ica</p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-cci-950 sm:text-4xl">Eventos realizados en Ica</h1>
-        <p className="mt-4 leading-7 text-slate-700">Explora los encuentros y conferencias de nuestra agenda anterior. Cada ficha conserva la descripción, las fechas y el programa publicado del evento. Las inscripciones de estas actividades han finalizado.</p>
+        <p className="mt-4 leading-7 text-slate-700">Consulta los encuentros anteriores de la Cámara de Comercio de Ica. Sus fichas conservan las fechas y el programa; las inscripciones han finalizado.</p>
       </header>
       <ActivityFilters categories={categories} filters={filters} />
       <section aria-labelledby="event-history-results" className="mt-10">
         <h2 className="text-2xl font-semibold text-cci-950" id="event-history-results">Encuentros anteriores</h2>
         <p className="mt-2 text-sm text-slate-600">{result.total} {result.total === 1 ? "evento realizado" : "eventos realizados"}, del más reciente al más antiguo.</p>
-        {result.activities.length ? <div className="mt-7 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{result.activities.map((activity) => <ActivityCard activity={activity} key={activity.id} />)}</div> : <p className="mt-7 rounded-2xl border border-dashed border-cci-200 px-6 py-10 text-center text-slate-600">{hasPublicActivityFilters(filters) ? "No se encontraron eventos realizados con estos filtros." : "Los eventos aparecerán aquí cuando termine su última sesión."}</p>}
+        {result.activities.length ? <div className="mt-7 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{result.activities.map((activity) => <ActivityCard activity={activity} key={activity.id} presentation="visual" />)}</div> : <p className="mt-7 rounded-2xl border border-dashed border-cci-200 px-6 py-10 text-center text-slate-600">{hasPublicActivityFilters(filters) ? "No se encontraron eventos realizados con estos filtros." : "Los eventos aparecerán aquí cuando termine su última sesión."}</p>}
         {result.pageCount > 1 ? <div className="mt-9"><Pagination page={result.page} pageCount={result.pageCount} pathname={ROUTES.eventHistory} searchParams={{ categoria: filters.category, fecha: filters.date, modalidad: filters.modality, precio: filters.price, q: filters.query }} /></div> : null}
       </section>
     </div>

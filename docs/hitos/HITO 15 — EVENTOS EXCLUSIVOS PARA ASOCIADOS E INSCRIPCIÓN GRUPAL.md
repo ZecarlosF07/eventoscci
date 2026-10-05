@@ -5,6 +5,8 @@
 
 > Actualización del 02/10/2026: los eventos pagados admiten preventa opcional por público, con vencimiento en hora de Lima y precio congelado al inscribirse. Consultar [Preventa de eventos](../integraciones/preventa-eventos.md) para configuración, compatibilidad y validación transaccional.
 
+> Actualización de interfaz del 05/10/2026: en el detalle y el formulario de inscripción de eventos exclusivos para asociados se oculta el botón flotante de comunidad de WhatsApp. Su tarjeta de inscripción también omite «Quiero más información», Lugar y Contacto, evitando divisores vacíos. Se conserva el contador de cierre, los precios, pases e inscripción grupal. La ubicación continúa disponible en «Cómo llegar». Eventos abiertos y capacitaciones conservan sus accesos habituales; esta regla visual no cambia la información almacenada ni las validaciones del padrón.
+
 ---
 
 # 1. Descripción del hito

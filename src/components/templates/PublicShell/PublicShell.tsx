@@ -1,4 +1,4 @@
-import { WhatsAppCommunityButton } from "@/components/atoms/WhatsAppCommunityButton";
+import { PublicCommunityButton } from "@/components/organisms/PublicCommunityButton/PublicCommunityButton";
 import { PublicFooter } from "@/components/organisms/PublicFooter";
 import { PublicHeader } from "@/components/organisms/PublicHeader";
 import type { PublicShellProps } from "@/components/templates/PublicShell/types/public-shell.types";
@@ -11,7 +11,7 @@ export function PublicShell({ children }: PublicShellProps) {
         <PublicHeader />
         <main className="flex-1">{children}</main>
         <PublicFooter />
-        <WhatsAppCommunityButton />
+        <PublicCommunityButton />
       </div>
     </PublicAccountProvider>
   );

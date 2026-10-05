@@ -4,6 +4,7 @@ import { ActivityParticipationPrices } from "@/features/activities/components/Ac
 import { getWhatsAppUrl } from "@/features/activities/utils/activity-contact";
 import { hasActivityEnded } from "@/features/activities/utils/activity-lifecycle";
 import { getActivityPricingConfig } from "@/features/activities/utils/activity-pricing";
+import { canShowActivityPublicContact } from "@/features/activities/utils/activity-public-contact";
 import { RegistrationCountdown } from "@/features/registrations/components/RegistrationCountdown";
 import { RegistrationCta } from "@/features/registrations/components/RegistrationCta";
 
@@ -21,6 +22,8 @@ export function ActivityConversionPanel({
   availability,
   initialNow,
 }: ActivityConversionPanelProps) {
+  const showPublicContact = canShowActivityPublicContact(activity.type, activity.members_only);
+  const showFacts = Boolean(activity.capacity || (showPublicContact && (activity.venue || activity.contact)));
   const whatsAppUrl = getWhatsAppUrl(activity.contact?.whatsapp_phone ?? null, activity.title);
   const isFinished = activity.status === "finished" || hasActivityEnded(activity.dates, new Date(initialNow));
   const canCountDown = Boolean(
@@ -49,7 +52,7 @@ export function ActivityConversionPanel({
       ) : <p className="mt-5 rounded-2xl bg-slate-50 p-4 text-base text-slate-700">Ya no se aceptan inscripciones.</p>}
       {!isUnavailable ? <div className="mt-5">{availability ? <RegistrationCta activityId={activity.id} activitySlug={activity.slug} activityType={activity.type} availability={availability} /> : <p className="rounded-xl bg-slate-100 p-4 text-center text-base font-semibold text-slate-600">Disponibilidad no confirmada</p>}</div> : null}
       {availability?.is_open && !activity.is_free ? <p className="mt-2 text-center text-sm leading-relaxed text-slate-600">{activity.member_free_passes_per_company > 0 && activity.members_only && activity.type === "event" ? "Los pases gratuitos disponibles se confirman al registrarse. Las demás plazas se confirman tras validar el pago." : "El personal de CCI confirmará tu inscripción después de validar el pago."}</p> : null}
-      {whatsAppUrl ? <a className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-cci-700 bg-white px-4 py-2 text-base font-semibold text-cci-950 transition hover:bg-cci-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-800" href={whatsAppUrl} rel="noreferrer" target="_blank"><WhatsAppIcon /> Quiero más información</a> : null}
+      {showPublicContact && whatsAppUrl ? <a className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-cci-700 bg-white px-4 py-2 text-base font-semibold text-cci-950 transition hover:bg-cci-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cci-800" href={whatsAppUrl} rel="noreferrer" target="_blank"><WhatsAppIcon /> Quiero más información</a> : null}
       {canCountDown && activity.registration_close_at ? (
         <div className="mt-5 rounded-2xl bg-cci-950 p-4"><RegistrationCountdown deadline={activity.registration_close_at} initialNow={initialNow} /></div>
       ) : null}
@@ -62,11 +65,11 @@ export function ActivityConversionPanel({
           mode={activity.certificate_mode}
         />
       </div> : null}
-      <dl className="mt-6 space-y-3 border-t border-cci-100 pt-5 text-base">
+      {showFacts ? <dl className="mt-6 space-y-3 border-t border-cci-100 pt-5 text-base">
         {activity.capacity ? <div className="flex justify-between gap-4"><dt className="text-slate-600">Capacidad</dt><dd className="font-semibold text-cci-950">{activity.capacity} personas</dd></div> : null}
-        {activity.venue ? <div><dt className="text-slate-600">Lugar</dt><dd className="mt-1 font-semibold text-cci-950">{activity.venue.name}</dd></div> : null}
-        {activity.contact ? <div><dt className="text-slate-600">Contacto</dt><dd className="mt-1 font-semibold text-cci-950">{activity.contact.contact_name}</dd></div> : null}
-      </dl>
+        {showPublicContact && activity.venue ? <div><dt className="text-slate-600">Lugar</dt><dd className="mt-1 font-semibold text-cci-950">{activity.venue.name}</dd></div> : null}
+        {showPublicContact && activity.contact ? <div><dt className="text-slate-600">Contacto</dt><dd className="mt-1 font-semibold text-cci-950">{activity.contact.contact_name}</dd></div> : null}
+      </dl> : null}
     </aside>
   );
 }

@@ -1623,3 +1623,9 @@ El catálogo separa próximos encuentros de hasta seis eventos realizados. El hi
 La administración de eventos permite publicar el programa en texto junto con sus imágenes. Fechas, descripción y ubicación siguen disponibles como contenido legible. Los ponentes vinculados se usan en los datos estructurados del evento y sus sesiones; no se completan nombres ficticios para eliminar advertencias de Google. Se conservan el catálogo y las URLs de capacitaciones, las inscripciones existentes y sus importes. La consulta del historial no modifica datos de actividades o participantes.
 
 Consultar [SEO e indexación](integraciones/seo-indexacion.md) para las reglas técnicas, enlaces externos preparados y seguimiento en Search Console después de la publicación.
+
+### Presentación pública unificada (05/10/2026)
+
+Los catálogos de eventos, capacitaciones y cursos utilizan tarjetas visuales con banners completos, título, fecha o duración, precios y acceso al detalle. Se distribuyen en tres columnas en escritorio, dos en tableta y una en móvil; un único resultado usa el ancho disponible. Los filtros adicionales de actividades se abren bajo demanda y permanecen abiertos al aplicar criterios. Se conservan las URLs, la información completa en las fichas y las reglas de inscripción.
+
+Inicio comienza con el banner, sin encabezado o botones que repitan el menú. Su H1 se integra en el buscador y las actividades se exploran en filas con navegación cuando hay varias opciones. El video original del Campus permanece después de las actividades; no se incorporan tarjetas de cursos a inicio por ahora.

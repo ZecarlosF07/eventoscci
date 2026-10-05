@@ -458,3 +458,22 @@ Verificación visual aprobada a 1440×900, 768×1024 y 390×844, sin desbordamie
 | SEO-E10 | Search Console antes/después, publicación frontend, Rich Results en producción y enlaces institucionales | Operación externa | PENDIENTE, requiere publicación y acceso a la propiedad |
 
 Cierre local: 243 unitarias, 24 comprobaciones SQL y cinco pruebas HTTP/HTML aprobadas; `yarn lint`, `yarn typecheck` y `yarn build` correctos. El marcado incluye los ponentes reales también en las sesiones; su ausencia sigue siendo una advertencia recomendada cuando no hay ponentes registrados. Evidencia, mediciones y límites en [Entrega SEO de inicio y eventos](seo-inicio-eventos-2026-10-05.md).
+
+## Contacto público en eventos exclusivos (05/10/2026)
+
+| Caso | Resultado esperado | Evidencia |
+|---|---|---|
+| Detalle exclusivo para asociados, listado o por enlace directo | Sin comunidad de WhatsApp, «Quiero más información», Lugar ni Contacto en la tarjeta; sin divisor vacío | Navegador local: Prueba aniversario, no listado |
+| Inscripción del mismo evento | Sin comunidad de WhatsApp; conserva el formulario grupal y precios | Navegador local: navegación desde «Inscribirme» |
+| Evento abierto | Conserva un único botón de comunidad, consulta por WhatsApp y datos de lugar/contacto | Navegador local: encuentro de sostenibilidad |
+| Contador y datos del evento | Contador e inscripción visibles; ubicación disponible en «Cómo llegar» | Navegador local, sin desbordamiento horizontal |
+
+La condición depende de `type = event` y `members_only`, no de la visibilidad del catálogo. No requiere migración ni modifica registros o reglas de inscripción.
+
+## Presentación unificada del portal (05/10/2026)
+
+Inicio, eventos, capacitaciones, historial y cursos comparten tarjetas con imagen completa, título siempre visible y acciones claras. Los catálogos usan tres columnas en escritorio, dos en tableta y una en móvil; el único resultado ocupa el ancho con distribución horizontal en escritorio. La agenda mantiene su H2 y una explicación breve. Los filtros de actividades están plegados inicialmente y abiertos cuando hay criterios activos; su búsqueda y envío siguen siendo GET.
+
+Inicio comienza con el hero. Se elimina el encabezado superior y sus botones duplicados; el H1 se integra en el buscador existente. Las actividades se exploran en filas con controles de navegación cuando hay varias opciones. No se añaden cursos a inicio y se mantiene el video original del Campus. Los títulos completos siguen en HTML, con navegación de teclado, encuadre íntegro, fondos animados, precios, preventa y acciones según disponibilidad. El campus privado conserva progreso e ingreso a sus cursos.
+
+Verificación local: 243 unitarias y lint aprobados tras retirar el encabezado duplicado. Inicio conserva un H1, el video original y cero tarjetas de cursos. En 375 px se verificaron inicio, eventos, cursos y capacitaciones sin desbordamientos, incluidos filtros desplegados; en 768 px, historial en dos columnas; en 1440 px, distribución horizontal del resultado único y navegación a inscripción exclusiva. Búsqueda GET y filtros activos conservados; imágenes cargadas y encuadre completo. Cierre aprobado: `yarn typecheck`, `yarn build`, cinco pruebas HTTP de SEO y ocho comprobaciones HTTP de páginas/contactos. La compilación inicial sin acceso de red no descargó las fuentes de Google; el reintento con acceso terminó correctamente. Vista previa compilada disponible en el puerto 3100; publicación externa a cargo del usuario.

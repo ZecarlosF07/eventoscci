@@ -3,7 +3,6 @@ import type { HomePageTemplateProps } from "@/components/templates/HomePageTempl
 import { HomeActivitySection } from "@/features/home/components/HomeActivitySection";
 import { HomeCourseSection } from "@/features/home/components/HomeCourseSection";
 import { HomeHero } from "@/features/home/components/HomeHero";
-import { HomeIntroduction } from "@/features/home/components/HomeIntroduction/HomeIntroduction";
 import { HomeSearch } from "@/features/home/components/HomeSearch";
 
 export function HomePageTemplate({ content }: HomePageTemplateProps) {
@@ -11,18 +10,16 @@ export function HomePageTemplate({ content }: HomePageTemplateProps) {
     <div>
       <HomeHero activities={[...content.events, ...content.trainings]} />
       <HomeSearch />
-      <HomeIntroduction />
-      <div className="mx-auto max-w-[90rem] px-4 pb-16 pt-2 sm:px-6 sm:pb-20 sm:pt-4 lg:px-8">
-        <HomeActivitySection activities={content.events} description="Encuentros para conectar con oportunidades, conocimiento y la comunidad empresarial de Ica." href="/eventos" title="Próximos eventos en Ica, Perú" />
-        <HomeActivitySection activities={content.trainings} description="Capacitaciones presenciales en Ica y experiencias virtuales para fortalecer tus capacidades y las de tu empresa." href="/capacitaciones" title="Capacitaciones destacadas" />
+      <div className="mx-auto max-w-7xl px-5 pb-12 pt-2 sm:px-8 sm:pb-16">
+        <HomeActivitySection activities={content.events} description="Encuentros para conectar con la comunidad empresarial." href="/eventos" title="Próximos eventos en Ica, Perú" />
+        <HomeActivitySection activities={content.trainings} description="Aprendizaje práctico para ti y tu empresa." href="/capacitaciones" title="Capacitaciones destacadas" />
         <HomeCourseSection />
-        <section className="mt-12 overflow-hidden rounded-2xl border border-cci-100 bg-cci-100 px-5 py-8 sm:mt-16 sm:rounded-[2rem] sm:px-10 sm:py-10 lg:flex lg:items-center lg:justify-between lg:gap-12">
+        <section className="mt-6 rounded-2xl border border-cci-100 bg-cci-100 p-5 sm:p-6 lg:flex lg:items-center lg:justify-between lg:gap-8">
           <div className="max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-cci-600">Comunidad empresarial</p>
-            <Heading className="mt-3" level={2}>Más oportunidades para los asociados CCI</Heading>
-            <p className="mt-4 leading-7 text-slate-700">Accede a precios preferenciales y actividades exclusivas dentro de una red que impulsa el desarrollo empresarial de Ica.</p>
+            <Heading level={2}>Más oportunidades para los asociados CCI</Heading>
+            <p className="mt-2 text-sm leading-6 text-slate-700">Accede a precios preferenciales y encuentros exclusivos.</p>
           </div>
-          <a className="mt-7 inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-cci-950 px-5 text-sm font-bold text-white hover:bg-cci-800 lg:mt-0" href="https://camaraica.org.pe/formulario-asociados/" rel="noreferrer" target="_blank">Quiero asociarme</a>
+          <a className="mt-4 inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-cci-950 px-5 text-sm font-bold text-white hover:bg-cci-800 lg:mt-0" href="https://camaraica.org.pe/formulario-asociados/" rel="noreferrer" target="_blank">Quiero asociarme</a>
         </section>
       </div>
     </div>

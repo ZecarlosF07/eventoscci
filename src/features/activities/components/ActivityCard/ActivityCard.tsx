@@ -1,9 +1,5 @@
-import Link from "next/link";
-
 import { Badge } from "@/components/atoms/Badge";
-import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
-import { BannerImage } from "@/components/molecules/BannerImage";
 import { PriceDisplay } from "@/components/molecules/PriceDisplay";
 import { StatusBadge } from "@/components/molecules/StatusBadge";
 import type { ActivityCardProps } from "@/features/activities/components/ActivityCard/types/activity-card.types";
@@ -20,8 +16,10 @@ import {
   getActivityEndTimestamp,
 } from "@/features/activities/utils/activity-lifecycle";
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
+import { CatalogCard } from "@/features/catalog/components/CatalogCard/CatalogCard";
 
-export function ActivityCard({ activity }: ActivityCardProps) {
+export function ActivityCard({ activity, presentation = "default" }: ActivityCardProps) {
+  const isVisual = presentation !== "default";
   const now = new Date();
   const nextDate = getNextActivityDate(activity.dates);
   const endedByDate = hasActivityEnded(activity.dates, now);
@@ -31,49 +29,28 @@ export function ActivityCard({ activity }: ActivityCardProps) {
   const canRegister = canActivityInviteRegistration(activity, now);
   const bannerUrl = getActivityBannerUrl(activity.banner_path);
   const href = getPublicActivityRoute(activity.type, activity.slug);
-  const actionId = `activity-${activity.id}-action`;
-  const titleId = `activity-${activity.id}-title`;
-
   return (
-    <Link aria-labelledby={`${titleId} ${actionId}`} className="group block h-full rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cci-800" href={href}>
-      <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-cci-100 bg-white shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:border-cci-200 group-hover:shadow-xl">
-        <div className="relative aspect-[5/2] overflow-hidden bg-cci-950">
-          {bannerUrl ? (
-            <BannerImage alt={`Banner de ${activity.title}`} className="transition duration-300 group-hover:brightness-110" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" src={bannerUrl} />
-          ) : (
-            <div className="relative flex h-full items-center justify-center overflow-hidden text-4xl font-bold tracking-[-0.08em] text-white/85">
-              <span className="absolute -right-10 -top-16 size-52 rounded-full border border-cci-lime/50" />
-              <span className="absolute -right-4 -top-10 size-40 rounded-full border border-cci-lime/25" />
-              <span>CCI</span>
-            </div>
-          )}
-        </div>
-        <div className="flex flex-1 flex-col space-y-4 p-5">
-          <div className="flex flex-wrap gap-2">
-            <Badge>{ACTIVITY_TYPE_LABELS[activity.type]}</Badge>
-            <Badge>{getModalityLabel(activity.modality)}</Badge>
-            {activity.members_only ? <Badge variant="warning">Solo asociados</Badge> : null}
-            {activity.status === "cancelled" ? <StatusBadge status={activity.status} /> : null}
-            {activity.status !== "cancelled" && isFinished ? <StatusBadge status="finished" /> : null}
-          </div>
-          <div>
-            <Heading id={titleId} level={3}>{activity.title}</Heading>
-            {activity.category ? <Text className="mt-1" size="sm">{activity.category.name}</Text> : null}
-          </div>
-          {activity.short_description ? <Text size="sm">{activity.short_description}</Text> : null}
-          {nextDate ? (
-            <Text className="font-semibold text-cci-800" size="sm">
-              {endedByDate ? "Finalizó el " : ""}{formatActivityDate(endedByDate ? endedDate ?? nextDate.starts_at : nextDate.starts_at)}
-            </Text>
-          ) : null}
-          <div className="mt-auto flex items-end justify-between gap-4 border-t border-cci-100 pt-4">
-            <PriceDisplay initialNow={now.getTime()} type={activity.type} presaleGeneralPrice={activity.presale_general_price} presaleMemberPrice={activity.presale_member_price} presaleEndsAt={activity.presale_ends_at} generalPrice={activity.general_price} isFree={activity.is_free} memberPrice={activity.member_price} membersOnly={activity.members_only} />
-            <span className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl bg-cci-950 px-4 py-2 text-sm font-bold text-white transition group-hover:bg-cci-800" id={actionId}>
-              {canRegister ? "Inscríbete" : "Ver detalles"} <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
-            </span>
-          </div>
-        </div>
-      </article>
-    </Link>
+    <CatalogCard
+      action={canRegister ? "Inscríbete" : "Ver detalles"}
+      bannerUrl={bannerUrl}
+      featured={presentation === "featured"}
+      href={href}
+      id={`activity-${activity.id}`}
+      labels={(
+        <>
+          {!isVisual ? <Badge>{ACTIVITY_TYPE_LABELS[activity.type]}</Badge> : null}
+          <Badge>{getModalityLabel(activity.modality)}</Badge>
+          {activity.members_only ? <Badge variant="warning">Solo asociados</Badge> : null}
+          {activity.status === "cancelled" ? <StatusBadge status={activity.status} /> : null}
+          {activity.status !== "cancelled" && isFinished ? <StatusBadge status="finished" /> : null}
+        </>
+      )}
+      metadata={nextDate ? <Text className="font-semibold text-cci-800" size="sm">{endedByDate ? "Finalizó el " : ""}{formatActivityDate(endedByDate ? endedDate ?? nextDate.starts_at : nextDate.starts_at)}</Text> : null}
+      price={<PriceDisplay initialNow={now.getTime()} type={activity.type} presaleGeneralPrice={activity.presale_general_price} presaleMemberPrice={activity.presale_member_price} presaleEndsAt={activity.presale_ends_at} generalPrice={activity.general_price} isFree={activity.is_free} memberPrice={activity.member_price} membersOnly={activity.members_only} />}
+      title={activity.title}
+    >
+      {!isVisual && activity.category ? <Text size="sm">{activity.category.name}</Text> : null}
+      {!isVisual && activity.short_description ? <Text size="sm">{activity.short_description}</Text> : null}
+    </CatalogCard>
   );
 }

@@ -19,6 +19,7 @@ test("inicio renderiza un único H1 permanente antes de las secciones y conserva
   assert.equal((html.match(/<h1[ >]/g) ?? []).length, 1);
   assert.match(html, /<h1[^>]*>Eventos, capacitaciones y cursos en Ica, Perú<\/h1>/);
   assert.match(html, /<h2[^>]*>Próximos eventos en Ica, Perú<\/h2>/);
+  for (const route of ["/eventos", "/capacitaciones", "/cursos"]) assert.ok(html.includes(`href="${route}"`));
   assert.match(html, /rel="canonical"/);
 });
 

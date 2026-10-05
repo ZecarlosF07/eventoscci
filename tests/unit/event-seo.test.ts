@@ -83,11 +83,10 @@ test("programa y dirección del evento permanecen en HTML sin depender de imáge
   assert.equal(structured(training)["@type"], "Event");
 });
 
-test("inicio presenta un H1 permanente y enlaces rastreables a los tres catálogos", () => {
+test("inicio conserva un H1 permanente al compactar el buscador", () => {
   const html = renderToStaticMarkup(createElement(HomeIntroduction));
   assert.equal((html.match(/<h1/g) ?? []).length, 1);
   assert.match(html, /Eventos, capacitaciones y cursos en Ica, Perú/);
-  for (const route of ["/eventos", "/capacitaciones", "/cursos"]) assert.ok(html.includes('href="' + route + '"'));
 });
 
 test("reserva slug normalizado del historial", () => {

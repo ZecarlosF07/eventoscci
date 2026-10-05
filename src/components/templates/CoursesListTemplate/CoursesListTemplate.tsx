@@ -5,6 +5,7 @@ import { FormField } from "@/components/molecules/FormField";
 import { Pagination } from "@/components/molecules/Pagination";
 import type { CoursesListTemplateProps } from "@/components/templates/CoursesListTemplate/types/courses-list-template.types";
 import { CatalogHeroCarousel } from "@/features/catalog/components/CatalogHeroCarousel";
+import { CatalogSectionHeader } from "@/features/catalog/components/CatalogSectionHeader/CatalogSectionHeader";
 import { createCourseCarouselSlides } from "@/features/catalog/utils/catalog-carousel";
 import { CourseCard } from "@/features/courses/components/CourseCard";
 
@@ -19,14 +20,14 @@ export function CoursesListTemplate({ courses, featuredCourses, page, pageCount,
           <div className="flex-1"><FormField label="Buscar cursos" name="q"><Input defaultValue={query} id="q" name="q" placeholder="Título o tema del curso" /></FormField></div>
           <div className="flex items-end"><Button className="w-full sm:w-auto" type="submit">Buscar</Button></div>
         </form>
+        <div className="mt-6 sm:mt-8"><CatalogSectionHeader description="Formación virtual de la Cámara de Comercio de Ica. Elige un curso y aprende a tu ritmo." eyebrow={`${total} ${total === 1 ? "curso disponible" : "cursos disponibles"}`} title="Explora nuestros cursos" /></div>
         {courses.length ? (
-          <section className="mt-12">
-            <div className="flex flex-wrap items-end justify-between gap-3"><div className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-600">Aprende a tu ritmo</p><h2 className="mt-2 text-2xl font-bold tracking-tight text-cci-950 sm:text-3xl">Explora nuestros cursos</h2><Text className="mt-3">Formación virtual desde Ica para profesionales y empresas de todo el Perú.</Text></div><Text size="sm">{total} {total === 1 ? "curso disponible" : "cursos disponibles"}</Text></div>
-            <div className="mt-7 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{courses.map((course) => <CourseCard course={course} key={course.id} />)}</div>
+          <section aria-label="Cursos disponibles" className="mt-5">
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">{courses.map((course) => <div className={courses.length === 1 ? "md:col-span-2 lg:col-span-3" : undefined} key={course.id}><CourseCard course={course} featured={courses.length === 1} /></div>)}</div>
             {pageCount > 1 ? <div className="mt-9"><Pagination page={page} pageCount={pageCount} pathname={pathname} searchParams={{ q: query }} /></div> : null}
           </section>
         ) : (
-          <div className="mt-10 rounded-3xl border border-dashed border-cci-200 bg-white p-12 text-center"><p className="text-lg font-bold text-cci-950">No encontramos cursos</p><Text className="mt-2">Prueba con otro título, tema o instructor.</Text></div>
+          <div className="mt-5 rounded-2xl border border-dashed border-cci-200 bg-white px-6 py-8 text-center"><p className="text-lg font-bold text-cci-950">No encontramos cursos</p><Text className="mt-2">Prueba con otro título, tema o instructor.</Text></div>
         )}
       </div>
     </div>

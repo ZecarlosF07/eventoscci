@@ -2,4 +2,5 @@ import type { ActivityListItem } from "@/features/activities/types/activity.type
 
 export interface ActivityCardProps {
   activity: ActivityListItem;
+  presentation?: "default" | "visual" | "featured";
 }
