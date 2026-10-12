@@ -8,9 +8,10 @@ import {
   certificateSignerFormSchema,
   certificateTemplateFormSchema,
 } from "@/features/certificates/schemas/certificate.schema";
-import { uploadTemplateAsset } from "@/features/certificates/services/certificate-template-assets";
+import { CERTIFICATE_BUCKET } from "@/features/certificates/constants/certificate.constants";
 import type { CertificateSigner, CertificateTemplateFormState } from "@/features/certificates/types/certificate.types";
 import { checkboxValue, signerFromFormData } from "@/features/certificates/utils/certificate-form-data";
+import { consumeStagedImage } from "@/features/media/services/consume-staged-image";
 import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getSupabaseErrorMessage, logSupabaseError } from "@/lib/supabase/supabase-error";
@@ -35,9 +36,9 @@ export async function saveCertificateTemplateAction(
   const signers = Array.from({ length: MAX_SIGNERS }, (_, index) => {
     const signer = signerFromFormData(formData, index);
     const title = String(formData.get(`signer_title_${index}`) ?? "").trim();
-    const signature = formData.get(`signature_${index}`);
+    const stagedSignaturePath = String(formData.get(`signature_${index}_staged_path`) ?? "");
     const existingSignaturePath = String(formData.get(`existing_signature_path_${index}`) ?? "");
-    const slotHasContent = Boolean(title || existingSignaturePath || (signature instanceof File && signature.size));
+    const slotHasContent = Boolean(title || existingSignaturePath || stagedSignaturePath);
 
     if (!signer) {
       if (slotHasContent) signerErrors[`signer_name_${index}`] = ["Ingresa el nombre de este firmante."];
@@ -63,17 +64,26 @@ export async function saveCertificateTemplateAction(
 
   const client = await createServerSupabaseClient();
   const templateId = parsed.data.id || crypto.randomUUID();
-  const background = formData.get("background");
+  const stagedBackgroundPath = String(formData.get("background_staged_path") ?? "");
   let backgroundPath = typeof formData.get("existing_background_path") === "string" ? String(formData.get("existing_background_path")) : "";
   let assetField = "background";
+  const movedAssetPaths: string[] = [];
   try {
-    if (background instanceof File && background.size) backgroundPath = await uploadTemplateAsset(templateId, "background", background);
+    if (stagedBackgroundPath) {
+      backgroundPath = await consumeStagedImage(CERTIFICATE_BUCKET, stagedBackgroundPath, `templates/${templateId}/background`);
+      movedAssetPaths.push(backgroundPath);
+    }
     for (let index = 0; index < signers.length; index += 1) {
       assetField = `signature_${signers[index].sort_order}`;
-      const signature = formData.get(`signature_${signers[index].sort_order}`);
-      if (signature instanceof File && signature.size) signers[index].signature_path = await uploadTemplateAsset(templateId, "signature", signature);
+      const stagedSignaturePath = String(formData.get(`${assetField}_staged_path`) ?? "");
+      if (stagedSignaturePath) {
+        const signaturePath = await consumeStagedImage(CERTIFICATE_BUCKET, stagedSignaturePath, `templates/${templateId}/signature`);
+        signers[index].signature_path = signaturePath;
+        movedAssetPaths.push(signaturePath);
+      }
     }
   } catch (error) {
+    if (movedAssetPaths.length) await client.storage.from(CERTIFICATE_BUCKET).remove(movedAssetPaths);
     return { errors: { [assetField]: [error instanceof Error ? error.message : "No fue posible cargar esta imagen."] } };
   }
 
@@ -90,6 +100,7 @@ export async function saveCertificateTemplateAction(
     },
   });
   if (error) {
+    if (movedAssetPaths.length) await client.storage.from(CERTIFICATE_BUCKET).remove(movedAssetPaths);
     logSupabaseError("certificate_template_save_failed", error, { templateId });
     return {
       message: getSupabaseErrorMessage(error, {

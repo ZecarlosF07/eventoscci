@@ -17,14 +17,13 @@ import type {
 } from "@/features/catalogs/types/catalog.types";
 import { slugify } from "@/features/activities/utils/slugify";
 import { requireAdmin } from "@/features/auth/services/admin-session";
+import { consumeStagedImage } from "@/features/media/services/consume-staged-image";
+import { SPEAKER_IMAGE_BUCKET } from "@/features/speakers/constants/speaker.constants";
 import { getSpeakerImageUrl } from "@/features/speakers/utils/speaker-image";
 import { invalidatePublicCatalogContent } from "@/features/seo/services/invalidate-public-content";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getSupabaseErrorMessage, logSupabaseError } from "@/lib/supabase/supabase-error";
 import type { SupabaseErrorLike } from "@/lib/supabase/types/supabase-error.types";
-
-const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 function text(formData: FormData, name: string): string {
   return String(formData.get(name) ?? "").trim();
@@ -119,21 +118,6 @@ async function saveCategory(formData: FormData): Promise<CatalogOption> {
   return { description: data.description ?? undefined, id: data.id, label: data.name };
 }
 
-function validateSpeakerPhoto(file: File): void {
-  if (!IMAGE_TYPES.includes(file.type)) throw new Error("La fotografía debe ser JPG, PNG o WebP.");
-  if (file.size > MAX_IMAGE_SIZE) throw new Error("La fotografía no debe superar 5 MB.");
-}
-
-async function uploadSpeakerPhoto(file: File, speakerId: string): Promise<string> {
-  validateSpeakerPhoto(file);
-  const extension = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-  const path = `${speakerId}/${crypto.randomUUID()}.${extension}`;
-  const client = await createServerSupabaseClient();
-  const { error } = await client.storage.from("speaker-images").upload(path, file, { contentType: file.type });
-  if (error) throw error;
-  return path;
-}
-
 async function saveSpeaker(formData: FormData): Promise<CatalogOption> {
   const parsed = speakerSchema.safeParse({
     ...commonInput(formData),
@@ -151,8 +135,7 @@ async function saveSpeaker(formData: FormData): Promise<CatalogOption> {
   });
   if (!parsed.success) throw parsed.error;
 
-  const photo = formData.get("photo");
-  if (photo instanceof File && photo.size) validateSpeakerPhoto(photo);
+  const stagedPhotoPath = text(formData, "photo_staged_path");
   const client = await createServerSupabaseClient();
   const speakerPayload = {
     bio: parsed.data.bio || null,
@@ -171,15 +154,15 @@ async function saveSpeaker(formData: FormData): Promise<CatalogOption> {
   if (error) throw error;
 
   let photoPath = data.photo_path;
-  if (photo instanceof File && photo.size) {
-    photoPath = await uploadSpeakerPhoto(photo, data.id);
+  if (stagedPhotoPath) {
+    photoPath = await consumeStagedImage(SPEAKER_IMAGE_BUCKET, stagedPhotoPath, data.id);
     const { error: photoError } = await client.from("speakers").update({ photo_path: photoPath }).eq("id", data.id);
     if (photoError) {
-      await client.storage.from("speaker-images").remove([photoPath]);
+      await client.storage.from(SPEAKER_IMAGE_BUCKET).remove([photoPath]);
       throw photoError;
     }
     if (data.photo_path && data.photo_path !== photoPath) {
-      const { error: cleanupError } = await client.storage.from("speaker-images").remove([data.photo_path]);
+      const { error: cleanupError } = await client.storage.from(SPEAKER_IMAGE_BUCKET).remove([data.photo_path]);
       if (cleanupError) logSupabaseError("speaker_old_photo_cleanup_failed", cleanupError, { speakerId: data.id });
     }
   }

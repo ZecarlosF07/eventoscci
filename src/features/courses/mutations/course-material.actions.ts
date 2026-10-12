@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 
 import { COURSE_MATERIAL_BUCKET } from "@/features/courses/constants/course.constants";
-import { MAX_COURSE_MATERIAL_SIZE } from "@/features/courses/constants/course.constants";
 import { deleteCourseContentSchema, materialMetadataSchema } from "@/features/courses/schemas/course-content.schema";
+import { consumeStagedCourseMaterial } from "@/features/courses/services/consume-staged-course-material";
 import type { MaterialFormState, MaterialMetadataInput } from "@/features/courses/types/course-content.types";
 import { getAdminCourseMaterialsRoute } from "@/features/courses/utils/course-routes";
 import { requireAdmin } from "@/features/auth/services/admin-session";
@@ -52,34 +52,25 @@ export async function saveMaterialAction(
   const materialId = String(formData.get("material_id") ?? "");
   const materialType = String(formData.get("material_type") ?? "external_link") as MaterialMetadataInput["materialType"];
   const existingPath = String(formData.get("storage_path") ?? "");
-  const file = formData.get("file");
+  const stagedPath = String(formData.get("file_staged_path") ?? "");
   let storagePath = existingPath;
   let mimeType = String(formData.get("mime_type") ?? "");
   let fileSizeBytes = Number(formData.get("file_size_bytes") || 0) || null;
   const client = await createServerSupabaseClient();
 
-  if (materialType === "file" && file instanceof File && file.size) {
-    if (file.size > MAX_COURSE_MATERIAL_SIZE) return { errors: { file: ["El archivo no debe superar 50 MB."] } };
-    const extension = file.name.split(".").pop()?.toLowerCase() ?? "bin";
-    storagePath = `${courseId}/${crypto.randomUUID()}.${extension}`;
-    const { error } = await client.storage.from(COURSE_MATERIAL_BUCKET)
-      .upload(storagePath, file, { contentType: file.type, upsert: false });
-    if (error) {
-      logSupabaseError("course_material_upload_failed", error, { courseId });
+  if (materialType === "file" && stagedPath) {
+    try {
+      const consumed = await consumeStagedCourseMaterial(stagedPath, courseId);
+      storagePath = consumed.storagePath;
+      mimeType = consumed.mimeType;
+      fileSizeBytes = consumed.fileSizeBytes;
+    } catch (error) {
       return {
         errors: {
-          file: [getSupabaseErrorMessage(error, {
-            fallback: "No se pudo subir el archivo. Revisa tu conexión y vuelve a seleccionarlo.",
-            messages: {
-              "BUCKET NOT FOUND": "El almacenamiento de materiales no está disponible. Comunícate con el administrador.",
-              "MIME TYPE": "El tipo de archivo no está permitido para este material.",
-            },
-          })],
+          file: [error instanceof Error ? error.message : "No fue posible guardar el archivo. Vuelve a seleccionarlo."],
         },
       };
     }
-    mimeType = file.type;
-    fileSizeBytes = file.size;
   }
 
   const result = await saveMaterialMetadataAction({
@@ -97,6 +88,10 @@ export async function saveMaterialAction(
   if (!result.success && storagePath !== existingPath) {
     const { error } = await client.storage.from(COURSE_MATERIAL_BUCKET).remove([storagePath]);
     if (error) logSupabaseError("course_material_cleanup_failed", error, { courseId });
+  }
+  if (result.success && existingPath && (materialType === "external_link" || storagePath !== existingPath)) {
+    const { error } = await client.storage.from(COURSE_MATERIAL_BUCKET).remove([existingPath]);
+    if (error) logSupabaseError("course_material_replaced_file_cleanup_failed", error, { courseId });
   }
   return result;
 }

@@ -10,6 +10,16 @@ export type LessonFormState = ModuleFormState;
 
 export type MaterialFormState = ModuleFormState;
 
+export type StageCourseMaterialResult =
+  | { errors: Record<string, string[]>; ok: false }
+  | { formData: FormData; ok: true; paths: string[] };
+
+export interface ConsumedCourseMaterial {
+  fileSizeBytes: number;
+  mimeType: string;
+  storagePath: string;
+}
+
 export interface CourseContentManagerProps {
   courseId: string;
   lessons: Lesson[];

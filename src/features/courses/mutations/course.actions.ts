@@ -6,7 +6,6 @@ import { redirect } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
 import {
   COURSE_BANNER_BUCKET,
-  MAX_COURSE_BANNER_SIZE,
 } from "@/features/courses/constants/course.constants";
 import { courseFormSchema, courseStatusSchema } from "@/features/courses/schemas/course.schema";
 import type { CourseFormState } from "@/features/courses/types/course-form.types";
@@ -15,39 +14,11 @@ import { parseCourseFormData } from "@/features/courses/utils/course-form-data";
 import { getAdminCourseRoute } from "@/features/courses/utils/course-routes";
 import { createContentSlug } from "@/features/activities/utils/slugify";
 import { requireAdmin } from "@/features/auth/services/admin-session";
+import { consumeStagedImage } from "@/features/media/services/consume-staged-image";
 import { invalidatePublicCourseContent } from "@/features/seo/services/invalidate-public-content";
 import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getSupabaseErrorMessage, logSupabaseError, matchesSupabaseError } from "@/lib/supabase/supabase-error";
-
-const BANNER_TYPES = ["image/jpeg", "image/png", "image/webp"];
-
-function validateBanner(file: File): string | null {
-  if (!file.size) return null;
-  if (!BANNER_TYPES.includes(file.type)) return "Usa una imagen JPG, PNG o WebP.";
-  if (file.size > MAX_COURSE_BANNER_SIZE) return "La portada no debe superar 5 MB.";
-  return null;
-}
-
-async function uploadBanner(file: File, courseId: string): Promise<string> {
-  const extension = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-  const path = `${courseId}/${crypto.randomUUID()}.${extension}`;
-  const client = await createServerSupabaseClient();
-  const { error } = await client.storage.from(COURSE_BANNER_BUCKET)
-    .upload(path, file, { contentType: file.type, upsert: false });
-  if (error) {
-    logSupabaseError("course_banner_upload_failed", error, { courseId });
-    throw new Error(getSupabaseErrorMessage(error, {
-      fallback: "El curso se guardó, pero la portada no pudo cargarse. Puedes volver a intentarlo al editarlo.",
-      messages: {
-        "BUCKET NOT FOUND": "El curso se guardó, pero el almacenamiento de portadas no está disponible. Comunícate con el administrador.",
-        "MIME TYPE": "El curso se guardó, pero el formato de la portada no está permitido. Usa JPG, PNG o WebP.",
-        "PAYLOAD TOO LARGE": "El curso se guardó, pero la portada supera el tamaño permitido de 5 MB.",
-      },
-    }));
-  }
-  return path;
-}
 
 export async function saveCourseAction(
   previousState: CourseFormState,
@@ -58,11 +29,7 @@ export async function saveCourseAction(
   const savedId = input.id || previousState.savedId;
   const parsed = courseFormSchema.safeParse(input);
   if (!parsed.success) return { errors: parsed.error.flatten().fieldErrors, savedId };
-  const banner = formData.get("banner");
-  if (banner instanceof File) {
-    const bannerError = validateBanner(banner);
-    if (bannerError) return { errors: { banner: [bannerError] }, savedId };
-  }
+  const stagedBannerPath = String(formData.get("banner_staged_path") ?? "").trim();
 
   const courseId = parsed.data.id || crypto.randomUUID();
   const course = {
@@ -93,16 +60,22 @@ export async function saveCourseAction(
   }
   if (!data) return { message: "El curso no pudo confirmarse después de guardarlo. Actualiza la lista antes de volver a intentarlo.", savedId };
 
-  if (banner instanceof File && banner.size) {
+  if (stagedBannerPath) {
+    let bannerPath: string | null = null;
     try {
-      const bannerPath = await uploadBanner(banner, courseId);
+      bannerPath = await consumeStagedImage(COURSE_BANNER_BUCKET, stagedBannerPath, courseId);
       const { error: updateError } = await client.from("courses")
         .update({ banner_path: bannerPath }).eq("id", courseId);
       if (updateError) {
         logSupabaseError("course_banner_link_failed", updateError, { courseId });
         throw new Error("El curso se guardó, pero la portada no pudo asociarse. Puedes volver a cargarla al editarlo.");
       }
+      if (parsed.data.banner_path && parsed.data.banner_path !== bannerPath) {
+        const { error: cleanupError } = await client.storage.from(COURSE_BANNER_BUCKET).remove([parsed.data.banner_path]);
+        if (cleanupError) logSupabaseError("course_old_banner_cleanup_failed", cleanupError, { courseId });
+      }
     } catch (uploadError) {
+      if (bannerPath) await client.storage.from(COURSE_BANNER_BUCKET).remove([bannerPath]);
       // The course RPC succeeded even if its media failed; expire public data too.
       invalidatePublicCourseContent();
       revalidatePath(ROUTES.adminCourses);

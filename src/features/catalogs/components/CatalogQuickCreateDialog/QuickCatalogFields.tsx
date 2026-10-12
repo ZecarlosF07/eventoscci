@@ -40,7 +40,7 @@ export function QuickCatalogFields({ errors, kind }: QuickCatalogFieldsProps) {
       <FormField label="Cargo o título" name="professional_title"><Input id="quick-title" name="professional_title" /></FormField>
       <FormField label="Organización" name="organization"><Input id="quick-organization" name="organization" /></FormField>
       <FormField label="Especialidades" hint="Separadas por comas." name="specialties"><Input id="quick-specialties" name="specialties" /></FormField>
-      <FormField label="Fotografía" name="photo"><Input accept="image/jpeg,image/png,image/webp" id="quick-photo" name="photo" type="file" /></FormField>
+      <FormField error={error("photo")} hint="JPG, PNG o WebP. Máximo 5 MB." label="Fotografía" name="photo"><Input accept="image/jpeg,image/png,image/webp" id="quick-photo" name="photo" type="file" /></FormField>
       <div className="sm:col-span-2"><FormField label="Biografía" name="bio"><Textarea id="quick-bio" name="bio" /></FormField></div>
     </div>
   );

@@ -10,6 +10,15 @@ import type { CatalogQuickCreateDialogProps } from "@/features/catalogs/componen
 import { CATALOG_TITLES } from "@/features/catalogs/constants/catalog.constants";
 import { quickCreateCatalogAction } from "@/features/catalogs/mutations/catalog.actions";
 import type { QuickCatalogResult } from "@/features/catalogs/types/catalog.types";
+import { discardStagedFormImages, stageFormImages } from "@/features/media/services/stage-form-images.client";
+import type { StagedImageField } from "@/features/media/types/staged-image.types";
+import { SPEAKER_IMAGE_BUCKET } from "@/features/speakers/constants/speaker.constants";
+
+const SPEAKER_IMAGE_FIELDS: StagedImageField[] = [{
+  field: "photo",
+  label: "La fotografía",
+  stagedField: "photo_staged_path",
+}];
 
 function collectFields(form: HTMLFormElement, kind: string): FormData {
   const data = new FormData(form);
@@ -45,12 +54,25 @@ export function CatalogQuickCreateDialog({ kind, onCreated }: CatalogQuickCreate
   function save(form: HTMLFormElement) {
     const data = collectFields(form, kind);
     startTransition(async () => {
-      const result = await quickCreateCatalogAction(data);
-      setState(result);
-      if (!result.option) return;
-      onCreated(result.option);
-      setOpen(false);
-      setState({});
+      const staged = await stageFormImages(
+        data,
+        SPEAKER_IMAGE_BUCKET,
+        kind === "speakers" ? SPEAKER_IMAGE_FIELDS : [],
+      );
+      if (!staged.ok) {
+        setState({ errors: staged.errors, message: "Revisa la fotografía seleccionada." });
+        return;
+      }
+      try {
+        const result = await quickCreateCatalogAction(staged.formData);
+        setState(result);
+        if (!result.option) return;
+        onCreated(result.option);
+        setOpen(false);
+        setState({});
+      } finally {
+        await discardStagedFormImages(SPEAKER_IMAGE_BUCKET, staged.paths);
+      }
     });
   }
 

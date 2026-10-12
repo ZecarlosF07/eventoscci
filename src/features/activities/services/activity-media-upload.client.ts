@@ -2,29 +2,19 @@
 
 import { ACTIVITY_IMAGE_BUCKET } from "@/features/activities/constants/activity.constants";
 import type { ActivityMediaErrors, ActivityMediaUploadProgress, ActivityMediaUploadResult } from "@/features/activities/types/activity-media.types";
+import { IMAGE_MIME_EXTENSIONS } from "@/features/media/constants/image-upload.constants";
+import { validateFormImage } from "@/features/media/utils/image-file-validation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
-const MIME_EXTENSIONS: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-};
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const MAX_PROGRAM_IMAGES = 10;
 
 function selectedFile(value: FormDataEntryValue | null): File | null {
   return value instanceof File && value.size ? value : null;
 }
 
-function validateFile(file: File, label: string): string | null {
-  if (!MIME_EXTENSIONS[file.type]) return `${label} debe ser JPG, PNG o WebP.`;
-  if (file.size > MAX_IMAGE_SIZE) return `${label} no debe superar 5 MB.`;
-  return null;
-}
-
 function validateSelection(banner: File | null, programs: File[], retainedCount: number): Partial<ActivityMediaErrors> {
-  const bannerError = banner ? validateFile(banner, "El banner") : null;
-  const programError = programs.map((file) => validateFile(file, "Cada imagen del programa")).find(Boolean);
+  const bannerError = banner ? validateFormImage(banner, "El banner") : null;
+  const programError = programs.map((file) => validateFormImage(file, "Cada imagen del programa")).find(Boolean);
   if (bannerError) return { banner: [bannerError] };
   if (programError) return { program_images: [programError] };
   if (retainedCount + programs.length > MAX_PROGRAM_IMAGES) {
@@ -55,7 +45,7 @@ export async function stageActivityMedia(
   const bucket = createBrowserSupabaseClient().storage.from(ACTIVITY_IMAGE_BUCKET);
   for (const [index, upload] of uploads.entries()) {
     onProgress({ current: index + 1, total: uploads.length });
-    const path = `staging/${crypto.randomUUID()}.${MIME_EXTENSIONS[upload.file.type]}`;
+    const path = `staging/${crypto.randomUUID()}.${IMAGE_MIME_EXTENSIONS[upload.file.type]}`;
     const { error } = await bucket.upload(path, upload.file, { cacheControl: "3600", contentType: upload.file.type, upsert: false });
     if (error) {
       await discardStagedActivityMedia(stagedPaths);

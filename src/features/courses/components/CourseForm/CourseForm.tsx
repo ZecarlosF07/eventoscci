@@ -12,15 +12,22 @@ import { FormActionNotice } from "@/components/molecules/FormActionNotice";
 import { FIELD_LIMITS } from "@/constants/field-limits";
 import { ActivityFormSection } from "@/features/activities/components/ActivityFormSection";
 import { CourseInstructorFields } from "@/features/courses/components/CourseInstructorFields";
-import { COURSE_STATUS_LABELS } from "@/features/courses/constants/course.constants";
+import { COURSE_BANNER_BUCKET, COURSE_STATUS_LABELS } from "@/features/courses/constants/course.constants";
 import { saveCourseAction } from "@/features/courses/mutations/course.actions";
 import type { CourseFormProps, CourseFormState } from "@/features/courses/types/course-form.types";
-import { usePersistentAction } from "@/hooks/use-persistent-action";
+import type { StagedImageField } from "@/features/media/types/staged-image.types";
+import { useStagedImageAction } from "@/hooks/use-staged-image-action";
 
 const INITIAL_STATE: CourseFormState = {};
+const COURSE_IMAGE_FIELDS: StagedImageField[] = [{ field: "banner", label: "La portada", stagedField: "banner_staged_path" }];
 
 export function CourseForm({ course, speakers }: CourseFormProps) {
-  const { onSubmit, pending, state } = usePersistentAction(saveCourseAction, INITIAL_STATE);
+  const { onSubmit, pending, state, uploading } = useStagedImageAction({
+    action: saveCourseAction,
+    bucket: COURSE_BANNER_BUCKET,
+    fields: COURSE_IMAGE_FIELDS,
+    initialState: INITIAL_STATE,
+  });
   const error = (name: string) => state.errors?.[name]?.[0];
   const initialInstructors = course?.instructors.map((item) => ({
     is_primary: item.isPrimary,
@@ -62,7 +69,7 @@ export function CourseForm({ course, speakers }: CourseFormProps) {
     </ActivityFormSection>
     <div className="sticky bottom-3 flex flex-col items-stretch gap-3 rounded-2xl border border-cci-100 bg-white/95 p-4 shadow-lg backdrop-blur sm:bottom-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <FormActionNotice compact message={state.message} success={state.success} warning={state.warning} />
-      <Button className="w-full sm:w-auto" disabled={pending} type="submit">{pending ? "Guardando…" : course ? "Guardar cambios" : "Crear curso"}</Button>
+      <Button className="w-full sm:w-auto" disabled={pending} type="submit">{uploading ? "Subiendo portada…" : pending ? "Guardando…" : course ? "Guardar cambios" : "Crear curso"}</Button>
     </div>
   </form>;
 }
