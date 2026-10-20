@@ -1673,7 +1673,7 @@ El Hito 3 se considerará **TERMINADO** únicamente cuando se cumplan todos los 
 - [ ] Cargo es obligatorio.
 - [ ] Dirección es opcional.
 - [ ] Empresa es opcional para público general.
-- [ ] RUC es obligatorio para profesionales de público general y asociados.
+- [ ] RUC es opcional para profesionales de público general y obligatorio para asociados.
 - [ ] Empresa es obligatoria para asociado.
 - [ ] RUC es obligatorio para asociado.
 - [ ] El formulario es dinámico.
@@ -1937,7 +1937,7 @@ Una vez cumplido el Definition of Done, el proyecto podrá avanzar al:
 
 El tipo comercial de inscripción continuará siendo `general | member`. De manera independiente, cada persona e inscripción registrará `participant_profile = professional | student`.
 
-- Público general profesional: empresa / organización, RUC y cargo obligatorios; provincia opcional.
+- Público general profesional: empresa / organización y cargo obligatorios; RUC y provincia opcionales.
 - Público general estudiante: universidad o instituto y carrera obligatorios; utilizará tarifa general.
 - Asociado CCI: perfil profesional, con cargo, empresa y RUC obligatorios.
 - El perfil estudiante no crea una cuenta ni concede el rol de Campus.
@@ -1949,7 +1949,7 @@ El formulario seguirá siendo único y dinámico. Al cambiar temporalmente de pe
 
 # 54. Información profesional — actualización del 30/09/2026
 
-El formulario individual de eventos y capacitaciones muestra Empresa / Organización y RUC en la primera fila; Cargo y Provincia en la segunda. En móvil conserva ese orden. Empresa / Organización es obligatoria para profesionales (2–250 caracteres); Cargo mantiene su validación. RUC es obligatorio para todos los profesionales, tanto público general como asociados, y debe contener 11 dígitos. Provincia es texto libre opcional de hasta 250 caracteres. Los estudiantes y grupos exclusivos conservan su recorrido.
+El formulario individual de eventos y capacitaciones muestra Empresa / Organización y RUC en la primera fila; Cargo y Provincia en la segunda. En móvil conserva ese orden. Empresa / Organización es obligatoria para profesionales (2–250 caracteres); Cargo mantiene su validación. RUC es opcional para profesionales de público general y obligatorio para asociados. Si se informa, debe contener 11 dígitos. Provincia es texto libre opcional de hasta 250 caracteres. Los estudiantes y grupos exclusivos conservan su recorrido.
 
 Por decisión funcional, Provincia reutiliza `address`, sin crear otra columna en `people`, convertir valores históricos ni rellenar registros. La ficha administrativa muestra el mismo campo como Provincia. Una inscripción nueva guarda el valor recortado en `province_snapshot`; vacío explícito equivale a null y actualiza el valor actual de la persona. Omitir la clave conserva el dato personal anterior, y los estudiantes no envían información profesional. Los snapshots anteriores nunca cambian con una inscripción o edición posterior. Los registros históricos y grupos mantienen el snapshot nulo.
 

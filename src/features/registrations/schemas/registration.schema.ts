@@ -101,7 +101,7 @@ export const registrationFormSchema = z
       });
     }
 
-    if (data.participant_profile === "professional" && !data.ruc) {
+    if (data.registration_type === "member" && !data.ruc) {
       context.addIssue({
         code: "custom",
         message: "Indica el RUC de tu empresa u organización.",

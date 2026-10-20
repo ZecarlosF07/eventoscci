@@ -1642,3 +1642,7 @@ Refuerzo visual de las luces: los halos recorren ±25 % horizontal y ±20 % vert
 Interacción de banners: al pasar el mouse, los banners del hero y tarjetas se oscurecen suavemente al 90 % de brillo. Se retira el aumento de luminosidad; se conservan las luces LED y el encuadre 5:2.
 
 La presentación se implementa con utilidades Tailwind, sin selectores ni keyframes CSS propios de componentes. `globals.css` contiene únicamente la importación de Tailwind y los tokens institucionales de colores y tipografías. Los recorridos de luces y la entrada de tarjetas utilizan la API nativa Web Animations del navegador; conservan sus tiempos, responden a la pausa del portal y a cambios en `prefers-reduced-motion`, y se cancelan al desmontar el componente. Sin JavaScript, el banner y su iluminación permanecen visibles y estáticos. La posición adaptable del botón de WhatsApp, incluidos los márgenes seguros y la separación del acceso fijo a cursos en móvil, se expresa con clases Tailwind.
+
+### RUC opcional para público general — 20/10/2026
+
+En las inscripciones individuales de eventos y capacitaciones, los profesionales de público general pueden omitir el RUC. Si lo ingresan, se recorta y valida que contenga 11 dígitos. Empresa / Organización y Cargo siguen siendo obligatorios. Los asociados conservan el RUC obligatorio para identificar la empresa; los grupos exclusivos y la emisión de facturas conservan sus requisitos. La ausencia de RUC produce un snapshot nulo para la nueva inscripción sin modificar los snapshots anteriores.

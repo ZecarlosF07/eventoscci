@@ -31,15 +31,17 @@ select throws_ok($$select public.register_activity('33000000-0000-4000-8000-0000
 select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload||'{"company":"x"}'::jsonb from input33))$$,'22023','VALIDATION_ERROR','one-character company is rejected');
 select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload||jsonb_build_object('address',repeat('x',251)) from input33))$$,'22023','VALIDATION_ERROR','province cannot exceed 250 characters');
 select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select (payload-'ruc')||'{"registration_type":"member"}'::jsonb from input33))$$,'22023','INVALID_MEMBER_DATA','member RUC remains required');
-select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload-'ruc' from input33))$$,'22023','VALIDATION_ERROR','general professional requires RUC');
-select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload||'{"ruc":"   "}'::jsonb from input33))$$,'22023','VALIDATION_ERROR','blank professional RUC is rejected');
+select lives_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select (payload-'ruc')||'{"document_number":"33100004"}'::jsonb from input33))$$,'general professional may omit RUC');
+select lives_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload||'{"ruc":"   ","document_number":"33100005"}'::jsonb from input33))$$,'blank general professional RUC is optional');
 select throws_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload||'{"ruc":"123"}'::jsonb from input33))$$,'22023','INVALID_MEMBER_DATA','professional RUC needs 11 digits');
 select lives_ok($$select public.register_activity('33000000-0000-4000-8000-000000000001',(select payload from input33))$$,'general professional with RUC may omit province');
 reset role;
 select is((select address from public.people where document_number='33100001'),'Av. Histórica 123','omitted province preserves historical value');
-select is((select province_snapshot from public.registrations where activity_id='33000000-0000-4000-8000-000000000001'),null::text,'omitted province has null snapshot');
-select is((select company_snapshot from public.registrations where activity_id='33000000-0000-4000-8000-000000000001'),'Organización de prueba','organization is trimmed');
-select is((select ruc_snapshot from public.registrations where activity_id='33000000-0000-4000-8000-000000000001'),'20123456789','required RUC is trimmed and snapshotted');
+select is((select province_snapshot from public.registrations where activity_id='33000000-0000-4000-8000-000000000001' and person_id='33000000-0000-4000-8000-000000000010'),null::text,'omitted province has null snapshot');
+select is((select company_snapshot from public.registrations where activity_id='33000000-0000-4000-8000-000000000001' and person_id='33000000-0000-4000-8000-000000000010'),'Organización de prueba','organization is trimmed');
+select is((select ruc_snapshot from public.registrations where activity_id='33000000-0000-4000-8000-000000000001' and person_id='33000000-0000-4000-8000-000000000010'),'20123456789','provided RUC is trimmed and snapshotted');
+
+select is((select count(*) from public.registrations r join public.people p on p.id=r.person_id where p.document_number in ('33100004','33100005') and r.ruc_snapshot is null),2::bigint,'missing and whitespace RUC produce null snapshots');
 
 set local role anon;
 select lives_ok($$select public.register_activity('33000000-0000-4000-8000-000000000002',(select payload||'{"address":" Pisco "}'::jsonb from input33))$$,'province registers for a training');

@@ -123,6 +123,7 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
       <ProfessionalRegistrationFields
         active={activeProfile === "professional"}
         errors={errors}
+        requiresRuc={registrationType === "member"}
       />
       {activity.allowsStudentRegistration && !activity.membersOnly ? <StudentRegistrationFields
         active={activeProfile === "student"}

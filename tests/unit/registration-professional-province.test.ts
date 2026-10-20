@@ -21,7 +21,7 @@ function professionalData() {
   return data;
 }
 
-test("profesionales requieren organización y RUC y permiten provincia vacía", () => {
+test("profesionales generales requieren organización y permiten RUC y provincia vacíos", () => {
   const input = parseRegistrationFormData(professionalData());
   const parsed = registrationFormSchema.parse(input);
   assert.equal(parsed.company, "Organización de prueba");
@@ -29,7 +29,10 @@ test("profesionales requieren organización y RUC y permiten provincia vacía", 
   assert.equal("province" in parsed, false);
   assert.equal(parsed.ruc, "20123456789");
   assert.equal(registrationFormSchema.safeParse({ ...input, address: "" }).success, true);
-  for (const ruc of ["", "   ", "123", "201234567890", "2012345678a"]) {
+  for (const ruc of ["", "   "]) {
+    assert.equal(registrationFormSchema.parse({ ...input, ruc }).ruc, "");
+  }
+  for (const ruc of ["123", "201234567890", "2012345678a"]) {
     const result = registrationFormSchema.safeParse({ ...input, ruc });
     assert.equal(result.success, false);
     if (!result.success) assert.ok(result.error.issues.some((issue) => issue.path[0] === "ruc"));
@@ -67,15 +70,15 @@ test("alternar a estudiante excluye datos profesionales sin modificar el borrado
 });
 
 test("el formulario conserva orden accesible y requisitos según tipo de inscripción", () => {
-  for (const active of [false, true]) {
-    const html = renderToStaticMarkup(createElement(ProfessionalRegistrationFields, { active, errors: {} }));
+  for (const active of [false, true]) for (const requiresRuc of [false, true]) {
+    const html = renderToStaticMarkup(createElement(ProfessionalRegistrationFields, { active, requiresRuc, errors: {} }));
     const positions = ["company", "ruc", "job_title", "address"].map((name) => html.indexOf(`id="${name}"`));
     assert.ok(positions.every((position, index) => position >= 0 && (!index || position > positions[index - 1])));
     assert.match(html, /Empresa \/ Organización/);
     assert.equal(/id="company"[^>]*required/.test(html), active);
     assert.equal(/id="job_title"[^>]*required/.test(html), active);
     assert.doesNotMatch(html, /id="address"[^>]*required/);
-    assert.equal(/id="ruc"[^>]*required/.test(html), active);
+    assert.equal(/id="ruc"[^>]*required/.test(html), active && requiresRuc);
   }
 });
 

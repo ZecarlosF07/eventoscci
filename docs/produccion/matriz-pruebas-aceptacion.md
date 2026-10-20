@@ -519,3 +519,14 @@ Las luces y la entrada de tarjetas pasan a Web Animations, conservando recorrido
 | EST-03 | El botón de WhatsApp mantiene márgenes seguros y separación de la barra fija de cursos en móvil mediante Tailwind | APROBADO |
 
 Evidencia de la implementación sin CSS manual: 244 unitarias, `yarn lint`, `yarn typecheck` y `yarn build` aprobados. El navegador confirmó desplazamiento de luces, pausa estable entre lecturas y reanudación por teclado. Movimiento reducido y limpieza de efectos comprobados mediante pruebas del controlador. Inicio y curso mantienen 5:2, sin desbordamientos; WhatsApp conserva 16 px de margen en móvil, 88 px sobre la barra fija del curso y 24 px en escritorio. `globals.css` contiene exclusivamente la importación de Tailwind y tokens de colores/fuentes.
+
+## RUC opcional para público general — 20/10/2026
+
+Este cambio sustituye la obligación de RUC para profesionales generales del 30/09/2026. Empresa / Organización y Cargo continúan siendo obligatorios. El RUC vacío o compuesto de espacios es válido para público general; un RUC informado debe tener 11 dígitos. Asociados individuales y grupos exclusivos mantienen la identificación por RUC. La facturación conserva sus requisitos independientes.
+
+- Verificar envío general sin RUC, con espacios y con 11 dígitos; rechazar formatos inválidos.
+- Verificar obligatoriedad dinámica al alternar público general/asociado y omisión de campos profesionales en estudiantes.
+- Verificar en SQL snapshot nulo sin RUC y conservación de validaciones de empresa, asociados, precios y comprobantes.
+- Migración: `202610200001_registration_general_ruc_optional.sql`; sin cambios de tablas, firmas RPC, tipos generados ni datos históricos.
+
+Estado: migración `202610200001_registration_general_ruc_optional.sql` aplicada en Supabase vinculado, sin seeds. Aprobados 250 tests unitarios, `yarn lint`, `yarn typecheck` y `yarn build`. Suites SQL 033 y 035 aprobadas: 71 comprobaciones con `finish(true)` y rollback. El frontend queda preparado para publicación.
