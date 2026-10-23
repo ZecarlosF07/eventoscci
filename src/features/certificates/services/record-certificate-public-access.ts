@@ -11,7 +11,8 @@ export async function recordCertificatePublicAccess(
 ): Promise<"duplicate" | "not_found" | "recorded"> {
   const certificateResult = await client.from("certificates")
     .select(`
-      id, certificate_type,
+      id, certificate_type, recipient_type,
+      speaker_activity:activities!certificates_activity_id_fkey(status),
       registration:registrations!certificates_registration_id_fkey(
         activity:activities!inner(status)
       )
@@ -24,7 +25,9 @@ export async function recordCertificatePublicAccess(
   if (!certificateResult.data) return "not_found";
   if (
     certificateResult.data.certificate_type === "activity"
-    && certificateResult.data.registration?.activity.status === "archived"
+    && (certificateResult.data.recipient_type === "speaker"
+      ? certificateResult.data.speaker_activity?.status
+      : certificateResult.data.registration?.activity.status) === "archived"
   ) return "not_found";
 
   if (input.action === "certificate.public_view") {

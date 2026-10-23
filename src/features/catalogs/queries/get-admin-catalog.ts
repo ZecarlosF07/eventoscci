@@ -7,6 +7,7 @@ import type {
   SpeakerAdminRecord,
 } from "@/features/catalogs/types/catalog.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getSpeakerDocuments } from "@/features/speakers/queries/get-speaker-documents";
 
 export async function getAdminCatalogItems(kind: CatalogKind): Promise<CatalogAdminItem[]> {
   const client = await createServerSupabaseClient();
@@ -51,7 +52,7 @@ export async function getAdminCatalogItems(kind: CatalogKind): Promise<CatalogAd
   }
 
   const { data, error } = await client.from("speakers")
-    .select("*, activity_speakers(id), course_instructors(id)")
+    .select("*, activity_speakers(id), course_instructors(id), certificates(id)")
     .is("deleted_at", null).order("last_names").order("first_names");
   if (error) throw new Error("No fue posible consultar los ponentes.", { cause: error });
   return data.map((item) => ({
@@ -60,7 +61,7 @@ export async function getAdminCatalogItems(kind: CatalogKind): Promise<CatalogAd
     isActive: item.is_active,
     label: `${item.first_names} ${item.last_names}`,
     meta: item.specialties.join(", "),
-    usageCount: item.activity_speakers.length + item.course_instructors.length,
+    usageCount: item.activity_speakers.length + item.course_instructors.length + item.certificates.length,
   }));
 }
 
@@ -73,8 +74,10 @@ export async function getAdminCatalogRecord(kind: CatalogKind, id: string): Prom
       .eq("id", id).is("deleted_at", null).maybeSingle();
     if (error) throw new Error("No fue posible consultar el ponente.", { cause: error });
     if (!data) return null;
+    const documents = await getSpeakerDocuments([id]);
     return {
       ...data,
+      documentContext: documents.get(id) ?? { canCorrect: true, documentNumber: null, hasCertificates: false },
       private_details: Array.isArray(data.private_details) ? data.private_details[0] ?? null : data.private_details,
     } as SpeakerAdminRecord;
   }

@@ -47,7 +47,7 @@ async function drawSigner(
 }
 
 export async function generateCertificatePdf(input: CertificateDocumentInput): Promise<Uint8Array> {
-  if (input.certificateType === "activity" && (input.academicHours === null || !Number.isFinite(input.academicHours) || input.academicHours <= 0)) {
+  if (input.certificateType === "activity" && input.recipientType !== "speaker" && (input.academicHours === null || !Number.isFinite(input.academicHours) || input.academicHours <= 0)) {
     throw new Error("ACADEMIC_HOURS_REQUIRED");
   }
   const pdf = await PDFDocument.create();
@@ -70,13 +70,18 @@ export async function generateCertificatePdf(input: CertificateDocumentInput): P
   page.drawText(input.participantName, { color: DARK_COLOR, font: bold, size: nameSize, x: centeredTextX(input.participantName, bold, nameSize, PAGE_WIDTH), y: nameY });
   page.drawLine({ color: TEXT_COLOR, start: { x: 95, y: nameY - 10 }, end: { x: 500, y: nameY - 10 }, thickness: 0.8 });
 
-  const condition = input.condition?.trim() || "Participó";
-  const description = `Por haber cumplido satisfactoriamente la condición de ${condition} en ${input.title}.`;
-  const descriptionLines = wrapPdfText(description, regular, 12, 385).slice(0, 4);
-  descriptionLines.forEach((line, index) => page.drawText(line, { color: TEXT_COLOR, font: regular, size: 12, x: centeredTextX(line, regular, 12, PAGE_WIDTH), y: nameY - 48 - index * 17 }));
+  const condition = input.condition?.trim() || (input.recipientType === "speaker" ? "Ponente" : "Participó");
+  const description = input.recipientType === "speaker"
+    ? `En reconocimiento a su valiosa participación como ${condition} en ${input.title}.`
+    : `Por haber cumplido satisfactoriamente la condición de ${condition} en ${input.title}.`;
+  const [descriptionLines, descriptionSize]: [string[], number] = input.recipientType === "speaker"
+    ? fitWrappedPdfText(description, regular, 385, 7, 12, 9)
+    : [wrapPdfText(description, regular, 12, 385).slice(0, 4), 12];
+  const descriptionLineHeight = descriptionSize + 5;
+  descriptionLines.forEach((line, index) => page.drawText(line, { color: TEXT_COLOR, font: regular, size: descriptionSize, x: centeredTextX(line, regular, descriptionSize, PAGE_WIDTH), y: nameY - 48 - index * descriptionLineHeight }));
 
-  const detailY = nameY - 48 - descriptionLines.length * 17 - 8;
-  if (input.academicHours !== null) {
+  const detailY = nameY - 48 - descriptionLines.length * descriptionLineHeight - 8;
+  if (input.recipientType !== "speaker" && input.academicHours !== null) {
     const hours = `${input.academicHours} horas académicas`;
     page.drawText(hours, { color: TEXT_COLOR, font: bold, size: 11, x: centeredTextX(hours, bold, 11, PAGE_WIDTH), y: detailY });
   }

@@ -37,6 +37,7 @@ export function QuickCatalogFields({ errors, kind }: QuickCatalogFieldsProps) {
     <div className="grid gap-4 sm:grid-cols-2">
       <FormField error={error("first_names")} label="Nombres" name="first_names" required><Input id="quick-first-names" maxLength={FIELD_LIMITS.personName} name="first_names" required /></FormField>
       <FormField error={error("last_names")} label="Apellidos" name="last_names" required><Input id="quick-last-names" maxLength={FIELD_LIMITS.personName} name="last_names" required /></FormField>
+      <FormField error={error("document_number")} hint="Opcional al crear el perfil; necesario para emitir certificados." label="DNI del ponente" name="document_number"><Input autoComplete="off" id="quick-document" inputMode="numeric" maxLength={8} name="document_number" pattern="[0-9]{8}" /></FormField>
       <FormField label="Cargo o título" name="professional_title"><Input id="quick-title" name="professional_title" /></FormField>
       <FormField label="Organización" name="organization"><Input id="quick-organization" name="organization" /></FormField>
       <FormField label="Especialidades" hint="Separadas por comas." name="specialties"><Input id="quick-specialties" name="specialties" /></FormField>

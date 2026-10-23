@@ -10,7 +10,7 @@ export function CertificateAccountCallout({ accountHref, accountLabel }: Certifi
       <div className="max-w-2xl">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-cci-lime">Tu historial CCI</p>
         <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Conserva todos tus logros en un solo lugar</h2>
-        <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base">Al usar el mismo documento con el que participaste, encontrarás este y tus próximos certificados dentro del Campus.</p>
+        <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base">Usa el mismo documento registrado para tu certificado. Si eres ponente, la Cámara debe haber registrado tu DNI para que tu historial aparezca en el Campus.</p>
       </div>
       <Link className="mt-6 inline-flex min-h-12 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-cci-950 px-6 font-bold text-white transition hover:bg-cci-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cci-800 sm:mt-0 sm:w-auto" href={accountHref}>
         {accountLabel} <span aria-hidden="true">→</span>

@@ -12,7 +12,8 @@ export type NotificationEventType =
   | "activity_paid_registration_confirmed"
   | "activity_registration_cancelled"
   | "activity_virtual_session_reminder"
-  | "course_certificate_issued";
+  | "course_certificate_issued"
+  | "speaker_certificate_issued";
 
 export type NotificationEntityType =
   | "activity_virtual_reminder"

@@ -1,4 +1,5 @@
 import type { Tables } from "@/lib/supabase/database.types";
+import type { SpeakerDocumentContext } from "@/features/speakers/types/speaker-document.types";
 
 export type CatalogKind = "categories" | "contacts" | "speakers" | "venues";
 
@@ -9,6 +10,7 @@ export type CategoryRecord = Tables<"categories">;
 export type SpeakerRecord = Tables<"speakers">;
 
 export type SpeakerAdminRecord = SpeakerRecord & {
+  documentContext: SpeakerDocumentContext;
   private_details: SpeakerPrivateDetails | null;
 };
 
@@ -32,6 +34,7 @@ export interface CatalogOption {
 }
 
 export interface QuickCatalogResult {
+  conflict?: { name: string; speakerId: string };
   errors?: Record<string, string[]>;
   message?: string;
   option?: CatalogOption;

@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.15"
   }
   graphql_public: {
     Tables: {
@@ -883,6 +883,7 @@ export type Database = {
         Row: {
           academic_hours_snapshot: number | null
           access_token: string
+          activity_id: string | null
           certificate_code: string
           certificate_type: Database["public"]["Enums"]["certificate_type"]
           condition_snapshot: string | null
@@ -892,23 +893,29 @@ export type Database = {
           deleted_at: string | null
           deleted_by: string | null
           file_path: string | null
+          generation_lease_token: string | null
+          generation_lease_until: string | null
           id: string
           issued_at: string
           issued_by: string | null
           participant_name_snapshot: string
-          person_id: string
+          person_id: string | null
+          recipient_type: Database["public"]["Enums"]["certificate_recipient_type"]
           registration_id: string | null
           revocation_reason: string | null
           revoked_at: string | null
           revoked_by: string | null
+          speaker_id: string | null
           status: Database["public"]["Enums"]["certificate_status"]
           template_id: string
+          template_snapshot: Json | null
           title_snapshot: string
           updated_at: string
         }
         Insert: {
           academic_hours_snapshot?: number | null
           access_token?: string
+          activity_id?: string | null
           certificate_code: string
           certificate_type: Database["public"]["Enums"]["certificate_type"]
           condition_snapshot?: string | null
@@ -918,23 +925,29 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           file_path?: string | null
+          generation_lease_token?: string | null
+          generation_lease_until?: string | null
           id?: string
           issued_at?: string
           issued_by?: string | null
           participant_name_snapshot: string
-          person_id: string
+          person_id?: string | null
+          recipient_type?: Database["public"]["Enums"]["certificate_recipient_type"]
           registration_id?: string | null
           revocation_reason?: string | null
           revoked_at?: string | null
           revoked_by?: string | null
+          speaker_id?: string | null
           status?: Database["public"]["Enums"]["certificate_status"]
           template_id: string
+          template_snapshot?: Json | null
           title_snapshot: string
           updated_at?: string
         }
         Update: {
           academic_hours_snapshot?: number | null
           access_token?: string
+          activity_id?: string | null
           certificate_code?: string
           certificate_type?: Database["public"]["Enums"]["certificate_type"]
           condition_snapshot?: string | null
@@ -944,21 +957,54 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           file_path?: string | null
+          generation_lease_token?: string | null
+          generation_lease_until?: string | null
           id?: string
           issued_at?: string
           issued_by?: string | null
           participant_name_snapshot?: string
-          person_id?: string
+          person_id?: string | null
+          recipient_type?: Database["public"]["Enums"]["certificate_recipient_type"]
           registration_id?: string | null
           revocation_reason?: string | null
           revoked_at?: string | null
           revoked_by?: string | null
+          speaker_id?: string | null
           status?: Database["public"]["Enums"]["certificate_status"]
           template_id?: string
+          template_snapshot?: Json | null
           title_snapshot?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "certificates_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificates_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_base"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "certificates_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_participation_summary"
+            referencedColumns: ["activity_id"]
+          },
+          {
+            foreignKeyName: "certificates_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_payment_totals"
+            referencedColumns: ["activity_id"]
+          },
           {
             foreignKeyName: "certificates_course_enrollment_id_fkey"
             columns: ["course_enrollment_id"]
@@ -992,6 +1038,13 @@ export type Database = {
             columns: ["registration_id"]
             isOneToOne: false
             referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificates_speaker_id_fkey"
+            columns: ["speaker_id"]
+            isOneToOne: false
+            referencedRelation: "speakers"
             referencedColumns: ["id"]
           },
           {
@@ -2606,6 +2659,35 @@ export type Database = {
           },
         ]
       }
+      speaker_identity_documents: {
+        Row: {
+          created_at: string
+          document_number: string
+          speaker_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          document_number: string
+          speaker_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          document_number?: string
+          speaker_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "speaker_identity_documents_speaker_id_fkey"
+            columns: ["speaker_id"]
+            isOneToOne: true
+            referencedRelation: "speakers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       speaker_private_details: {
         Row: {
           created_at: string
@@ -3122,6 +3204,14 @@ export type Database = {
         Args: { p_has_presale: boolean; p_input: Json; p_price: number }
         Returns: undefined
       }
+      assert_speaker_certificate_email: {
+        Args: { p_speaker_id: string }
+        Returns: string
+      }
+      assert_speaker_document: {
+        Args: { p_speaker_id: string }
+        Returns: undefined
+      }
       authorize_course_certificate_generation: {
         Args: { p_certificate_id: string }
         Returns: boolean
@@ -3138,6 +3228,12 @@ export type Database = {
       cancel_registration_without_pass_notice: {
         Args: { p_reason?: string; p_registration_id: string }
         Returns: Json
+      }
+      certificate_identity_ids: {
+        Args: { p_dni: string; p_person_id: string }
+        Returns: {
+          id: string
+        }[]
       }
       check_course_completion: {
         Args: { p_enrollment_id: string }
@@ -3201,6 +3297,10 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      claim_speaker_certificate: {
+        Args: { p_certificate_id: string }
+        Returns: string | null
+      }
       complete_notification_delivery: {
         Args: {
           p_error?: string
@@ -3238,6 +3338,10 @@ export type Database = {
         Args: { p_activity_id: string }
         Returns: number
       }
+      create_speaker_with_document: {
+        Args: { p_document_number?: string; p_profile: Json }
+        Returns: string
+      }
       current_course_enrollment: {
         Args: { p_course_id: string }
         Returns: string
@@ -3271,6 +3375,15 @@ export type Database = {
         Args: {
           p_certificate_id: string
           p_file_path: string
+          p_public_base_url: string
+        }
+        Returns: Json
+      }
+      finalize_speaker_certificate: {
+        Args: {
+          p_certificate_id: string
+          p_file_path: string
+          p_lease_token: string
           p_public_base_url: string
         }
         Returns: Json
@@ -3444,6 +3557,49 @@ export type Database = {
         Args: { p_enrollment_id: string; p_quiz_id: string }
         Returns: Json
       }
+      get_speaker_certificate_activity_summaries: {
+        Args: {
+          p_limit?: number
+          p_offset?: number
+          p_query?: string
+          p_type?: Database["public"]["Enums"]["activity_type"]
+        }
+        Returns: {
+          id: string
+          issued_count: number
+          pending_count: number
+          speaker_count: number
+          title: string
+          total_count: number
+          type: Database["public"]["Enums"]["activity_type"]
+        }[]
+      }
+      get_speaker_certificate_candidates: {
+        Args: { p_activity_id: string }
+        Returns: {
+          access_token: string
+          certificate_code: string
+          certificate_id: string
+          certificate_status: Database["public"]["Enums"]["certificate_status"]
+          email: string
+          file_path: string
+          first_names: string
+          last_names: string
+          organization: string
+          photo_path: string
+          role_label: string
+          speaker_id: string
+        }[]
+      }
+      get_speaker_document_context: {
+        Args: { p_speaker_ids: string[] }
+        Returns: {
+          can_correct: boolean
+          document_number: string | null
+          has_certificates: boolean
+          speaker_id: string
+        }[]
+      }
       get_student_course_quiz_summaries: {
         Args: { p_course_id: string }
         Returns: Json
@@ -3522,6 +3678,14 @@ export type Database = {
           p_condition?: string
           p_registration_ids: string[]
           p_template_id: string
+        }
+        Returns: Json
+      }
+      prepare_speaker_certificates: {
+        Args: {
+          p_activity_id: string
+          p_recipients: Json
+          p_template_id: string | null
         }
         Returns: Json
       }
@@ -3606,6 +3770,14 @@ export type Database = {
           p_new_file_path: string
         }
         Returns: Json
+      }
+      replace_speaker_certificate_file: {
+        Args: {
+          p_certificate_id: string
+          p_expected_file_path: string
+          p_new_file_path: string
+        }
+        Returns: boolean
       }
       request_activity_certificate: {
         Args: { p_registration_code: string; p_request_token: string }
@@ -3702,10 +3874,24 @@ export type Database = {
         }
         Returns: undefined
       }
+      set_speaker_document: {
+        Args: {
+          p_confirm_history?: boolean
+          p_document_number: string
+          p_expected_document?: string
+          p_reason?: string
+          p_speaker_id: string
+        }
+        Returns: boolean
+      }
       soft_delete_activity: { Args: { p_activity_id: string }; Returns: string }
       soft_delete_certificate_template: {
         Args: { p_template_id: string }
         Returns: string
+      }
+      speaker_certificate_email_is_valid: {
+        Args: { p_email: string }
+        Returns: boolean
       }
       start_activity_certificate_batch: {
         Args: {
@@ -3781,6 +3967,7 @@ export type Database = {
         | "cancelled"
       activity_type: "event" | "training"
       attendance_status: "pending" | "attended" | "absent"
+      certificate_recipient_type: "participant" | "student" | "speaker"
       certificate_status: "issued" | "revoked"
       certificate_type: "activity" | "course"
       course_enrollment_status: "active" | "completed" | "revoked"
@@ -3937,6 +4124,7 @@ export const Constants = {
       ],
       activity_type: ["event", "training"],
       attendance_status: ["pending", "attended", "absent"],
+      certificate_recipient_type: ["participant", "student", "speaker"],
       certificate_status: ["issued", "revoked"],
       certificate_type: ["activity", "course"],
       course_enrollment_status: ["active", "completed", "revoked"],

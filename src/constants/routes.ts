@@ -4,6 +4,7 @@ export const ROUTES = {
   adminCatalogs: "/admin/catalogos",
   adminCertificates: "/admin/certificados",
   adminCertificatesActivities: "/admin/certificados/actividades",
+  adminCertificatesSpeakers: "/admin/certificados/ponentes",
   adminCertificateAccess: "/admin/certificados/accesos",
   adminCertificateQueries: "/admin/certificados/consultas",
   adminCourses: "/admin/cursos",

@@ -14,7 +14,7 @@ export function PublicCertificateResults({ certificates, participantName }: Publ
         </div>
       </div>
       <div className="mt-7 grid gap-5 md:grid-cols-2">
-        {certificates.map((certificate) => <PublicCertificateCard certificate={certificate} key={certificate.access_token} />)}
+        {certificates.map((certificate) => <PublicCertificateCard certificate={certificate} key={certificate.id} />)}
       </div>
     </section>
   );

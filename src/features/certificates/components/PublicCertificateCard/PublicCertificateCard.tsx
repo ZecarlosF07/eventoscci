@@ -12,11 +12,12 @@ export function PublicCertificateCard({ certificate }: PublicCertificateCardProp
   return (
     <article className="flex h-full flex-col rounded-3xl border border-cci-100 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <Badge>{certificate.certificate_type === "course" ? "Curso" : "Actividad"}</Badge>
+        <Badge>{certificate.recipient_type === "speaker" ? "Ponente" : certificate.certificate_type === "course" ? "Curso" : "Actividad"}</Badge>
         <Badge variant={revoked ? "warning" : "success"}>{revoked ? "Revocado" : "Vigente"}</Badge>
       </div>
       <div className="mt-5">
         <Heading level={3}>{certificate.title}</Heading>
+        <Text className="mt-2" size="sm">Otorgado a {certificate.participant_name}</Text>
         <Text className="mt-2 font-mono" size="sm">{certificate.certificate_code}</Text>
       </div>
       <dl className="mt-5 grid gap-3 border-y border-cci-100 py-5 text-sm sm:grid-cols-2">

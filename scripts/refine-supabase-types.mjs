@@ -16,4 +16,19 @@ for (const [field, expected] of [
   source = source.replaceAll(original, `${field}: ${certificateMode}`);
 }
 
+// PostgreSQL permite NULL explícito en estos argumentos/resultados; el generador
+// no distingue esa nulabilidad en las funciones SQL.
+source = source.replace(
+  /(prepare_speaker_certificates: \{[\s\S]*?p_template_id: )string/,
+  "$1string | null",
+);
+source = source.replace(
+  /(claim_speaker_certificate: \{[\s\S]*?Returns: )string/,
+  "$1string | null",
+);
+source = source.replace(
+  /(get_speaker_document_context: \{[\s\S]*?document_number: )string/,
+  "$1string | null",
+);
+
 writeFileSync(path, source);

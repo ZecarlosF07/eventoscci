@@ -530,3 +530,50 @@ Este cambio sustituye la obligación de RUC para profesionales generales del 30/
 - Migración: `202610200001_registration_general_ruc_optional.sql`; sin cambios de tablas, firmas RPC, tipos generados ni datos históricos.
 
 Estado: migración `202610200001_registration_general_ruc_optional.sql` aplicada en Supabase vinculado, sin seeds. Aprobados 250 tests unitarios, `yarn lint`, `yarn typecheck` y `yarn build`. Suites SQL 033 y 035 aprobadas: 71 comprobaciones con `finish(true)` y rollback. El frontend queda preparado para publicación.
+# Certificados de ponentes — Hito 18
+
+| Recorrido | Resultado esperado |
+| --- | --- |
+| Emitir en evento/capacitación en borrador o publicada | PDF de reconocimiento, sin horas ni requisitos de pago/asistencia |
+| Revisar rol | Valor de actividad o Ponente; ajuste no modifica la actividad |
+| Editar nombre antes de emitir | Permite completar nombres y quitar tratamientos; solo cambia el certificado, no Catálogos; reintentos conservan el nombre impreso |
+| Repetir emisión | Un certificado por actividad y ponente; conserva snapshots |
+| Interrumpir emisión | Terminados disponibles; pendientes recuperables tras vencer bloqueo |
+| Ponente con/sin correo | Correo válido obligatorio al emitir; sin correo no se selecciona ni prepara/finaliza; al emitir se crea notificación única |
+| Retirar asignación tras emisión | Conserva documento e historial administrativo |
+| Cambiar nombre/rol/título/plantilla | Certificado emitido conserva los datos originales |
+| Regenerar/revocar | PDF conserva snapshots; revocación exige motivo y deja auditoría |
+| Archivar actividad | Solo lectura; se aplica política vigente de visibilidad pública |
+| Consultar DNI o Campus | Incluye certificados de ponentes finalizados al registrar su DNI; cuenta Campus con el mismo documento de tipo DNI |
+| Anónimo/estudiante | No puede consultar candidatos ni emitir |
+
+## Ampliación Hito 18 — identidad y búsqueda de ponentes
+
+| Caso | Criterio de aceptación |
+| --- | --- |
+| Perfil sin DNI | Se puede guardar en Catálogos o creación rápida; no preparar/recuperar/finalizar certificados nuevos |
+| DNI inválido o duplicado | Ocho dígitos, ceros iniciales conservados; conflicto muestra perfil relacionado sin crear huérfanos ni fusionar |
+| Registrar DNI inicial | Operador o administrador, incluso con certificados históricos; cambio auditado |
+| Corregir DNI con historial | Solo administrador, motivo y confirmación; rechazo de ediciones obsoletas y de eliminación del DNI |
+| Cambio de correo/teléfono/nombre | No altera ni borra el documento privado; no modifica el nombre del certificado |
+| Editar desde «Datos del ponente» | Diálogo en la misma pantalla con DNI, correo y perfil completo; reutiliza validaciones de Catálogos y límite de fotografía de 5 MB |
+| Guardado desde diálogo | No navega a Catálogos, no dispara emisión ni pierde selección; actualiza modo de entrega y conserva nombre personalizado/snapshots |
+| Permisos del editor | Sesión interna, vínculo a la actividad/historial y actividad no archivada comprobados tanto al leer como al guardar |
+| Correo requerido en emisión | Validación en UI, acción y RPC; direcciones inválidas o ausentes bloquean nuevas emisiones y recuperación/finalización de pendientes |
+| Correo retirado tras preparar | Finalización bloqueada sin modificar PDF ni notificar; registrar correo válido permite recuperar con los mismos snapshots |
+| Históricos sin correo | Conservan token, consulta y descarga; no se reemiten ni notifican automáticamente |
+| Certificado anterior sin DNI | Token, QR y descarga se conservan; completar DNI lo incorpora sin regeneración |
+| Consulta sin cuenta ni people | Encuentra el historial finalizado del ponente; no incluye pendientes ni datos privados |
+| Campus posterior | Mismo DNI de sesión encuentra historial anterior; CE coincidente o DNI diferente no acceden |
+| Participante y ponente | Se combinan sin duplicar ID, ordenados por emisión; tarjetas muestran rol y nombre del snapshot |
+| Corrección de identidad | Historial pasa al DNI corregido; PDF, código, token y nombre impreso permanecen intactos |
+| Revocados y archivados | Revocado visible sin descarga; eliminado/archivado excluido conforme a política vigente |
+| Escritura y lectura privadas | Anónimos/estudiantes sin acceso a identidad; mutaciones solo por RPC con permisos y auditoría |
+
+Evidencia: suite SQL transaccional `040_speaker_certificate_dni_lookup_test.sql`, regresiones `038`, `015`, `010`, `018` y unitarias de validación y tarjetas. Las pruebas no envían correos ni dejan registros de prueba persistentes. Comprobación visual interactiva en escritorio/móvil pendiente de la sesión administrativa de prueba.
+
+23/10/2026: migración `202610230002` aplicada y verificada en Supabase vinculado; RLS activo, tipos regenerados y ausencia de fixtures persistentes comprobada. Aprobadas 193 comprobaciones SQL (65 nuevas y 128 de regresión), 261 unitarias, lint, typecheck y build. El despliegue del frontend es independiente.
+
+Edición integrada de perfiles desde emisión (23/10/2026): 269 unitarias aprobadas, incluidas ocho nuevas; lint, typecheck, build y diff-check aprobados. No necesita nueva migración. Verificación visual con sesión administrativa tras desplegar el frontend; las pruebas no alteraron perfiles reales ni enviaron correo.
+
+Correo obligatorio en emisión (23/10/2026): `202610230003` aplicada en Supabase y guardia comprobada activa; tipos regenerados. 121 comprobaciones SQL (038/040/041) con rollback y 273 unitarias aprobadas, además de lint, typecheck, build y diff-check. Sin perfiles de prueba persistentes ni envíos reales. El frontend sigue su despliegue habitual y n8n no necesita cambios.

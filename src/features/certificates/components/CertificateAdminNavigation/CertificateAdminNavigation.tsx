@@ -17,6 +17,11 @@ const PRIMARY_ITEMS: CertificateNavigationItem[] = [
     title: "Emitir por actividad",
   },
   {
+    description: "Reconoce a los ponentes asignados a cada evento o capacitación.",
+    href: ROUTES.adminCertificatesSpeakers,
+    title: "Certificados de ponentes",
+  },
+  {
     description: "Configura diseños institucionales, firmas y autoridades.",
     href: ROUTES.adminCertificateTemplates,
     title: "Plantillas y firmantes",
@@ -41,7 +46,7 @@ export function CertificateAdminNavigation({ canViewAudit }: CertificateAdminNav
   const items = canViewAudit ? [...PRIMARY_ITEMS, ...AUDIT_ITEMS] : PRIMARY_ITEMS;
 
   return (
-    <nav aria-label="Secciones de certificados" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <nav aria-label="Secciones de certificados" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {items.map((item) => {
         const active = pathname.startsWith(item.href);
         return (

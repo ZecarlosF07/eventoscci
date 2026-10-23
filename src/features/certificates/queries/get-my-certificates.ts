@@ -6,6 +6,8 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function mapMyCertificate(row: typeof myCertificateSchema._output): MyCertificate {
   return {
+    participantName: row.participant_name,
+    recipientType: row.recipient_type,
     accessToken: row.access_token,
     academicHours: row.academic_hours,
     certificateCode: row.certificate_code,

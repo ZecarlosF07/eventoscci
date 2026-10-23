@@ -6,6 +6,7 @@ import type { CertificateBatchStatus } from "@/features/certificates/types/certi
 import type { Enums, Json, Tables } from "@/lib/supabase/database.types";
 
 export type CertificateStatus = Enums<"certificate_status">;
+export type CertificateRecipientType = Enums<"certificate_recipient_type">;
 export type CertificateType = Enums<"certificate_type">;
 export type CertificateRow = Tables<"certificates">;
 
@@ -94,6 +95,8 @@ export interface ActivityCertificateData {
 }
 
 export interface MyCertificate {
+  participantName: string;
+  recipientType: CertificateRecipientType;
   accessToken: string;
   academicHours: number | null;
   certificateCode: string;
@@ -132,6 +135,7 @@ export interface CertificatePublicData {
   download_available: boolean;
   issued_at: string;
   participant_name: string;
+  recipient_type: CertificateRecipientType;
   revocation_reason: string | null;
   revoked_at: string | null;
   status: CertificateStatus;
@@ -144,6 +148,7 @@ export interface CertificatePublicData {
 export type PublicCertificateSearchStatus = "error" | "found" | "idle" | "invalid" | "not_found" | "rate_limited";
 
 export interface PublicCertificateSearchItem {
+  id: string;
   access_token: string;
   academic_hours: number | null;
   certificate_code: string;
@@ -153,6 +158,7 @@ export interface PublicCertificateSearchItem {
   download_available: boolean;
   issued_at: string;
   participant_name: string;
+  recipient_type: CertificateRecipientType;
   revocation_reason: string | null;
   status: CertificateStatus;
   title: string;
@@ -207,6 +213,7 @@ export interface CertificateDocumentInput {
   condition: string | null;
   dateText: string | null;
   participantName: string;
+  recipientType?: CertificateRecipientType;
   signers: CertificateDocumentSigner[];
   title: string;
 }
@@ -223,7 +230,7 @@ export interface CertificateDocumentSigner extends Omit<CertificateSigner, "id">
 export interface CertificateGenerationData extends Pick<CertificateRow,
   "access_token" | "academic_hours_snapshot" | "certificate_code" | "certificate_type" |
   "condition_snapshot" | "date_text_snapshot" | "file_path" | "id" |
-  "participant_name_snapshot" | "status" | "title_snapshot"
+  "participant_name_snapshot" | "recipient_type" | "status" | "title_snapshot"
 > {
   template: CertificateTemplate;
 }

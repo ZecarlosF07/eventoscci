@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { NotificationFilters } from "@/features/notifications/types/notification.types";
 
 export const NOTIFICATION_EVENT_LABELS: Record<string, string> = {
+  speaker_certificate_issued: "Certificado de ponente",
   activity_certificate_issued: "Certificado emitido", activity_certificate_offer: "Oferta de certificado",
   activity_certificate_request_created: "Solicitud de certificado", activity_free_registration_confirmed: "Inscripción gratuita confirmada",
   activity_group_request_received: "Solicitud grupal recibida", activity_paid_preregistration_created: "Preinscripción recibida",

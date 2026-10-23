@@ -3,6 +3,7 @@ import { z } from "zod";
 import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
 import { normalizeWhatsAppPhone } from "@/features/activities/utils/activity-contact";
 import { isGoogleMapsEmbedUrl } from "@/features/activities/utils/activity-maps";
+import { optionalSpeakerDniSchema } from "@/features/speakers/schemas/speaker-document.schema";
 
 const optionalHttpsUrl = z.union([
   z.url("Ingresa una URL válida.").refine((value) => value.startsWith("https://"), "La URL debe usar HTTPS."),
@@ -38,6 +39,7 @@ export const categorySchema = z.object({
 });
 
 export const speakerSchema = z.object({
+  document_number: optionalSpeakerDniSchema.default(""),
   bio: z.string().trim().max(2000, "La biografía no puede superar 2000 caracteres."),
   email: z.union([z.email("Ingresa un correo válido."), z.literal("")]),
   first_names: z.string().trim().min(2, "Ingresa los nombres.").max(FIELD_LIMITS.personName, maximumCharactersMessage(FIELD_LIMITS.personName)),

@@ -11,6 +11,7 @@ export const certificatePublicSchema = z.object({
   download_available: z.boolean(),
   issued_at: z.string(),
   participant_name: z.string(),
+  recipient_type: z.enum(["participant", "student", "speaker"]),
   revocation_reason: z.string().nullable(),
   revoked_at: z.string().nullable(),
   status: z.enum(["issued", "revoked"]),

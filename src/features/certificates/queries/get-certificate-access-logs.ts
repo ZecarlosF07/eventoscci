@@ -30,7 +30,7 @@ export async function getCertificateAccessLogs(page: number): Promise<Certificat
     : { data: [], error: null };
   if (certificateResult.error) throw new Error("No fue posible resolver los certificados consultados.", { cause: certificateResult.error });
   const certificates = (certificateResult.data ?? []).map((row) => certificateAccessCertificateRowSchema.parse(row));
-  const peopleIds = [...new Set(certificates.map((certificate) => certificate.person_id))];
+  const peopleIds = [...new Set(certificates.flatMap((certificate) => certificate.person_id ? [certificate.person_id] : []))];
   const peopleResult = peopleIds.length
     ? await client.from("people").select("id, document_number").in("id", peopleIds)
     : { data: [], error: null };
@@ -45,7 +45,7 @@ export async function getCertificateAccessLogs(page: number): Promise<Certificat
       certificateCode: certificate?.certificate_code ?? "No disponible",
       certificateTitle: certificate?.title_snapshot ?? "Certificado no disponible",
       createdAt: log.created_at,
-      documentNumber: certificate ? documentsByPersonId.get(certificate.person_id) ?? null : null,
+      documentNumber: certificate?.person_id ? documentsByPersonId.get(certificate.person_id) ?? null : null,
       id: log.id,
       ipAddress: ipText(log.ip_address),
       participantName: certificate?.participant_name_snapshot ?? "Participante no disponible",

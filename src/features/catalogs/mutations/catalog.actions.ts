@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { CATALOG_ROUTE_SEGMENTS } from "@/features/catalogs/constants/catalog.constants";
+import { ROUTES } from "@/constants/routes";
+import { getSpeakerProfileScopeError } from "@/features/certificates/services/get-speaker-profile-scope";
 import {
   categorySchema,
   contactSchema,
@@ -20,6 +22,7 @@ import { requireAdmin } from "@/features/auth/services/admin-session";
 import { consumeStagedImage } from "@/features/media/services/consume-staged-image";
 import { SPEAKER_IMAGE_BUCKET } from "@/features/speakers/constants/speaker.constants";
 import { getSpeakerImageUrl } from "@/features/speakers/utils/speaker-image";
+import { speakerDocumentError } from "@/features/speakers/services/speaker-document-error";
 import { invalidatePublicCatalogContent } from "@/features/seo/services/invalidate-public-content";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getSupabaseErrorMessage, logSupabaseError } from "@/lib/supabase/supabase-error";
@@ -31,6 +34,7 @@ function text(formData: FormData, name: string): string {
 
 function errorLike(error: unknown): SupabaseErrorLike {
   if (error instanceof Error) return error;
+  if (error && typeof error === "object" && "message" in error && typeof error.message === "string") return { ...error, message: error.message };
   return { message: String(error) };
 }
 
@@ -121,6 +125,7 @@ async function saveCategory(formData: FormData): Promise<CatalogOption> {
 async function saveSpeaker(formData: FormData): Promise<CatalogOption> {
   const parsed = speakerSchema.safeParse({
     ...commonInput(formData),
+    document_number: text(formData, "document_number"),
     bio: text(formData, "bio"),
     email: text(formData, "email"),
     first_names: text(formData, "first_names"),
@@ -149,8 +154,18 @@ async function saveSpeaker(formData: FormData): Promise<CatalogOption> {
     specialties: parsed.data.specialties,
     website_url: parsed.data.website_url || null,
   };
-  const { data, error } = await client.from("speakers").upsert(speakerPayload)
-    .select("id, first_names, last_names, professional_title, organization, photo_path").single();
+  let speakerId = parsed.data.id;
+  if (!speakerId) {
+    const created = await client.rpc("create_speaker_with_document", {
+      p_document_number: parsed.data.document_number, p_profile: speakerPayload,
+    });
+    if (created.error) throw created.error;
+    speakerId = created.data;
+  } else {
+    const updated = await client.from("speakers").update(speakerPayload).eq("id", speakerId).is("deleted_at", null);
+    if (updated.error) throw updated.error;
+  }
+  const { data, error } = await client.from("speakers").select("id, first_names, last_names, professional_title, organization, photo_path").eq("id", speakerId).single();
   if (error) throw error;
 
   let photoPath = data.photo_path;
@@ -190,9 +205,7 @@ async function persistCatalog(kind: CatalogKind, formData: FormData): Promise<Ca
   return saveSpeaker(formData);
 }
 
-export async function quickCreateCatalogAction(formData: FormData): Promise<QuickCatalogResult> {
-  await requireAdmin();
-  const kind = text(formData, "kind") as CatalogKind;
+async function persistCatalogResult(kind: CatalogKind, formData: FormData): Promise<QuickCatalogResult> {
   try {
     const option = await persistCatalog(kind, formData);
     return { option, success: true };
@@ -201,28 +214,42 @@ export async function quickCreateCatalogAction(formData: FormData): Promise<Quic
       const flattened = (error as { flatten: () => { fieldErrors: Record<string, string[]> } }).flatten();
       return { errors: flattened.fieldErrors };
     }
-    logSupabaseError("catalog_quick_create_failed", errorLike(error), { kind });
+    logSupabaseError("catalog_save_failed", errorLike(error), { kind });
+    if (errorLike(error).message?.includes("SPEAKER_DOCUMENT_")) return speakerDocumentError(errorLike(error));
     return { message: catalogErrorMessage(errorLike(error)) };
   }
+}
+
+export async function quickCreateCatalogAction(formData: FormData): Promise<QuickCatalogResult> {
+  await requireAdmin();
+  return persistCatalogResult(text(formData, "kind") as CatalogKind, formData);
 }
 
 export async function saveCatalogAction(_: QuickCatalogResult, formData: FormData): Promise<QuickCatalogResult> {
   await requireAdmin();
   const kind = text(formData, "kind") as CatalogKind;
-  try {
-    await persistCatalog(kind, formData);
-  } catch (error) {
-    if (error && typeof error === "object" && "flatten" in error) {
-      const flattened = (error as { flatten: () => { fieldErrors: Record<string, string[]> } }).flatten();
-      return { errors: flattened.fieldErrors };
-    }
-    const safeError = errorLike(error);
-    logSupabaseError("catalog_save_failed", safeError, { kind });
-    return { message: catalogErrorMessage(safeError) };
-  }
+  const result = await persistCatalogResult(kind, formData);
+  if (!result.success) return result;
   revalidatePath(catalogPath(kind));
   invalidatePublicCatalogContent();
   redirect(catalogPath(kind));
+}
+
+export async function saveSpeakerProfileFromCertificatesAction(
+  activityId: string, speakerId: string, _: QuickCatalogResult, formData: FormData,
+): Promise<QuickCatalogResult> {
+  await requireAdmin();
+  const scopeError = await getSpeakerProfileScopeError(activityId, speakerId);
+  if (scopeError) return { message: scopeError };
+  if (text(formData, "id") !== speakerId) return { message: "El perfil seleccionado cambió. Actualiza la pantalla." };
+  const result = await persistCatalogResult("speakers", formData);
+  if (!result.success) return result;
+  revalidatePath(catalogPath("speakers"));
+  revalidatePath(`${catalogPath("speakers")}/${speakerId}`);
+  revalidatePath(`${ROUTES.adminCertificatesSpeakers}/[activityId]`, "page");
+  revalidatePath(ROUTES.adminCertificatesSpeakers);
+  invalidatePublicCatalogContent();
+  return { ...result, message: "Datos del perfil guardados en Catálogos. No se modificaron certificados preparados o emitidos." };
 }
 
 export async function setCatalogActiveAction(kind: CatalogKind, id: string, isActive: boolean): Promise<void> {

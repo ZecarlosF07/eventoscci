@@ -28,6 +28,7 @@ export async function storeCertificatePdf(
       ? null
       : certificate.date_text_snapshot,
     participantName: certificate.participant_name_snapshot,
+    recipientType: certificate.recipient_type,
     signers: assets.signers,
     title: certificate.title_snapshot,
   });

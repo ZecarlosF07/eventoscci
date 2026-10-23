@@ -17,6 +17,7 @@ const allowedEvents = new Set([
   "activity_certificate_offer",
   "activity_certificate_request_created",
   "course_certificate_issued",
+  "speaker_certificate_issued",
 ]);
 
 if (!allowedEvents.has(eventType)) throw new Error(`Evento no soportado: ${eventType ?? "vacío"}`);
@@ -246,7 +247,7 @@ if (eventType === "activity_certificate_request_created") {
   addAction("Atender solicitud", `${siteUrl}/admin/inscripciones/${encodeURIComponent(activityId)}?certificado=pending`, true);
 }
 
-if (eventType === "activity_certificate_issued" || eventType === "course_certificate_issued") {
+if (["activity_certificate_issued", "course_certificate_issued", "speaker_certificate_issued"].includes(eventType)) {
   const titleKey = eventType === "course_certificate_issued" ? "course_title" : "activity_title";
   const title = requiredText(titleKey);
   const participantName = requiredText("participant_name");
@@ -258,6 +259,10 @@ if (eventType === "activity_certificate_issued" || eventType === "course_certifi
   message = eventType === "course_certificate_issued"
     ? `${paragraph(`Completaste satisfactoriamente <strong>${escapeHtml(title)}</strong>. Ya puedes consultar y descargar tu certificado.`)}${detailPanel("Código del certificado", escapeHtml(certificateCode))}`
     : `${paragraph(`Ya puedes consultar y descargar tu certificado de <strong>${escapeHtml(title)}</strong>.`)}${detailPanel("Código del certificado", escapeHtml(certificateCode))}`;
+  if (eventType === "speaker_certificate_issued") {
+    heading = `Gracias por compartir tu conocimiento, ${escapeHtml(participantName)}`;
+    message = `${paragraph(`Reconocemos tu valiosa participación como <strong>${escapeHtml(payload.condition || "Ponente")}</strong> en <strong>${escapeHtml(title)}</strong>. Ya puedes consultar y descargar tu certificado.`)}${detailPanel("Código del certificado", escapeHtml(certificateCode))}`;
+  }
   actions.length = 0;
   addAction("Ver certificado", certificateUrl, true);
 }

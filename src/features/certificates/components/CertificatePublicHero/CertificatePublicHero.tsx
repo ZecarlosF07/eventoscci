@@ -32,7 +32,7 @@ function CertificateCredential({ certificate }: Pick<CertificatePublicHeroProps,
           </div>
           <div>
             <dt className="text-slate-500">Tipo</dt>
-            <dd className="mt-1 font-semibold">{certificate.certificate_type === "course" ? "Curso" : "Actividad"}</dd>
+            <dd className="mt-1 font-semibold">{certificate.recipient_type === "speaker" ? "Ponente" : certificate.certificate_type === "course" ? "Curso" : "Actividad"}</dd>
           </div>
           {certificate.date_text ? <div><dt className="text-slate-500">Fecha</dt><dd className="mt-1 font-semibold">{certificate.date_text}</dd></div> : null}
           {certificate.academic_hours !== null ? <div><dt className="text-slate-500">Horas académicas</dt><dd className="mt-1 font-semibold">{certificate.academic_hours}</dd></div> : null}
@@ -56,7 +56,7 @@ export function CertificatePublicHero({ certificate, token }: CertificatePublicH
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-cci-lime">Un logro que merece ser celebrado</p>
           <h1 className="mt-4 text-4xl font-semibold leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-6xl">¡Felicitaciones!</h1>
           <p className="mt-5 text-xl font-semibold leading-snug text-white sm:text-2xl">Tu certificado de {certificate.title} ya está disponible.</p>
-          <p className="mt-4 max-w-xl text-base leading-7 text-white/70">Reconocemos tu participación y el compromiso de seguir fortaleciendo tus capacidades junto a la Cámara de Comercio de Ica.</p>
+          <p className="mt-4 max-w-xl text-base leading-7 text-white/70">{certificate.recipient_type === "speaker" ? "Agradecemos tu valiosa contribución y el conocimiento compartido con nuestra comunidad." : "Reconocemos tu participación y el compromiso de seguir fortaleciendo tus capacidades junto a la Cámara de Comercio de Ica."}</p>
 
           {revoked ? (
             <div className="mt-7 rounded-2xl border border-amber-300/30 bg-amber-100/10 p-4 text-sm leading-6 text-amber-50">

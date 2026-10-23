@@ -88,6 +88,7 @@ export function CatalogQuickCreateDialog({ kind, onCreated }: CatalogQuickCreate
             </div>
             <div className="mt-6"><QuickCatalogFields errors={state.errors} kind={kind} /></div>
             {state.message ? <p aria-live="polite" className="mt-4 text-sm font-medium text-rose-700">{state.message}</p> : null}
+            {state.conflict ? <a className="inline-flex min-h-11 items-center font-semibold underline" href={`/admin/catalogos/ponentes/${state.conflict.speakerId}`} rel="noopener noreferrer" target="_blank">Revisar perfil de {state.conflict.name} (nueva pestaña)</a> : null}
             <div className="mt-6 flex justify-end gap-3">
               <Button onClick={() => setOpen(false)} type="button" variant="secondary">Cancelar</Button>
               <Button disabled={pending} type="submit">{pending ? "Guardando…" : "Crear y seleccionar"}</Button>

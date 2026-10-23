@@ -18,12 +18,14 @@ export function MyCertificatesList({ certificates }: MyCertificatesListProps) {
         return (
           <article className="space-y-4 rounded-3xl border border-cci-100 bg-white p-6" key={certificate.id}>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <Badge>{certificate.certificateType === "course" ? "Curso" : "Actividad"}</Badge>
+              <Badge>{certificate.recipientType === "speaker" ? "Ponente" : certificate.certificateType === "course" ? "Curso" : "Actividad"}</Badge>
               <Badge variant={revoked ? "warning" : "success"}>{revoked ? "Revocado" : "Vigente"}</Badge>
             </div>
             <div>
               <Heading level={2}>{certificate.title}</Heading>
               <Text className="mt-1" size="sm">{certificate.certificateCode}</Text>
+              <Text className="mt-2" size="sm">Otorgado a {certificate.participantName}</Text>
+              {certificate.recipientType === "speaker" ? <Text size="sm">Rol: {certificate.condition ?? "Ponente"}</Text> : null}
             </div>
             <Text size="sm">Emitido el {formatRegistrationDate(certificate.issuedAt)}</Text>
             {revoked ? (

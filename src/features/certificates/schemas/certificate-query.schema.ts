@@ -51,11 +51,14 @@ export const certificateGenerationSchema = z.object({
   file_path: z.string().nullable(),
   id: z.uuid(),
   participant_name_snapshot: z.string(),
+  recipient_type: z.enum(["participant", "student", "speaker"]),
   status: z.enum(["issued", "revoked"]),
   title_snapshot: z.string(),
 });
 
 export const myCertificateSchema = z.object({
+  participant_name: z.string(),
+  recipient_type: z.enum(["participant", "student", "speaker"]),
   access_token: z.uuid(),
   academic_hours: z.number().nullable(),
   certificate_code: z.string(),

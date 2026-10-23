@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 export const publicCertificateSearchItemSchema = z.object({
+  id: z.uuid(),
+  recipient_type: z.enum(["participant", "student", "speaker"]),
   access_token: z.uuid(),
   academic_hours: z.number().nullable(),
   certificate_code: z.string(),

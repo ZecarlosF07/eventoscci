@@ -96,3 +96,7 @@ Al activar el workflow, la URL de producción mostrada por el nodo Webhook debe 
 ## Decisión sobre fechas en certificados
 
 Los certificados de actividades pueden mostrar sus fechas según la plantilla. Los cursos del campus son virtuales y sus certificados siempre omiten las fechas, incluso si la configuración visual de la plantilla las habilita.
+
+## Certificados de ponentes (Hito 18)
+
+Se admite `speaker_certificate_issued` en el workflow existente. Requiere `activity_title`, `participant_name`, `certificate_code` y `certificate_url` HTTPS; `condition` es el rol certificado. El correo agradece su contribución y enlaza al certificado, sin pagos ni inscripción. Desde `202610230003`, la plataforma exige correo privado válido para emisiones nuevas y para finalizar pendientes, y crea la notificación automáticamente. Los perfiles incompletos se pueden guardar, pero no emitir. Esta validación no requiere cambiar el workflow. Actualizar «Preparar correo» antes de las primeras emisiones si aún no incluye este evento.

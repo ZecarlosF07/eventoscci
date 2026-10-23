@@ -22,6 +22,6 @@ export const certificateAccessCertificateRowSchema = z.object({
   certificate_code: z.string(),
   id: z.uuid(),
   participant_name_snapshot: z.string(),
-  person_id: z.uuid(),
+  person_id: z.uuid().nullable(),
   title_snapshot: z.string(),
 });
