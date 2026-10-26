@@ -1,15 +1,16 @@
 "use server";
 
-import { createHash } from "node:crypto";
-
 import { updateTag } from "next/cache";
 import { headers } from "next/headers";
+import { createHash } from "node:crypto";
 
 import { getRegistrationPricing } from "@/features/activities/services/get-registration-pricing";
-import { REGISTRATION_ERROR_MESSAGES } from "@/features/registrations/constants/registration.constants";
-import { deliverNotificationImmediately, deliverNotificationImmediatelyById } from "@/features/notifications/services/process-notifications";
 import { memberCompanyLookupSchema, memberGroupInputSchema, memberGroupSubmissionSchema, memberPassAvailabilitySchema } from "@/features/member-groups/schemas/member-group.schema";
 import type { MemberGroupInput, MemberGroupMutationResult, MemberPassAvailability } from "@/features/member-groups/types/member-group.types";
+import { deliverNotificationImmediately, deliverNotificationImmediatelyById } from "@/features/notifications/services/process-notifications";
+import { privacyInputSchema } from "@/features/privacy/schemas/privacy.schema";
+import { getPrivacyError } from "@/features/privacy/utils/privacy-error";
+import { REGISTRATION_ERROR_MESSAGES } from "@/features/registrations/constants/registration.constants";
 import { PUBLIC_CACHE_TAGS } from "@/features/seo/constants/public-cache.constants";
 import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -46,6 +47,8 @@ export async function registerMemberGroup(
   input: MemberGroupInput,
   idempotencyKey: string,
 ): Promise<MemberGroupMutationResult> {
+  const privacy = privacyInputSchema.safeParse(input);
+  if (!privacy.success) return { fieldErrors: Object.fromEntries(privacy.error.issues.map((issue) => [issue.path.join("."), issue.message])), message: privacy.error.issues[0].message, success: false };
   const parsed = memberGroupInputSchema.safeParse(input);
   if (!parsed.success || !/^[0-9a-f-]{36}$/i.test(idempotencyKey)) {
     return { message: "Revisa los datos de la empresa, asistentes y comprobante antes de enviar.", success: false };
@@ -59,6 +62,8 @@ export async function registerMemberGroup(
   });
   if (error) {
     const message = error.message;
+    const privacyMessage = getPrivacyError(message);
+    if (privacyMessage) return { fieldErrors: { privacy_accepted: privacyMessage }, message: privacyMessage, success: false };
     if (message.includes("PRICE_CHANGED")) return { code: "PRICE_CHANGED", pricing: await getRegistrationPricing(activityId) ?? undefined, message: REGISTRATION_ERROR_MESSAGES.PRICE_CHANGED, success: false };
     return { code: message.includes("BENEFIT_AVAILABILITY_CHANGED") ? "BENEFIT_AVAILABILITY_CHANGED" : undefined, message: message.includes("MEMBER_RUC_INACTIVE") ? "El RUC ya no figura como asociado activo. Verifícalo nuevamente."
       : message.includes("GROUP_RATE_LIMITED") ? "Se alcanzó el límite temporal de solicitudes para este RUC. Contacta a la CCI para continuar."

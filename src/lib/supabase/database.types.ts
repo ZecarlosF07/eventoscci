@@ -1016,6 +1016,13 @@ export type Database = {
             foreignKeyName: "certificates_person_id_fkey"
             columns: ["person_id"]
             isOneToOne: false
+            referencedRelation: "authorized_marketing_contacts"
+            referencedColumns: ["person_id"]
+          },
+          {
+            foreignKeyName: "certificates_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
             referencedRelation: "people"
             referencedColumns: ["id"]
           },
@@ -1121,6 +1128,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "courses"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_enrollments_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "authorized_marketing_contacts"
+            referencedColumns: ["person_id"]
           },
           {
             foreignKeyName: "course_enrollments_person_id_fkey"
@@ -1342,6 +1356,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "course_enrollments"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_ratings_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "authorized_marketing_contacts"
+            referencedColumns: ["person_id"]
           },
           {
             foreignKeyName: "course_ratings_person_id_fkey"
@@ -1924,6 +1945,13 @@ export type Database = {
             foreignKeyName: "member_group_requests_coordinator_person_id_fkey"
             columns: ["coordinator_person_id"]
             isOneToOne: false
+            referencedRelation: "authorized_marketing_contacts"
+            referencedColumns: ["person_id"]
+          },
+          {
+            foreignKeyName: "member_group_requests_coordinator_person_id_fkey"
+            columns: ["coordinator_person_id"]
+            isOneToOne: false
             referencedRelation: "people"
             referencedColumns: ["id"]
           },
@@ -2099,6 +2127,13 @@ export type Database = {
             foreignKeyName: "notification_outbox_person_id_fkey"
             columns: ["person_id"]
             isOneToOne: false
+            referencedRelation: "authorized_marketing_contacts"
+            referencedColumns: ["person_id"]
+          },
+          {
+            foreignKeyName: "notification_outbox_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
             referencedRelation: "people"
             referencedColumns: ["id"]
           },
@@ -2167,6 +2202,128 @@ export type Database = {
           phone?: string
           ruc?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      privacy_consent_records: {
+        Row: {
+          action: string
+          actor_type: string
+          channels: string[]
+          group_request_id: string | null
+          id: string
+          person_id: string
+          policy_version: string
+          purpose: string
+          reason: string | null
+          recorded_at: string
+          recorded_by: string | null
+          registration_id: string | null
+          sequence: number
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_type: string
+          channels?: string[]
+          group_request_id?: string | null
+          id?: string
+          person_id: string
+          policy_version: string
+          purpose: string
+          reason?: string | null
+          recorded_at?: string
+          recorded_by?: string | null
+          registration_id?: string | null
+          sequence?: never
+          source: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_type?: string
+          channels?: string[]
+          group_request_id?: string | null
+          id?: string
+          person_id?: string
+          policy_version?: string
+          purpose?: string
+          reason?: string | null
+          recorded_at?: string
+          recorded_by?: string | null
+          registration_id?: string | null
+          sequence?: never
+          source?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "privacy_consent_records_group_request_id_fkey"
+            columns: ["group_request_id"]
+            isOneToOne: false
+            referencedRelation: "member_group_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "privacy_consent_records_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "authorized_marketing_contacts"
+            referencedColumns: ["person_id"]
+          },
+          {
+            foreignKeyName: "privacy_consent_records_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "privacy_consent_records_policy_version_fkey"
+            columns: ["policy_version"]
+            isOneToOne: false
+            referencedRelation: "privacy_policy_versions"
+            referencedColumns: ["version"]
+          },
+          {
+            foreignKeyName: "privacy_consent_records_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "admin_registration_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "privacy_consent_records_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "certificate_payment_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "privacy_consent_records_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      privacy_policy_versions: {
+        Row: {
+          content: Json
+          created_at: string
+          version: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          version: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          version?: string
         }
         Relationships: []
       }
@@ -2654,6 +2811,13 @@ export type Database = {
             foreignKeyName: "registrations_person_id_fkey"
             columns: ["person_id"]
             isOneToOne: false
+            referencedRelation: "authorized_marketing_contacts"
+            referencedColumns: ["person_id"]
+          },
+          {
+            foreignKeyName: "registrations_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
             referencedRelation: "people"
             referencedColumns: ["id"]
           },
@@ -2809,6 +2973,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "user_accounts_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "authorized_marketing_contacts"
+            referencedColumns: ["person_id"]
+          },
           {
             foreignKeyName: "user_accounts_person_id_fkey"
             columns: ["person_id"]
@@ -3006,8 +3177,35 @@ export type Database = {
             foreignKeyName: "registrations_person_id_fkey"
             columns: ["person_id"]
             isOneToOne: false
+            referencedRelation: "authorized_marketing_contacts"
+            referencedColumns: ["person_id"]
+          },
+          {
+            foreignKeyName: "registrations_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
             referencedRelation: "people"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      authorized_marketing_contacts: {
+        Row: {
+          authorized_at: string | null
+          email: string | null
+          first_names: string | null
+          last_names: string | null
+          person_id: string | null
+          phone: string | null
+          policy_version: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "privacy_consent_records_policy_version_fkey"
+            columns: ["policy_version"]
+            isOneToOne: false
+            referencedRelation: "privacy_policy_versions"
+            referencedColumns: ["version"]
           },
         ]
       }
@@ -3204,6 +3402,7 @@ export type Database = {
         Args: { p_has_presale: boolean; p_input: Json; p_price: number }
         Returns: undefined
       }
+      assert_privacy_input: { Args: { p_input: Json }; Returns: undefined }
       assert_speaker_certificate_email: {
         Args: { p_speaker_id: string }
         Returns: string
@@ -3347,12 +3546,21 @@ export type Database = {
         Returns: string
       }
       current_person_id: { Args: never; Returns: string }
+      current_privacy_version: { Args: never; Returns: string }
       current_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
       }
       delete_course_rating: { Args: { p_course_id: string }; Returns: boolean }
       enroll_free_course: { Args: { p_course_id: string }; Returns: string }
+      enroll_free_course_before_privacy: {
+        Args: { p_course_id: string }
+        Returns: string
+      }
+      enroll_free_course_with_privacy: {
+        Args: { p_course_id: string; p_privacy: Json }
+        Returns: string
+      }
       finalize_activity_certificate: {
         Args: {
           p_certificate_id: string
@@ -3621,6 +3829,7 @@ export type Database = {
         Args: { p_course_id: string }
         Returns: boolean
       }
+      has_current_campus_privacy: { Args: never; Returns: boolean }
       is_active_admin: { Args: never; Returns: boolean }
       is_activity_certificate_visible: {
         Args: { p_certificate_id: string }
@@ -3693,11 +3902,28 @@ export type Database = {
         Args: { p_file_hash: string; p_file_name: string; p_rows: Json }
         Returns: Json
       }
+      privacy_consent_enforced: { Args: never; Returns: boolean }
       recalculate_course_progress: {
         Args: { p_enrollment_id: string }
         Returns: number
       }
+      record_privacy_consent: {
+        Args: {
+          p_group_id?: string
+          p_input: Json
+          p_person_id: string
+          p_purpose: string
+          p_registration_id?: string
+          p_source: string
+          p_user_id?: string
+        }
+        Returns: undefined
+      }
       register_activity: {
+        Args: { p_activity_id: string; p_registration: Json }
+        Returns: Json
+      }
+      register_activity_before_privacy: {
         Args: { p_activity_id: string; p_registration: Json }
         Returns: Json
       }
@@ -3726,6 +3952,14 @@ export type Database = {
         Returns: Json
       }
       register_member_group: {
+        Args: {
+          p_activity_id: string
+          p_idempotency_key: string
+          p_request: Json
+        }
+        Returns: Json
+      }
+      register_member_group_before_privacy: {
         Args: {
           p_activity_id: string
           p_idempotency_key: string
@@ -3955,6 +4189,10 @@ export type Database = {
           p_request_id: string
         }
         Returns: Json
+      }
+      withdraw_marketing_consent: {
+        Args: { p_person_id: string; p_reason: string }
+        Returns: undefined
       }
     }
     Enums: {

@@ -1,18 +1,20 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
-import { useRouter } from "next/navigation";
-
-import { useRegistrationPricing } from "@/features/activities/components/ActivityPricingProvider/ActivityPricingProvider";
-import { getActivityPrice } from "@/features/activities/utils/activity-pricing";
-import { formatActivityPrice } from "@/features/activities/utils/activity-formatters";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Text } from "@/components/atoms/Text";
+import { useRegistrationPricing } from "@/features/activities/components/ActivityPricingProvider/ActivityPricingProvider";
+import { formatActivityPrice } from "@/features/activities/utils/activity-formatters";
+import { getActivityPrice } from "@/features/activities/utils/activity-pricing";
+import { trackAnalyticsEvent } from "@/features/analytics/services/track-analytics-event.client";
 import { IndividualBillingFields } from "@/features/billing/components/IndividualBillingFields";
 import type { BillingInput } from "@/features/billing/types/billing.types";
 import { applicableBilling } from "@/features/billing/utils/billing-input";
+import { PrivacyFields } from "@/features/privacy/components/PrivacyFields";
+import { privacyInputSchema } from "@/features/privacy/schemas/privacy.schema";
 import { CertificateInterestField } from "@/features/registrations/components/CertificateInterestField";
 import { FutureTopicsField } from "@/features/registrations/components/FutureTopicsField";
 import { ProfessionalRegistrationFields } from "@/features/registrations/components/ProfessionalRegistrationFields";
@@ -22,7 +24,6 @@ import { RegistrationProfileSelector } from "@/features/registrations/components
 import { RegistrationTypeSelector } from "@/features/registrations/components/RegistrationTypeSelector";
 import { StudentRegistrationFields } from "@/features/registrations/components/StudentRegistrationFields";
 import { PROFESSIONAL_ACTIVITY_NOTICE } from "@/features/registrations/constants/registration.constants";
-import { trackAnalyticsEvent } from "@/features/analytics/services/track-analytics-event.client";
 import { registerActivity } from "@/features/registrations/mutations/register-activity";
 import type {
   RegistrationFormProps,
@@ -30,9 +31,9 @@ import type {
   RegistrationType,
 } from "@/features/registrations/types/registration.types";
 import { focusFirstInvalidField } from "@/features/registrations/utils/focus-first-invalid-field";
+import { validateRegistrationWithBilling } from "@/features/registrations/utils/registration-billing-validation";
 import { parseRegistrationFormData } from "@/features/registrations/utils/registration-form-data";
 import { getRegistrationResultRoute } from "@/features/registrations/utils/registration-routes";
-import { validateRegistrationWithBilling } from "@/features/registrations/utils/registration-billing-validation";
 
 export function RegistrationForm({ activity }: RegistrationFormProps) {
   const router = useRouter();
@@ -68,6 +69,13 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
 
     try {
       const input = { ...parseRegistrationFormData(new FormData(form)), expected_unit_price: quote.amount, billing: requiresBilling ? applicableBilling(billing) : null };
+      const privacy = privacyInputSchema.safeParse(input);
+      if (!privacy.success) {
+        setErrors(privacy.error.flatten().fieldErrors);
+        setMessage("Revisa la aceptación de privacidad antes de continuar.");
+        focusFirstInvalidField(form);
+        return;
+      }
       const validated = validateRegistrationWithBilling(input, requiresBilling ? 1 : 0);
       if (!validated.success) {
         setErrors(Object.fromEntries(validated.error.issues.map((issue) => [issue.path.join("."), [issue.message]])));
@@ -138,6 +146,7 @@ export function RegistrationForm({ activity }: RegistrationFormProps) {
         />
       ) : null}
       <FutureTopicsField error={errors.future_topics_suggestion?.[0]} />
+      <PrivacyFields errors={errors} />
       {message ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-medium text-rose-800" role="alert">
           {message}

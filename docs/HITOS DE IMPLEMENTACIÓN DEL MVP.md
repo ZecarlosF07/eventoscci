@@ -959,6 +959,32 @@ Dos responsables podrán trabajar simultáneamente sin ver ni operar datos de la
 
 ---
 
+# Hito 18 — Certificados para ponentes por actividad
+
+## Objetivo
+
+Emitir certificados para ponentes asignados a actividades, con identidad, entrega, historial y auditoría independientes de las inscripciones.
+
+## Referencia
+
+Consultar [Hito 18](hitos/HITO%2018%20—%20CERTIFICADOS%20PARA%20PONENTES%20POR%20ACTIVIDAD.md) para el alcance y la evidencia existente. Esta referencia no cambia su estado ni sus reglas.
+
+---
+
+# Hito 19 — Privacidad y autorizaciones de datos personales
+
+## Objetivo
+
+Integrar la política de privacidad, aceptación necesaria y publicidad opcional por correo y WhatsApp en inscripciones individuales, grupos y Campus, con evidencia versionada y bajas auditadas.
+
+## Actividades y finalización
+
+Implementar el esquema compatible y sus RPC/RLS, página `/privacidad`, casillas reutilizables, integración de registros, consulta y bajas administrativas, exportación de contactos autorizados y pruebas de regresión. Publicar el frontend antes de activar la exigencia SQL. No atribuir autorizaciones a históricos ni a Analytics.
+
+Consultar [Hito 19](hitos/HITO%2019%20—%20PRIVACIDAD%20Y%20AUTORIZACIONES%20DE%20DATOS%20PERSONALES.md) para etapas, textos, permisos, aceptación y estado de entrega.
+
+---
+
 # Orden resumido del desarrollo
 
 ## Etapa A — Eventos y capacitaciones
@@ -1038,6 +1064,22 @@ Resultado:
 Resultado:
 
 **Cuenta interna nueva o reactivada → Contacto con vínculo estable → Un responsable por actividad → Operación acotada → Reasignación individual auditada**
+
+---
+
+## Etapa I — Reconocimiento de ponentes
+
+**Hito 18**
+
+**Asignación → Identidad y correo → Certificado por actividad → Entrega e historial**
+
+---
+
+## Etapa J — Privacidad y autorizaciones
+
+**Hito 19**
+
+**Información → Aceptación expresa → Registro transaccional → Publicidad opcional → Baja auditada**
 
 ---
 

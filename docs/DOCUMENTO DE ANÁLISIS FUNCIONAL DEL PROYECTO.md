@@ -1646,3 +1646,11 @@ La presentación se implementa con utilidades Tailwind, sin selectores ni keyfra
 ### RUC opcional para público general — 20/10/2026
 
 En las inscripciones individuales de eventos y capacitaciones, los profesionales de público general pueden omitir el RUC. Si lo ingresan, se recorta y valida que contenga 11 dígitos. Empresa / Organización y Cargo siguen siendo obligatorios. Los asociados conservan el RUC obligatorio para identificar la empresa; los grupos exclusivos y la emisión de facturas conservan sus requisitos. La ausencia de RUC produce un snapshot nulo para la nueva inscripción sin modificar los snapshots anteriores.
+
+## Hito 19 — Privacidad y autorizaciones (26/10/2026)
+
+El portal informa sus finalidades en `/privacidad`; la política se abre en otra pestaña y está enlazada en el pie. La autorización necesaria para inscripción/cuenta es obligatoria y desmarcada; la publicidad de próximas actividades por correo y WhatsApp es opcional y separada. En grupos, el representante declara haber informado y contar con autorización de todos los asistentes para las finalidades seleccionadas. En Campus se conserva la aceptación vigente por cuenta; una nueva matrícula de una cuenta anterior solicita aceptación sin bloquear cursos ya concedidos.
+
+Las constancias son inmutables y guardan finalidad, versión, origen y fecha del servidor; las inscripciones/cuentas y sus constancias se registran atómicamente. No se atribuye aceptación a históricos. Dejar publicidad desmarcada en un registro posterior no retira una autorización anterior. Las bajas se reciben en **comercial@camaraica.org.pe** y se registran con motivo y auditoría en la ficha administrativa. El directorio permite exportar únicamente contactos con publicidad vigente; no se implementan campañas ni envíos promocionales.
+
+Excepción acordada: Analytics conserva su configuración actual sin aviso de cookies. Se informa en la política y su consentimiento queda pendiente; ninguna aceptación de inscripción se considera consentimiento analítico. Consultar el [Hito 19](hitos/HITO%2019%20—%20PRIVACIDAD%20Y%20AUTORIZACIONES%20DE%20DATOS%20PERSONALES.md).

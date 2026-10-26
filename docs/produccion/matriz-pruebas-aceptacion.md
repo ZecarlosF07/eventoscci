@@ -577,3 +577,23 @@ Evidencia: suite SQL transaccional `040_speaker_certificate_dni_lookup_test.sql`
 Edición integrada de perfiles desde emisión (23/10/2026): 269 unitarias aprobadas, incluidas ocho nuevas; lint, typecheck, build y diff-check aprobados. No necesita nueva migración. Verificación visual con sesión administrativa tras desplegar el frontend; las pruebas no alteraron perfiles reales ni enviaron correo.
 
 Correo obligatorio en emisión (23/10/2026): `202610230003` aplicada en Supabase y guardia comprobada activa; tipos regenerados. 121 comprobaciones SQL (038/040/041) con rollback y 273 unitarias aprobadas, además de lint, typecheck, build y diff-check. Sin perfiles de prueba persistentes ni envíos reales. El frontend sigue su despliegue habitual y n8n no necesita cambios.
+
+## Hito 19 — Privacidad y autorizaciones (26/10/2026)
+
+| Caso | Criterio | Evidencia / estado |
+|---|---|---|
+| H19-01 | Política `/privacidad`, canonical, pie del portal, texto versionado y contacto comercial | APROBADO: unitarias y navegador móvil; sin desbordamiento |
+| H19-02 | Casillas independientes, desmarcadas, publicidad opcional por correo y WhatsApp; textos v2 breves sin repetición de baja | APROBADO: unitarias y revisión del formulario individual en móvil/escritorio y registro de cuenta |
+| H19-03 | Falta de aceptación, booleanos falsos/cadenas y versión obsoleta se rechazan antes de cambios | APROBADO: Zod, acción y SQL 042; foco/ARIA comprobados en formulario individual |
+| H19-04 | Grupo completo, autorización del representante y reintentos sin duplicar evidencias, incluso con otra versión vigente | APROBADO: SQL 042 y unitarias del estado controlado; recorrido visual completo pendiente de sesión de prueba |
+| H19-05 | Cuenta nueva conserva constancia fuera de metadata mutable; cuenta anterior acepta al matricularse y no repite por curso | APROBADO: SQL 042 y regresión 006/007; recorrido autenticado visual pendiente |
+| H19-06 | Matrícula fallida revierte autorización; cursos concedidos y datos de personas existentes se conservan | APROBADO: SQL 042 |
+| H19-07 | RLS, helpers privados e inmutabilidad de versiones y constancias | APROBADO: SQL 042; sin lectura global para alumnos ni escritura directa pública |
+| H19-08 | Publicidad desmarcada no revoca permiso previo; baja auditada excluye exportación y no cancela inscripciones | APROBADO: SQL 042; formulario interno y descarga visual pendientes de sesión interna |
+| H19-09 | Pases, grupos, datos profesionales, política de estudiantes, precios y comprobantes conservan reglas | APROBADO: regresiones 025/027/033/035/036 |
+| H19-10 | Despliegue compatible, sin consentimientos históricos inventados ni fixtures persistentes | APROBADO: migraciones y comprobación de guardia falsa; sin seeds |
+| H19-11 | Frontend publicado, comprobación productiva y activación explícita de exigencia SQL | PENDIENTE: proceso habitual de publicación del usuario; no ejecutar rollout antes |
+
+279 pruebas unitarias, 341 comprobaciones SQL (61 del hito y 280 de regresión), lint, typecheck, build y diff-check aprobados. Las pruebas SQL usan `finish(true)` y rollback. Se regeneraron tipos del esquema vinculado. Las comprobaciones de UI no enviaron registros ni crearon cuentas reales.
+
+Analytics conserva su comportamiento actual sin aviso de cookies por decisión expresa. La política lo informa; no se registran autorizaciones analíticas automáticas. Ese consentimiento permanece pendiente y no forma parte de los criterios aprobados.

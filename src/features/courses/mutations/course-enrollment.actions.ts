@@ -12,13 +12,18 @@ import {
   revokeCourseAccessSchema,
 } from "@/features/courses/schemas/course-enrollment.schema";
 import { getAdminCourseStudentsRoute, getCampusCourseRoute } from "@/features/courses/utils/course-routes";
+import { getPrivacyError } from "@/features/privacy/utils/privacy-error";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function enrollFreeCourseAction(courseId: string): Promise<void> {
   await requireActiveAccount();
   const parsed = enrollFreeCourseSchema.parse({ courseId });
   const client = await createServerSupabaseClient();
+  const { data: accepted, error: privacyError } = await client.rpc("has_current_campus_privacy");
+  if (privacyError) throw new Error("No fue posible consultar la autorización de privacidad.", { cause: privacyError });
+  if (!accepted) redirect(`/privacidad/aceptar?curso=${parsed.courseId}`);
   const { error } = await client.rpc("enroll_free_course", { p_course_id: parsed.courseId });
+  if (error && getPrivacyError(error.message)) redirect(`/privacidad/aceptar?curso=${parsed.courseId}`);
   if (error) throw new Error("No fue posible habilitar el curso gratuito.", { cause: error });
   revalidatePath(ROUTES.campusCourses);
   redirect(getCampusCourseRoute(parsed.courseId));

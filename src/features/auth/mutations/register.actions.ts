@@ -5,9 +5,12 @@ import { redirect } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
 import { registerSchema } from "@/features/auth/schemas/register.schema";
 import type { RegisterActionState } from "@/features/auth/types/auth.types";
-import { formText, registrationMetadata } from "@/features/auth/utils/auth-form-data";
 import { getSignUpErrorState } from "@/features/auth/utils/auth-errors";
+import { formText, registrationMetadata } from "@/features/auth/utils/auth-form-data";
 import { safeAuthRedirect } from "@/features/auth/utils/safe-auth-redirect";
+import { PRIVACY_ERRORS } from "@/features/privacy/constants/privacy.constants";
+import { privacyInputSchema } from "@/features/privacy/schemas/privacy.schema";
+import { parsePrivacyFormData } from "@/features/privacy/utils/privacy-form-data";
 import { getSiteUrl } from "@/lib/env/server-env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { logSupabaseError } from "@/lib/supabase/supabase-error";
@@ -16,6 +19,8 @@ export async function registerAction(
   _previousState: RegisterActionState,
   formData: FormData,
 ): Promise<RegisterActionState> {
+  const privacy = privacyInputSchema.safeParse(parsePrivacyFormData(formData));
+  if (!privacy.success) return { errors: privacy.error.flatten().fieldErrors };
   const parsed = registerSchema.safeParse({
     address: formText(formData, "address"),
     company: formText(formData, "company"),
@@ -46,10 +51,13 @@ export async function registerAction(
     ruc: parsed.data.ruc,
   };
   const client = await createServerSupabaseClient();
+  const { data: currentVersion, error: versionError } = await client.rpc("current_privacy_version");
+  if (versionError) return { message: "No fue posible consultar la política vigente. Inténtalo nuevamente." };
+  if (currentVersion !== privacy.data.privacy_version) return { errors: { privacy_version: [PRIVACY_ERRORS.PRIVACY_POLICY_CHANGED] } };
   const { data, error } = await client.auth.signUp({
     email,
     options: {
-      data: registrationMetadata(profile),
+      data: { ...registrationMetadata(profile), ...privacy.data },
       emailRedirectTo: `${getSiteUrl()}${ROUTES.authConfirm}?next=${encodeURIComponent(destination)}`,
     },
     password,

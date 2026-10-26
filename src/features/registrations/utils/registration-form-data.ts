@@ -1,3 +1,4 @@
+import { parsePrivacyFormData } from "@/features/privacy/utils/privacy-form-data";
 import type { RegistrationInput } from "@/features/registrations/types/registration.types";
 
 function formValue(formData: FormData, name: string): string {
@@ -13,6 +14,7 @@ export function parseRegistrationFormData(formData: FormData): RegistrationInput
   const isStudent = participantProfile === "student";
 
   return {
+    ...parsePrivacyFormData(formData),
     academic_institution: isStudent ? formValue(formData, "academic_institution") : "",
     address: isStudent ? "" : formValue(formData, "address"),
     career: isStudent ? formValue(formData, "career") : "",

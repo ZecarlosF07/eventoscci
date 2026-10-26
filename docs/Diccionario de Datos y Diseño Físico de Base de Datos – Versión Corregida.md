@@ -1935,3 +1935,19 @@ Las columnas de preventa son opcionales y solo corresponden a eventos pagados. A
 Consulta de lectura `STABLE SECURITY INVOKER`, disponible para `anon`, `authenticated` y `service_role`, con filtros públicos explícitos y RLS de las tablas existentes. Agrega la última fecha efectiva (`max(coalesce(ends_at, starts_at))`) de sesiones no eliminadas antes de filtrar y paginar. `past` admite únicamente eventos publicados/finalizados con fecha final vencida; `upcoming` mantiene eventos publicados/cancelados con sesiones pendientes o en curso. Admite páginas desde 1 y tamaños de 1 a 12; entradas inválidas generan `INVALID_EVENT_PAGE` (`22023`). Ordena historial por fecha final descendente y agenda por próxima sesión ascendente, desempata por ID. No devuelve participantes ni enlaces virtuales privados.
 
 La restricción `activities_event_reserved_slug` reserva `realizados` en eventos para la ruta del historial. No añade columnas ni modifica datos existentes. Migración: `202610050001_public_event_history.sql`; pruebas transaccionales: `039_public_event_history_test.sql`.
+
+## Hito 19 — Privacidad (26/10/2026)
+
+### privacy_policy_versions
+
+`version` (text, PK), `content` (jsonb: política completa y textos de ambas casillas por recorrido), `created_at` (timestamptz del servidor). Contenido inmutable; se inserta una versión nueva para cambios futuros. La copia del frontend y la de PostgreSQL deben coincidir. No contiene información de participantes.
+
+### privacy_consent_records
+
+`id` UUID PK; `sequence` bigint identity para ordenar eventos; `person_id` FK people; `purpose` activity_registration/campus/marketing; `action` accepted/declined/withdrawn; `policy_version` FK; `source` individual/group/campus_registration/campus_enrollment/admin; `actor_type` self/representative/staff; `registration_id`, `group_request_id` y `user_id` FK opcionales según origen; `recorded_by` FK Auth; `recorded_at` generado por servidor; `channels` email/whatsapp para publicidad; `reason` obligatorio en bajas administrativas. Una inscripción admite una constancia por finalidad. Versiones y eventos no admiten actualización ni eliminación. No se completan históricos ni se capturan IP/UA adicionales.
+
+### Consultas y operaciones
+
+`authorized_marketing_contacts`: vista invoker con persona, nombres, correo, celular, fecha y versión de autorización vigente. Solo incluye la última decisión expresa accepted/withdrawn; declined no revoca. Sin acceso anónimo ni escritura. `withdraw_marketing_consent` verifica usuario interno, motivo y persona, serializa por persona y deja auditoría. `has_current_campus_privacy` está limitado a la cuenta actual. `enroll_free_course_with_privacy` registra aceptación y matrícula en la misma transacción. Los helpers y núcleos anteriores son privados incluso para clientes service_role; no añaden un bypass público.
+
+La activación posterior al despliegue se controla mediante `privacy_consent_enforced()`, privada, inicialmente falsa. La política vigente es `2026-10-26.v2`; la migración `202610260002_privacy_short_notices.sql` acorta las casillas y conserva la primera versión inmutable. Los tipos Supabase se regeneran desde el esquema aplicado.

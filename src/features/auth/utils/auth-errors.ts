@@ -1,8 +1,11 @@
 import type { AuthError } from "@supabase/supabase-js";
 
 import type { RegisterActionState } from "@/features/auth/types/auth.types";
+import { getPrivacyError } from "@/features/privacy/utils/privacy-error";
 
 export function getSignUpErrorState(error: AuthError): RegisterActionState {
+  const privacyMessage = getPrivacyError(error.message);
+  if (privacyMessage) return { errors: { privacy_accepted: [privacyMessage] } };
   if (["email_exists", "user_already_exists"].includes(error.code ?? "")) {
     return { errors: { email: ["Este correo ya tiene una cuenta. Inicia sesión o recupera tu contraseña."] } };
   }

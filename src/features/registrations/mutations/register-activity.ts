@@ -3,13 +3,14 @@
 import { updateTag } from "next/cache";
 import { z } from "zod";
 
+import { getRegistrationPricing } from "@/features/activities/services/get-registration-pricing";
+import { getActivityPrice, getActivityPricingConfig, matchesExpectedPrice } from "@/features/activities/utils/activity-pricing";
 import {
   deliverNotificationImmediately,
   deliverNotificationImmediatelyById,
 } from "@/features/notifications/services/process-notifications";
-import { PUBLIC_CACHE_TAGS } from "@/features/seo/constants/public-cache.constants";
-import { getRegistrationPricing } from "@/features/activities/services/get-registration-pricing";
-import { getActivityPrice, getActivityPricingConfig, matchesExpectedPrice } from "@/features/activities/utils/activity-pricing";
+import { privacyInputSchema } from "@/features/privacy/schemas/privacy.schema";
+import { getPrivacyError } from "@/features/privacy/utils/privacy-error";
 import { REGISTRATION_ERROR_MESSAGES } from "@/features/registrations/constants/registration.constants";
 import {
   registrationRpcResultSchema,
@@ -18,9 +19,10 @@ import type {
   RegistrationInput,
   RegistrationMutationResult,
 } from "@/features/registrations/types/registration.types";
-import { getRegistrationErrorCode } from "@/features/registrations/utils/registration-errors";
 import { validateRegistrationWithBilling } from "@/features/registrations/utils/registration-billing-validation";
+import { getRegistrationErrorCode } from "@/features/registrations/utils/registration-errors";
 import { isStudentRegistrationRestricted } from "@/features/registrations/utils/student-registration-policy";
+import { PUBLIC_CACHE_TAGS } from "@/features/seo/constants/public-cache.constants";
 import type { Json } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -29,6 +31,8 @@ export async function registerActivity(
   input: RegistrationInput,
 ): Promise<RegistrationMutationResult> {
   if (!z.uuid().safeParse(activityId).success) return { code: "ACTIVITY_NOT_FOUND", message: REGISTRATION_ERROR_MESSAGES.ACTIVITY_NOT_FOUND, success: false };
+  const privacy = privacyInputSchema.safeParse(input);
+  if (!privacy.success) return { code: "VALIDATION_ERROR", fieldErrors: privacy.error.flatten().fieldErrors, message: "Revisa la aceptación de privacidad antes de continuar.", success: false };
   const client = await createServerSupabaseClient();
   const { data: activity, error: activityError } = await client.from("activities").select("allows_student_registration,type,is_free,general_price,member_price,presale_general_price,presale_member_price,presale_ends_at").eq("id", activityId).maybeSingle();
   if (activityError) return { code: "DATABASE_ERROR", message: REGISTRATION_ERROR_MESSAGES.DATABASE_ERROR, success: false };
@@ -59,6 +63,8 @@ export async function registerActivity(
   });
 
   if (error) {
+    const privacyMessage = getPrivacyError(error.message);
+    if (privacyMessage) return { code: "VALIDATION_ERROR", message: privacyMessage, fieldErrors: { privacy_accepted: [privacyMessage] }, success: false };
     if (error.message.includes("BILLING_REQUIRED") || error.message.includes("INVALID_BILLING_DATA")) return {
       code: "VALIDATION_ERROR", fieldErrors: { "billing.document": ["Revisa los datos para el comprobante. El precio puede haber cambiado; actualiza si no aparecen los campos."] },
       message: "Completa o revisa los datos para la boleta o factura.", success: false,

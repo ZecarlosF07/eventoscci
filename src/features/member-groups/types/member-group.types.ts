@@ -1,4 +1,5 @@
 import type { ActivityPricingConfig } from "@/features/activities/types/activity-pricing.types";
+import type { PrivacyInput } from "@/features/privacy/types/privacy.types";
 import type { ActivityRegistrationContext } from "@/features/registrations/types/registration.types";
 
 export interface MemberAttendeeInput {
@@ -19,7 +20,7 @@ export interface MemberBillingInput {
   address?: string;
 }
 
-export interface MemberGroupInput {
+export interface MemberGroupInput extends PrivacyInput {
   expected_unit_price?: number;
   attendees: MemberAttendeeInput[];
   billing: MemberBillingInput | null;
@@ -29,6 +30,7 @@ export interface MemberGroupInput {
 }
 
 export interface MemberGroupMutationResult {
+  fieldErrors?: Record<string, string>;
   code?: "PRICE_CHANGED" | "BENEFIT_AVAILABILITY_CHANGED";
   data?: MemberGroupSubmissionResult;
   message?: string;

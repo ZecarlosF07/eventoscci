@@ -11,6 +11,7 @@ import { absoluteUrl } from "@/features/seo/utils/seo-url";
 import { getSiteUrl } from "@/lib/env/server-env";
 
 const STATIC_ROUTES = [
+  { changeFrequency: "yearly", path: "/privacidad", priority: 0.2 },
   { changeFrequency: "daily", path: ROUTES.home, priority: 1 },
   { changeFrequency: "daily", path: ROUTES.events, priority: 0.9 },
   { changeFrequency: "weekly", path: ROUTES.eventHistory, priority: 0.7 },

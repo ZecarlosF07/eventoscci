@@ -2871,3 +2871,13 @@ RLS se aplicará desde las primeras migraciones y evolucionará junto con cada d
 Con estas decisiones queda establecida una base técnica suficientemente definida para avanzar a la siguiente etapa del proyecto:
 
 **diseño físico de la base de datos y modelo entidad-relación completo de Supabase**, incluyendo tablas, campos, relaciones, claves, restricciones, índices y funciones PostgreSQL requeridas para el MVP.
+
+## Ampliación técnica — Hito 19 (26/10/2026)
+
+La feature `privacy` centraliza política JSON versionada, componentes Tailwind, tipos separados y validación expresa Zod. Las entradas agregan `privacy_accepted` booleano, `privacy_version` y `marketing_accepted` booleano opcional. Los esquemas de transporte mantienen compatibilidad con clientes antiguos; las acciones nuevas validan siempre la aceptación. No se convierten cadenas como `"false"` en booleanos verdaderos.
+
+La migración `202610260001_privacy_consent.sql` preserva los envoltorios existentes como núcleos privados y añade el registro atómico en las RPC de inscripción individual/grupal, el trigger de alta de cuentas Campus y la matrícula gratuita. El trigger retira de Auth los campos transitorios después de persistir la evidencia. `has_current_campus_privacy()` consulta únicamente la cuenta de la sesión. La ruta `/privacidad/aceptar?curso=UUID` es privada por sesión, no indexable y solo matricula mediante una acción POST. Las cuentas con aceptación vigente mantienen el botón directo.
+
+Tablas con RLS desde su creación; ninguna escritura pública directa. Versiones y constancias rechazan UPDATE/DELETE. La lectura administrativa conserva el permiso interno vigente; estudiantes no pueden consultar el historial global. Las bajas añaden eventos y auditoría, sin borrar aceptaciones anteriores. La vista `authorized_marketing_contacts` es `security_invoker` y usa la última aceptación/baja, ignorando selecciones promocionales desmarcadas posteriores. Su exportación Excel reutiliza el generador seguro existente y `private, no-store`.
+
+Despliegue en dos pasos: esquema compatible con `privacy_consent_enforced() = false`, frontend actualizado y comprobación, luego `supabase/rollouts/enable_privacy_consent.sql`. No activar el rollout antes de publicar. Una versión antigua se rechaza con mensaje de recarga; el formulario conserva sus datos. No se modifican datos históricos, n8n ni el comportamiento de Analytics.

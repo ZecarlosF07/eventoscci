@@ -6,10 +6,11 @@ import type { ChangeEvent } from "react";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
-import { FormField } from "@/components/molecules/FormField";
 import { FormActionNotice } from "@/components/molecules/FormActionNotice";
+import { FormField } from "@/components/molecules/FormField";
 import { registerAction } from "@/features/auth/mutations/register.actions";
 import type { RegisterActionState, RegisterFormProps, RegisterFormValues } from "@/features/auth/types/auth.types";
+import { PrivacyFields } from "@/features/privacy/components/PrivacyFields";
 import { usePersistentAction } from "@/hooks/use-persistent-action";
 
 const INITIAL_STATE: RegisterActionState = {};
@@ -79,6 +80,7 @@ export function RegisterForm({ next }: RegisterFormProps) {
           <Input aria-invalid={Boolean(error("confirm_password"))} autoComplete="new-password" id="confirm_password" minLength={8} name="confirm_password" onChange={updateValue} required type="password" value={values.confirm_password} />
         </FormField>
       </div>
+      <PrivacyFields context="campus" errors={state.errors} idPrefix="campus-privacy" />
       <FormActionNotice message={state.message} success={state.success} />
       <Button className="w-full" disabled={pending || state.success} type="submit">{pending ? "Creando cuenta…" : "Crear cuenta"}</Button>
     </form>

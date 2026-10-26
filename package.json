@@ -29,7 +29,8 @@
     "types:db:linked": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts && node scripts/refine-supabase-types.mjs",
     "video:render": "remotion render remotion/index.ts CampusCci public/assets/videos/campus-cci.mp4 --codec=h264 --crf=23 --pixel-format=yuv420p",
     "video:still": "remotion still remotion/index.ts CampusCci public/assets/videos/campus-cci-poster.png --frame=210",
-    "video:studio": "remotion studio remotion/index.ts --no-open"
+    "video:studio": "remotion studio remotion/index.ts --no-open",
+    "db:test:hito19:linked": "supabase db query --linked --output table -f supabase/tests/042_privacy_consent_test.sql"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

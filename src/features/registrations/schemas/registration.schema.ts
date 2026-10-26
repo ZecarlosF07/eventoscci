@@ -1,8 +1,9 @@
 import { z } from "zod";
 
 import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
-import { REGISTRATION_NOTIFICATION_EVENT_TYPES } from "@/features/notifications/constants/notification.constants";
 import { billingSchema } from "@/features/billing/schemas/billing.schema";
+import { REGISTRATION_NOTIFICATION_EVENT_TYPES } from "@/features/notifications/constants/notification.constants";
+import { privacyTransportShape } from "@/features/privacy/schemas/privacy.schema";
 
 const optionalText = z.string().trim().max(250, "Usa como máximo 250 caracteres.");
 const optionalAcademicText = z.string().trim().max(
@@ -12,6 +13,7 @@ const optionalAcademicText = z.string().trim().max(
 
 export const registrationFormSchema = z
   .object({
+    ...privacyTransportShape,
     billing: billingSchema.nullable().optional(),
     expected_unit_price: z.number().finite().nonnegative().max(99_999_999.99).multipleOf(0.01).optional(),
     academic_institution: optionalAcademicText,

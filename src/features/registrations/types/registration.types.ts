@@ -6,6 +6,7 @@ import type {
 } from "@/features/activities/types/activity.types";
 import type { BillingInput } from "@/features/billing/types/billing.types";
 import type { NotificationEventType } from "@/features/notifications/types/notification.types";
+import type { PrivacyInput } from "@/features/privacy/types/privacy.types";
 import type { Enums, Tables } from "@/lib/supabase/database.types";
 
 export type RegistrationType = Enums<"registration_type">;
@@ -19,7 +20,7 @@ export type CertificateRequestFilter =
   | "payment_verified"
   | "ready_to_issue";
 
-export interface RegistrationInput {
+export interface RegistrationInput extends PrivacyInput {
   expected_unit_price?: number;
   billing?: BillingInput | null;
   academic_institution: string;

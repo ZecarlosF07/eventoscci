@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { billingSchema } from "@/features/billing/schemas/billing.schema";
+import { privacyTransportShape } from "@/features/privacy/schemas/privacy.schema";
 
 const attendeeSchema = z.object({
   document_type: z.enum(["dni", "ce"]),
@@ -20,6 +21,7 @@ const attendeeSchema = z.object({
 });
 
 export const memberGroupInputSchema = z.object({
+  ...privacyTransportShape,
   attendees: z.array(attendeeSchema).min(1).max(500),
   billing: billingSchema.nullable(),
   expected_free_count: z.number().int().min(0).max(500),

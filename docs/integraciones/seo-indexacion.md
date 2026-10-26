@@ -115,3 +115,7 @@ Incorporar en la web institucional un enlace rastreable `<a href="https://evento
 5. A los 28 y 56 días desde el despliegue, repetir los mismos filtros y revisar consultas como «eventos en Ica», «agenda de eventos en Ica» y búsquedas de la Cámara. Separar crecimiento de impresiones de mejora de CTR y posición, considerando la cantidad de eventos publicados y estacionalidad.
 
 La publicación del frontend, los cambios en canales externos y el seguimiento futuro no quedan completados por una validación local. No se crea una automatización de seguimiento mientras no se conozca la fecha de despliegue.
+
+## Privacidad — Hito 19
+
+`/privacidad` es pública, indexable, con canonical propio y entrada en sitemap; `/privacidad/aceptar` no es indexable. La política explica Analytics sin cambiar su carga ni sus eventos. Por decisión expresa no se incorpora aviso de cookies; el consentimiento de analítica sigue pendiente y no se atribuye a las casillas de inscripción.

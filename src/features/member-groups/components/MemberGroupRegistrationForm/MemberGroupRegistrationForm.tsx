@@ -1,23 +1,26 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
-import { useRouter } from "next/navigation";
-
-import { useRegistrationPricing } from "@/features/activities/components/ActivityPricingProvider/ActivityPricingProvider";
-import { getActivityPrice } from "@/features/activities/utils/activity-pricing";
-import { reuseSubmittedGroup } from "@/features/member-groups/utils/member-group-submission";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
+import { useRegistrationPricing } from "@/features/activities/components/ActivityPricingProvider/ActivityPricingProvider";
+import { getActivityPrice } from "@/features/activities/utils/activity-pricing";
 import { MemberAttendeeFields } from "@/features/member-groups/components/MemberAttendeeFields/MemberAttendeeFields";
 import { MemberBillingFields } from "@/features/member-groups/components/MemberBillingFields/MemberBillingFields";
 import { MemberGroupSummary } from "@/features/member-groups/components/MemberGroupSummary/MemberGroupSummary";
-import { PaymentInstructions } from "@/features/registrations/components/PaymentInstructions";
 import { lookupMemberCompany, registerMemberGroup } from "@/features/member-groups/mutations/member-group.actions";
 import { memberGroupInputSchema } from "@/features/member-groups/schemas/member-group.schema";
 import type { MemberAttendeeInput, MemberBillingInput, MemberGroupInput, MemberGroupRegistrationFormProps, MemberPassAvailability } from "@/features/member-groups/types/member-group.types";
+import { reuseSubmittedGroup } from "@/features/member-groups/utils/member-group-submission";
 import { getMemberPassPricing } from "@/features/member-groups/utils/member-pass-pricing";
+import { PrivacyFields } from "@/features/privacy/components/PrivacyFields";
+import { PRIVACY_VERSION } from "@/features/privacy/constants/privacy.constants";
+import { privacyInputSchema } from "@/features/privacy/schemas/privacy.schema";
+import type { PrivacyInput } from "@/features/privacy/types/privacy.types";
+import { PaymentInstructions } from "@/features/registrations/components/PaymentInstructions";
 
 const emptyAttendee = (): MemberAttendeeInput => ({ document_type: "dni", document_number: "", first_names: "", last_names: "", email: "", phone: "", job_title: "", request_certificate: false });
 
@@ -36,7 +39,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [authorized, setAuthorized] = useState(false);
+  const [privacy, setPrivacy] = useState<PrivacyInput>({ privacy_accepted: false, privacy_version: PRIVACY_VERSION, marketing_accepted: false });
   const idempotencyKey = useRef<string>("");
   const { complimentaryCount, total } = getMemberPassPricing(attendees.length, quote.amount, activity.isFree, availability);
 
@@ -83,8 +86,14 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
   }
 
   async function submit() {
-    if (!authorized) { setMessage("Confirma que cuentas con autorización para registrar a las personas indicadas."); return; }
-    const input = { ruc, attendees, expected_free_count: complimentaryCount, expected_unit_price: quote.amount, billing: total === 0 ? null : billing, future_topics_suggestion: suggestion };
+    const accepted = privacyInputSchema.safeParse(privacy);
+    if (!accepted.success) {
+      setFieldErrors(Object.fromEntries(accepted.error.issues.map((issue) => [issue.path.join("."), issue.message])));
+      setMessage("Revisa la autorización de privacidad para todos los asistentes.");
+      document.getElementById("group-privacy-accepted")?.focus();
+      return;
+    }
+    const input = { ...accepted.data, ruc, attendees, expected_free_count: complimentaryCount, expected_unit_price: quote.amount, billing: total === 0 ? null : billing, future_topics_suggestion: suggestion };
     const parsed = memberGroupInputSchema.safeParse(input);
     if (!parsed.success) {
       setFieldErrors(Object.fromEntries(parsed.error.issues.map((item) => [item.path.join("."), item.message])));
@@ -107,6 +116,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
           if (current.availability) setAvailability(current.availability);
           idempotencyKey.current = ""; submittedInput.current = null;
         }
+        if (result.fieldErrors) { setFieldErrors(result.fieldErrors); document.getElementById("group-privacy-accepted")?.focus(); }
         setMessage(result.message ?? "No se pudo enviar la solicitud.");
         return;
       }
@@ -148,7 +158,7 @@ export function MemberGroupRegistrationForm({ activity }: MemberGroupRegistratio
         {total > 0 && activity.paymentNote ? <PaymentInstructions note={activity.paymentNote} /> : null}
         {total > 0 ? <MemberBillingFields billing={billing} companyName={companyName} companyRuc={ruc} errors={Object.fromEntries(Object.entries(fieldErrors).filter(([key]) => key.startsWith("billing.")).map(([key, value]) => [key.split(".")[1], value]))} onChange={(next) => { setBilling(next); setFieldErrors({}); }} /> : null}
         <MemberGroupSummary attendees={attendees} certificateMode={activity.certificateMode} companyName={companyName} complimentaryCount={complimentaryCount} isFree={activity.isFree} isPresale={quote.isPresale} memberPrice={quote.amount} ruc={ruc} total={total} />
-        <label className="flex min-h-11 items-start gap-3 text-sm text-cci-950"><input className="mt-1" type="checkbox" checked={authorized} onChange={(event) => setAuthorized(event.target.checked)} />Confirmo que cuento con autorización para registrar los datos de las demás personas.</label>
+        <PrivacyFields context="group" errors={Object.fromEntries(Object.entries(fieldErrors).map(([key, value]) => [key, [value]]))} idPrefix="group-privacy" onChange={setPrivacy} value={privacy} />
         <div className="flex flex-wrap gap-3"><Button type="button" variant="secondary" disabled={busy} onClick={() => setStep(1)}>← Volver y editar</Button><Button type="button" disabled={busy} onClick={submit}>{busy ? "Enviando…" : total === 0 ? "Confirmar plazas" : "Enviar solicitud"}</Button></div>
       </>}
       {message ? <p className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800" role="alert">{message}</p> : null}
