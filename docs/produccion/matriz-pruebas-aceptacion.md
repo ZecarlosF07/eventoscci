@@ -597,3 +597,31 @@ Correo obligatorio en emisión (23/10/2026): `202610230003` aplicada en Supabase
 279 pruebas unitarias, 341 comprobaciones SQL (61 del hito y 280 de regresión), lint, typecheck, build y diff-check aprobados. Las pruebas SQL usan `finish(true)` y rollback. Se regeneraron tipos del esquema vinculado. Las comprobaciones de UI no enviaron registros ni crearon cuentas reales.
 
 Analytics conserva su comportamiento actual sin aviso de cookies por decisión expresa. La política lo informa; no se registran autorizaciones analíticas automáticas. Ese consentimiento permanece pendiente y no forma parte de los criterios aprobados.
+
+## Capacitaciones no listadas — 13/11/2026
+
+| Caso | Criterio | Resultado |
+|---|---|---|
+| VIS-01 | «Mostrar en el portal» aparece al crear y editar eventos y capacitaciones; los nuevos se listan por defecto | APROBADO: validación de formulario y SQL 043 |
+| VIS-02 | Una capacitación no listada queda fuera de inicio, catálogo, búsqueda, relacionados, recomendaciones y sitemap; su ficha indica `noindex, follow` y omite JSON-LD de actividad | APROBADO: revisión de filtros compartidos y prueba de la regla de indexación |
+| VIS-03 | Detalle, disponibilidad e inscripción por enlace directo conservan las reglas de publicación y cupos | APROBADO: SQL 043 con inscripción anónima transaccional |
+| VIS-04 | Volver a listar no cambia el slug ni cancela inscripciones. Omitir la visibilidad al editar conserva el valor guardado | APROBADO: SQL 043 |
+| VIS-05 | «No listado», filtro de visibilidad y «Copiar enlace» siguen disponibles en el listado administrativo | APROBADO: reutiliza el listado y enlace por tipo de actividad |
+
+Migración `202611130001_training_listing_visibility.sql` aplicada en Supabase tras dry-run, sin seeds ni cambios a actividades existentes. Aprobadas 281 unitarias, 73 comprobaciones SQL con rollback (043, 035 y 039), lint, typecheck y build. No cambia el esquema TypeScript generado. Pendiente publicar el frontend y verificar el control en una sesión administrativa de producción. No listado permite acceso a quien tenga el enlace; no es un permiso de acceso privado.
+
+## Hito 20 — Tipos de certificados y firmas personalizables
+
+| Caso | Criterio | Verificación |
+|---|---|---|
+| H20-01 | Acceso por Catálogos y Certificados. Edición administrativa y emisión interna según permisos | Navegador local y SQL 044 |
+| H20-02 | Compatibilidad por tipo, convivencia de modelos compartidos y predeterminados específicos | SQL 044 y pruebas unitarias |
+| H20-03 | Una firma centrada, dos lado a lado, tres en una fila y cuatro en dos filas | Cuatro PDF renderizados y pruebas unitarias |
+| H20-04 | Límite de 5 MB, verificación del formato real, proporción y transparencia, respaldo para firmas antiguas | Validación en editor y servidor, PDF y SQL 044 |
+| H20-05 | Vista previa de cambios sin guardar, con la misma composición del PDF de emisión y la marca de muestra | Comparación de PDF renderizados y navegador local |
+| H20-06 | Reconocimiento con variables, textos extensos, QR con margen de cuatro módulos, ponentes sin horas y cursos sin fechas | PDF renderizados, verificación de los módulos del QR y pruebas unitarias |
+| H20-07 | Cambio de imágenes solo para nuevas emisiones, históricos conservados y bloqueo durante tanda activa | SQL 044 y regresiones |
+| H20-08 | Editor usable con teclado y en móvil, despliegue del frontend y comprobación administrativa | Vista previa, reordenamiento y guardado probados en navegador local a 390 y 1370 px con sesión y datos simulados. Publicación y comprobación en producción pendientes |
+| H20-09 | La desactivación y el retiro conservan al menos un modelo activo para la emisión automática del Campus | SQL 044, regresión 010 y migración `202611130004` |
+
+Migraciones `202611130002`, `202611130003` y `202611130004` aplicadas y verificadas en Supabase el 13/11/2026. La suite del hito pasó 43 comprobaciones SQL con rollback y se repitieron las regresiones de cursos y tandas de actividad. Pasaron 285 unitarias, dos pruebas de integración de caché, lint, typecheck y build. Las pruebas y vistas previas usaron datos ficticios.

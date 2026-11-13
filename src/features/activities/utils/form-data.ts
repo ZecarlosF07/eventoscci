@@ -33,6 +33,7 @@ function parseSpeakers(formData: FormData): ActivitySpeakerInput[] {
 }
 
 export function parseActivityFormData(formData: FormData): ActivityFormInput {
+  const type = stringValue(formData, "type") as ActivityFormInput["type"];
   return {
     academic_hours: stringValue(formData, "academic_hours"),
     allows_student_registration: formData.has("allows_student_registration")
@@ -54,7 +55,8 @@ export function parseActivityFormData(formData: FormData): ActivityFormInput {
     presale_ends_at: formData.has("presale_ends_at") ? stringValue(formData, "presale_ends_at") : undefined,
     id: stringValue(formData, "id"),
     is_free: formData.get("is_free") === "on",
-    is_listed: formData.get("type") !== "event" || formData.get("is_listed") === "on",
+    is_listed: type === "event" || formData.has("is_listed")
+      ? formData.get("is_listed") === "on" : undefined,
     member_price: stringValue(formData, "member_price"),
     member_free_passes_per_company: stringValue(formData, "member_free_passes_per_company"),
     members_only: formData.get("members_only") === "on",
@@ -74,7 +76,7 @@ export function parseActivityFormData(formData: FormData): ActivityFormInput {
     syllabus: stringValue(formData, "syllabus"),
     target_audience: stringValue(formData, "target_audience"),
     title: stringValue(formData, "title"),
-    type: stringValue(formData, "type") as ActivityFormInput["type"],
+    type,
     venue_id: stringValue(formData, "venue_id"),
     virtual_url: stringValue(formData, "virtual_url"),
   };

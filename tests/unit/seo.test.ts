@@ -6,6 +6,7 @@ import { createContentSlug } from "@/features/activities/utils/slugify";
 import { buildSafeAnalyticsEvent } from "@/features/analytics/utils/analytics-event";
 import type { CourseListItem } from "@/features/courses/types/course.types";
 import { buildPageMetadata } from "@/features/seo/services/build-page-metadata";
+import { canIndexActivity } from "@/features/seo/utils/activity-structured-data";
 import {
   buildActivityJsonLd,
   buildBreadcrumbJsonLd,
@@ -45,6 +46,13 @@ test("construye canonicales y política de robots coherentes", () => {
   });
   assert.equal(metadata.alternates?.canonical, "/eventos/cancelado");
   assert.deepEqual(metadata.robots, { follow: true, index: false });
+});
+
+test("la visibilidad del portal determina el marcado y la indexación de actividades", () => {
+  assert.equal(canIndexActivity({ is_listed: true, status: "published" }), true);
+  assert.equal(canIndexActivity({ is_listed: true, status: "finished" }), true);
+  assert.equal(canIndexActivity({ is_listed: false, status: "published" }), false);
+  assert.equal(canIndexActivity({ is_listed: true, status: "cancelled" }), false);
 });
 
 test("escapa JSON-LD y genera breadcrumbs con URLs absolutas", () => {

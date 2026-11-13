@@ -9,6 +9,7 @@ import { getActivityBannerUrl } from "@/features/activities/utils/activity-forma
 import { getPublicActivityRoute } from "@/features/activities/utils/activity-routes";
 import { JsonLd } from "@/features/seo/components/JsonLd";
 import { buildNoIndexMetadata, buildPageMetadata } from "@/features/seo/services/build-page-metadata";
+import { canIndexActivity } from "@/features/seo/utils/activity-structured-data";
 import { buildActivityJsonLd, buildBreadcrumbJsonLd } from "@/features/seo/utils/json-ld";
 import { absoluteUrl } from "@/features/seo/utils/seo-url";
 import { buildSeoDescription } from "@/features/seo/utils/seo-text";
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: ActivityDetailPageProps): Pro
     ),
     follow: true,
     image,
-    index: activity.status !== "cancelled",
+    index: canIndexActivity(activity),
     path: getPublicActivityRoute(activity.type, activity.slug),
     title: activity.title,
   });
@@ -42,17 +43,17 @@ export default async function TrainingDetailPage({ params }: ActivityDetailPageP
     { name: "Capacitaciones", path: ROUTES.trainings },
     { name: activity.title, path },
   ], siteUrl);
-  const structuredData = activity.status === "cancelled"
-    ? [breadcrumbs]
-    : [breadcrumbs, buildActivityJsonLd({
+  const structuredData = canIndexActivity(activity)
+    ? [breadcrumbs, buildActivityJsonLd({
       activity,
       image: getActivityBannerUrl(activity.banner_path),
       pageUrl: absoluteUrl(path, siteUrl),
-    })];
+    })]
+    : activity.is_listed ? [breadcrumbs] : [];
 
   return (
     <>
-      <JsonLd data={structuredData} />
+      {structuredData.length > 0 ? <JsonLd data={structuredData} /> : null}
       <ActivityDetailTemplate activity={activity} />
     </>
   );

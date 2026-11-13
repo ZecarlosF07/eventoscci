@@ -196,12 +196,14 @@ set local role service_role;
 select is(public.get_public_certificate_file((select access_token::text from hito5_certificate)), null::text, 'revoked certificate file is not downloadable');
 
 reset role;
+insert into storage.objects(bucket_id,name) values
+  ('certificates','templates/c5000000-0000-4000-8000-000000000099/signature/hito5.png');
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '85000000-0000-4000-8000-000000000002', true);
 select lives_ok(
   $$select public.save_certificate_template(
-    '{"name":"Plantilla secundaria","scope":"activity","is_default":false,"is_active":true,"template_config":{"show_date":false}}'::jsonb,
-    '[{"signer_name":"Eduardo Ojeda Davila","signer_title":"Presidente Institucional","sort_order":0}]'::jsonb
+    '{"id":"c5000000-0000-4000-8000-000000000099","name":"Plantilla secundaria","scope":"activity","is_default":false,"is_active":true,"template_config":{"show_date":false}}'::jsonb,
+    '[{"signer_name":"Eduardo Ojeda Davila","signer_title":"Presidente Institucional","signature_path":"templates/c5000000-0000-4000-8000-000000000099/signature/hito5.png"}]'::jsonb
   )$$,
   'administrator creates certificate template'
 );

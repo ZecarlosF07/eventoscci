@@ -7,6 +7,7 @@ import { loadCertificateDocumentAssets } from "@/features/certificates/services/
 import { generateCertificatePdf } from "@/features/certificates/services/generate-certificate-pdf";
 import type { CertificateDocumentAssets, CertificateGenerationData } from "@/features/certificates/types/certificate.types";
 import { certificateTemplateShowsDate } from "@/features/certificates/utils/certificate-template-config";
+import { getCertificateDesignText } from "@/features/certificates/utils/certificate-design-text";
 import type { Database } from "@/lib/supabase/database.types";
 
 export async function storeCertificatePdf(
@@ -18,6 +19,7 @@ export async function storeCertificatePdf(
 ): Promise<string> {
   const assets = documentAssets ?? await loadCertificateDocumentAssets(client, certificate);
   const pdf = await generateCertificatePdf({
+    ...getCertificateDesignText(certificate.template.template_config),
     academicHours: certificate.academic_hours_snapshot,
     accessUrl: `${siteUrl}/certificados/${certificate.access_token}`,
     backgroundBytes: assets.backgroundBytes,

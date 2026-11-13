@@ -30,6 +30,7 @@ export const certificateSignerSchema = z.object({
 });
 
 export const certificateTemplateSchema = z.object({
+  audience: z.enum(["participant", "student", "speaker"]).nullish(),
   background_path: z.string().nullable(),
   id: z.uuid(),
   is_active: z.boolean(),

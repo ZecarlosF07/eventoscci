@@ -1,4 +1,5 @@
 import "server-only";
+import { templatesForRecipient } from "@/features/certificates/utils/certificate-template-audience";
 
 import { z } from "zod";
 
@@ -48,6 +49,6 @@ export async function getSpeakerCertificateData(
   return {
     activity: activityResult.data,
     candidates,
-    templates: templates.filter((template) => template.scope === "activity"),
+    templates: templatesForRecipient(templates, "speaker"),
   };
 }

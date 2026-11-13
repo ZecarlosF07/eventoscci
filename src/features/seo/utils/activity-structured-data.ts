@@ -4,6 +4,10 @@ import { canActivityInviteRegistration } from "@/features/activities/utils/activ
 import type { ActivityStructuredDataInput, JsonLdObject } from "@/features/seo/types/seo.types";
 import { toLimaDateTime } from "@/features/seo/utils/seo-date";
 
+export function canIndexActivity(activity: Pick<ActivityStructuredDataInput["activity"], "is_listed" | "status">): boolean {
+  return activity.is_listed && activity.status !== "cancelled";
+}
+
 export function getActivityLocation(input: ActivityStructuredDataInput): JsonLdObject | JsonLdObject[] | undefined {
   const { activity, pageUrl } = input;
   const venueName = activity.venue?.name || activity.location_name;

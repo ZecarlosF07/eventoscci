@@ -839,6 +839,9 @@ export type Database = {
       }
       certificate_templates: {
         Row: {
+          audience:
+            | Database["public"]["Enums"]["certificate_recipient_type"]
+            | null
           background_path: string | null
           created_at: string
           deleted_at: string | null
@@ -846,12 +849,16 @@ export type Database = {
           id: string
           is_active: boolean
           is_default: boolean
+          legacy_snapshot: Json | null
           name: string
           scope: Database["public"]["Enums"]["certificate_type"]
           template_config: Json
           updated_at: string
         }
         Insert: {
+          audience?:
+            | Database["public"]["Enums"]["certificate_recipient_type"]
+            | null
           background_path?: string | null
           created_at?: string
           deleted_at?: string | null
@@ -859,12 +866,16 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_default?: boolean
+          legacy_snapshot?: Json | null
           name: string
           scope: Database["public"]["Enums"]["certificate_type"]
           template_config?: Json
           updated_at?: string
         }
         Update: {
+          audience?:
+            | Database["public"]["Enums"]["certificate_recipient_type"]
+            | null
           background_path?: string | null
           created_at?: string
           deleted_at?: string | null
@@ -872,6 +883,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_default?: boolean
+          legacy_snapshot?: Json | null
           name?: string
           scope?: Database["public"]["Enums"]["certificate_type"]
           template_config?: Json
@@ -4017,6 +4029,10 @@ export type Database = {
         Args: { p_registration_code: string; p_request_token: string }
         Returns: Json
       }
+      retire_certificate_template: {
+        Args: { p_template_id: string }
+        Returns: string
+      }
       retry_notification: {
         Args: { p_notification_id: string }
         Returns: string
@@ -4118,6 +4134,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      snapshot_certificate_template: { Args: { p_id: string }; Returns: Json }
       soft_delete_activity: { Args: { p_activity_id: string }; Returns: string }
       soft_delete_certificate_template: {
         Args: { p_template_id: string }

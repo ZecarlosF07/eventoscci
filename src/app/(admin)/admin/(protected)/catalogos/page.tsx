@@ -4,6 +4,7 @@ import { getCurrentAccount } from "@/features/auth/queries/get-current-account";
 import { Heading } from "@/components/atoms/Heading";
 import { Text } from "@/components/atoms/Text";
 import { SectionHeading } from "@/components/molecules/SectionHeading";
+import { ROUTES } from "@/constants/routes";
 import {
   CATALOG_DESCRIPTIONS,
   CATALOG_KINDS,
@@ -32,6 +33,14 @@ export default async function CatalogsPage() {
             <Text className="mt-2" size="sm">{CATALOG_DESCRIPTIONS[kind]}</Text>
           </Link>
         ))}
+        <Link
+          className="group rounded-3xl border border-cci-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-cci-300 hover:shadow-lg"
+          href={ROUTES.adminCertificateTemplates}
+        >
+          <span className="grid size-11 place-items-center rounded-2xl bg-cci-lime font-bold text-cci-950" aria-hidden="true">→</span>
+          <Heading className="mt-5 group-hover:text-cci-700" level={3}>Tipos de certificados</Heading>
+          <Text className="mt-2" size="sm">Modelos de participación, ponentes y cursos con sus fondos, textos y firmas.</Text>
+        </Link>
         {account?.role === "administrator" ? (
           <Link
             className="group rounded-3xl border border-cci-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-cci-300 hover:shadow-lg"

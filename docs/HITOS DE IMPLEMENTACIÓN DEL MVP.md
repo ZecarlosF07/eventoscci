@@ -985,6 +985,14 @@ Consultar [Hito 19](hitos/HITO%2019%20—%20PRIVACIDAD%20Y%20AUTORIZACIONES%20DE
 
 ---
 
+# Hito 20 — Tipos de certificados y firmas personalizables
+
+Configurar desde Catálogos modelos por destinatario, textos, fondos y hasta cuatro firmas con vista previa PDF. La emisión guarda una copia del diseño para la recuperación y la regeneración.
+
+Consultar [Hito 20](hitos/HITO%2020%20—%20TIPOS%20DE%20CERTIFICADOS%20Y%20FIRMAS%20PERSONALIZABLES.md) para el flujo administrativo y los criterios de publicación.
+
+---
+
 # Orden resumido del desarrollo
 
 ## Etapa A — Eventos y capacitaciones
@@ -1080,6 +1088,14 @@ Resultado:
 **Hito 19**
 
 **Información → Aceptación expresa → Registro transaccional → Publicidad opcional → Baja auditada**
+
+---
+
+## Etapa K — Modelos de certificados
+
+**Hito 20**
+
+**Tipo de certificado → Texto, fondo y firmas → Vista previa → Emisión con diseño guardado**
 
 ---
 

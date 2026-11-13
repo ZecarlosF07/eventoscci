@@ -3,7 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { certificateGenerationSchema, certificateTemplateSchema } from "@/features/certificates/schemas/certificate-query.schema";
-import { getCertificateTemplateByIdWithClient } from "@/features/certificates/queries/get-certificate-templates";
+import { getLegacyCertificateTemplateWithClient } from "@/features/certificates/queries/get-certificate-templates";
 import type { CertificateGenerationData } from "@/features/certificates/types/certificate.types";
 import type { Database } from "@/lib/supabase/database.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -31,9 +31,9 @@ export async function getCertificateGenerationDataWithClient(
   if (data.certificate_type === "activity" && activityStatus === "archived") return null;
   const [parsed, template] = [
     certificateGenerationSchema.safeParse(data),
-    data.recipient_type === "speaker" && data.template_snapshot
+    data.template_snapshot
       ? certificateTemplateSchema.parse(data.template_snapshot)
-      : await getCertificateTemplateByIdWithClient(client, data.template_id),
+      : await getLegacyCertificateTemplateWithClient(client, data.template_id),
   ];
   if (!parsed.success || !template) throw new Error("La información del certificado no tiene el formato esperado.");
   return { ...parsed.data, template };

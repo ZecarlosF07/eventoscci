@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import QRCode from "qrcode";
+import { drawCertificateDesign } from "@/features/certificates/services/draw-certificate-design";
+import { embedCertificateRaster } from "@/features/certificates/services/embed-certificate-raster";
 
 import type { CertificateDocumentInput, CertificateDocumentSigner } from "@/features/certificates/types/certificate.types";
 import {
@@ -22,11 +24,6 @@ async function bundledBackground(): Promise<Uint8Array> {
   return readFile(assetPath);
 }
 
-async function embedRaster(pdf: PDFDocument, bytes: Uint8Array) {
-  const isPng = bytes[0] === 0x89 && bytes[1] === 0x50;
-  return isPng ? pdf.embedPng(bytes) : pdf.embedJpg(bytes);
-}
-
 async function drawSigner(
   pdf: PDFDocument,
   page: ReturnType<PDFDocument["addPage"]>,
@@ -37,7 +34,7 @@ async function drawSigner(
   const regular = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
   if (signer.signatureBytes) {
-    const signature = await embedRaster(pdf, signer.signatureBytes);
+    const signature = await embedCertificateRaster(pdf, signer.signatureBytes);
     const scale = Math.min(120 / signature.width, 45 / signature.height);
     page.drawImage(signature, { height: signature.height * scale, width: signature.width * scale, x: centerX - (signature.width * scale) / 2, y: y + 30 });
   }
@@ -54,10 +51,29 @@ export async function generateCertificatePdf(input: CertificateDocumentInput): P
   const page = pdf.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
   const regular = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
-  const titleFont = await pdf.embedFont(StandardFonts.TimesRomanBoldItalic);
-  const background = await embedRaster(pdf, input.backgroundBytes ?? await bundledBackground());
+  const background = await embedCertificateRaster(pdf, input.backgroundBytes ?? await bundledBackground());
   page.drawImage(background, { height: PAGE_HEIGHT, width: PAGE_WIDTH, x: 0, y: 0 });
 
+  if (input.layoutVersion === 2) await drawCertificateDesign(pdf, page, input);
+  else await drawLegacyContent(pdf, page, input);
+
+  const qrBytes = await QRCode.toBuffer(input.accessUrl, input.layoutVersion === 2
+    ? { errorCorrectionLevel: "M", margin: 4, scale: 8 }
+    : { errorCorrectionLevel: "M", margin: 1, width: 240 });
+  const qr = await pdf.embedPng(qrBytes);
+  page.drawText(input.preview ? "QR de muestra" : "Verifica la autenticidad", { color: TEXT_COLOR, font: regular, size: 7, x: 472, y: 98 });
+  page.drawImage(qr, { height: 62, width: 62, x: 478, y: 31 });
+  page.drawText(input.certificateCode, { color: DARK_COLOR, font: bold, size: 8, x: centeredTextX(input.certificateCode, bold, 8, PAGE_WIDTH), y: 38 });
+  const footer = input.preview ? "Muestra · no válido" : "Documento emitido digitalmente por la Cámara de Comercio de Ica";
+  page.drawText(footer, { color: input.preview ? DARK_COLOR : TEXT_COLOR, font: regular, size: input.preview ? 12 : 6.5,
+    x: centeredTextX(footer, regular, input.preview ? 12 : 6.5, PAGE_WIDTH), y: 24 });
+  return pdf.save();
+}
+
+async function drawLegacyContent(pdf: PDFDocument, page: ReturnType<PDFDocument["addPage"]>, input: CertificateDocumentInput) {
+  const regular = await pdf.embedFont(StandardFonts.Helvetica);
+  const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+  const titleFont = await pdf.embedFont(StandardFonts.TimesRomanBoldItalic);
   const intro = "La Cámara de Comercio de Ica otorga el presente certificado a:";
   page.drawText(intro, { color: TEXT_COLOR, font: regular, size: 11, x: centeredTextX(intro, regular, 11, PAGE_WIDTH), y: 690 });
 
@@ -99,11 +115,4 @@ export async function generateCertificatePdf(input: CertificateDocumentInput): P
     await drawSigner(pdf, page, input.signers[index], 102 + signerWidth * (index + 0.5), 190);
   }
 
-  const qrDataUrl = await QRCode.toDataURL(input.accessUrl, { errorCorrectionLevel: "M", margin: 1, width: 240 });
-  const qr = await pdf.embedPng(Uint8Array.from(Buffer.from(qrDataUrl.split(",")[1], "base64")));
-  page.drawText("Verifica la autenticidad", { color: TEXT_COLOR, font: regular, size: 7, x: 472, y: 98 });
-  page.drawImage(qr, { height: 62, width: 62, x: 478, y: 31 });
-  page.drawText(input.certificateCode, { color: DARK_COLOR, font: bold, size: 8, x: centeredTextX(input.certificateCode, bold, 8, PAGE_WIDTH), y: 38 });
-  page.drawText("Documento emitido digitalmente por la Cámara de Comercio de Ica", { color: TEXT_COLOR, font: regular, size: 6.5, x: centeredTextX("Documento emitido digitalmente por la Cámara de Comercio de Ica", regular, 6.5, PAGE_WIDTH), y: 24 });
-  return pdf.save();
 }

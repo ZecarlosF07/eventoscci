@@ -1951,3 +1951,7 @@ La restricción `activities_event_reserved_slug` reserva `realizados` en eventos
 `authorized_marketing_contacts`: vista invoker con persona, nombres, correo, celular, fecha y versión de autorización vigente. Solo incluye la última decisión expresa accepted/withdrawn; declined no revoca. Sin acceso anónimo ni escritura. `withdraw_marketing_consent` verifica usuario interno, motivo y persona, serializa por persona y deja auditoría. `has_current_campus_privacy` está limitado a la cuenta actual. `enroll_free_course_with_privacy` registra aceptación y matrícula en la misma transacción. Los helpers y núcleos anteriores son privados incluso para clientes service_role; no añaden un bypass público.
 
 La activación posterior al despliegue se controla mediante `privacy_consent_enforced()`, privada, inicialmente falsa. La política vigente es `2026-10-26.v2`; la migración `202610260002_privacy_short_notices.sql` acorta las casillas y conserva la primera versión inmutable. Los tipos Supabase se regeneran desde el esquema aplicado.
+
+## Visibilidad en el portal — 13/11/2026
+
+`activities.is_listed` es booleano no nulo con valor predeterminado `true` para eventos y capacitaciones. `false` oculta la actividad de las superficies de descubrimiento y del sitemap, pero no cambia su publicación ni permisos. La migración `202611130001_training_listing_visibility.sql` elimina la restricción que limitaba el valor `false` a eventos; una edición que omite el campo conserva la visibilidad guardada. No añade columnas ni cambia firmas de RPC.

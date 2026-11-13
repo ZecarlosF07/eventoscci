@@ -4,6 +4,7 @@ import test from "node:test";
 import { activityFormSchema } from "../../src/features/activities/schemas/activity.schema";
 import type { ActivityFormInput } from "../../src/features/activities/types/activity-form.types";
 import { normalizeActivityCommercialFields } from "../../src/features/activities/utils/activity-commercial-fields";
+import { parseActivityFormData } from "../../src/features/activities/utils/form-data";
 
 function validActivity(): ActivityFormInput {
   return {
@@ -51,11 +52,23 @@ test("permite crear un borrador sin banner ni programa", () => {
   assert.equal(activityFormSchema.safeParse(validActivity()).success, true);
 });
 
-test("solo eventos pueden quedar no listados y los exclusivos pagados requieren precio", () => {
+test("eventos y capacitaciones pueden quedar no listados", () => {
   assert.equal(activityFormSchema.safeParse({ ...validActivity(), is_listed: false }).success, true);
-  assert.equal(activityFormSchema.safeParse({ ...validActivity(), type: "training", is_listed: false }).success, false);
-  const exclusive = { ...validActivity(), members_only: true, is_free: false, status: "published" as const };
-  assert.equal(activityFormSchema.safeParse({ ...exclusive, member_price: "0" }).success, false);
+  assert.equal(activityFormSchema.parse({ ...validActivity(), type: "training", is_listed: false }).is_listed, false);
+});
+
+test("distingue ocultar una capacitación de un formulario anterior sin casilla", () => {
+  const data = new FormData();
+  data.set("type", "training");
+  assert.equal(parseActivityFormData(data).is_listed, undefined);
+  data.set("is_listed", "off");
+  assert.equal(parseActivityFormData(data).is_listed, false);
+  data.set("is_listed", "on");
+  data.append("is_listed", "off");
+  assert.equal(parseActivityFormData(data).is_listed, true);
+  data.set("type", "event");
+  data.delete("is_listed");
+  assert.equal(parseActivityFormData(data).is_listed, false);
 });
 
 test("una actividad exclusiva no admite precio general y publica solo con precio de asociado positivo", () => {

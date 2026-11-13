@@ -19,6 +19,7 @@ export interface CertificateSigner {
 }
 
 export interface CertificateTemplate {
+  audience?: CertificateRecipientType | null;
   background_path: string | null;
   id: string;
   is_active: boolean;
@@ -211,6 +212,10 @@ export interface CertificateDocumentInput {
   certificateCode: string;
   certificateType: CertificateType;
   condition: string | null;
+  heading?: string;
+  recognition?: string;
+  layoutVersion?: number;
+  preview?: boolean;
   dateText: string | null;
   participantName: string;
   recipientType?: CertificateRecipientType;
@@ -262,6 +267,7 @@ export interface CertificateTemplateFormState {
   errors?: Record<string, string[]>;
   message?: string;
   success?: boolean;
+  templateId?: string;
 }
 
 export interface CertificateRouteProps {

@@ -68,11 +68,13 @@ Las inscripciones individuales anteriores continuarán consultables y confirmabl
 
 # 5. Persistencia y reglas de PostgreSQL
 
-## 5.1 Visibilidad de eventos
+## 5.1 Visibilidad de eventos y capacitaciones
 
 Agregar a `activities` un indicador `is_listed boolean not null default true`. Los registros existentes conservarán la visibilidad actual. El estado `published` y `published_at` seguirán determinando si el detalle y la inscripción son accesibles; `is_listed` controlará únicamente su descubrimiento público.
 
-El formulario de creación y edición de eventos mostrará «Mostrar en el portal» con una explicación concreta. La vista administrativa indicará «No listado» y ofrecerá «Copiar enlace». Cambiar el indicador invalidará los cachés del portal y del sitemap sin alterar inscripciones ni estado de la actividad.
+El formulario de creación y edición de eventos y capacitaciones muestra «Mostrar en el portal» con una explicación concreta. La vista administrativa indicará «No listado» y ofrecerá «Copiar enlace». Cambiar el indicador invalidará los cachés del portal y del sitemap sin alterar inscripciones ni estado de la actividad.
+
+Desde el 13/11/2026, `202611130001_training_listing_visibility.sql` extiende la visibilidad no listada a capacitaciones sin modificar registros existentes. La opción conserva las reglas normales de inscripción, incluso para capacitaciones exclusivas. Un cliente de API que omite el campo no vuelve a listar una actividad oculta; una actividad nueva se lista por defecto. Para compartir una capacitación publicada y no listada, usar «Copiar enlace» en su listado administrativo.
 
 ## 5.2 Padrón de asociados
 

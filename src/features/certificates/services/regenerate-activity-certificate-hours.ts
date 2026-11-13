@@ -2,8 +2,8 @@ import "server-only";
 
 import { CERTIFICATE_HOURS_REGENERATION_BATCH_SIZE } from "@/features/certificates/constants/certificate.constants";
 import { countOutdatedActivityCertificateHours, getOutdatedActivityCertificateHoursQuery } from "@/features/certificates/queries/get-outdated-activity-certificate-hours";
-import { getCertificateTemplatesWithClient } from "@/features/certificates/queries/get-certificate-templates";
-import { certificateGenerationSchema } from "@/features/certificates/schemas/certificate-query.schema";
+import { getLegacyCertificateTemplateWithClient } from "@/features/certificates/queries/get-certificate-templates";
+import { certificateGenerationSchema, certificateTemplateSchema } from "@/features/certificates/schemas/certificate-query.schema";
 import { loadCertificateDocumentAssets } from "@/features/certificates/services/certificate-assets";
 import { removeCertificateFile } from "@/features/certificates/services/remove-certificate-file";
 import { storeCertificatePdf } from "@/features/certificates/services/store-certificate-pdf";
@@ -22,7 +22,6 @@ export async function regenerateActivityCertificateHours(activityId: string, exp
   const result = await getOutdatedActivityCertificateHoursQuery(client, activityId, expectedHours)
     .order("id").limit(CERTIFICATE_HOURS_REGENERATION_BATCH_SIZE);
   if (result.error) return { message: "No fue posible consultar los certificados por corregir.", success: false };
-  const templates = await getCertificateTemplatesWithClient(client);
   const assets = new Map<string, Awaited<ReturnType<typeof loadCertificateDocumentAssets>>>();
   const failedCertificateCodes: string[] = [];
   let regeneratedCount = 0;
@@ -31,11 +30,13 @@ export async function regenerateActivityCertificateHours(activityId: string, exp
     let uploadedPath: string | undefined;
     try {
       const parsed = certificateGenerationSchema.parse(row);
-      const template = templates.find((item) => item.id === row.template_id);
+      const template = row.template_snapshot ? certificateTemplateSchema.parse(row.template_snapshot)
+        : await getLegacyCertificateTemplateWithClient(client, row.template_id);
       if (!template || !parsed.file_path?.startsWith(`issued/${parsed.id}/`)) throw new Error("CERTIFICATE_NOT_AVAILABLE");
       const corrected = { ...parsed, template, academic_hours_snapshot: expectedHours };
-      const documentAssets = assets.get(template.id) ?? await loadCertificateDocumentAssets(client, corrected);
-      assets.set(template.id, documentAssets);
+      const assetKey = JSON.stringify([template.background_path, template.signers]);
+      const documentAssets = assets.get(assetKey) ?? await loadCertificateDocumentAssets(client, corrected);
+      assets.set(assetKey, documentAssets);
       const newPath = `issued/${parsed.id}/${parsed.certificate_code}-${crypto.randomUUID()}.pdf`;
       await storeCertificatePdf(client, corrected, getSiteUrl(), newPath, documentAssets);
       uploadedPath = newPath;

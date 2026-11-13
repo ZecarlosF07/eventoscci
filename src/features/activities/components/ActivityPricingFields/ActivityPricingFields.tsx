@@ -57,12 +57,11 @@ export function ActivityPricingFields({
           <Input defaultValue={activity?.capacity ?? ""} id="capacity" min="1" name="capacity" type="number" />
         </FormField>
       </div>
-      {type === "event" ? (
-        <div className="rounded-xl border border-cci-100 bg-cci-50 p-4">
-          <Label className="flex min-h-11 cursor-pointer items-center gap-2" htmlFor="is_listed"><Checkbox defaultChecked={activity?.is_listed ?? true} id="is_listed" name="is_listed" /> Mostrar en el portal</Label>
-          <p className="mt-2 text-sm text-slate-600">Si lo desactivas, el evento publicado seguirá disponible por enlace directo y aceptará inscripciones, pero no aparecerá en Inicio, Eventos ni la búsqueda.</p>
-        </div>
-      ) : null}
+      <div className="rounded-xl border border-cci-100 bg-cci-50 p-4">
+        <Label className="flex min-h-11 cursor-pointer items-center gap-2" htmlFor="is_listed"><Checkbox aria-describedby="activity-visibility-hint" defaultChecked={activity?.is_listed ?? true} id="is_listed" name="is_listed" /> Mostrar en el portal</Label>
+        <input name="is_listed" type="hidden" value="off" />
+        <p className="mt-2 text-sm text-slate-600" id="activity-visibility-hint">Desmarca esta opción para ocultar la actividad del portal. Si está publicada, su enlace directo seguirá funcionando.</p>
+      </div>
     </div>
   );
 }

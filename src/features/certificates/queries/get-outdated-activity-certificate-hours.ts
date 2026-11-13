@@ -13,7 +13,7 @@ export function getOutdatedActivityCertificateHoursQuery(
   return client.from("certificates").select(`
     id, access_token, academic_hours_snapshot, certificate_code, certificate_type,
     condition_snapshot, date_text_snapshot, file_path, participant_name_snapshot,
-    status, template_id, title_snapshot,
+    status, template_id, template_snapshot, title_snapshot,
     registration:registrations!certificates_registration_id_fkey!inner(activity_id, deleted_at)
   `, { count: "exact", head: countOnly }).eq("registration.activity_id", activityId).is("registration.deleted_at", null)
     .eq("certificate_type", "activity").eq("status", "issued").is("deleted_at", null)

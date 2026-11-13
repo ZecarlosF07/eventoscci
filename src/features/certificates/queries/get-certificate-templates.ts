@@ -13,7 +13,7 @@ export async function getCertificateTemplatesWithClient(
 ): Promise<CertificateTemplate[]> {
   let templateQuery = client
     .from("certificate_templates")
-    .select("id, name, scope, background_path, template_config, is_default, is_active, updated_at")
+    .select("id, name, scope, audience, background_path, template_config, is_default, is_active, updated_at")
     .is("deleted_at", null)
     .order("is_default", { ascending: false })
     .order("name");
@@ -42,6 +42,16 @@ export async function getCertificateTemplatesWithClient(
     if (!parsed.success) throw new Error("La respuesta de plantillas no tiene el formato esperado.");
     return parsed.data;
   });
+}
+
+export async function getLegacyCertificateTemplateWithClient(
+  client: SupabaseClient<Database>, id: string,
+): Promise<CertificateTemplate | null> {
+  const { data, error } = await client.from("certificate_templates").select("legacy_snapshot").eq("id", id).maybeSingle();
+  if (error) throw new Error("No fue posible consultar el diseño histórico.", { cause: error });
+  return data?.legacy_snapshot
+    ? certificateTemplateSchema.parse(data.legacy_snapshot)
+    : getCertificateTemplateByIdWithClient(client, id);
 }
 
 export async function getCertificateTemplates(activeOnly = false): Promise<CertificateTemplate[]> {

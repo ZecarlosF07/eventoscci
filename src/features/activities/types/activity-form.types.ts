@@ -44,7 +44,7 @@ export interface ActivityFormInput {
   presale_ends_at?: string;
   id: string;
   is_free: boolean;
-  is_listed: boolean;
+  is_listed?: boolean;
   member_price: string;
   member_free_passes_per_company: string;
   members_only: boolean;

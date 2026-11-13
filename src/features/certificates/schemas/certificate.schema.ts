@@ -1,6 +1,9 @@
 import { z } from "zod";
 
 import { FIELD_LIMITS, maximumCharactersMessage } from "@/constants/field-limits";
+import {
+  CERTIFICATE_HEADING_LIMIT, CERTIFICATE_RECOGNITION_LIMIT, isCertificateRecognitionValid,
+} from "@/features/certificates/utils/certificate-design-text";
 
 export const certificatePublicSchema = z.object({
   academic_hours: z.number().nullable(),
@@ -22,10 +25,14 @@ export const certificatePublicSchema = z.object({
 });
 
 export const certificateTemplateFormSchema = z.object({
-  id: z.string().trim(),
+  id: z.union([z.literal(""), z.uuid()]),
+  audience: z.enum(["shared", "participant", "speaker", "student"]).optional(),
+  heading: z.string().trim().max(CERTIFICATE_HEADING_LIMIT, maximumCharactersMessage(CERTIFICATE_HEADING_LIMIT)).optional(),
   is_active: z.boolean(),
   is_default: z.boolean(),
   name: z.string().trim().min(3, "Ingresa un nombre.").max(FIELD_LIMITS.certificateTemplateName, maximumCharactersMessage(FIELD_LIMITS.certificateTemplateName)),
+  recognition: z.string().trim().max(CERTIFICATE_RECOGNITION_LIMIT, maximumCharactersMessage(CERTIFICATE_RECOGNITION_LIMIT))
+    .refine(isCertificateRecognitionValid, "Incluye {{condicion}}. Puedes añadir {{titulo}}.").optional(),
   scope: z.enum(["activity", "course"]),
   show_date: z.boolean(),
 });

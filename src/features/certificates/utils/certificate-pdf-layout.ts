@@ -48,3 +48,30 @@ export function fitPdfTextSize(
 export function centeredTextX(text: string, font: PDFFont, size: number, pageWidth: number): number {
   return (pageWidth - font.widthOfTextAtSize(text, size)) / 2;
 }
+
+export function fitCertificateText(
+  text: string, font: PDFFont, width: number, maxLines: number, preferred: number, minimum: number, label: string,
+): [string[], number] {
+  if (!text.trim()) return [[], preferred];
+  const normalized = text.normalize("NFC");
+  const available = new Set(font.getCharacterSet());
+  if (Array.from(normalized.replace(/\s/g, "")).some((char) => !available.has(char.codePointAt(0) ?? -1))) {
+    throw new Error(`${label} contiene caracteres incompatibles con el PDF.`);
+  }
+  for (let size = preferred; size >= minimum; size -= 0.5) {
+    const lines = wrapPdfText(normalized, font, size, width);
+    if (lines.length <= maxLines && lines.every((line) => font.widthOfTextAtSize(line, size) <= width)) return [lines, size];
+  }
+  throw new Error(`${label} no cabe de forma legible. Acorta el texto e inténtalo nuevamente.`);
+}
+
+export function certificateSignerSlots(count: number) {
+  if (count < 1 || count > 4 || !Number.isInteger(count)) throw new Error("Configura entre una y cuatro firmas.");
+  const columns = count === 4 ? 2 : count;
+  const width = 426 / columns;
+  return Array.from({ length: count }, (_, index) => ({
+    centerX: 84.64 + width * ((index % columns) + 0.5),
+    width: Math.min(220, width - 14),
+    top: count === 4 ? 331 - Math.floor(index / columns) * 105 : 278,
+  }));
+}

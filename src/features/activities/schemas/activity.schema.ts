@@ -59,7 +59,7 @@ export const activityFormSchema = z
     presale_ends_at: z.string().trim().optional(),
     id: z.union([z.uuid(), z.literal("")]),
     is_free: z.boolean(),
-    is_listed: z.boolean(),
+    is_listed: z.boolean().optional(),
     member_price: nonnegativeNumber,
     member_free_passes_per_company: z.string().refine(
       (value) => /^\d+$/.test(value || "0") && Number(value || "0") <= 999999999,
@@ -153,9 +153,6 @@ export const activityFormSchema = z
     }
     if (data.status === "published" && !data.is_free && !data.members_only && Number(data.general_price) <= 0) {
       context.addIssue({ code: "custom", message: "Indica un precio general mayor que cero o marca la actividad como gratuita.", path: ["general_price"] });
-    }
-    if (data.type !== "event" && !data.is_listed) {
-      context.addIssue({ code: "custom", message: "La opción de no listar solo está disponible para eventos.", path: ["is_listed"] });
     }
     if (
       data.registration_open_at &&

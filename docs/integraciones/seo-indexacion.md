@@ -8,6 +8,7 @@ La plataforma posiciona su agenda empresarial presencial en Ica, Perú, y su ofe
 
 - Se indexan inicio, catálogos, consulta general de certificados, cursos publicados y actividades publicadas o finalizadas.
 - Las actividades canceladas continúan accesibles, pero usan `noindex, follow`.
+- Los eventos y capacitaciones no listados mantienen su enlace directo, pero quedan fuera de inicio, catálogos, búsqueda, recomendaciones y sitemap. Sus fichas usan `noindex, follow` y omiten el marcado estructurado de la actividad.
 - Las actividades archivadas o eliminadas no son públicas y responden como no encontradas.
 - Búsquedas internas, autenticación, inscripciones, administración, campus y certificados con token no se indexan.
 - `/sitemap.xml` incluye únicamente URLs canónicas que pueden aparecer en buscadores.

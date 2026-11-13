@@ -1,125 +1,72 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 import { ROUTES } from "@/constants/routes";
 import { requireAdmin } from "@/features/auth/services/admin-session";
-import {
-  certificateSignerFormSchema,
-  certificateTemplateFormSchema,
-} from "@/features/certificates/schemas/certificate.schema";
-import { CERTIFICATE_BUCKET } from "@/features/certificates/constants/certificate.constants";
-import type { CertificateSigner, CertificateTemplateFormState } from "@/features/certificates/types/certificate.types";
-import { checkboxValue, signerFromFormData } from "@/features/certificates/utils/certificate-form-data";
-import { consumeStagedImage } from "@/features/media/services/consume-staged-image";
-import type { Json } from "@/lib/supabase/database.types";
+import { storeTemplateAsset } from "@/features/certificates/services/certificate-template-assets";
+import { readCertificateTemplateDraft, renderCertificateDraft } from "@/features/certificates/services/read-certificate-template-draft";
+import type { CertificateTemplateFormState } from "@/features/certificates/types/certificate.types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getSupabaseErrorMessage, logSupabaseError } from "@/lib/supabase/supabase-error";
 
-const MAX_SIGNERS = 3;
+const templateErrors = {
+  LAST_ACTIVE_COURSE_TEMPLATE: "Activa otro modelo de Cursos antes de desactivar o retirar este. El Campus necesita uno para emitir.",
+  TEMPLATE_BATCH_ACTIVE: "Termina la tanda de emisión activa antes de modificar o retirar este modelo.",
+  TEMPLATE_CHANGED: "El modelo cambió. Actualiza la página antes de volver a guardar.",
+  TEMPLATE_NOT_FOUND: "El modelo ya no está disponible.",
+  SIGNATURE_REQUIRED: "Sube una imagen para cada firmante nuevo.",
+  VALIDATION_ERROR: "Revisa el nombre, el tipo y los firmantes del modelo.",
+};
 
-export async function saveCertificateTemplateAction(
-  _previousState: CertificateTemplateFormState,
-  formData: FormData,
-): Promise<CertificateTemplateFormState> {
-  await requireAdmin();
-  const parsed = certificateTemplateFormSchema.safeParse({
-    id: formData.get("id") ?? "",
-    is_active: checkboxValue(formData, "is_active"),
-    is_default: checkboxValue(formData, "is_default"),
-    name: formData.get("name"),
-    scope: formData.get("scope"),
-    show_date: checkboxValue(formData, "show_date"),
-  });
-  if (!parsed.success) return { errors: parsed.error.flatten().fieldErrors };
-  const signerErrors: Record<string, string[]> = {};
-  const signers = Array.from({ length: MAX_SIGNERS }, (_, index) => {
-    const signer = signerFromFormData(formData, index);
-    const title = String(formData.get(`signer_title_${index}`) ?? "").trim();
-    const stagedSignaturePath = String(formData.get(`signature_${index}_staged_path`) ?? "");
-    const existingSignaturePath = String(formData.get(`existing_signature_path_${index}`) ?? "");
-    const slotHasContent = Boolean(title || existingSignaturePath || stagedSignaturePath);
-
-    if (!signer) {
-      if (slotHasContent) signerErrors[`signer_name_${index}`] = ["Ingresa el nombre de este firmante."];
-      return null;
-    }
-
-    const signerResult = certificateSignerFormSchema.safeParse({
-      existing_signature_path: existingSignaturePath,
-      signer_name: signer.signer_name,
-      signer_title: signer.signer_title ?? "",
-      sort_order: index,
-    });
-    if (!signerResult.success) {
-      const fieldErrors = signerResult.error.flatten().fieldErrors;
-      if (fieldErrors.signer_name) signerErrors[`signer_name_${index}`] = fieldErrors.signer_name;
-      if (fieldErrors.signer_title) signerErrors[`signer_title_${index}`] = fieldErrors.signer_title;
-      return null;
-    }
-    return signer;
-  }).filter((item): item is Omit<CertificateSigner, "id"> => Boolean(item));
-  if (Object.keys(signerErrors).length) return { errors: signerErrors };
-  if (!signers.length) return { errors: { signer_name_0: ["Configura al menos un firmante."] } };
-
+export async function saveCertificateTemplateAction(formData: FormData): Promise<CertificateTemplateFormState> {
+  if ((await requireAdmin()).role !== "administrator") return { message: "Solo un administrador puede guardar modelos." };
   const client = await createServerSupabaseClient();
-  const templateId = parsed.data.id || crypto.randomUUID();
-  const stagedBackgroundPath = String(formData.get("background_staged_path") ?? "");
-  let backgroundPath = typeof formData.get("existing_background_path") === "string" ? String(formData.get("existing_background_path")) : "";
-  let assetField = "background";
-  const movedAssetPaths: string[] = [];
   try {
-    if (stagedBackgroundPath) {
-      backgroundPath = await consumeStagedImage(CERTIFICATE_BUCKET, stagedBackgroundPath, `templates/${templateId}/background`);
-      movedAssetPaths.push(backgroundPath);
+    const draft = await readCertificateTemplateDraft(client, formData);
+    if (!draft.ok) return { errors: draft.errors, message: draft.message ?? "Revisa los campos indicados." };
+    await renderCertificateDraft(draft);
+    if (!draft.recipient) await renderCertificateDraft(draft, true);
+    const { templateId, model } = draft;
+    const signers = [];
+    for (const signer of draft.signers) {
+      const { staged, signatureBytes, ...values } = signer;
+      if (staged && signatureBytes) values.signature_path = await storeTemplateAsset(client, templateId, "signature", signatureBytes);
+      signers.push(values);
     }
-    for (let index = 0; index < signers.length; index += 1) {
-      assetField = `signature_${signers[index].sort_order}`;
-      const stagedSignaturePath = String(formData.get(`${assetField}_staged_path`) ?? "");
-      if (stagedSignaturePath) {
-        const signaturePath = await consumeStagedImage(CERTIFICATE_BUCKET, stagedSignaturePath, `templates/${templateId}/signature`);
-        signers[index].signature_path = signaturePath;
-        movedAssetPaths.push(signaturePath);
-      }
+    const backgroundPath = draft.stagedBackground && draft.backgroundBytes
+      ? await storeTemplateAsset(client, templateId, "background", draft.backgroundBytes)
+      : draft.backgroundPath;
+    const { error } = await client.rpc("save_certificate_template", {
+      p_signers: signers,
+      p_template: {
+        id: templateId, audience: draft.recipient, scope: draft.scope, name: model.name,
+        background_path: backgroundPath, is_active: model.is_active, is_default: model.is_default,
+        expected_updated_at: draft.revision,
+        template_config: { heading: model.heading, recognition: model.recognition, show_date: model.show_date },
+      },
+    });
+    if (error) {
+      logSupabaseError("certificate_template_save_failed", error, { templateId });
+      return { message: getSupabaseErrorMessage(error, { fallback: "No se pudo guardar el modelo.", messages: templateErrors }) };
     }
+    revalidatePath(ROUTES.adminCertificateTemplates);
+    return { message: "Modelo guardado.", success: true, templateId };
   } catch (error) {
-    if (movedAssetPaths.length) await client.storage.from(CERTIFICATE_BUCKET).remove(movedAssetPaths);
-    return { errors: { [assetField]: [error instanceof Error ? error.message : "No fue posible cargar esta imagen."] } };
+    return { message: error instanceof Error ? error.message : "No se pudo guardar el modelo." };
   }
-
-  const { error } = await client.rpc("save_certificate_template", {
-    p_signers: signers as Json,
-    p_template: {
-      background_path: backgroundPath || null,
-      id: templateId,
-      is_active: parsed.data.is_active,
-      is_default: parsed.data.is_default,
-      name: parsed.data.name,
-      scope: parsed.data.scope,
-      template_config: { show_date: parsed.data.show_date },
-    },
-  });
-  if (error) {
-    if (movedAssetPaths.length) await client.storage.from(CERTIFICATE_BUCKET).remove(movedAssetPaths);
-    logSupabaseError("certificate_template_save_failed", error, { templateId });
-    return {
-      message: getSupabaseErrorMessage(error, {
-        fallback: "No se pudo guardar la plantilla. Actualiza la página e inténtalo nuevamente.",
-        messages: {
-          TEMPLATE_NOT_FOUND: "La plantilla ya no está disponible. Regresa al listado y vuelve a abrirla.",
-          VALIDATION_ERROR: "La plantilla contiene datos incompatibles. Revisa el nombre, alcance y firmantes.",
-        },
-      }),
-    };
-  }
-  revalidatePath(ROUTES.adminCertificateTemplates);
-  return { message: "Plantilla guardada correctamente.", success: true };
 }
 
-export async function deleteCertificateTemplateAction(templateId: string): Promise<void> {
-  await requireAdmin();
+export async function deleteCertificateTemplateAction(templateId: string): Promise<CertificateTemplateFormState> {
+  if ((await requireAdmin()).role !== "administrator") return { message: "Solo un administrador puede retirar modelos." };
+  if (!z.uuid().safeParse(templateId).success) return { message: "Modelo inválido." };
   const client = await createServerSupabaseClient();
-  const { error } = await client.rpc("soft_delete_certificate_template", { p_template_id: templateId });
-  if (error) throw new Error("No se puede retirar una plantilla en uso.", { cause: error });
+  const { error } = await client.rpc("retire_certificate_template", { p_template_id: templateId });
+  if (error) return { message: getSupabaseErrorMessage(error, {
+    fallback: "No se pudo retirar el modelo. Inténtalo nuevamente.",
+    messages: templateErrors,
+  }) };
   revalidatePath(ROUTES.adminCertificateTemplates);
+  return { success: true, message: "Modelo retirado." };
 }

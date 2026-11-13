@@ -1,4 +1,5 @@
 import "server-only";
+import { templatesForRecipient } from "@/features/certificates/utils/certificate-template-audience";
 
 import { CERTIFICATE_CANDIDATE_PAGE_SIZE } from "@/features/certificates/constants/certificate.constants";
 import { countOutdatedActivityCertificateHours } from "@/features/certificates/queries/get-outdated-activity-certificate-hours";
@@ -50,7 +51,7 @@ export async function getActivityCertificateData(
       readyCount: 0,
       outdatedHoursCount,
       recoverableCount: recoverableResult.data ?? 0,
-      templates: templates.filter((template) => template.scope === "activity"),
+      templates: templatesForRecipient(templates, "participant"),
     };
   }
 
@@ -93,6 +94,6 @@ export async function getActivityCertificateData(
     readyCount: Number(readyResult.data?.[0]?.total_count ?? 0),
     outdatedHoursCount,
     recoverableCount: recoverableResult.data ?? 0,
-    templates: templates.filter((template) => template.scope === "activity"),
+    templates: templatesForRecipient(templates, "participant"),
   };
 }

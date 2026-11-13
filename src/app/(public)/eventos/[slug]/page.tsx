@@ -13,6 +13,7 @@ import { getRegistrationAvailability } from "@/features/registrations/queries/ge
 import { getServerTimestamp } from "@/utils/get-server-timestamp";
 import { JsonLd } from "@/features/seo/components/JsonLd";
 import { buildNoIndexMetadata, buildPageMetadata } from "@/features/seo/services/build-page-metadata";
+import { canIndexActivity } from "@/features/seo/utils/activity-structured-data";
 import { buildActivityJsonLd, buildBreadcrumbJsonLd } from "@/features/seo/utils/json-ld";
 import { absoluteUrl } from "@/features/seo/utils/seo-url";
 import { buildSeoDescription } from "@/features/seo/utils/seo-text";
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: ActivityDetailPageProps): Pro
     ),
     follow: true,
     image,
-    index: activity.is_listed && activity.status !== "cancelled",
+    index: canIndexActivity(activity),
     path: getPublicActivityRoute(activity.type, activity.slug),
     title: activity.title,
   });
@@ -48,7 +49,7 @@ export default async function EventDetailPage({ params }: ActivityDetailPageProp
     { name: "Eventos", path: ROUTES.events },
     { name: activity.title, path },
   ], siteUrl);
-  const structuredData = activity.is_listed && activity.status !== "cancelled"
+  const structuredData = canIndexActivity(activity)
     ? [breadcrumbs, buildActivityJsonLd({
       activity,
       availability,
