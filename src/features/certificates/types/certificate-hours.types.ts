@@ -9,6 +9,7 @@ export interface CertificateHoursRegenerationState extends CertificateRegenerati
 export interface CertificateHoursRegenerationProps {
   academicHours: number | null;
   activityId: string;
+  activityTitle: string;
   outdatedCount: number;
 }
 

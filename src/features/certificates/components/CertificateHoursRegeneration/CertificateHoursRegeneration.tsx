@@ -10,7 +10,7 @@ import { certificateHoursProgress } from "@/features/certificates/utils/certific
 import { certificateHoursResultMessage } from "@/features/certificates/utils/certificate-hours-result";
 import type { CertificateHoursProgress, CertificateHoursRegenerationProps } from "@/features/certificates/types/certificate-hours.types";
 
-export function CertificateHoursRegeneration({ academicHours, activityId, outdatedCount }: CertificateHoursRegenerationProps) {
+export function CertificateHoursRegeneration({ academicHours, activityId, activityTitle, outdatedCount }: CertificateHoursRegenerationProps) {
   const router = useRouter();
   const [confirmed, setConfirmed] = useState(false);
   const [pending, setPending] = useState(false);
@@ -37,7 +37,7 @@ export function CertificateHoursRegeneration({ academicHours, activityId, outdat
     try {
       let hasMore = true;
       while (hasMore) {
-        const result = await regenerateActivityCertificateHoursAction(activityId, academicHours);
+        const result = await regenerateActivityCertificateHoursAction(activityId, academicHours, activityTitle);
         if (result.totalCount !== undefined) total = completed + result.totalCount;
         completed += result.regeneratedCount ?? 0;
         if (result.remainingCount !== undefined) total = completed + result.remainingCount;
@@ -57,13 +57,14 @@ export function CertificateHoursRegeneration({ academicHours, activityId, outdat
   }
 
   return (
-    <section aria-label="Corregir horas de certificados emitidos" className="space-y-3 rounded-2xl border border-cci-100 p-5">
-      <h2 className="font-bold text-cci-950">Corregir horas de certificados emitidos</h2>
-      <p className="text-sm text-slate-600">{validHours ? `Regenera los certificados vigentes con horas distintas de ${academicHours}. Conserva códigos, enlaces, nombres y fecha de emisión. No envía nuevos correos.` : "Primero guarda horas académicas mayores que cero en la actividad."}</p>
+    <section aria-label="Corregir título y horas de certificados emitidos" className="space-y-3 rounded-2xl border border-cci-100 p-5">
+      <h2 className="font-bold text-cci-950">Corregir título y horas de certificados emitidos</h2>
+      <p className="text-sm text-slate-600">{validHours ? `Actualiza los certificados vigentes cuyo título u horas difieran de la actividad. Se usarán ${academicHours} horas y el siguiente título.` : "Primero guarda horas académicas mayores que cero en la actividad."}</p>
+      {validHours ? <p className="text-sm font-semibold text-cci-950">{activityTitle}</p> : null}
       {confirmed ? <div className="flex flex-wrap gap-3">
-        <Button disabled={pending} onClick={regenerate} type="button">{pending ? "Regenerando… Mantén esta página abierta" : `Confirmar regeneración con ${academicHours} horas`}</Button>
+        <Button disabled={pending} onClick={regenerate} type="button">{pending ? "Regenerando… Mantén esta página abierta" : `Confirmar título y ${academicHours} horas`}</Button>
         <Button disabled={pending} onClick={() => setConfirmed(false)} type="button" variant="secondary">Cancelar</Button>
-      </div> : <Button disabled={!validHours || !outdatedCount} onClick={() => setConfirmed(true)} type="button" variant="secondary">Regenerar por horas académicas</Button>}
+      </div> : <Button disabled={!validHours || !outdatedCount} onClick={() => setConfirmed(true)} type="button" variant="secondary">Regenerar título y horas</Button>}
       {validHours ? <p className="text-sm text-slate-600">{pending ? Math.max(0, progress.total - progress.completed) : outdatedCount} certificados pendientes de corrección.{runProgress ? " La barra muestra el avance de esta ejecución." : ""}</p> : null}
       <CertificateHoursProgressBar {...progress} />
       {pending ? <p className="flex items-center gap-2 text-sm text-slate-600"><span aria-hidden="true" className="size-4 animate-spin rounded-full border-2 border-cci-200 border-t-cci-700 motion-reduce:animate-none" />Actualizando certificados · {elapsedSeconds} s transcurridos</p> : null}

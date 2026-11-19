@@ -75,12 +75,13 @@ export async function regenerateParticipantCertificatesAction(
 }
 
 
-export async function regenerateActivityCertificateHoursAction(activityId: string, expectedHours: number): Promise<CertificateHoursRegenerationState> {
+export async function regenerateActivityCertificateHoursAction(activityId: string, expectedHours: number, expectedTitle?: string): Promise<CertificateHoursRegenerationState> {
   await requireAdmin();
-  if (!z.uuid().safeParse(activityId).success || !Number.isFinite(expectedHours) || expectedHours <= 0 || expectedHours > ACTIVITY_MAX_ACADEMIC_HOURS) {
-    return { message: "La actividad o sus horas académicas no son válidas.", success: false };
+  if (!z.uuid().safeParse(activityId).success || !Number.isFinite(expectedHours) || expectedHours <= 0 || expectedHours > ACTIVITY_MAX_ACADEMIC_HOURS
+    || (expectedTitle !== undefined && !z.string().trim().min(1).max(300).safeParse(expectedTitle).success)) {
+    return { message: "La actividad, su título o sus horas académicas no son válidos.", success: false };
   }
-  const result = await regenerateActivityCertificateHours(activityId, expectedHours);
+  const result = await regenerateActivityCertificateHours(activityId, expectedHours, expectedTitle);
   revalidatePath(`${ROUTES.adminCertificatesActivities}/${activityId}`);
   revalidatePath(ROUTES.campusCertificates);
   revalidatePath("/certificados/[token]", "page");

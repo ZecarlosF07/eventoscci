@@ -40,7 +40,7 @@ export async function getActivityCertificateData(
   const error = activityResult.error ?? candidateResult.error ?? readyResult.error ?? recoverableResult.error;
   if (error) throw new Error("No fue posible consultar los candidatos a certificado.", { cause: error });
   if (!activityResult.data) return null;
-  const outdatedHoursCount = await countOutdatedActivityCertificateHours(client, activityId, activityResult.data.academic_hours);
+  const outdatedHoursCount = await countOutdatedActivityCertificateHours(client, activityId, activityResult.data.academic_hours, activityResult.data.title);
 
   if (candidateResult.error?.code === "PGRST202") {
     if (filters.emissionState && filters.emissionState !== "all") throw new Error("Actualiza la base de datos para aplicar filtros de emisión.");

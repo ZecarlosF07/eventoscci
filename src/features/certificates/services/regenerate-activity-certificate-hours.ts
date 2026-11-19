@@ -12,14 +12,16 @@ import { getSiteUrl } from "@/lib/env/server-env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { logSupabaseError } from "@/lib/supabase/supabase-error";
 
-export async function regenerateActivityCertificateHours(activityId: string, expectedHours: number): Promise<CertificateHoursRegenerationState> {
+export async function regenerateActivityCertificateHours(activityId: string, expectedHours: number, expectedTitle?: string): Promise<CertificateHoursRegenerationState> {
   const client = await createServerSupabaseClient();
-  const activity = await client.from("activities").select("academic_hours")
+  const activity = await client.from("activities").select("academic_hours, title")
     .eq("id", activityId).neq("status", "archived").is("deleted_at", null).maybeSingle();
-  if (activity.error || activity.data?.academic_hours !== expectedHours) {
-    return { message: "Las horas de la actividad cambiaron o no están disponibles. Actualiza la página.", success: false };
+  if (activity.error || !activity.data || activity.data.academic_hours !== expectedHours
+    || (expectedTitle !== undefined && activity.data.title !== expectedTitle)) {
+    return { message: "El título o las horas de la actividad cambiaron o no están disponibles. Actualiza la página.", success: false };
   }
-  const result = await getOutdatedActivityCertificateHoursQuery(client, activityId, expectedHours)
+  const title = activity.data.title;
+  const result = await getOutdatedActivityCertificateHoursQuery(client, activityId, expectedHours, false, title)
     .order("id").limit(CERTIFICATE_HOURS_REGENERATION_BATCH_SIZE);
   if (result.error) return { message: "No fue posible consultar los certificados por corregir.", success: false };
   const assets = new Map<string, Awaited<ReturnType<typeof loadCertificateDocumentAssets>>>();
@@ -33,16 +35,16 @@ export async function regenerateActivityCertificateHours(activityId: string, exp
       const template = row.template_snapshot ? certificateTemplateSchema.parse(row.template_snapshot)
         : await getLegacyCertificateTemplateWithClient(client, row.template_id);
       if (!template || !parsed.file_path?.startsWith(`issued/${parsed.id}/`)) throw new Error("CERTIFICATE_NOT_AVAILABLE");
-      const corrected = { ...parsed, template, academic_hours_snapshot: expectedHours };
+      const corrected = { ...parsed, template, academic_hours_snapshot: expectedHours, title_snapshot: title };
       const assetKey = JSON.stringify([template.background_path, template.signers]);
       const documentAssets = assets.get(assetKey) ?? await loadCertificateDocumentAssets(client, corrected);
       assets.set(assetKey, documentAssets);
       const newPath = `issued/${parsed.id}/${parsed.certificate_code}-${crypto.randomUUID()}.pdf`;
       await storeCertificatePdf(client, corrected, getSiteUrl(), newPath, documentAssets);
       uploadedPath = newPath;
-      const replaced = await client.rpc("replace_activity_certificate_hours", {
+      const replaced = await client.rpc("replace_activity_certificate_details", {
         p_activity_id: activityId, p_certificate_id: parsed.id,
-        p_new_hours: expectedHours, p_expected_file_path: parsed.file_path, p_new_file_path: newPath,
+        p_new_hours: expectedHours, p_new_title: title, p_expected_file_path: parsed.file_path, p_new_file_path: newPath,
       });
       if (replaced.error) {
         const current = await client.from("certificates").select("file_path").eq("id", parsed.id).maybeSingle();
@@ -61,7 +63,7 @@ export async function regenerateActivityCertificateHours(activityId: string, exp
   const errorCount = failedCertificateCodes.length;
   let remainingCount: number;
   try {
-    remainingCount = await countOutdatedActivityCertificateHours(client, activityId, expectedHours);
+    remainingCount = await countOutdatedActivityCertificateHours(client, activityId, expectedHours, title);
   } catch (error) {
     logSupabaseError("certificate_hours_remaining_count_failed", error instanceof Error ? error : { message: "Unknown count error" }, { activityId });
     return { cleanupWarningCount, errorCount, failedCertificateCodes, regeneratedCount, totalCount: result.count ?? 0, success: false,

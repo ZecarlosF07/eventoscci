@@ -625,3 +625,17 @@ Migración `202611130001_training_listing_visibility.sql` aplicada en Supabase t
 | H20-09 | La desactivación y el retiro conservan al menos un modelo activo para la emisión automática del Campus | SQL 044, regresión 010 y migración `202611130004` |
 
 Migraciones `202611130002`, `202611130003` y `202611130004` aplicadas y verificadas en Supabase el 13/11/2026. La suite del hito pasó 43 comprobaciones SQL con rollback y se repitieron las regresiones de cursos y tandas de actividad. Pasaron 285 unitarias, dos pruebas de integración de caché, lint, typecheck y build. Las pruebas y vistas previas usaron datos ficticios.
+
+## Regeneración de título y horas — 19/11/2026
+
+| Caso | Resultado |
+|---|---|
+| Validación previa al PDF | La consulta incluye `recipient_type` y satisface el esquema de generación. Prueba con proyección de columnas de PostgREST |
+| Detección | Incluye diferencias de título, horas o ambas. Se verifican títulos con comas, comillas y paréntesis |
+| Corrección explícita | El panel muestra el título y las horas objetivo y confirma ambos antes de regenerar |
+| Escritura y concurrencia | SQL 045 valida permisos, actividad, valores actuales, ruta previa, revocación, archivo y auditoría |
+| Historial | Se conservan código, token, nombre, fechas y diseño. Los avisos por correo siguen el flujo existente |
+| Compatibilidad | SQL 034 verifica la operación anterior de corrección de horas |
+| Caso reportado | Consulta de solo lectura confirmó ocho pendientes, de 100 a 125 horas, con títulos diferentes. Sus PDF con los datos actuales se generaron correctamente en memoria |
+
+Aplicada `202611190001_certificate_title_hours_correction.sql` y regenerados los tipos. Pasaron 288 unitarias, 41 comprobaciones SQL con rollback, lint, typecheck y build. Pendiente publicar el frontend y ejecutar la regeneración administrativa de los documentos reportados.
