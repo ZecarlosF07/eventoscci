@@ -6,5 +6,8 @@ export interface RegistrationRowActionsProps {
 }
 
 export interface RegistrationCancelDialogProps extends RegistrationRowActionsProps {
+  mode: RegistrationActionMode;
   onClose: () => void;
 }
+
+export type RegistrationActionMode = "cancel" | "reactivate";

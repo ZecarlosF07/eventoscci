@@ -3915,6 +3915,10 @@ export type Database = {
         Returns: Json
       }
       privacy_consent_enforced: { Args: never; Returns: boolean }
+      reactivate_registration: {
+        Args: { p_reason?: string; p_registration_id: string }
+        Returns: Json
+      }
       recalculate_course_progress: {
         Args: { p_enrollment_id: string }
         Returns: number

@@ -67,3 +67,15 @@ Evidencia automatizada y pruebas integrales pendientes: consultar `docs/producci
 ## Preventa opcional de eventos
 
 Los pagos y sus exportaciones continúan usando snapshots; una inscripción realizada durante la preventa conserva ese importe aunque el pago se valide después del vencimiento. Las cortesías conservan importe cero y los certificados siguen separados. Consultar [Preventa de eventos](preventa-eventos.md).
+
+## Reactivación administrativa de inscripciones
+
+En Inscripciones, los registros cancelados ofrecen **Reactivar inscripción** tanto en la tabla como en las tarjetas móviles. El diálogo muestra la persona, actividad, importe y resultado esperado, con un motivo opcional.
+
+La RPC `reactivate_registration` restaura la misma inscripción. Una plaza gratuita, una confirmación histórica o un pago verificado permiten recuperar el estado confirmado. Una plaza pagada sin confirmar vuelve a pendiente de pago. El precio y la fecha original de confirmación se conservan cuando corresponda.
+
+La operación bloquea la actividad antes de comprobar cupos y duplicados. Una persona con otra inscripción activa debe utilizar ese registro vigente. Los pases gratuitos solo se restauran mientras continúen asignados a la misma inscripción. Las actividades archivadas, canceladas o eliminadas requieren restauración previa.
+
+La reactivación registra usuario, fecha, motivo y valores anteriores y nuevos en `registration.reactivated`. Los campos de cancelación se limpian en el estado vigente y su historial queda en auditoría. El cambio de estado sincroniza recordatorios virtuales futuros y retira avisos de cancelación aún pendientes. Los conteos administrativos y la disponibilidad pública se invalidan tras la operación. Los reintentos sobre una inscripción activa devuelven el estado existente.
+
+La migración es `202611200001_reactivate_registration.sql`; la aceptación SQL transaccional está en `046_registration_reactivation_test.sql`.

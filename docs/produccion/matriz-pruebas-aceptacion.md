@@ -639,3 +639,19 @@ Migraciones `202611130002`, `202611130003` y `202611130004` aplicadas y verifica
 | Caso reportado | Consulta de solo lectura confirmó ocho pendientes, de 100 a 125 horas, con títulos diferentes. Sus PDF con los datos actuales se generaron correctamente en memoria |
 
 Aplicada `202611190001_certificate_title_hours_correction.sql` y regenerados los tipos. Pasaron 288 unitarias, 41 comprobaciones SQL con rollback, lint, typecheck y build. Pendiente publicar el frontend y ejecutar la regeneración administrativa de los documentos reportados.
+
+## Reactivación de inscripciones — 20/11/2026
+
+| Caso | Criterio y evidencia |
+|---|---|
+| Acceso administrativo | Inscripción cancelada ofrece Reactivar inscripción, en tabla y tarjetas. Diálogo probado a 1366 y 390 px, con Escape y retorno del foco |
+| Gratuita y pago confirmado | Recuperan Confirmada. Se preservan identidad, código, precios, datos del certificado y fecha de confirmación original cuando existe |
+| Pago pendiente | Recupera Pendiente y puede continuar por Pagos. Se verifica también en una plaza grupal |
+| Cupos y duplicados | El bloqueo de la actividad serializa la comprobación. Cupo lleno u otra inscripción activa de la misma persona rechazan la reactivación |
+| Pases gratuitos | Recuperación permitida con el pase asignado. Un pase transferido impide reactivar la plaza anterior y no crea una cortesía adicional |
+| Actividad y permisos | Rechazo de anónimos, estudiantes, actividad archivada, cancelada o eliminada |
+| Auditoría e idempotencia | Se guardan actor, fecha, motivo y estados anterior/nuevo. Repetir una inscripción activa conserva el registro |
+| Recordatorios y avisos | Confirmación restaura un recordatorio futuro por sesión. Se retiran los avisos de cancelación pendientes |
+| Caché y mensajes | Se invalidan disponibilidad pública y vistas administrativas. El mensaje indica Confirmadas o Pendientes para encontrar la inscripción tras salir del filtro Canceladas |
+
+Migración `202611200001_reactivate_registration.sql` aplicada en Supabase. Pasaron 290 unitarias, 181 comprobaciones SQL transaccionales (27 nuevas y 154 de regresión), lint, typecheck y build. El recorrido de navegador usó sesión y registros simulados. Pendiente publicar el frontend y comprobar la opción con una sesión administrativa en producción.

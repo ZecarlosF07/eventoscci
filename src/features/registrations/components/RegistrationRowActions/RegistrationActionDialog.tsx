@@ -6,11 +6,12 @@ import { createPortal } from "react-dom";
 import { Button } from "@/components/atoms/Button";
 import { SubmitButton } from "@/components/atoms/SubmitButton";
 import { cancelRegistrationAction } from "@/features/registrations/mutations/registration-admin.actions";
+import { reactivateRegistrationAction } from "@/features/registrations/mutations/reactivate-registration.actions";
 import type { RegistrationCancelDialogProps } from "@/features/registrations/components/RegistrationRowActions/types/registration-row-actions.types";
 import { formatRegistrationPrice } from "@/features/registrations/utils/registration-formatters";
 import { handleDialogKeyboard } from "@/utils/dialog-keyboard";
 
-export function RegistrationActionDialog({ onClose, registration, returnTo }: RegistrationCancelDialogProps) {
+export function RegistrationActionDialog({ mode, onClose, registration, returnTo }: RegistrationCancelDialogProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -21,15 +22,17 @@ export function RegistrationActionDialog({ onClose, registration, returnTo }: Re
     return () => { document.body.style.overflow = previousOverflow; document.removeEventListener("keydown", closeOnEscape); };
   }, [onClose]);
 
-  const action = cancelRegistrationAction.bind(null, registration.id, returnTo);
+  const reactivating = mode === "reactivate";
+  const action = (reactivating ? reactivateRegistrationAction : cancelRegistrationAction).bind(null, registration.id, returnTo);
+  const heading = reactivating ? "Reactivar inscripción" : "Cancelar inscripción";
 
   return createPortal(
     <div aria-labelledby="registration-action-title" aria-modal="true" className="fixed inset-0 z-[100] grid place-items-center bg-cci-950/70 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }} role="dialog">
-      <form action={action} className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+      <form action={action} className="max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-cci-600">Cambio de estado</p>
-            <h2 className="mt-1 text-2xl font-bold text-cci-950" id="registration-action-title">Cancelar inscripción</h2>
+            <h2 className="mt-1 text-2xl font-bold text-cci-950" id="registration-action-title">{heading}</h2>
           </div>
           <button aria-label="Cerrar" className="grid size-11 place-items-center rounded-full border border-cci-200 text-xl" onClick={onClose} ref={closeRef} type="button">×</button>
         </div>
@@ -38,10 +41,13 @@ export function RegistrationActionDialog({ onClose, registration, returnTo }: Re
           <div><dt className="text-slate-500">Importe</dt><dd className="font-semibold text-cci-950">{formatRegistrationPrice(registration.price_snapshot)}</dd></div>
           <div className="sm:col-span-2"><dt className="text-slate-500">Actividad</dt><dd className="font-semibold text-cci-950">{registration.activity.title}</dd></div>
         </dl>
-        <label className="mt-4 block text-sm font-semibold">Motivo de cancelación (opcional)<textarea className="mt-1 min-h-24 w-full rounded-xl border border-slate-300 p-3 text-sm outline-none focus:border-cci-600 focus:ring-2 focus:ring-cci-100" maxLength={500} name="cancellation_reason" /></label>
+        {reactivating ? <p className="mt-4 text-sm text-slate-600">{registration.price_snapshot === 0
+          ? "La inscripción gratuita quedará confirmada y volverá a ocupar un cupo."
+          : "Si el pago ya estaba confirmado, recuperará su confirmación. Si faltaba validarlo, quedará pendiente de pago."}</p> : null}
+        <label className="mt-4 block text-sm font-semibold">Motivo de {reactivating ? "reactivación" : "cancelación"} (opcional)<textarea className="mt-1 min-h-24 w-full rounded-xl border border-slate-300 p-3 text-sm outline-none focus:border-cci-600 focus:ring-2 focus:ring-cci-100" maxLength={500} name={reactivating ? "reactivation_reason" : "cancellation_reason"} /></label>
         <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button onClick={onClose} type="button" variant="secondary">Volver</Button>
-          <SubmitButton pendingLabel="Cancelando…" variant="subtle">Cancelar inscripción</SubmitButton>
+          <SubmitButton pendingLabel={reactivating ? "Reactivando…" : "Cancelando…"} variant={reactivating ? "primary" : "subtle"}>{heading}</SubmitButton>
         </div>
       </form>
     </div>,
