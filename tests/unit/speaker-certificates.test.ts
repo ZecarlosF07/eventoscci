@@ -1,11 +1,34 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { decodePDFRawStream, PDFArray, PDFDocument, PDFRawStream } from "pdf-lib";
+import { decodePDFRawStream, PDFArray, PDFDict, PDFDocument, PDFName, PDFRawStream } from "pdf-lib";
 
 import { generateCertificatePdf } from "../../src/features/certificates/services/generate-certificate-pdf";
 import { speakerCertificateRecipientSchema } from "../../src/features/certificates/schemas/speaker-certificate.schema";
 import { certificateAccessCertificateRowSchema } from "../../src/features/certificates/schemas/certificate-access.schema";
+
+function readEmbeddedTextRuns(pdf: PDFDocument) {
+  const page = pdf.getPage(0);
+  const contents = page.node.Contents();
+  const resources = page.node.Resources();
+  assert.ok(contents instanceof PDFArray && resources);
+  const fonts = resources.lookup(PDFName.of("Font"), PDFDict);
+  return Array.from({ length: contents.size() }, (_, index) => {
+    const stream = contents.lookup(index, PDFRawStream);
+    const source = Buffer.from(decodePDFRawStream(stream).decode()).toString();
+    return [...source.matchAll(/\/([\w-]+) ([\d.]+) Tf\b[^<]*<([0-9a-f]+)>\s*Tj/gi)].map(([, fontKey, size, hex]) => {
+      const font = fonts.lookup(PDFName.of(fontKey), PDFDict);
+      const unicode = font.lookup(PDFName.of("ToUnicode"));
+      assert.ok(unicode instanceof PDFRawStream);
+      const mapping = Buffer.from(decodePDFRawStream(unicode).decode()).toString();
+      const glyphs = new Map([...mapping.matchAll(/^<([0-9a-f]{4})> <([0-9a-f]+)>$/gim)].map(([, id, value]) => [
+        id.toUpperCase(), Buffer.from(value, "hex").swap16().toString("utf16le"),
+      ]));
+      const text = hex.match(/.{4}/g)?.map((glyph) => glyphs.get(glyph.toUpperCase()) ?? "\uFFFD").join("") ?? "";
+      return { font: font.lookup(PDFName.of("BaseFont"), PDFName).decodeText(), size: Number(size), text };
+    });
+  }).flat();
+}
 
 test("la bitácora de accesos acepta certificados de ponente sin persona ni DNI", () => {
   assert.equal(certificateAccessCertificateRowSchema.safeParse({
@@ -14,27 +37,35 @@ test("la bitácora de accesos acepta certificados de ponente sin persona ni DNI"
   }).success, true);
 });
 
-test("genera PDF de ponente sin horas usando la plantilla institucional", async () => {
-  const bytes = await generateCertificatePdf({
-    academicHours: null, accessUrl: "https://example.test/certificados/token",
-    certificateCode: "CCI-PON-2026-000001", certificateType: "activity", recipientType: "speaker",
-    condition: "Panelista", dateText: "22/10/2026", participantName: "Ana Pérez",
-    signers: [], title: "Encuentro empresarial",
-  });
-  const pdf = await PDFDocument.load(bytes);
-  assert.equal(pdf.getPageCount(), 1);
-  assert.ok(bytes.length > 1000);
-  const contents = pdf.getPage(0).node.Contents();
-  assert.ok(contents instanceof PDFArray);
-  const text = Array.from({ length: contents.size() }, (_, index) => {
-    const stream = contents.lookup(index);
-    assert.ok(stream instanceof PDFRawStream);
-    const source = Buffer.from(decodePDFRawStream(stream).decode()).toString();
-    return [...source.matchAll(/<([0-9a-f]+)>\s*Tj/gi)].map((match) => Buffer.from(match[1], "hex").toString("latin1")).join(" ");
-  }).join(" ");
-  assert.match(text, /En reconocimiento/);
-  assert.match(text, /Panelista/);
-  assert.doesNotMatch(text, /horas acad/);
+test("destaca el nombre del ponente y muestra su rol y el título una sola vez en ambos diseños", async () => {
+  for (const layoutVersion of [1, 2]) {
+    const condition = layoutVersion === 1 ? null : "Panelista";
+    const bytes = await generateCertificatePdf({
+      academicHours: null, accessUrl: "https://example.test/certificados/token",
+      certificateCode: "CCI-PON-2026-000001", certificateType: "activity", recipientType: "speaker",
+      condition, dateText: "22/10/2026", layoutVersion, participantName: "Ana Pérez",
+      recognition: "Reconocemos a {{condicion}} en {{titulo}}.",
+      signers: [{ signature_path: null, signer_name: "Firma institucional", signer_title: null, sort_order: 0 }],
+      title: "Encuentro empresarial",
+    });
+    const pdf = await PDFDocument.load(bytes);
+    assert.equal(pdf.getPageCount(), 1);
+    const textRuns = readEmbeddedTextRuns(pdf);
+    assert.deepEqual(textRuns.slice(0, 2).map((run) => run.text), ["Certificado", "de Reconocimiento"]);
+    assert.ok(textRuns.slice(0, 2).every((run) => /^CharisSIL-Italic/.test(run.font)));
+    const text = textRuns.map((run) => run.text).join(" ");
+    const role = condition ?? "ponente";
+    assert.ok(text.includes(`Ana Pérez En reconocimiento a su valiosa participación como ${role} en: Encuentro empresarial Ica, 22/10/2026`));
+    assert.equal(textRuns.filter((run) => run.text === "Encuentro empresarial").length, 1);
+    assert.doesNotMatch(text, /horas acad|Reconocemos/);
+    const name = textRuns.find((run) => run.text === "Ana Pérez");
+    const title = textRuns.find((run) => run.text === "Encuentro empresarial");
+    const recognition = textRuns.find((run) => run.text.startsWith("En reconocimiento"));
+    assert.ok(name && title && name.size > title.size);
+    assert.match(name.font, /^CharisSIL-Bold/);
+    assert.match(title.font, /^CharisSIL-Bold/);
+    assert.match(recognition?.font ?? "", /^Inter-Regular/);
+  }
 });
 
 test("valida roles y referencias antes de emitir", () => {

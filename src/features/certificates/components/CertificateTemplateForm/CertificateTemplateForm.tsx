@@ -119,10 +119,12 @@ export function CertificateTemplateForm({ template }: CertificateTemplateFormPro
         <FormField error={state.errors?.heading?.[0]} label="Encabezado" name="heading" hint="Déjalo vacío para usar el encabezado institucional.">
           <Textarea defaultValue={design.heading} id="heading" maxLength={CERTIFICATE_HEADING_LIMIT} name="heading" rows={3} />
         </FormField>
-        <FormField error={state.errors?.recognition?.[0]} label="Texto de reconocimiento" name="recognition"
-          hint="Si escribes un texto propio, incluye {{condicion}}. Puedes usar {{titulo}} para repetir el título.">
+        {audience === "speaker" ? <input name="recognition" type="hidden" value={design.recognition ?? ""} /> : <FormField
+          error={state.errors?.recognition?.[0]} label="Texto de reconocimiento" name="recognition"
+          hint={audience === "shared" ? "Texto para participación. Incluye {{condicion}} y, si deseas repetir el título, {{titulo}}."
+            : "Si escribes un texto propio, incluye {{condicion}}. Puedes usar {{titulo}} para repetir el título."}>
           <Textarea defaultValue={design.recognition} id="recognition" maxLength={CERTIFICATE_RECOGNITION_LIMIT} name="recognition" rows={3} />
-        </FormField>
+        </FormField>}
       </div>
       <section aria-labelledby="certificate-signers" className="space-y-3">
         <h2 className="text-lg font-semibold" id="certificate-signers">Firmantes</h2>

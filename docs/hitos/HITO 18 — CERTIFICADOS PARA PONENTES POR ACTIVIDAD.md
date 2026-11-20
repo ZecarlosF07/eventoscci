@@ -9,7 +9,7 @@ El personal selecciona una plantilla activa de actividades, revisa los roles, se
 ## Documento e historial
 
 - Se reutilizan fondo, firmas, QR, almacenamiento privado y acceso por token de los certificados actuales.
-- Redacción: «En reconocimiento a su valiosa participación como [rol] en [actividad]».
+- PDF: el nombre del ponente aparece como texto principal. Debajo dice «En reconocimiento a su valiosa participación como ponente en:» (con el rol configurado), seguido del título de la actividad en negrita.
 - El rol se precarga desde la actividad o «Ponente»; puede ajustarse antes de emitir sin cambiar la actividad.
 - «Editar nombre» permite completar o quitar tratamientos del nombre impreso antes de emitir (2–241 caracteres). El cambio se guarda solo en el snapshot del certificado, no en Catálogos. Los reintentos y la regeneración conservan ese nombre. La ampliación compatible está en `202610230001_speaker_certificate_name_override.sql`.
 - No se imprimen horas, aunque la actividad las tenga. Se respeta la configuración de fechas de la plantilla.

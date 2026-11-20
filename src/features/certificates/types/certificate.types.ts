@@ -1,3 +1,5 @@
+import type { PDFFont } from "pdf-lib";
+
 import type { ActivityCertificateMode } from "@/features/activities/types/activity-certificate.types";
 import type { ActivityListItem, ActivityType } from "@/features/activities/types/activity.types";
 import type { AttendanceStatus } from "@/features/attendance/types/attendance.types";
@@ -221,6 +223,13 @@ export interface CertificateDocumentInput {
   recipientType?: CertificateRecipientType;
   signers: CertificateDocumentSigner[];
   title: string;
+}
+
+export interface CertificateDocumentFonts {
+  regular: PDFFont;
+  bold: PDFFont;
+  emphasis: PDFFont;
+  masthead?: PDFFont;
 }
 
 export interface CertificateDocumentAssets {
